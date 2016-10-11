@@ -1,15 +1,14 @@
 # speed2.py - RPI OpenCV2 Object Speed Tracker
 ####  A Raspberry Pi Speed Camera using python, Video Stream Thread, pi-camera
 
-### Links
+### Links   
 * speed-track YouTube video here https://youtu.be/eRi50BbJUro
 * speed2 RPI forum post here https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
 * motion-track YouTube video here using RPI B2 https://youtu.be/09JS7twPBsQ
 * YouTube Channel https://www.youtube.com/user/pageaucp   
 * GitHub Repo https://github.com/pageauc
 
-### Quick Install
-
+### Quick Install   
 For Easy speed-cam install onto raspbian RPI. 
 
     curl -L https://raw.github.com/pageauc/rpi-speed-cam/master/speed-install.sh | bash
@@ -20,8 +19,7 @@ download and execute the github speed-install.sh script for rpi-speed-cam object
 Note - a raspbian apt-get update and upgrade will be performed as part of install 
 so it may take some time if these are not up-to-date
 
-### or Manual Install
-
+#### or Manual Install   
 From logged in RPI SSH session or console terminal perform the following.
 
     wget https://raw.github.com/pageauc/rpi-speed-cam/master/speed-track-2/speed-install.sh
@@ -40,9 +38,9 @@ You will need to perform a calibration to set the correct value for IMAGE_VIEW_F
 variable based on the distance from camera to objects being measured for speed.  
 See video and this Readme.md below for more details.     
     
-How to Run speed-cam.py section below
+See How to Run speed-cam.py section below
 
-### Program Description
+### Program Description   
 This is a raspberry pi computer openCV2 object speed camera demo program.
 It is written in python and uses openCV2 to detect and track object motion.
 The results are recorded on speed photos and data in a CSV file that can be
@@ -56,17 +54,7 @@ taken and saved in an images folder. If log_data_to_file=True then a
 speed2.csv file will be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet.
 
-#### Credits
-Some of this code is based on a YouTube tutorial by
-Kyle Hounslow using C here https://www.youtube.com/watch?v=X6rPdRZzgjg
-
-Thanks to Adrian Rosebrock jrosebr1 at http://www.pyimagesearch.com 
-for the PiVideoStream Class code available on github at
-https://github.com/jrosebr1/imutils/blob/master/imutils/video/pivideostream.py
-
-
-### How to Run Speed-cam.py
-    
+### How to Run Speed-cam.py     
 if wish to run speed-cam.py as a background task or on boot from /etc/rc.local then
 
     cd ~/rpi-speed-cam
@@ -116,12 +104,11 @@ other variables as desired.
 
 Use the calibrate option and follow instructions below to calculate an accurate
 value for IMAGE_VIEW_FT variable in the speed_settings.py
-    
-### Calibrate IMAGE_VIEW_FT variable
-  
-speed-cam.py needs to be calibrated in order to display a correct speed.
+ 
 
-#### Calibration Procedure
+### Calibration Procedure   
+speed-cam.py needs to be calibrated in order to display a correct speed.
+#### To Calibrate IMAGE_VIEW_FT variable perform the following
 
 * Setup the RPI camera to point to the view to be monitored.
 * Login to RPI using SSH or desktop terminal session and cd to rpi-speed-cam folder
@@ -150,15 +137,14 @@ speed-cam.py needs to be calibrated in order to display a correct speed.
 Please note that if road is too close and/or vehicles are moving too quickly then
 the camera may not capture motion and/or record vehicle in speed photo.
   
-### Calibration formula
+#### Calibration Formula  
 Use this formula to calculate a value for IMAGE_VIEW_FT
  
 IMAGE_VIEW_FT = (CAMERA_WIDTH * Ref_Obj_ft) / num_px_for_Ref_Object
 
 eg (320 * 18) / 80 = 72
   
-### speed-cam Settings
-
+### speed-cam Settings  
 Variable values are stored in the config.py file and are imported
 when speed-cam.py is run.  Use the nano editor to modify these settings
 per the comments.  Most settings should be OK and should not need to be
@@ -168,6 +154,14 @@ likely won't need to be changed unless you are familiar with them.
 Note if log_data_to_file is set it will save a data to a .csv file
 in the same folder as speed-cam.py  eg speed-cam.csv 
 
+### Credits  
+Some of this code is based on a YouTube tutorial by
+Kyle Hounslow using C here https://www.youtube.com/watch?v=X6rPdRZzgjg
+
+Thanks to Adrian Rosebrock jrosebr1 at http://www.pyimagesearch.com 
+for the PiVideoStream Class code available on github at
+https://github.com/jrosebr1/imutils/blob/master/imutils/video/pivideostream.py
+  
 Have Fun   
 Claude Pageau
 
