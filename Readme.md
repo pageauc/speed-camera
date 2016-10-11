@@ -6,26 +6,26 @@
 * speed-cam RPI forum post here https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
 * motion-track YouTube video here using RPI B2 https://youtu.be/09JS7twPBsQ
 * YouTube Channel https://www.youtube.com/user/pageaucp   
-* GitHub Repo https://github.com/pageauc/rpi-speed-cam
+* GitHub Repo https://github.com/pageauc/rpi-speed-camera
 
 ### Quick Install   
 For Easy speed-cam install onto raspbian RPI. 
 
-    curl -L https://raw.github.com/pageauc/rpi-speed-cam/master/speed-install.sh | bash
+    curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash
 
 From a computer logged into the RPI via ssh(Putty) session use mouse to highlight command above, right click, copy.  
 Then select ssh(Putty) window, mouse right click, paste.  The command should 
-download and execute the github speed-install.sh script for rpi-speed-cam object(vehicle) speed tracker.   
+download and execute the github speed-install.sh script for rpi-speed-camera object(vehicle) speed tracker.   
 Note - a raspbian apt-get update and upgrade will be performed as part of install 
 so it may take some time if these are not up-to-date
 
 #### or Manual Install   
 From logged in RPI SSH session or console terminal perform the following.
 
-    wget https://raw.github.com/pageauc/rpi-speed-cam/master/speed-track-2/speed-install.sh
+    wget https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
     chmod +x speed-install.sh
     ./speed-install.sh
-    cd rpi-speed-cam
+    cd rpi-speed-camera
     ./speed-cam.py
 
 Requires a Raspberry Pi computer with a RPI camera module installed, configured
@@ -57,7 +57,7 @@ CSV (Comma Separated Values) format. This can be imported into a spreadsheet.
 ### How to Run Speed-cam.py     
 if wish to run speed-cam.py as a background task or on boot from /etc/rc.local then
 
-    cd ~/rpi-speed-cam
+    cd ~/rpi-speed-camera
     ./speed-cam.sh
     
 or edit /etc/rc.local file using nano editor per command below
@@ -66,7 +66,7 @@ or edit /etc/rc.local file using nano editor per command below
 
 Then add line below before the exit line then ctrl-x y to save and reboot to test
 
-    /home/pi/rpi-speed-cam/speed-cam.sh
+    /home/pi/rpi-speed-camera/speed-cam.sh
     exit 0    
     
 Edit the speed-cam.sh script to suit your needs per comments.  
@@ -93,9 +93,9 @@ From 9 Advanced Options select AA GL Driver then enable driver and reboot
 You can also use git clone to copy the files to your RPI.
 
     cd ~
-    git clone https://github.com/pageauc/rpi-speed-cam.git
+    git clone https://github.com/pageauc/rpi-speed-camera.git
  
-The speed-cam files will be in the /home/pi/rpi-speed-cam folder. You can
+The speed-cam files will be in the /home/pi/rpi-speed-camera folder. You can
 then move them to another location if you wish.
  
 Note A default images folder will be created to store jpg speed photos. There is an
@@ -111,7 +111,7 @@ speed-cam.py needs to be calibrated in order to display a correct speed.
 #### To Calibrate IMAGE_VIEW_FT variable perform the following
 
 * Setup the RPI camera to point to the view to be monitored.
-* Login to RPI using SSH or desktop terminal session and cd to rpi-speed-cam folder
+* Login to RPI using SSH or desktop terminal session and cd to rpi-speed-camera folder
 * Use nano to edit config.py. Edit variable calibrate=True  ctl-x y to save
 * Start speed-cam.py eg python ./speed-cam.py
 * Motion will automatically be detected and calibration images will be
