@@ -1,19 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 # writtem by Claude Pageau 
-# Script to run speed2.py in background available here
-# wget https://raw.github.com/pageauc/motion-track/master/speed-track-2/speed2.sh
+# Script to run speed-cam.py in background available here
+# wget https://raw.github.com/pageauc/rpi-speed-cam/master/speed-cam.sh
 # launch from command line or via entry in /etc/rc.local file
 # You may have to change sleep delay if it does not run properly in rc.local
 # make sure to make this script executable
-# chmod +x speed2.sh
+# chmod +x speed-cam.sh
 # and also
-# chmod +x speed2.py
+# chmod +x speed-cam.py
 # NOTE : This script can be used as a generic launcher by changing
 #        the parameters below
 # This script avoid launching the speed2.py script more than once due to
 # since the pi camera hardware cannot be run more than once sumultaneously.
-progpath=/home/pi/speed2
-progname=speed2.py
+progpath=/home/pi/rpi-speed-cam
+progname=speed-cam.py
 proglog=verbose.log
 
 if [ -z "$(ps -ef | grep $progname | grep -v grep)" ]

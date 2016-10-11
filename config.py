@@ -1,5 +1,5 @@
-# ---------------- User Configuration Settings for speed2.py ---------------------------------
-#               Ver 2.09  speed2.py Variable Configuration Settings
+# ---------------- User Configuration Settings for speed-cam.py ---------------------------------
+#               Ver 2.09  speed-cam.py Variable Configuration Settings
 
 # Display and Log settings
 #-------------------------
@@ -30,7 +30,7 @@ CAMERA_HFLIP = False   # Flip the camera image horizontally if required
 # Camera Image Settings
 #-----------------------
 image_path = "images"     # folder name to store images 
-image_prefix = "cam1-"    # image name prefix
+image_prefix = "speed-"   # image name prefix
 image_text_bottom = True  # True = Show image text at bottom otherwise at top
 image_font_size = 18      # font text height in px for text on images default=18 
 image_bigger = 3          # multiply value to resize the default image size 320x240

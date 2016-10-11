@@ -1,18 +1,6 @@
 # speed2.py - RPI OpenCV2 Object Speed Tracker
 ####  A Raspberry Pi Speed Camera using python, Video Stream Thread, pi-camera
 
-For Easy speed2 install onto raspbian RPI. 
-
-    curl -L https://raw.github.com/pageauc/motion-track/master/speed-track-2/install.sh | bash
-
-From a computer logged into the RPI via ssh(Putty) session use mouse to highlight command above, right click, copy.  
-Then select ssh(Putty) window, mouse right click, paste.  The command should 
-download and execute the github install.sh script for speed2 object(vehicle) speed tracker.  Note a raspbian
-apt-get update and upgrade will be performed as part of install so it may take some time if these are not 
-up-to-date
-
-How to Run speed2 https://github.com/pageauc/motion-track/wiki/Running-Program
-
 ### Links
 * speed-track YouTube video here https://youtu.be/eRi50BbJUro
 * speed2 RPI forum post here https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
@@ -20,8 +8,39 @@ How to Run speed2 https://github.com/pageauc/motion-track/wiki/Running-Program
 * YouTube Channel https://www.youtube.com/user/pageaucp   
 * GitHub Repo https://github.com/pageauc
 
-### Release History
-* ver 2.03 16-May-2016 - Enhanced streaming speed by using threading
+### Quick Install
+
+For Easy speed-cam install onto raspbian RPI. 
+
+    curl -L https://raw.github.com/pageauc/rpi-speed-cam/master/speed-install.sh | bash
+
+From a computer logged into the RPI via ssh(Putty) session use mouse to highlight command above, right click, copy.  
+Then select ssh(Putty) window, mouse right click, paste.  The command should 
+download and execute the github speed-install.sh script for rpi-speed-cam object(vehicle) speed tracker.   
+Note - a raspbian apt-get update and upgrade will be performed as part of install 
+so it may take some time if these are not up-to-date
+
+### or Manual Install
+
+From logged in RPI SSH session or console terminal perform the following.
+
+    wget https://raw.github.com/pageauc/rpi-speed-cam/master/speed-track-2/speed-install.sh
+    chmod +x speed-install.sh
+    ./speed-install.sh
+    cd rpi-speed-cam
+    ./speed-cam.py
+
+Requires a Raspberry Pi computer with a RPI camera module installed, configured
+and tested to verify it is working. I used a RPI model B2 but a B+ , 3 or 
+earlier will work OK. A quad core processor will greatly improve performance
+due to threading
+    
+IMPORTANT - Review settings in config.py file and edit variables with nano as required.
+You will need to perform a calibration to set the correct value for IMAGE_VIEW_FT 
+variable based on the distance from camera to objects being measured for speed.  
+See video and this Readme.md below for more details.     
+    
+How to Run speed-cam.py section below
 
 ### Program Description
 This is a raspberry pi computer openCV2 object speed camera demo program.
@@ -45,41 +64,13 @@ Thanks to Adrian Rosebrock jrosebr1 at http://www.pyimagesearch.com
 for the PiVideoStream Class code available on github at
 https://github.com/jrosebr1/imutils/blob/master/imutils/video/pivideostream.py
 
-### Quick Setup
-Requires a Raspberry Pi computer with a RPI camera module installed, configured
-and tested to verify it is working. I used a RPI model B2 but a B+ , 3 or 
-earlier will work OK. A quad core processor will greatly improve performance
-due to threading
 
-For Easy speed2 install onto raspbian RPI. 
-
-    curl -L https://raw.github.com/pageauc/motion-track/master/speed-track-2/install.sh | bash
-
-From a computer logged into the RPI via ssh(Putty) session use mouse to highlight command above, right click, copy.  
-Then select ssh(Putty) window, mouse right click, paste.  The command should 
-download and execute the github install.sh script for speed2 object(vehicle) speed tracker.
-
-### or
-
-From logged in RPI SSH session or console terminal perform the following.
-
-    wget https://raw.github.com/pageauc/motion-track/master/speed-track-2/install.sh
-    chmod +x install.sh
-    ./install.sh
-    ./speed2.py
-
-Run install.sh again to upgrade to latest version of speed2 code.
+### How to Run Speed-cam.py
     
-IMPORTANT - Review settings in config.py file and edit variables with nano as required.
-You will need to perform a calibration to set the correct value for IMAGE_VIEW_FT 
-variable based on the distance from camera to objects being measured for speed.  
-See video and this Readme.md below for more details.
+if wish to run speed-cam.py as a background task or on boot from /etc/rc.local then
 
-### Running Speed2
-    
-if wish to run speed2.py in background or on boot from /etc/rc.local then
-
-    ./speed2.sh
+    cd ~/rpi-speed-cam
+    ./speed-cam.sh
     
 or edit /etc/rc.local file using nano editor per command below
 
@@ -87,10 +78,10 @@ or edit /etc/rc.local file using nano editor per command below
 
 Then add line below before the exit line then ctrl-x y to save and reboot to test
 
-    /home/pi/speed2/speed2.sh
+    /home/pi/rpi-speed-cam/speed-cam.sh
     exit 0    
     
-Edit the speed2.sh script to suit your needs per comments.  
+Edit the speed-cam.sh script to suit your needs per comments.  
 Note you may need to change the sleep delay time if rc.local does not run script
 successfully at boot, since services may need more time to start.  
         
@@ -99,7 +90,7 @@ NOTE: operation under python3 is not very good compared to python2 IMO. I recomm
 
     sudo apt-get install -y python3-pip  
     sudo pip-3.2 install -y Pillow
-    python3 ./speed2.py
+    python3 ./speed-cam.py
     
 if you get opengl error then install support library per following command then reboot.
 
@@ -114,9 +105,9 @@ From 9 Advanced Options select AA GL Driver then enable driver and reboot
 You can also use git clone to copy the files to your RPI.
 
     cd ~
-    git clone https://github.com/pageauc/motion-track.git
+    git clone https://github.com/pageauc/rpi-speed-cam.git
  
-The speed-track-2 files will be in the motion-track/speed-track-2 subfolder. You can
+The speed-cam files will be in the /home/pi/rpi-speed-cam folder. You can
 then move them to another location if you wish.
  
 Note A default images folder will be created to store jpg speed photos. There is an
@@ -128,14 +119,14 @@ value for IMAGE_VIEW_FT variable in the speed_settings.py
     
 ### Calibrate IMAGE_VIEW_FT variable
   
-speed2.py needs to be calibrated in order to display a correct speed.
+speed-cam.py needs to be calibrated in order to display a correct speed.
 
 #### Calibration Procedure
 
 * Setup the RPI camera to point to the view to be monitored.
-* Login to RPI using SSH or desktop terminal session and cd to speed-track folder
-* Use nano to edit speed_settings.py. Edit variable calibrate=True  ctl-x y to save
-* Start speed_track.py eg python ./speed_track.py
+* Login to RPI using SSH or desktop terminal session and cd to rpi-speed-cam folder
+* Use nano to edit config.py. Edit variable calibrate=True  ctl-x y to save
+* Start speed-cam.py eg python ./speed-cam.py
 * Motion will automatically be detected and calibration images will be
   put in images folder with prefix calib-
 * Monitor progress and calibration images. Press ctrl-c to Quit when done. 
@@ -159,23 +150,23 @@ speed2.py needs to be calibrated in order to display a correct speed.
 Please note that if road is too close and/or vehicles are moving too quickly then
 the camera may not capture motion and/or record vehicle in speed photo.
   
-#### Calibration formula
+### Calibration formula
 Use this formula to calculate a value for IMAGE_VIEW_FT
  
 IMAGE_VIEW_FT = (CAMERA_WIDTH * Ref_Obj_ft) / num_px_for_Ref_Object
 
 eg (320 * 18) / 80 = 72
   
-### Settings
+### speed-cam Settings
 
 Variable values are stored in the config.py file and are imported
-when speed2.py is run.  Use the nano editor to modify these settings
+when speed-cam.py is run.  Use the nano editor to modify these settings
 per the comments.  Most settings should be OK and should not need to be
 changed. Others may need to be fine tuned.  The openCV settings most
 likely won't need to be changed unless you are familiar with them.
 
 Note if log_data_to_file is set it will save a data to a .csv file
-in the same folder as speed2.py  eg speed2.csv 
+in the same folder as speed-cam.py  eg speed-cam.csv 
 
 Have Fun   
 Claude Pageau
