@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Convenient speed-install.sh script written by Claude Pageau 1-Jul-2016
 ver="1.1"
 SPEED_DIR='rpi-speed-cam'  # Default folder install location
