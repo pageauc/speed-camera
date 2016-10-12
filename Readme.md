@@ -1,21 +1,23 @@
 # speed-cam.py - RPI OpenCV2 Object Speed Tracker
 ### A Raspberry Pi Speed Camera using python, openCV, pi-camera, Video Stream
 
-### Links   
-* speed-track YouTube video here https://youtu.be/eRi50BbJUro
-* speed-cam RPI forum post here https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
-* motion-track YouTube video here using RPI B2 https://youtu.be/09JS7twPBsQ
+### Links  
+* speed-cam GitHub Repo https://github.com/pageauc/rpi-speed-camera  
+* speed-track YouTube video https://youtu.be/eRi50BbJUro
+* speed-cam RPI forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
+* YouTube motion-track video https://youtu.be/09JS7twPBsQ
 * YouTube Channel https://www.youtube.com/user/pageaucp   
-* GitHub Repo https://github.com/pageauc/rpi-speed-camera
+
 
 ### Quick Install   
-For Easy speed-cam install onto raspbian RPI. 
+Easy Install of speed-cam onto a Raspberry Pi Computer with latest Raspbian. 
 
     curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash
 
 From a computer logged into the RPI via ssh(Putty) session use mouse to highlight command above, right click, copy.  
 Then select ssh(Putty) window, mouse right click, paste.  The command should 
-download and execute the github speed-install.sh script for rpi-speed-camera object(vehicle) speed tracker.   
+download and execute the github speed-install.sh script for rpi-speed-camera object(vehicle) speed tracker.  
+This install can also be done from an Internet connected Raspberry Pi desktop via a terminal session and web browser.      
 Note - a raspbian apt-get update and upgrade will be performed as part of install 
 so it may take some time if these are not up-to-date
 
@@ -28,10 +30,11 @@ From logged in RPI SSH session or console terminal perform the following.
     cd rpi-speed-camera
     ./speed-cam.py
 
+### Requirements
 Requires a Raspberry Pi computer with a RPI camera module installed, configured
 and tested to verify it is working. I used a RPI model B2 but a B+ , 3 or 
 earlier will work OK. A quad core processor will greatly improve performance
-due to threading
+due to threading. A recent version of Raspbian operating system is recommended.
     
 IMPORTANT - Review settings in config.py file and edit variables with nano as required.
 You will need to perform a calibration to set the correct value for IMAGE_VIEW_FT 
