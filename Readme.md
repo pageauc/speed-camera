@@ -60,13 +60,13 @@ taken and saved in an images folder. If log_data_to_file=True then a
 speed2.csv file will be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet.
 
-### How to Run Speed-cam.py     
-If wish to run speed-cam.py as a background task or on boot from /etc/rc.local then
+### How to Run    
+To run speed-cam.py as a background task or on boot from /etc/rc.local then
 
     cd ~/rpi-speed-camera
     ./speed-cam.sh
     
-or edit /etc/rc.local file using nano editor per command below
+or to run on boot edit /etc/rc.local file using nano editor per command below
 
     sudo nano /etc/rc.local
 
@@ -151,7 +151,7 @@ IMAGE_VIEW_FT = (CAMERA_WIDTH * Ref_Obj_ft) / num_px_for_Ref_Object
 
 eg (320 * 18) / 80 = 72
   
-### speed-cam Settings  
+### Configuration Settings  
 Variable values are stored in the config.py file and are imported
 when speed-cam.py is run.  Use the nano editor to modify these settings
 per the comments.  Most settings should be OK and should not need to be
@@ -178,7 +178,6 @@ could be used to query for vehicles that are the same or very similar.
 * Implement gnuplot interface to allow plotting by time of day or other parameters
 * Implement creation of profiles for vehicles, pedestrians, bicycles, Birds, Animals, Etc. Tracking
 
-
 ### Credits  
 Some of this code is based on a YouTube tutorial by
 Kyle Hounslow using C here https://www.youtube.com/watch?v=X6rPdRZzgjg
@@ -189,6 +188,5 @@ https://github.com/jrosebr1/imutils/blob/master/imutils/video/pivideostream.py
   
 Have Fun   
 Claude Pageau
-
 YouTube Channel https://www.youtube.com/user/pageaucp   
 GitHub Repo https://github.com/pageauc
