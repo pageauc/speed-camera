@@ -4,7 +4,7 @@ version = "version 2.09"
 """
 speed2 written by Claude Pageau pageauc@gmail.com
 Raspberry (Pi) - python opencv2 Speed tracking using picamera module
-GitHub Repo here https://github.com/pageauc/rpi-speed-cam/tree/master/
+GitHub Repo here https://github.com/pageauc/rpi-speed-camera/tree/master/
 
 This is a raspberry pi python opencv2 speed tracking demonstration program.
 It will detect speed in the field of view and use opencv to calculate the
@@ -26,8 +26,8 @@ Installation
 Requires a Raspberry Pi with a RPI camera module installed and working
 Install from a logged in SSH session per commands below
 
-wget https://raw.github.com/pageauc/rpi-speed-cam/master/speed-install.sh
-chmod +x install.sh
+wget https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
+chmod +x speed-install.sh
 ./speed-install.sh
 ./speed-cam.py
 
