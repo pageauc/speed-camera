@@ -2,12 +2,12 @@
 ### A Raspberry Pi Speed Camera using python, openCV, pi-camera, Video Stream
 
 ### Links  
-* speed-cam GitHub Repo https://github.com/pageauc/rpi-speed-camera  
-* speed-track YouTube video https://youtu.be/eRi50BbJUro
-* speed-cam RPI forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
-* YouTube motion-track video https://youtu.be/09JS7twPBsQ
-* YouTube Channel https://www.youtube.com/user/pageaucp   
 
+* YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
+* Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
+* YouTube motion-track video https://youtu.be/09JS7twPBsQ
+* YouTube Channel https://www.youtube.com/user/pageaucp 
+* Speed Camera GitHub Repo https://github.com/pageauc/rpi-speed-camera  
 
 ### Quick Install   
 Easy Install of speed-cam onto a Raspberry Pi Computer with latest Raspbian. 
@@ -17,7 +17,7 @@ Easy Install of speed-cam onto a Raspberry Pi Computer with latest Raspbian.
 From a computer logged into the RPI via ssh(Putty) session use mouse to highlight command above, right click, copy.  
 Then select ssh(Putty) window, mouse right click, paste.  The command should 
 download and execute the github speed-install.sh script for rpi-speed-camera object(vehicle) speed tracker.  
-This install can also be done from an Internet connected Raspberry Pi desktop via a terminal session and web browser.      
+This install can also be done directly on an Internet connected Raspberry Pi via a terminal session and web browser.      
 Note - a raspbian apt-get update and upgrade will be performed as part of install 
 so it may take some time if these are not up-to-date
 
