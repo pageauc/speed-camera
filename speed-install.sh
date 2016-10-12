@@ -23,8 +23,8 @@ echo "-----------------------------------------------"
 echo "  rpi-speed-camera speed-install.sh script ver $ver"
 echo "  $STATUS speed-cam.py Object speed tracking"
 echo "-----------------------------------------------"
-echo ""
 echo "1 - Downloading github repo files"
+echo ""
 wget -O speed-install.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
 if [ $? -ne 0 ] ;  then
   wget -O speed-install.sh https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
@@ -40,8 +40,8 @@ else
 fi
 echo "Done Download"
 echo "------------------------------------------------"
-echo ""
 echo "2 - Make required Files Executable"
+echo ""
 chmod +x speed-cam.py
 chmod +x speed-cam.sh
 chmod +x speed-install.sh
@@ -59,8 +59,8 @@ echo ""
 sudo apt-get -y upgrade
 echo "Done upgrade"
 echo "------------------------------------------------"
-echo ""
 echo "5 - Installing speed-cam.py Dependencies"
+echo ""
 sudo apt-get install -y python-opencv python-picamera python-imaging python-pyexiv2 libgl1-mesa-dri
 sudo apt-get install -y fonts-freefont-ttf # Required for Jessie Lite Only
 echo "Done Dependencies"
@@ -88,6 +88,7 @@ echo "   ./speed-cam.py"
 echo ""
 echo "-----------------------------------------------"
 echo "See Readme.md for Further Details"
+echo ""
 echo $SPEED_DIR "Good Luck Claude ..."
 echo "Bye"
 
