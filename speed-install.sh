@@ -20,8 +20,8 @@ INSTALL_PATH=$( pwd )
 # Remember where this script was launched from
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo "-----------------------------------------------"
-echo "      rpi-speed-camera Install.sh script ver $ver"
-echo "      $STATUS speed-cam Object speed tracking"
+echo "  rpi-speed-camera speed-install.sh script ver $ver"
+echo "  $STATUS speed-cam.py Object speed tracking"
 echo "-----------------------------------------------"
 echo ""
 echo "1 - Downloading github repo files"
@@ -42,23 +42,26 @@ echo "Done Download"
 echo "------------------------------------------------"
 echo ""
 echo "2 - Make required Files Executable"
+
 chmod +x speed-cam.py
 chmod +x speed-cam.sh
 chmod +x speed-install.sh
 echo "Done Permissions"
 echo "------------------------------------------------"
+echo "    This Will Take Some Time ...."
 echo ""
 echo "3 - Performing Raspbian System Update"
 sudo apt-get -y update
 echo "Done update"
 echo "------------------------------------------------"
-echo ""
 echo "4 - Performing Raspbian System Upgrade"
+echo "    This Will Take Some Time ...."
+echo ""
 sudo apt-get -y upgrade
 echo "Done upgrade"
 echo "------------------------------------------------"
 echo ""
-echo "5 - Installing speed-cam Dependencies"
+echo "5 - Installing speed-cam.py Dependencies"
 sudo apt-get install -y python-opencv python-picamera python-imaging python-pyexiv2 libgl1-mesa-dri
 sudo apt-get install -y fonts-freefont-ttf # Required for Jessie Lite Only
 echo "Done Dependencies"
