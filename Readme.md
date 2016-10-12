@@ -1,5 +1,5 @@
 # speed-cam.py - RPI OpenCV2 Object Speed Tracker
-####  A Raspberry Pi Speed Camera using python, Video Stream Thread, pi-camera
+### A Raspberry Pi Speed Camera using python, openCV, pi-camera, Video Stream
 
 ### Links   
 * speed-track YouTube video here https://youtu.be/eRi50BbJUro
@@ -43,19 +43,22 @@ See How to Run speed-cam.py section below
 ### Program Description   
 This is a raspberry pi computer openCV2 object speed camera demo program.
 It is written in python and uses openCV2 to detect and track object motion.
-The results are recorded on speed photos and data in a CSV file that can be
+This can be vehicles or any other moving objects.  It tracks the speed of
+the largest moving object in the camera view.
+The results are recorded on speed photos and in a CSV data file that can be
 imported to a spreadsheet or other program for additiona processing.  
+
 The program will detect motion in the field of view and use opencv to calculate
 the largest contour and return its x,y coordinate. Motion detection is
-restricted between y_upper and y_lower variables (road area).  If a track
-is longer than track_len_trig variable then average speed will be 
+restricted between y_upper and y_lower variables (road or area of interest).
+If a track is longer than track_len_trig variable then average speed will be 
 calculated (based on IMAGE_VIEW_FT variable) and a speed photo will be
 taken and saved in an images folder. If log_data_to_file=True then a
 speed2.csv file will be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet.
 
 ### How to Run Speed-cam.py     
-if wish to run speed-cam.py as a background task or on boot from /etc/rc.local then
+If wish to run speed-cam.py as a background task or on boot from /etc/rc.local then
 
     cd ~/rpi-speed-camera
     ./speed-cam.sh

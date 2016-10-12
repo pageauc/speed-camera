@@ -42,15 +42,14 @@ echo "Done Download"
 echo "------------------------------------------------"
 echo ""
 echo "2 - Make required Files Executable"
-
 chmod +x speed-cam.py
 chmod +x speed-cam.sh
 chmod +x speed-install.sh
 echo "Done Permissions"
 echo "------------------------------------------------"
+echo "3 - Performing Raspbian System Update"
 echo "    This Will Take Some Time ...."
 echo ""
-echo "3 - Performing Raspbian System Update"
 sudo apt-get -y update
 echo "Done update"
 echo "------------------------------------------------"
