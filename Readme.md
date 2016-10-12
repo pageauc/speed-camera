@@ -1,14 +1,6 @@
 # speed-cam.py - RPI OpenCV2 Object Speed Tracker
 ### A Raspberry Pi Speed Camera using python, openCV, pi-camera, Video Stream
 
-### Links  
-
-* YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
-* Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
-* YouTube motion-track video https://youtu.be/09JS7twPBsQ
-* YouTube Channel https://www.youtube.com/user/pageaucp 
-* Speed Camera GitHub Repo https://github.com/pageauc/rpi-speed-camera  
-
 ### Quick Install   
 Easy Install of speed-cam onto a Raspberry Pi Computer with latest Raspbian. 
 
@@ -30,6 +22,14 @@ From logged in RPI SSH session or console terminal perform the following.
     cd rpi-speed-camera
     ./speed-cam.py
 
+### Links  
+
+* YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
+* Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
+* YouTube motion-track video https://youtu.be/09JS7twPBsQ
+* YouTube Channel https://www.youtube.com/user/pageaucp 
+* Speed Camera GitHub Repo https://github.com/pageauc/rpi-speed-camera     
+    
 ### Requirements
 Requires a Raspberry Pi computer with a RPI camera module installed, configured
 and tested to verify it is working. I used a RPI model B2 but a B+ , 3 or 
@@ -114,7 +114,8 @@ value for IMAGE_VIEW_FT variable in the speed_settings.py
 
 ### Calibration Procedure   
 speed-cam.py needs to be calibrated in order to display a correct speed.
-#### To Calibrate IMAGE_VIEW_FT variable perform the following
+
+To Calibrate IMAGE_VIEW_FT variable perform the following
 
 * Setup the RPI camera to point to the view to be monitored.
 * Login to RPI using SSH or desktop terminal session and cd to rpi-speed-camera folder
@@ -143,7 +144,7 @@ speed-cam.py needs to be calibrated in order to display a correct speed.
 Please note that if road is too close and/or vehicles are moving too quickly then
 the camera may not capture motion and/or record vehicle in speed photo.
   
-#### Calibration Formula  
+### Calibration Formula  
 Use this formula to calculate a value for IMAGE_VIEW_FT
  
 IMAGE_VIEW_FT = (CAMERA_WIDTH * Ref_Obj_ft) / num_px_for_Ref_Object
@@ -157,8 +158,26 @@ per the comments.  Most settings should be OK and should not need to be
 changed. Others may need to be fine tuned.  The openCV settings most
 likely won't need to be changed unless you are familiar with them.
 
-Note if log_data_to_file is set it will save a data to a .csv file
+Note if log_data_to_file is set it will save tracking data to a .csv file
 in the same folder as speed-cam.py  eg speed-cam.csv 
+
+### Project Improvements
+These are some of the improvements I have been thinking about.  Not sure
+when I will actually implement as this is just a personal project challenge done for fun.
+
+* Move project documentation into GitHub wiki for easier maintenance.
+* Add ability to track object direction eg left-right or right-left.
+* Extract and store vehicle colour from image countour data 
+* Adjust Calibration for vehicles travelling in opposite lanes due to different distances from camera
+* Auto Calibrate by looking for smaller vehicles.  Small vehicles will usually be very similar in length so that
+the distance from camera to road can be calculated and used for any moving objects at a similar distance.
+* Modify CSV file to show filename separate from file path and simplify image naming to eliminate speed.
+* Create a sql database and/or web interface to store image and tracking data
+* Use image match per cam-track app to find similar vehicles in dataset and degree of accuracy. This
+could be used to query for vehicles that are the same or very similar.
+* Implement gnuplot interface to allow plotting by time of day or other parameters
+* Implement creation of profiles for vehicles, pedestrians, bicycles, Birds, Animals, Etc. Tracking
+
 
 ### Credits  
 Some of this code is based on a YouTube tutorial by
