@@ -31,12 +31,12 @@ if [ $? -ne 0 ] ;  then
   wget -O speed-cam.py https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.py
   wget -O speed-cam.sh https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.sh
   wget -O Readme.md https://raw.github.com/pageauc/rpi-speed-camera/master/Readme.md
-  wget -q https://raw.github.com/pageauc/rpi-speed-camera/master/config.py
+  wget -O config.py https://raw.github.com/pageauc/rpi-speed-camera/master/config.py
 else
   wget -O speed-cam.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.py
   wget -O speed-cam.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.sh  
   wget -O Readme.md -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/Readme.md
-  wget -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/config.py
+  wget -O config.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/config.py
 fi
 echo "Done Download"
 echo "------------------------------------------------"

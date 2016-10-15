@@ -190,6 +190,6 @@ for the PiVideoStream Class code available on github at
 https://github.com/jrosebr1/imutils/blob/master/imutils/video/pivideostream.py
   
 Have Fun   
-Claude Pageau
+Claude Pageau    
 YouTube Channel https://www.youtube.com/user/pageaucp   
 GitHub Repo https://github.com/pageauc

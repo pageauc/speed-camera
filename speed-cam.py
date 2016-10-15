@@ -36,21 +36,34 @@ print("Loading Please Wait ....")
 print("-------------------------------------------------------------------------------------------------")
 print("speed-cam.py %s using python2 and OpenCV2    written by Claude Pageau" % ( version ))
 
-# Setup program folder path requirements
 import os
 mypath=os.path.abspath(__file__)       # Find the full path of this python script
 baseDir=mypath[0:mypath.rfind("/")+1]  # get the path location only (excluding script name)
 baseFileName=mypath[mypath.rfind("/")+1:mypath.rfind(".")]
 progName = os.path.basename(__file__)
 
-# Check for variable config.py file to import and quit if Not Found.
+# Check for variable file to import and error out if not found.
 configFilePath = baseDir + "config.py"
 if not os.path.exists(configFilePath):
-    print("ERROR - Missing config.py file - Could not import Configuration file %s" % (configFilePath))
-    quit()
-else:
-    # File exists so read Configuration variables from config.py file
-    from config import *
+    print("ERROR - Missing config.py file - Could not find Configuration file %s" % (configFilePath))
+    import urllib2
+    config_url = "https://raw.github.com/pageauc/rpi-speed-camera/master/config.py"
+    print("   Attempting to Download config.py file from %s" % ( config_url ))
+    try:
+        wgetfile = urllib2.urlopen(config_url)
+    except:
+        print("ERROR - Download of config.py Failed")
+        print("   Try Rerunning the speed-install.sh Again.")
+        print("   or")
+        print("   Perform GitHub curl install per Readme.md")
+        print("   and Try Again")
+        print("Exiting %s" % ( progName ))
+        quit()
+    f = open('config.py','wb')
+    f.write(wgetfile.read())
+    f.close()   
+# Read Configuration variables from config.py file
+from config import *
 
 # import the necessary packages
 from picamera.array import PiRGBArray
