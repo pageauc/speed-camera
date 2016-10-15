@@ -133,9 +133,9 @@ To Calibrate IMAGE_VIEW_FT variable perform the following
   my PC and the RPI using sftp protocol and the RPI IP address.
 * Use formula below to calculate a value for IMAGE_VIEW_FT variable   
   You should use several photos to confirm and average results.
-* Use nano to edit the speed_settings.py and change IMAGE_VIEW_FT variable value
+* Use nano to edit the config.py and change IMAGE_VIEW_FT variable value
   to new calculated value.  Also change variable calibrate = False
-* Restart speed_track.py and monitor console messages.
+* Restart speed_cam.py and monitor console messages.
   Perform a test using a vehicle at a known speed to verify calibration.
 * Make sure y_upper and y_lower variables are correctly set for the area to
   monitor. This will restrict motion detection to area between these variable
