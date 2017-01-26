@@ -10,8 +10,8 @@
 # chmod +x speed-cam.py
 # NOTE : This script can be used as a generic launcher by changing
 #        the parameters below
-# This script avoid launching the speed2.py script more than once due to
-# since the pi camera hardware cannot be run more than once sumultaneously.
+# This script avoids launching speed2.py script more than once, since 
+# the pi camera hardware cannot be run more than once.
 progpath=/home/pi/rpi-speed-cam
 progname=speed-cam.py
 proglog=verbose.log

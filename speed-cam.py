@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 2.09"
+version = "version 2.11"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -78,7 +78,7 @@ except:
     print("------------------------------------")
     print("Error - Could not import cv2 library")
     print("")
-    if (sys.version_info > (3, 0)):
+    if (sys.version_info > (2, 9)):
         print("python3 failed to import cv2")
         print("Try installing opencv for python3")
         print("google for details regarding installing opencv for python3")
@@ -272,7 +272,7 @@ def log_to_file(data_to_append):
             msgStr = "Create New Data Log File %s" % log_file_path
             show_message("log_to_file ", msgStr)
         filecontents = data_to_append + "\n"
-        f = open( log_file_path, 'ab' )
+        f = open( log_file_path, 'a+' )
         f.write( filecontents )
         f.close()
     return
@@ -290,10 +290,9 @@ def image_write(image_filename, text_to_print):
         y = ( image_height - 50 )  # show text at bottom of image 
     else:
         y = 10  # show text at top of image
-    TEXT = text_to_print
+    text = text_to_print
     font_path = '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf'
     font = ImageFont.truetype( font_path, font_size, encoding='unic' )
-    text = TEXT.decode( 'utf-8' )
 
     # Read exif data since ImageDraw does not save this metadata
     if not (sys.version_info > (3, 0)):
@@ -373,8 +372,10 @@ def speed_camera():
         biggest_area = MIN_AREA
         cx = 0
         cy = 0
-        cw = 0
-        ch = 0
+        mx = 0
+        my = 0
+        mw = 0   # movement width
+        mh = 0   # movement height
         # Convert to gray scale, which is easier
         grayimage2 = cv2.cvtColor( image_crop, cv2.COLOR_BGR2GRAY )
         # Get differences between the two greyed images
@@ -383,12 +384,9 @@ def speed_camera():
         differenceimage = cv2.blur( differenceimage,(BLUR_SIZE,BLUR_SIZE ))
         # Get threshold of blurred difference image based on THRESHOLD_SENSITIVITY variable
         # Check if python 3 or 2 is running and proces opencv accordingly.
-        if (sys.version_info > (3, 0)):
-            thresholdimage,contours,hierarchy = cv2.findContours(differenceimage,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-        else:
-            retval, thresholdimage = cv2.threshold( differenceimage,THRESHOLD_SENSITIVITY,255,cv2.THRESH_BINARY )
-            # Get all the contours found in the threshold image
-            contours, hierarchy = cv2.findContours( thresholdimage,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE )
+        retval, thresholdimage = cv2.threshold( differenceimage,THRESHOLD_SENSITIVITY,255,cv2.THRESH_BINARY )
+        # Get all the contours found in the threshold image
+        thresholdimage, contours, hierarchy = cv2.findContours( thresholdimage,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE )
         total_contours = len( contours )
         # Update grayimage1 to grayimage2 ready for next image2
         grayimage1 = grayimage2
@@ -403,8 +401,10 @@ def speed_camera():
                 ( x, y, w, h ) = cv2.boundingRect(c)
                 cx = int(x + w/2) + x_left   # put circle in middle of width
                 cy = int(y + h/2) + y_upper  # put circle in middle of height
-                cw = w
-                ch = h
+                mx = x
+                my = y
+                mw = w
+                mh = h
                 
         if motion_found:
             # Process motion event and track data
@@ -430,7 +430,10 @@ def speed_camera():
                                 filename = get_image_name( image_path, "calib-" )                                               
                                 prev_image = take_calibration_image( filename, prev_image )                    
                             else:
-                                speed_prefix = str(int(round(ave_speed))) + "-" + image_prefix                                               
+                                if image_filename_speed :
+                                    speed_prefix = str(int(round(ave_speed))) + "-" + image_prefix
+                                else:
+                                    speed_prefix = image_prefix                               
                                 filename = get_image_name( image_path, speed_prefix)
                             big_image = cv2.resize(prev_image,(image_width, image_height))                                            
                             cv2.imwrite(filename, big_image)
@@ -442,7 +445,7 @@ def speed_camera():
                             # Add Text to image                                                
                             image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
                             image_write( filename, image_text )
-                            log_text = "%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i" % ( log_csv_time, ave_speed, quote, speed_units, quote, quote, filename, quote, cw, ch, cw * ch )
+                            log_text = "%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i" % ( log_csv_time, ave_speed, quote, speed_units, quote, quote, filename, quote, mw, mh, mw * mh )
                             log_to_file( log_text )
                             msgStr = "End Track    - Tracked %i px in %.1f sec" % ( tot_track_dist, tot_track_time )
                             show_message("speed_camera", msgStr)                                                  
@@ -466,7 +469,10 @@ def speed_camera():
              
             if gui_window_on:
                 # show small circle at motion location
-                cv2.circle( image2,( cx,cy ),CIRCLE_SIZE,( 0,255,0 ), 2 )
+                if SHOW_CIRCLE:
+                    cv2.circle(image2,( cx * WINDOW_BIGGER ,cy* WINDOW_BIGGER ),CIRCLE_SIZE,(0,255,0), LINE_THICKNESS)
+                else:
+                    cv2.rectangle(image2,( int(cx - mw/2) , int( cy - mh/2)),( ( int(cx + mw/2)) , int(cy + mh/2 )),(0,255,0), LINE_THICKNESS)                              
 
                 if ave_speed > 0:
                     speed_text = str('%3.1f %s'  % ( ave_speed, speed_units )) 
@@ -479,10 +485,12 @@ def speed_camera():
             cv2.line( image2,( x_left, y_lower ),( x_right, y_lower ),(255,0,0),1 )                              
             cv2.line( image2,( x_left, y_upper ),( x_left , y_lower ),(255,0,0),1 )
             cv2.line( image2,( x_right, y_upper ),( x_right, y_lower ),(255,0,0),1 )
-            image2 = cv2.resize( image2,( image_width, image_height ))                         
-            #cv2.imshow('Threshold Image', thresholdimage)
-            cv2.imshow('Movement Status (Press q Here to Quit)', image2)
-            cv2.imshow('Movement Crop Area',image_crop)
+            image2 = cv2.resize( image2,( image_width, image_height ))
+            cv2.imshow('Movement (q Quits)', image2)
+            if show_thresh_on:            
+                cv2.imshow('Threshold', thresholdimage)
+            if show_crop_on:
+                cv2.imshow('Crop Area',image_crop)
             # Close Window if q pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 cv2.destroyAllWindows()
