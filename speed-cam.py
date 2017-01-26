@@ -433,7 +433,7 @@ def speed_camera():
                                 if image_filename_speed :
                                     speed_prefix = str(int(round(ave_speed))) + "-" + image_prefix
                                 else:
-                                    speed_prefix = image_prefix                               
+                                    speed_prefix = ""                               
                                 filename = get_image_name( image_path, speed_prefix)
                             big_image = cv2.resize(prev_image,(image_width, image_height))                                            
                             cv2.imwrite(filename, big_image)
@@ -443,8 +443,7 @@ def speed_camera():
                             log_time = datetime.datetime.now()                                               
                             log_csv_time = "%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" % ( quote, log_time.year, log_time.month, log_time.day, quote, quote, log_time.hour, quote, quote, log_time.minute, quote)                                          
                             # Add Text to image                                                
-                            image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
-                            image_write( filename, image_text )
+                            image_write( filename, filename )
                             log_text = "%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i" % ( log_csv_time, ave_speed, quote, speed_units, quote, quote, filename, quote, mw, mh, mw * mh )
                             log_to_file( log_text )
                             msgStr = "End Track    - Tracked %i px in %.1f sec" % ( tot_track_dist, tot_track_time )
