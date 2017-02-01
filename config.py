@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 2.10  speed-cam.py Variable Configuration Settings
+#               Ver 3.00  speed-cam.py Variable Configuration Settings
 
 # Display and Log settings
 #-------------------------
@@ -33,11 +33,12 @@ CAMERA_HFLIP = False   # Flip the camera image horizontally if required
 
 # Camera Image Settings
 #-----------------------
-image_path = "images"         # folder name to store images 
-image_prefix = "speed-"       # image name prefix
-image_text_bottom = True      # True = Show image text at bottom otherwise at top
-image_font_size = 10          # font text height in px for text on images default=10 
-image_filename_speed = False  # Show speed as part of image filename default=False    
+image_path = "html/images"     # folder name to store images 
+image_prefix = "speed-"   # image name prefix
+image_filename_speed = False
+image_text_bottom = True  # True = Show image text at bottom otherwise at top
+image_font_size = 10      # font text height in px for text on images default=10 
+image_bigger = 3          # Saved Image multiply value, resizes default 320x240 image
  
 # Motion Event Exclusion Settings
 # -------------------------------
@@ -54,7 +55,7 @@ x_right = 295          # Exclude event if x greater than this px position Defaul
 
 # OpenCV Motion Settings
 #--------------------------------
-SHOW_CIRCLE = True          # True=circle in center of motion, False=rectangle
+SHOW_CIRCLE = False         # True=circle in center of motion, False=rectangle
 CIRCLE_SIZE = 2             # Diameter circle in px if SHOW_CIRCLE = True 
 LINE_THICKNESS = 1          # Size of lines for circle or Rectangle
 FONT_SCALE = .5             # OpenCV window text font size scaling factor default=.5 (lower is smaller)
@@ -62,4 +63,34 @@ WINDOW_BIGGER = 2           # resize multiplier for opencv window if gui_window_
 BLUR_SIZE = 10              # OpenCV setting for Gaussian difference image blur 
 THRESHOLD_SENSITIVITY = 20  # OpenCV setting for difference image threshold
 
-#--------------------------- End of User Settings -------------------------------------------------
+#======================================
+#       webserver.py Settings
+#======================================
+
+# Left iFrame Image Settings
+web_image_height = "768"      # px height of images to display in iframe default 768
+web_iframe_width = "75%"      # Desired frame width to display images. can be eg percent "80%" or px "1280"
+web_iframe_height = "100%"    # Desired frame height to display images. Scroll bars if image larger (percent or px)
+web_max_list_entries = 0      # 0 = All or Specify Max right side file entries to show (must be > 1)
+
+# Web Server settings
+web_server_root = "/home/pi/rpi-speed-camera/html"     # webserver root path to webserver image folder
+web_server_port = 8080             # Web server access port eg http://192.168.1.100:8080
+web_page_title = "Speed-Camera"    # web page title that browser show (not displayed on web page)
+web_page_refresh_on = False        # False=Off (never)  Refresh True=On (per seconds below)
+web_page_refresh_sec = "180"       # seconds to wait for web page refresh default=180 seconds (three minutes)
+web_page_blank = False             # Start left image with a blank page until a right menu item is selected
+# Otherwise False displays second list[1] item since first may be in progress
+web_iframe_width_usage = "70%"       # Left Pane - Sets % of total screen width allowed for iframe with rest for right list
+web_list_height = web_image_height   # Right List - side menu height in px (link selection)
+
+# Settings for right side files list
+web_list_by_datetime = True          # True=datetime False=filename
+web_list_sort_descending = True      # reverse sort order (filename or datetime per show_by_date setting
+
+# ---------------------------------------------- End of User Variables -----------------------------------------------------
+
+
+
+
+

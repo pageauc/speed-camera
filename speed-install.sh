@@ -16,35 +16,55 @@ fi
 
 cd $SPEED_DIR
 INSTALL_PATH=$( pwd )
-  
+
 # Remember where this script was launched from
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 echo "-----------------------------------------------"
 echo "  rpi-speed-camera speed-install.sh script ver $ver"
 echo "  $STATUS speed-cam.py Object speed tracking"
 echo "-----------------------------------------------"
 echo "1 - Downloading github repo files"
 echo ""
+if [ -e config.py ]; then
+  if [ ! -e config.py.orig ]; then
+     echo "Save config.py to config.py.orig"
+     cp config.py config.py.orig
+  fi
+  echo "Backup config.py to config.py.prev"
+  cp config.py config.py.prev
+else
+  wget -O config.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/source/config.py     
+fi
+ 
 wget -O speed-install.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
 if [ $? -ne 0 ] ;  then
   wget -O speed-install.sh https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
   wget -O speed-cam.py https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.py
   wget -O speed-cam.sh https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.sh
   wget -O Readme.md https://raw.github.com/pageauc/rpi-speed-camera/master/Readme.md
+  wget -O makehtml.py https://raw.github.com/pageauc/rpi-speed-camera/master/makehtml.py  
+  wget -O menubox.sh https://raw.github.com/pageauc/rpi-speed-camera/master/menubox.sh
+  wget -O webserver.py https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.py 
+  wget -O webserver.sh https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.sh  
   wget -O config.py https://raw.github.com/pageauc/rpi-speed-camera/master/config.py
 else
   wget -O speed-cam.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.py
   wget -O speed-cam.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.sh  
   wget -O Readme.md -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/Readme.md
+  wget -O makehtml.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/makehtml.py  
+  wget -O menubox.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/menubox.sh
+  wget -O webserver.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.py 
+  wget -O webserver.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.sh    
   wget -O config.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/config.py
 fi
 echo "Done Download"
 echo "------------------------------------------------"
 echo "2 - Make required Files Executable"
 echo ""
-chmod +x speed-cam.py
-chmod +x speed-cam.sh
-chmod +x speed-install.sh
+chmod +x *.py
+chmod +x *.sh
+chmod -x config.py
 echo "Done Permissions"
 echo "------------------------------------------------"
 echo "3 - Performing Raspbian System Update"
@@ -85,6 +105,10 @@ echo "   and change to rpi-speed-camera folder and launch per commands below"
 echo ""
 echo "   cd ~/rpi-speed-camera"
 echo "   ./speed-cam.py"
+echo ""
+echo "  or run admin menu"
+echo ""
+echo "   ./menubox.sh"
 echo ""
 echo "-----------------------------------------------"
 echo "See Readme.md for Further Details"
