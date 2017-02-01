@@ -198,7 +198,8 @@ function do_settings_menu ()
 function do_upgrade()
 {
   if (whiptail --title "GitHub Upgrade speed-cam" --yesno "Upgrade speed-cam files from GitHub. Config files will not be changed" 8 65 --yes-button "upgrade" --no-button "Cancel" ) then 
-    curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/source/speed-install.sh | bash
+    curlcmd=('/usr/bin/curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash')
+    eval $curlcmd
     do_anykey
   fi    
 }
