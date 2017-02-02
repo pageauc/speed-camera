@@ -5,6 +5,7 @@ ver="3.00"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
+progname="./speed-cam.py"
 pyconfigfile="./config.py"
 filename_conf="./speed_cam.conf"
 filename_temp="./speed_cam.conf.temp"
@@ -22,13 +23,13 @@ function do_anykey ()
 #------------------------------------------------------------------------------
 function init_status ()
 {
-  if [ -z "$( pgrep -f speed_cam.py )" ]; then
+  if [ -z "$( pgrep -f $progname )" ]; then
     SPEED_1="Start speed_cam"
     SPEED_2="Start speed_cam.py in background"
   else
-     SPEED_pid=$( pgrep -f speed-cam.py )
+     speed_cam_pid=$( pgrep -f $progname )
      SPEED_1="Stop speed_cam"
-     SPEED_2="Stop speed_cam.py - PID is $SPEED_pid"     
+     SPEED_2="Stop speed_cam.py - PID is $speed_cam_pid"     
   fi
 
   if [ -z "$( pgrep -f webserver.py )" ]; then
@@ -44,15 +45,15 @@ function init_status ()
 #------------------------------------------------------------------------------
 function do_speed_cam ()
 {
-  if [ -z "$( pgrep -f speed-cam.py )" ]; then 
-     ./speed-cam.py >/dev/null 2>&1 & 
+  if [ -z "$( pgrep -f $progname )" ]; then 
+     $progname >/dev/null 2>&1 &
      if [ -z "$( pgrep -f speed-cam.py )" ]; then 
          whiptail --msgbox "Failed to Start speed-cam.py   Please Investigate Problem " 20 70     
      fi
   else
-     speed-cam_pid=$( pgrep -f speed-cam.py )  
-     sudo kill $pi_timolo_pid
-      if [ ! -z "$( pgrep -f speed-cam.py )" ]; then 
+     speed_cam_pid=$( pgrep -f $progname )  
+     sudo kill $speed_cam_pid
+      if [ ! -z "$( pgrep -f $progname )" ]; then 
           whiptail --msgbox "Failed to Stop speed-cam.py   Please Investigate Problem" 20 70     
       fi    
   fi
@@ -67,12 +68,12 @@ function do_webserver ()
      if [ -z "$( pgrep -f webserver.py )" ]; then 
         whiptail --msgbox "Failed to Start webserver.py   Please Investigate Problem." 20 70     
      fi 
-  else  
+  else
      webserver_pid=$( pgrep -f webserver.py )   
      sudo kill $webserver_pid
      if [ ! -z "$( pgrep -f webserver.py )" ]; then 
         whiptail --msgbox "Failed to Stop webserver.py   Please Investigate Problem." 20 70     
-     fi      
+     fi
   fi
   do_main_menu
 }
