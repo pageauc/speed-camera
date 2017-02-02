@@ -209,16 +209,25 @@ function do_upgrade()
 function do_about()
 {
   whiptail --title "About" --msgbox " \
-   speed_cam - OpenCV Motion Tracking Object Speed
-          written by Claude Pageau
+       speed-cam - Object Motion Speed Tracking
+        using Raspberry Pi, picamera and openCV
+              written by Claude Pageau
 
-   Manage speed_cam operation, config and utilities
+ menubox.sh manages speed-cam operation, settings and utilities
 
-   Start Webserver to view speed_cam html files.
-   Note you must run makehtml.py to create or update
-   the html files.
+ Start and Calibrate the camera distance settings, then record
+ motion speed data and images.  Data will be in speed-cam.csv 
+ file and images will be in images folder (links to html/images).
+ Run makehtml.py and start the webserver.  View html files on a
+ network pc web browser by accessing rpi IP address and port.  
+ eg 192.168.1.100:8080 (replace ip with your rpi ip)
+ 
+           For more detailed instructions see
+       https://github.com/pageauc/rpi-speed-camera
+       
+ Good Luck and Enjoy .... Claude 
 \
-" 35 70 35
+" 0 0 0
 }
 
 #------------------------------------------------------------------------------
