@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="3.00"
+ver="3.10"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -226,11 +226,13 @@ function do_main_menu ()
 {
   init_status
   SELECTION=$(whiptail --title "Main Menu" --menu "Arrow/Enter Selects or Tab Key" 20 70 10 --cancel-button Quit --ok-button Select \
-  "a $SPEED_1" "$SPEED_2" \
+  "a $SPEED_1" "    $SPEED_2" \
   "b $WEB_1" "$WEB_2" \
-  "c Web Pages" "Create Web Pages from CSV Log File and Images" \
-  "d Settings" "Change speed_cam and webserver settings" \
-  "e Upgrade" "Upgrade program files from GitHub.com"  "f About" "Information about this program" \
+  "c Web Pages" "Create Web Pages from speed-cam.csv & Images" \
+  "d View CSV" "View speed-cam.csv file" \
+  "e Settings" "Change speed_cam and webserver settings" \
+  "f Upgrade" "Upgrade program files from GitHub.com" \
+  "g About" "Information about this program" \
   "q Quit" "Exit This Program"  3>&1 1>&2 2>&3)
 
   RET=$?
@@ -241,9 +243,11 @@ function do_main_menu ()
       a\ *) do_speed_cam ;;
       b\ *) do_webserver ;;
       c\ *) do_makehtml ;;
-      d\ *) do_settings_menu ;;
-      e\ *) do_upgrade ;;
-      f\ *) do_about ;;
+      d\ *) more ./speed-cam.csv
+            do_anykey ;;
+      e\ *) do_settings_menu ;;
+      f\ *) do_upgrade ;;
+      g\ *) do_about ;;
       q\ *) clear
             exit 0 ;;
          *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
