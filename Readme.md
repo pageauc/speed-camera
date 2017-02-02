@@ -1,7 +1,7 @@
-# speed-cam.py - RPI OpenCV2 Object Speed Tracker
+# speed-cam.py - RPI OpenCV2 Object Motion Speed Tracker
 ### A Raspberry Pi Speed Camera using python, openCV, pi-camera, Video Stream
 
-###See [Speed Camera Wiki](https://github.com/pageauc/rpi-speed-camera/wiki)
+###For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/rpi-speed-camera/wiki)
 
 ### Quick Install   
 Easy Install of speed-cam onto a Raspberry Pi Computer with latest Raspbian. 
