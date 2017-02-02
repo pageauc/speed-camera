@@ -24,11 +24,11 @@ function do_anykey ()
 function init_status ()
 {
   if [ -z "$( pgrep -f $progname )" ]; then
-    SPEED_1="Start speed_cam"
+    SPEED_1="Start speedcam"
     SPEED_2="Start speed_cam.py in background"
   else
      speed_cam_pid=$( pgrep -f $progname )
-     SPEED_1="Stop speed_cam"
+     SPEED_1="Stop speedcam"
      SPEED_2="Stop speed_cam.py - PID is $speed_cam_pid"     
   fi
 
@@ -171,7 +171,7 @@ function do_nano_main ()
 #------------------------------------------------------------------------------
 function do_settings_menu ()
 {
-  SET_SEL=$( whiptail --title "Settings Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --ok-button Select --cancel-button Back \
+  SET_SEL=$( whiptail --title "Settings Menu" --menu "Arrow/Enter Selects or Tab Key" 20 67 15 --ok-button Select --cancel-button Back \
   "a " "Menu Edit config.py for speed_cam & webserver" \
   "b " "Edit nano config.py for speed_cam & webserver" \
   "c " "View config.py for speed_cam & webserver" \
@@ -226,9 +226,9 @@ function do_main_menu ()
 {
   init_status
   SELECTION=$(whiptail --title "Main Menu" --menu "Arrow/Enter Selects or Tab Key" 20 70 10 --cancel-button Quit --ok-button Select \
-  "a $SPEED_1" "    $SPEED_2" \
+  "a $SPEED_1" "$SPEED_2" \
   "b $WEB_1" "$WEB_2" \
-  "c Web Pages" "Create Web Pages from speed-cam.csv & Images" \
+  "c Web Pages" "Make html pages from speed-cam.csv & jpgs" \
   "d View CSV" "View speed-cam.csv file" \
   "e Settings" "Change speed_cam and webserver settings" \
   "f Upgrade" "Upgrade program files from GitHub.com" \
