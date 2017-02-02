@@ -15,8 +15,8 @@ function do_anykey ()
 {
    echo ""
    echo "######################################"
-   echo "#          Review Output             #"     
-   echo "######################################" 
+   echo "#          Review Output             #"
+   echo "######################################"
    read -p "  Press Enter to Return to Main Menu"
 }
 
@@ -29,33 +29,33 @@ function init_status ()
   else
      speed_cam_pid=$( pgrep -f $progname )
      SPEED_1="Stop speedcam"
-     SPEED_2="Stop speed_cam.py - PID is $speed_cam_pid"     
+     SPEED_2="Stop speed_cam.py - PID is $speed_cam_pid"
   fi
 
   if [ -z "$( pgrep -f webserver.py )" ]; then
      WEB_1="Start webserver"
-     WEB_2="Start webserver.py in background"    
+     WEB_2="Start webserver.py in background"
   else
-     webserver_pid=$( pgrep -f webserver.py )    
+     webserver_pid=$( pgrep -f webserver.py )
      WEB_1="Stop webserver"
-     WEB_2="Stop webserver.py - PID is $webserver_pid"    
+     WEB_2="Stop webserver.py - PID is $webserver_pid"
   fi
 }
 
 #------------------------------------------------------------------------------
 function do_speed_cam ()
 {
-  if [ -z "$( pgrep -f $progname )" ]; then 
+  if [ -z "$( pgrep -f $progname )" ]; then
      $progname >/dev/null 2>&1 &
-     if [ -z "$( pgrep -f speed-cam.py )" ]; then 
-         whiptail --msgbox "Failed to Start speed-cam.py   Please Investigate Problem " 20 70     
+     if [ -z "$( pgrep -f speed-cam.py )" ]; then
+         whiptail --msgbox "Failed to Start speed-cam.py   Please Investigate Problem " 20 70
      fi
   else
-     speed_cam_pid=$( pgrep -f $progname )  
+     speed_cam_pid=$( pgrep -f $progname )
      sudo kill $speed_cam_pid
-      if [ ! -z "$( pgrep -f $progname )" ]; then 
-          whiptail --msgbox "Failed to Stop speed-cam.py   Please Investigate Problem" 20 70     
-      fi    
+      if [ ! -z "$( pgrep -f $progname )" ]; then
+          whiptail --msgbox "Failed to Stop speed-cam.py   Please Investigate Problem" 20 70
+      fi
   fi
   do_main_menu
 }
@@ -64,15 +64,15 @@ function do_speed_cam ()
 function do_webserver ()
 {
   if [ -z "$( pgrep -f webserver.py )" ]; then
-     ./webserver.py >/dev/null 2>&1 & 
-     if [ -z "$( pgrep -f webserver.py )" ]; then 
-        whiptail --msgbox "Failed to Start webserver.py   Please Investigate Problem." 20 70     
-     fi 
+     ./webserver.py >/dev/null 2>&1 &
+     if [ -z "$( pgrep -f webserver.py )" ]; then
+        whiptail --msgbox "Failed to Start webserver.py   Please Investigate Problem." 20 70
+     fi
   else
-     webserver_pid=$( pgrep -f webserver.py )   
+     webserver_pid=$( pgrep -f webserver.py )
      sudo kill $webserver_pid
-     if [ ! -z "$( pgrep -f webserver.py )" ]; then 
-        whiptail --msgbox "Failed to Stop webserver.py   Please Investigate Problem." 20 70     
+     if [ ! -z "$( pgrep -f webserver.py )" ]; then
+        whiptail --msgbox "Failed to Stop webserver.py   Please Investigate Problem." 20 70
      fi
   fi
   do_main_menu
@@ -81,14 +81,37 @@ function do_webserver ()
 #--------------------------------------------------------------------
 function do_makehtml ()
 {
-  python "./makehtml.py" 
+  python "./makehtml.py"
   echo "---------------------------------------------"
   echo "           N O T I C E"
-  echo "---------------------------------------------"  
-  echo "Start webserver and view files in web browser"      
-  do_anykey 
+  echo "---------------------------------------------"
+  echo "Start webserver and view files in web browser"
+  do_anykey
   do_main_menu
 }
+
+
+#--------------------------------------------------------------------
+function do_edit_save ()
+{
+  if (whiptail --title "Save $var=$newvalue" --yesno "$comment\n $var=$newvalue   was $value" 8 65 --yes-button "Save" --no-button "Cancel" ) then
+    value=$newvalue
+
+    rm $filename_conf  # Initialize new conf file
+    while read configfile ;  do
+      if echo "${configfile}" | grep --quiet "${var}" ; then
+         echo "$var=$value         #$comment" >> $filename_conf
+      else
+         echo "$configfile" >> $filename_conf
+      fi
+    done < $pyconfigfile
+    cp $filename_conf $pyconfigfile
+  fi
+  rm $filename_temp
+  rm $filename_conf
+  do_settings_menu
+}
+
 
 #--------------------------------------------------------------------
 function do_edit_variable ()
@@ -104,20 +127,20 @@ function do_edit_variable ()
   # Exit status 1 means anotherstring was not found
   if [ $? = 0 ] ; then
      newvalue=" False"
-     do_edit_save       
+     do_edit_save
   else
      echo "${value}" | grep --quiet "False"
      if [ $? = 0 ] ; then
         newvalue=" True"
-        do_edit_save            
-     elif  [ $? = 1 ] ; then       
+        do_edit_save
+     elif  [ $? = 1 ] ; then
         newvalue=$(whiptail --title "Edit $var (Enter Saves or Tab)" \
                                --inputbox "$comment\n $var=$value" 10 65 "$value" \
                                --ok-button "Save" 3>&1 1>&2 2>&3)
         exitstatus=$?
-        if [ ! "$newvalue" = "" ] ; then   # Variable was changed                             
+        if [ ! "$newvalue" = "" ] ; then   # Variable was changed
            if [ $exitstatus -eq 1 ] ; then  # Check if Save selected otherwise it was cancelled
-              do_edit_save                    
+              do_edit_save
            elif [ $exitstatus -eq 0 ] ; then
              echo "do_edit_variable - Cancel was pressed"
              if echo "${value}" | grep --quiet "${newvalue}" ; then
@@ -129,7 +152,7 @@ function do_edit_variable ()
         fi
      fi
   fi
-  do_settings_menu 
+  do_settings_menu
 }
 
 #--------------------------------------------------------------------
@@ -138,17 +161,17 @@ function do_edit_menu ()
   clear
   echo "Copy $filename_conf from $pyconfigfile  Please Wait ...."
   cp $pyconfigfile $filename_conf
-  echo "Initialize $filename_temp  Please Wait ...."  
+  echo "Initialize $filename_temp  Please Wait ...."
   cat $filename_conf | grep = | cut -f1 -d# | tr -s [:space:] >$filename_temp
-  echo "Initializing Settings Menu Please Wait ...."    
+  echo "Initializing Settings Menu Please Wait ...."
   menu_options=()
   while read -r number text; do
     menu_options+=( ${number//\"} "${text//\"}" )
   done < $filename_temp
-  
+
   SELECTION=$( whiptail --title "Speed Cam Settings Menu" \
                        --menu "Arrow/Enter Selects or Tab" 0 0 0 "${menu_options[@]}" --ok-button "Edit" 3>&1 1>&2 2>&3 )  
-  RET=$?  
+  RET=$? 
   if [ $RET -eq 1 ] ; then
     do_settings_menu
   elif [ $RET -eq 0 ]; then
@@ -202,7 +225,7 @@ function do_upgrade()
     curlcmd=('/usr/bin/curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash')
     eval $curlcmd
     do_anykey
-  fi    
+  fi
 }
 
 #------------------------------------------------------------------------------
@@ -216,15 +239,15 @@ function do_about()
  menubox.sh manages speed-cam operation, settings and utilities
 
  Start and Calibrate the camera distance settings, then record
- motion speed data and images.  Data will be in speed-cam.csv 
+ motion speed data and images.  Data will be in speed-cam.csv
  file and images will be in images folder (links to html/images).
  Run makehtml.py and start the webserver.  View html files on a
- network pc web browser by accessing rpi IP address and port.  
+ network pc web browser by accessing rpi IP address and port.
  eg 192.168.1.100:8080 (replace ip with your rpi ip)
- 
+
            For more detailed instructions see
        https://github.com/pageauc/rpi-speed-camera
-       
+
  Good Luck and Enjoy .... Claude 
 \
 " 0 0 0
