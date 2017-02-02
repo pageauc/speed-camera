@@ -171,7 +171,7 @@ function do_nano_main ()
 #------------------------------------------------------------------------------
 function do_settings_menu ()
 {
-  SET_SEL=$( whiptail --title "Settings Menu" --menu "Arrow/Enter Selects or Tab Key" 20 67 15 --ok-button Select --cancel-button Back \
+  SET_SEL=$( whiptail --title "Settings Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --ok-button Select --cancel-button Back \
   "a " "Menu Edit config.py for speed_cam & webserver" \
   "b " "Edit nano config.py for speed_cam & webserver" \
   "c " "View config.py for speed_cam & webserver" \
