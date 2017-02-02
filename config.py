@@ -33,7 +33,7 @@ CAMERA_HFLIP = False   # Flip the camera image horizontally if required
 
 # Camera Image Settings
 #-----------------------
-image_path = "html/images"     # folder name to store images 
+image_path = "images"     # folder name to store images 
 image_prefix = "speed-"   # image name prefix
 image_filename_speed = False
 image_text_bottom = True  # True = Show image text at bottom otherwise at top
