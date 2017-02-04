@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="3.10"
+ver="3.20"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -67,7 +67,11 @@ function do_webserver ()
      ./webserver.py >/dev/null 2>&1 &
      if [ -z "$( pgrep -f webserver.py )" ]; then
         whiptail --msgbox "Failed to Start webserver.py   Please Investigate Problem." 20 70
-     fi
+     else
+       myip=$(ifconfig | grep 'inet ' | grep -v 127.0.0 | cut -d " " -f 12 | cut -d ":" -f 2 )
+       myport=$( grep "web_server_port" config.py | cut -d "=" -f 2 | cut -d "#" -f 1 | awk '{$1=$1};1' )
+       whiptail --msgbox --title "Webserver Access" "Access speed-cam web server from another network computer web browser using url http://$myip:$myport" 15 50
+     fi         
   else
      webserver_pid=$( pgrep -f webserver.py )
      sudo kill $webserver_pid
