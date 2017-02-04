@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 3.00"
+version = "version 3.10"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -167,7 +167,8 @@ quote = '"'  # Used for creating quote delimited log file of speed data
 #-----------------------------------------------------------------------------------------------    
 def show_time():
     rightNow = datetime.datetime.now()
-    currentTime = "%04d%02d%02d_%02d:%02d:%02d" % ( rightNow.year, rightNow.month, rightNow.day, rightNow.hour, rightNow.minute, rightNow.second )
+    currentTime = ("%04d%02d%02d_%02d:%02d:%02d" % 
+                 ( rightNow.year, rightNow.month, rightNow.day, rightNow.hour, rightNow.minute, rightNow.second ))
     return currentTime    
 
 #-----------------------------------------------------------------------------------------------    
@@ -213,11 +214,14 @@ def show_settings():
         print("                  If  max_speed_over < %i %s" % ( max_speed_over, speed_units ))         
         print("                  If  event_timeout > %i seconds Start New Track" % ( event_timeout ))         
         print("                  track_timeout=%i sec wait after Track Ends (avoid retrack of same object)" % ( track_timeout ))      
-        print("Speed Photo ..... Size=%ix%i px  WINDOW_BIGGER=%i  rotation=%i  VFlip=%s  HFlip=%s " % ( image_width, image_height, WINDOW_BIGGER, CAMERA_ROTATION, CAMERA_VFLIP, CAMERA_HFLIP ))
+        print("Speed Photo ..... Size=%ix%i px  WINDOW_BIGGER=%i  rotation=%i  VFlip=%s  HFlip=%s " % 
+                                 ( image_width, image_height, WINDOW_BIGGER, CAMERA_ROTATION, CAMERA_VFLIP, CAMERA_HFLIP ))
         print("                  image_path=%s  image_Prefix=%s" % ( image_path, image_prefix ))
         print("                  image_font_size=%i px high  image_text_bottom=%s" % ( image_font_size, image_text_bottom ))
-        print("Motion Settings . Size=%ix%i px  IMAGE_VIEW_FT=%i  speed_units=%s" % ( CAMERA_WIDTH, CAMERA_HEIGHT, IMAGE_VIEW_FT, speed_units ))
-        print("OpenCV Settings . MIN_AREA=%i sq-px  BLUR_SIZE=%i  THRESHOLD_SENSITIVITY=%i  CIRCLE_SIZE=%i px" % ( MIN_AREA, BLUR_SIZE, THRESHOLD_SENSITIVITY, CIRCLE_SIZE ))
+        print("Motion Settings . Size=%ix%i px  IMAGE_VIEW_FT=%i  speed_units=%s" % 
+                              ( CAMERA_WIDTH, CAMERA_HEIGHT, IMAGE_VIEW_FT, speed_units ))
+        print("OpenCV Settings . MIN_AREA=%i sq-px  BLUR_SIZE=%i  THRESHOLD_SENSITIVITY=%i  CIRCLE_SIZE=%i px" % 
+                               ( MIN_AREA, BLUR_SIZE, THRESHOLD_SENSITIVITY, CIRCLE_SIZE ))
         print("                  gui_window_on=%s (Display OpenCV Status Windows on GUI Desktop)" % ( gui_window_on ))
         print("                  CAMERA_FRAMERATE=%i fps video stream speed" % ( CAMERA_FRAMERATE ))
         print("")
@@ -256,7 +260,8 @@ def take_calibration_image(filename, cal_image):
 def get_image_name(path, prefix):
     # build image file names by number sequence or date/time
     rightNow = datetime.datetime.now()
-    filename = "%s/%s%04d%02d%02d-%02d%02d%02d.jpg" % ( path, prefix ,rightNow.year, rightNow.month, rightNow.day, rightNow.hour, rightNow.minute, rightNow.second )     
+    filename = ("%s/%s%04d%02d%02d-%02d%02d%02d.jpg" % 
+          ( path, prefix ,rightNow.year, rightNow.month, rightNow.day, rightNow.hour, rightNow.minute, rightNow.second ))     
     return filename  
 
 #-----------------------------------------------------------------------------------------------    
@@ -340,7 +345,8 @@ def speed_camera():
     start_pos_x = 0
     end_pos_x = 0
     msgStr = "Start Speed Motion Tracking"
-    show_message("speed_camera", msgStr)                     
+    show_message("speed_camera", msgStr) 
+    travel_direction = ""    
 
     # initialize a cropped grayimage1 image
     # Only needs to be done once 
@@ -423,6 +429,10 @@ def speed_camera():
                     tot_track_time = abs( time.time() - track_start_time )
                     ave_speed = float((abs( tot_track_dist / tot_track_time)) / speed_conv)
                     if abs( end_pos_x - start_pos_x ) > track_len_trig:
+                        if end_pos_x - start_pos_x > 0:
+                            travel_direction = "L2R"
+                        else:
+                            travel_direction = "R2L"
                         # Track length exceeded so take process speed photo                                     
                         if ave_speed > max_speed_over or calibrate:
                             # Resized and process prev image before saving to disk 
@@ -437,20 +447,24 @@ def speed_camera():
                                 filename = get_image_name( image_path, speed_prefix)
                             big_image = cv2.resize(prev_image,(image_width, image_height))                                            
                             cv2.imwrite(filename, big_image)
-                            msgStr = " Event Add   - cx=%3i cy=%3i %3.1f %s Len=%3i of %i px Contours=%2i Area=%i " % ( cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x), track_len_trig, total_contours, biggest_area )
+                            msgStr = (" Event Add   - cx=%3i cy=%3i %3.1f %s Len=%3i of %i px Contours=%2i Area=%i Moving=%s" % 
+                                                   ( cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x), track_len_trig, total_contours, biggest_area, travel_direction ))
                             show_message("speed_camera", msgStr)                  
                             # Format and Save Data to CSV Log File
                             log_time = datetime.datetime.now()                                               
-                            log_csv_time = "%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" % ( quote, log_time.year, log_time.month, log_time.day, quote, quote, log_time.hour, quote, quote, log_time.minute, quote)                                          
+                            log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s,%s%s%s" % 
+                                          ( quote, log_time.year, log_time.month, log_time.day, quote, quote, log_time.hour, quote, quote, log_time.minute, quote, quote, travel_direction, quote))                                          
                             # Add Text to image                                                
                             image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
                             image_write( filename, image_text )
-                            log_text = "%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i" % ( log_csv_time, ave_speed, quote, speed_units, quote, quote, filename, quote, mw, mh, mw * mh )
+                            log_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%s%s%s" % 
+                                      ( log_csv_time, ave_speed, quote, speed_units, quote, quote, filename, quote, mw, mh, mw * mh, quote, travel_direction, quote ))
                             log_to_file( log_text )
                             msgStr = "End Track    - Tracked %i px in %.1f sec" % ( tot_track_dist, tot_track_time )
                             show_message("speed_camera", msgStr)                                                  
                         else:
-                            msgStr = "End Track    - Skip Photo SPEED %.1f %s max_speed_over=%i  %i px in %.1f sec  Contours=%2i Area=%i sq-px " % ( ave_speed, speed_units, max_speed_over, tot_track_dist, tot_track_time, total_contours, biggest_area )
+                            msgStr = ("End Track    - Skip Photo SPEED %.1f %s max_speed_over=%i  %i px in %.1f sec  Contours=%2i Area=%i sq-px " 
+                                                        % ( ave_speed, speed_units, max_speed_over, tot_track_dist, tot_track_time, total_contours, biggest_area ))
                             show_message("speed_camera", msgStr)
                         # Track Ended so Reset Variables for next cycle through loop
                         start_pos_x = 0
@@ -458,13 +472,15 @@ def speed_camera():
                         first_event = True                         
                         time.sleep( track_timeout )  # Pause so object is not immediately tracked again 
                     else:
-                        msgStr = " Event Add   - cx=%3i cy=%3i %3.1f %s Len=%3i of %i px Contours=%2i Area=%i" % ( cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x), track_len_trig, total_contours, biggest_area )
+                        msgStr = (" Event Add   - cx=%3i cy=%3i %3.1f %s Len=%3i of %i px Contours=%2i Area=%i" % 
+                                                ( cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x), track_len_trig, total_contours, biggest_area ))
                         end_pos_x = cx
                         show_message("speed_camera", msgStr)
                     prev_image = image2  # keep a colour copy for saving to disk at end of Track
                 else:
                     if show_out_range:
-                        msgStr = " Out Range   - cx=%3i cy=%3i Dist=%3i is <%i or >%i px  Contours=%2i Area=%i" % ( cx, cy, abs( cx - end_pos_x ), x_diff_min, x_diff_max, total_contours, biggest_area  )                                    
+                        msgStr = (" Out Range   - cx=%3i cy=%3i Dist=%3i is <%i or >%i px  Contours=%2i Area=%i" % 
+                                                ( cx, cy, abs( cx - end_pos_x ), x_diff_min, x_diff_max, total_contours, biggest_area  ))                                   
                         show_message("speed_camera", msgStr)                             
              
             if gui_window_on:
