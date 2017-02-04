@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 3.10"
+version = "version 3.20"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -452,8 +452,8 @@ def speed_camera():
                             show_message("speed_camera", msgStr)                  
                             # Format and Save Data to CSV Log File
                             log_time = datetime.datetime.now()                                               
-                            log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s,%s%s%s" % 
-                                          ( quote, log_time.year, log_time.month, log_time.day, quote, quote, log_time.hour, quote, quote, log_time.minute, quote, quote, travel_direction, quote))                                          
+                            log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" % 
+                                          ( quote, log_time.year, log_time.month, log_time.day, quote, quote, log_time.hour, quote, quote, log_time.minute, quote))                                          
                             # Add Text to image                                                
                             image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
                             image_write( filename, image_text )
