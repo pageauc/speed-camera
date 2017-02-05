@@ -4,7 +4,7 @@
 # Create html pages from csv log file entries
 # for viewing speed images and data on a web server
 
-ver = "3.00"
+ver = "3.20"
 
 import glob, os
 import csv
@@ -49,32 +49,34 @@ def make_web_page(up_html, row_data, dn_html):
     <meta "Content-Type" content="txt/html; charset=ISO-8859-1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     </head><html>
-    <title>Web Title</title>
+    <title>Speed Camera by Claude Pageau</title>
     <body>
     <table style="border-spacing: 15px;" cellspacing="10">
     <tr>
     <td>
       <a href="%s" alt="Previous Speed Record" >UP</a>  
-      <img src="%s" width="640" height="480" alt="Speed Image" >
+      <a href="%s" target="_blank" ><img src="%s" width="640" height="480" alt="Speed Image" ></a>
       <a href="%s" alt="Next Speed Record" >DN</a>         
     </td>      
       <td valign="top" align="center">
-        <h1>Speed Camera Data</h1>
-        OpenCV Motion Tracking         
+        <h4>Object Motion Speed Tracker</h4>
+        <h2>Speed Camera Data</h2>       
         <hr>
         <h3>Taken on %s at %s:%s</h3>
         <h3>Speed was %s %s</h3>
-        <h4>Image %s</h4>
-        <h4>Size w = %s x h = %s px  Area %s sq px</h4>
-        <h3>Aspect Ratio w/h = %.3f</h3>
+        <h4>Image <a href="%s" target="_blank" >%s</a></h4>
+        <h3>Last Contour Size</h3>
+        <h4>%s x %s px  is %s sq px</h4>
+        <h4>Aspect Ratio w/h = %.3f</h4>
         <h3>Guess</h3>
-        <h3>%s</h3>
+        <h4>%s</h3>
+        <p>Click Image or Link to View Full Size Image</p>
       </td>
-    </tr>
+    </tr><center>
     </table>
     </body>
-    </html>''' % ( dn_html ,img_path , up_html, YYYYMMDD, HH, MM, Speed, Unit, 
-                  img_path, W, H, Area, aspect_ratio, Guess))
+    </html>''' % ( dn_html ,img_path, img_path , up_html, YYYYMMDD, HH, MM, Speed, Unit, 
+                  img_path, img_path, W, H, Area, aspect_ratio, Guess))
 
     # Write the html file
     base_filename = os.path.splitext(os.path.basename(img_path))[0]

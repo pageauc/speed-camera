@@ -5,7 +5,7 @@
 #-------------------------
 verbose = True              # display basic status information on console
 calibrate = False           # Create a speed_calibrate.jpg file with markers to calculate a px to FT conversion
-display_fps = True          # show average frame count every 1000 loops
+display_fps = False         # show average frame count every 1000 loops
 log_data_to_file = True     # save log data as CSV comma separated values
 show_out_range = False      # Show Out of Range Events Default=False)
 
@@ -24,8 +24,8 @@ event_timeout = 2      # Number of seconds to wait for next motion event before 
 
 # Camera Settings
 #----------------
-CAMERA_WIDTH = 1280    # Image stream width for opencv motion scanning default=320
-CAMERA_HEIGHT = 720    # Image stream height for opencv motion scanning  default=240
+CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning default=320
+CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  default=240
 CAMERA_FRAMERATE = 25  # framerate for video stream default=35 90 max for V1 cam. V2 can be higher
 CAMERA_ROTATION = 0    # Rotate camera image valid values are 0, 90, 180, 270
 CAMERA_VFLIP = False   # Flip the camera image vertically if required
@@ -38,7 +38,7 @@ image_prefix = "speed-"   # image name prefix
 image_filename_speed = False
 image_text_bottom = True  # True = Show image text at bottom otherwise at top
 image_font_size = 10      # font text height in px for text on images default=10 
-image_bigger = 1          # Saved Image multiply value, resizes default 320x240 image
+image_bigger = 2          # Default=2 Saved Image multiply value, resizes 320x240 image
  
 # Motion Event Exclusion Settings
 # -------------------------------
@@ -48,10 +48,10 @@ x_diff_max = 50        # Exclude if max px away for last motion event x pos
 max_speed_over = 0     # Exclude track if Speed less than or equal to value specified 0=All 
 
 # This is the Crop Area for motion tracking
-y_upper = 240          # Exclude event if y less that this value default=100
-y_lower = 480          # Exclude event if y greater than this value default=200
-x_left  = 480          # Exclude event if x less than this px position Default=25
-x_right = 800          # Exclude event if x greater than this px position Default=295
+y_upper = 100          # Exclude event if y less that this value default=100
+y_lower = 200          # Exclude event if y greater than this value default=200
+x_left  = 25           # Exclude event if x less than this px position Default=25
+x_right = 295          # Exclude event if x greater than this px position Default=295
 
 # OpenCV Motion Settings
 #--------------------------------
@@ -59,7 +59,7 @@ SHOW_CIRCLE = False         # True=circle in center of motion, False=rectangle
 CIRCLE_SIZE = 2             # Diameter circle in px if SHOW_CIRCLE = True 
 LINE_THICKNESS = 1          # Size of lines for circle or Rectangle
 FONT_SCALE = .5             # OpenCV window text font size scaling factor default=.5 (lower is smaller)
-WINDOW_BIGGER = 1           # default=1 resize multiplier for opencv window if gui_window_on=True
+WINDOW_BIGGER = 1           # default=1 Resize multiplier for opencv window if gui_window_on=True
 BLUR_SIZE = 10              # OpenCV setting for Gaussian difference image blur 
 THRESHOLD_SENSITIVITY = 20  # OpenCV setting for difference image threshold
 

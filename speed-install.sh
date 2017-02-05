@@ -1,6 +1,6 @@
 #!/bin/bash
 # Convenient speed-install.sh script written by Claude Pageau 1-Jul-2016
-ver="1.1"
+ver="3.1"
 SPEED_DIR='rpi-speed-camera'  # Default folder install location
 
 cd ~
@@ -48,6 +48,8 @@ if [ $? -ne 0 ] ;  then
   wget -O webserver.py https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.py 
   wget -O webserver.sh https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.sh  
   wget -O config.py https://raw.github.com/pageauc/rpi-speed-camera/master/config.py
+  wget -O config.py.240 https://raw.github.com/pageauc/rpi-speed-camera/master/config.py.240
+  wget -O config.py.720 https://raw.github.com/pageauc/rpi-speed-camera/master/config.py.720 
 else
   wget -O speed-cam.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.py
   wget -O speed-cam.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.sh  
@@ -57,6 +59,8 @@ else
   wget -O webserver.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.py 
   wget -O webserver.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.sh    
   wget -O config.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/config.py
+  wget -O config.py.240 -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/config.py.240
+  wget -O config.py.720 -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/config.py.720  
 fi
 echo "Done Download"
 echo "------------------------------------------------"

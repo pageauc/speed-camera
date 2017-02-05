@@ -65,6 +65,12 @@ if not os.path.exists(configFilePath):
 # Read Configuration variables from config.py file
 from config import *
 
+# fix possible invalid values
+if WINDOW_BIGGER < 1:
+    WINDOW_BIGGER = 1
+if image_bigger < 1:
+    image_bigger = 1
+
 # import the necessary packages
 from picamera.array import PiRGBArray
 import numpy as np
@@ -149,8 +155,8 @@ from PIL import ImageFont
 from PIL import ImageDraw
 
 # System Settings    
-image_width  = int(CAMERA_WIDTH * WINDOW_BIGGER)        # Set width of trigger point image to save 
-image_height = int(CAMERA_HEIGHT * WINDOW_BIGGER)       # Set height of trigger point image to save    
+image_width  = int(CAMERA_WIDTH * image_bigger)        # Set width of trigger point image to save 
+image_height = int(CAMERA_HEIGHT * image_bigger)       # Set height of trigger point image to save    
     
 # Calculate conversion from camera pixel width to actual speed.
 px_to_mph = float(( CAMERA_WIDTH / IMAGE_VIEW_FT ) * 5280 / 3600)
@@ -214,15 +220,16 @@ def show_settings():
         print("                  If  max_speed_over < %i %s" % ( max_speed_over, speed_units ))         
         print("                  If  event_timeout > %i seconds Start New Track" % ( event_timeout ))         
         print("                  track_timeout=%i sec wait after Track Ends (avoid retrack of same object)" % ( track_timeout ))      
-        print("Speed Photo ..... Size=%ix%i px  WINDOW_BIGGER=%i  rotation=%i  VFlip=%s  HFlip=%s " % 
-                                 ( image_width, image_height, WINDOW_BIGGER, CAMERA_ROTATION, CAMERA_VFLIP, CAMERA_HFLIP ))
+        print("Speed Photo ..... Size=%ix%i px  image_bigger=%i  rotation=%i  VFlip=%s  HFlip=%s " % 
+                                 ( image_width, image_height, image_bigger, CAMERA_ROTATION, CAMERA_VFLIP, CAMERA_HFLIP ))
         print("                  image_path=%s  image_Prefix=%s" % ( image_path, image_prefix ))
         print("                  image_font_size=%i px high  image_text_bottom=%s" % ( image_font_size, image_text_bottom ))
         print("Motion Settings . Size=%ix%i px  IMAGE_VIEW_FT=%i  speed_units=%s" % 
                               ( CAMERA_WIDTH, CAMERA_HEIGHT, IMAGE_VIEW_FT, speed_units ))
         print("OpenCV Settings . MIN_AREA=%i sq-px  BLUR_SIZE=%i  THRESHOLD_SENSITIVITY=%i  CIRCLE_SIZE=%i px" % 
                                ( MIN_AREA, BLUR_SIZE, THRESHOLD_SENSITIVITY, CIRCLE_SIZE ))
-        print("                  gui_window_on=%s (Display OpenCV Status Windows on GUI Desktop)" % ( gui_window_on ))
+        print("                  WINDOW_BIGGER=%i gui_window_on=%s (Display OpenCV Status Windows on GUI Desktop)" % 
+                               ( WINDOW_BIGGER, gui_window_on ))
         print("                  CAMERA_FRAMERATE=%i fps video stream speed" % ( CAMERA_FRAMERATE ))
         print("")
         print("-------------------------------------------------------------------------------------------------")
