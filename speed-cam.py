@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 3.20"
+version = "version 3.30"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -399,7 +399,13 @@ def speed_camera():
         # Check if python 3 or 2 is running and proces opencv accordingly.
         retval, thresholdimage = cv2.threshold( differenceimage,THRESHOLD_SENSITIVITY,255,cv2.THRESH_BINARY )
         # Get all the contours found in the threshold image
-        thresholdimage, contours, hierarchy = cv2.findContours( thresholdimage,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE )
+        try:
+            contours, hierarchy = cv2.findContours( thresholdimage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE )
+        except ValueError:  
+            thresholdimage, contours, hierarchy = cv2.findContours( thresholdimage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE )       
+        else:
+            print("Problem with OpenCV.  Suggest you upgrade to the latest Raspbian Jessie and OpenCV")
+            quit()
         total_contours = len( contours )
         # Update grayimage1 to grayimage2 ready for next image2
         grayimage1 = grayimage2
