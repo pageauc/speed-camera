@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 3.70"
+version = "version 3.80"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -478,6 +478,12 @@ def speed_camera():
                                 else:
                                     speed_prefix = image_prefix                               
                                 filename = get_image_name( image_path, speed_prefix)
+                                # Add motion rectangle to image
+                                if image_show_motion_area:
+                                    cv2.line( prev_image ,( x_left, y_upper ),( x_right, y_upper ),(0,0,255),1 )
+                                    cv2.line( prev_image ,( x_left, y_lower ),( x_right, y_lower ),(0,0,255),1 )                              
+                                    cv2.line( prev_image ,( x_left, y_upper ),( x_left , y_lower ),(0,0,255),1 )
+                                    cv2.line( prev_image ,( x_right, y_upper ),( x_right, y_lower ),(0,0,255),1 )
                             big_image = cv2.resize(prev_image,(image_width, image_height))                                            
                             cv2.imwrite(filename, big_image)
                             msgStr = (" Event Add   - cx=%3i cy=%3i %3.1f %s Len=%3i of %i px Contours=%2i Area=%i Moving=%s" % 
