@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 3.50"
+version = "version 3.60"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -199,11 +199,30 @@ def get_fps( start_time, frame_count ):
     
 #-----------------------------------------------------------------------------------------------
 def show_settings():
+    cwd = os.getcwd()
+    html_path = "html"
+    sym_name = "images" 
+    if not os.path.isdir(image_path):
+        msgStr = "Creating Image Storage Folder " + image_path
+        show_message ("show_settings", msgStr)
+        os.makedirs(image_path)
+    os.chdir(image_path)
+    img_dir = os.getcwd()
+    os.chdir(cwd)
+    if not os.path.isdir(html_path):
+        msgStr = "Creating html Folder " + html_path
+        show_message ("show_settings", msgStr)
+        os.makedirs(html_path)
+    os.chdir(html_path)
+    html_dir = os.getcwd()
+    sym_path = html_dir + "/" + sym_name
+    if not os.path.isdir(sym_path):
+        os.chdir(html_dir)
+        msgStr = "Creating html Folder images symlink " + sym_path
+        show_message ("show_settings", msgStr)
+        os.symlink(img_dir, sym_name)
+    os.chdir(cwd)
     if verbose:
-        if not os.path.isdir(image_path):
-            msgStr = "Creating Image Storage Folder " + image_path
-            show_message ("show_settings", msgStr)
-            os.makedirs(image_path)
         print("")
         print("Note: To Send Full Output to File Use command -   python -u ./%s | tee -a log.txt" % progName)
         print("      Set log_data_to_file=True to Send speed_Data to CSV File %s.log" % baseFileName) 
