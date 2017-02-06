@@ -3,6 +3,13 @@
 
 ###For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/rpi-speed-camera/wiki)
 
+***IMPORTANT*** speed-cam.py release 3.6 requires a full install.
+It is advised that you rename/delete previous rpi-speed-camera folder
+and rerun GitHub Quick Install or Manual Install.  This will avoid problems.
+Default config.py is designed for quad core RPI's.  If you have an older
+single core RPI copy config.py.240 to config.py.  This should improve performance.
+Use menubox.sh to change settings or nano config.py
+
 ### Quick Install   
 Easy Install of speed-cam onto a Raspberry Pi Computer with latest Raspbian. 
 
