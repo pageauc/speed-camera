@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 3.60"
+version = "version 3.70"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -255,11 +255,17 @@ def show_settings():
     return
   
 def take_calibration_image(filename, cal_image):
-    # Create a calibration image for determining value of IMG_VIEW_FT variable       
+    # Create a calibration image for determining value of IMG_VIEW_FT variable 
+    # This is calibation has marks
     cv2.line( cal_image,( 0,y_upper ),( CAMERA_WIDTH, y_upper ),(255,0,0), 1 )
     cv2.line( cal_image,( 0,y_lower ),( CAMERA_WIDTH, y_lower ),(255,0,0), 1 )
     for i in range ( 10, CAMERA_WIDTH - 9, 10 ):
         cv2.line( cal_image,( i ,y_upper - 5 ),( i, y_upper + 30 ),(255,0,0), 1 )
+    # This is motion window      
+    cv2.line( cal_image,( x_left, y_upper ),( x_right, y_upper ),(0,0,255),1 )
+    cv2.line( cal_image,( x_left, y_lower ),( x_right, y_lower ),(0,0,255),1 )                              
+    cv2.line( cal_image,( x_left, y_upper ),( x_left , y_lower ),(0,0,255),1 )
+    cv2.line( cal_image,( x_right, y_upper ),( x_right, y_lower ),(0,0,255),1 )
     print("")
     print("----------------------------------- Create Calibration Image --------------------------------------")    
     print("")
