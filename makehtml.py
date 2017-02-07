@@ -4,13 +4,18 @@
 # Create html pages from csv log file entries
 # for viewing speed images and data on a web server
 
-ver = "3.20"
+ver = "3.30"
 
 import glob, os
 import csv
 import time
 import datetime
 import shutil
+
+# Change to Folder that this script is run from
+mypath = os.path.abspath(__file__)  # Find the full path of this python script
+baseDir = os.path.dirname(mypath)  # get the path location only (excluding script name)
+os.chdir(baseDir)
 
 verbose = True
 
