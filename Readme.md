@@ -132,7 +132,7 @@ value for IMAGE_VIEW_FT variable in the speed_settings.py
 ### Calibration Procedure   
 speed-cam.py needs to be calibrated in order to display a correct speed.
 
-To Calibrate IMAGE_VIEW_FT variable perform the following
+To Calibrate cal_obj_px and cal_obj_mm variables perform the following
 
 * Setup the RPI camera to point to the view to be monitored.
 * Login to RPI using SSH or desktop terminal session and cd to rpi-speed-camera folder
