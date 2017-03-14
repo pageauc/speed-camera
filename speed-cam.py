@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 3.80"
+version = "version 4.00"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -159,14 +159,14 @@ image_width  = int(CAMERA_WIDTH * image_bigger)        # Set width of trigger po
 image_height = int(CAMERA_HEIGHT * image_bigger)       # Set height of trigger point image to save    
     
 # Calculate conversion from camera pixel width to actual speed.
-px_to_mph = float(( CAMERA_WIDTH / IMAGE_VIEW_FT ) * 5280 / 3600)
+px_to_kph = float(cal_obj_mm/cal_obj_px * 0.0036)
 
 if SPEED_MPH:
     speed_units = "mph"
-    speed_conv = 1.0 * px_to_mph
+    speed_conv  = 0.621371 * px_to_kph
 else:
     speed_units = "kph"
-    speed_conv = 1.609344 * px_to_mph
+    speed_conv  = px_to_kph
 
 quote = '"'  # Used for creating quote delimited log file of speed data
     
@@ -243,8 +243,8 @@ def show_settings():
                                  ( image_width, image_height, image_bigger, CAMERA_ROTATION, CAMERA_VFLIP, CAMERA_HFLIP ))
         print("                  image_path=%s  image_Prefix=%s" % ( image_path, image_prefix ))
         print("                  image_font_size=%i px high  image_text_bottom=%s" % ( image_font_size, image_text_bottom ))
-        print("Motion Settings . Size=%ix%i px  IMAGE_VIEW_FT=%i  speed_units=%s" % 
-                              ( CAMERA_WIDTH, CAMERA_HEIGHT, IMAGE_VIEW_FT, speed_units ))
+        print("Motion Settings . Size=%ix%i px  px_to_kph=%f  speed_units=%s" % 
+                              ( CAMERA_WIDTH, CAMERA_HEIGHT, px_to_kph, speed_units ))
         print("OpenCV Settings . MIN_AREA=%i sq-px  BLUR_SIZE=%i  THRESHOLD_SENSITIVITY=%i  CIRCLE_SIZE=%i px" % 
                                ( MIN_AREA, BLUR_SIZE, THRESHOLD_SENSITIVITY, CIRCLE_SIZE ))
         print("                  WINDOW_BIGGER=%i gui_window_on=%s (Display OpenCV Status Windows on GUI Desktop)" % 
@@ -269,18 +269,12 @@ def take_calibration_image(filename, cal_image):
     print("")
     print("----------------------------------- Create Calibration Image --------------------------------------")    
     print("")
-    print("    Instructions for using %s image to calculate value for IMG_VIEW_FT variable" % ( filename ))
+    print("    Instructions for using %s image for camera calibration" % ( filename ))
     print("")
     print("1 - Use a known size reference object in the image like a vehicle at the required distance.")
-    print("2 - Calculate the px to FT conversion using the reference object and the image y_upper marks at every 10 px")
-    print("3 - Calculate IMG_VIEW_FT per formula below See speed-track.md for details")
-    print("")
-    print("    IMG_VIEW_FT = (%i * Ref_Obj_ft) / num_px_for_Ref_Object" % ( CAMERA_WIDTH ))
-    print("    eg. (%i * 18) / 80 = %.1f" % ( CAMERA_WIDTH, ((CAMERA_WIDTH * 18)/80)))
-    print("")
-    print("4 - Update the IMG_VIEW_FT variable in the speed_settings.py file")
-    print("5 - Perform a test using a vehicle at a known speed to verify calibration.")
-    print("6 - Make sure y_upper and y_lower variables are correctly set for the roadway to monitor")
+    print("2 - Record cal_obj_px of object using the calibration y_upper hash marks at every 10 px")
+    print("3 - Record cal_obj_mm of object. This is Actual length in mm of object above")
+    print("4 - Edit config.py and enter the values for the above variables.")
     print("")
     print("    Calibration Image Saved To %s%s" % ( baseDir, filename ))
     print("")
@@ -376,6 +370,9 @@ def speed_camera():
     event_timer = time.time()
     start_pos_x = 0
     end_pos_x = 0
+    # setup buffer area to ensure contour is fully contained in crop area
+    x_buf = int((x_right - x_left) / 10 )
+    y_buf = int((y_lower - y_upper) / 8 )
     msgStr = "Start Speed Motion Tracking"
     show_message("speed_camera", msgStr) 
     travel_direction = ""    
@@ -435,15 +432,20 @@ def speed_camera():
             # get area of next contour
             found_area = cv2.contourArea(c)
             if found_area > biggest_area:
-                motion_found = True
-                biggest_area = found_area
                 ( x, y, w, h ) = cv2.boundingRect(c)
-                cx = int(x + w/2) + x_left   # put circle in middle of width
-                cy = int(y + h/2) + y_upper  # put circle in middle of height
-                mx = x
-                my = y
-                mw = w
-                mh = h
+                # check if complete contour is completely within crop area
+                if ( x > x_buf and 
+                     x + w < abs(x_right - x_left) - x_buf and
+                     y > y_buf and
+                     y + h < abs(y_lower - y_upper) - y_buf ):
+                    motion_found = True
+                    biggest_area = found_area
+                    cx = int(x + w/2) + x_left   # put circle in middle of width
+                    cy = int(y + h/2) + y_upper  # put circle in middle of height
+                    mx = x
+                    my = y
+                    mw = w
+                    mh = h
                 
         if motion_found:
             # Process motion event and track data
@@ -460,7 +462,7 @@ def speed_camera():
                     end_pos_x = cx
                     tot_track_dist = abs( end_pos_x - start_pos_x )
                     tot_track_time = abs( time.time() - track_start_time )
-                    ave_speed = float((abs( tot_track_dist / tot_track_time)) / speed_conv)
+                    ave_speed = float((abs( tot_track_dist / tot_track_time)) *  speed_conv)
                     if abs( end_pos_x - start_pos_x ) > track_len_trig:
                         if end_pos_x - start_pos_x > 0:
                             travel_direction = "L2R"

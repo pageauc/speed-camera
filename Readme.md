@@ -136,38 +136,33 @@ To Calibrate IMAGE_VIEW_FT variable perform the following
 
 * Setup the RPI camera to point to the view to be monitored.
 * Login to RPI using SSH or desktop terminal session and cd to rpi-speed-camera folder
-* Use nano to edit config.py. Edit variable calibrate=True  ctl-x y to save
+* Use nano to edit config.py. 
+* Edit variable calibrate=True
+* I required Adjust the y_upper and y_lower variables to cover the road area.  Note
+  image 0,0 is the top left hand corner and values are in pixels.  Do not
+  exceed the CAMERA_HEIGHT value  
+* In nano save changes ( ctl-x y to save )
 * Start speed-cam.py eg python ./speed-cam.py
 * Motion will automatically be detected and calibration images will be
   put in images folder with prefix calib-
 * Monitor progress and calibration images. Press ctrl-c to Quit when done. 
-* Adjust the y_upper and y_lower variables to cover the road area.  Note
-  image 0,0 is the top left hand corner and values are in pixels.  Do not
-  exceed the CAMERA_HEIGHT default 240 value  
-* Open calibration images with an image viewer program and use hash marks to
-  record pixels for vehicle length
+* View calibration images with image viewer program or via webserver
+  and use hash marks to record cal_obj_px for vehicle/object length
   Note each division is 10 pixels.  I use filezilla to transfer files to/from
   my PC and the RPI using sftp protocol and the RPI IP address.
-* Use formula below to calculate a value for IMAGE_VIEW_FT variable   
+* Record cal_obj_mm length of the speed object above in millimeters   
   You should use several photos to confirm and average results.
-* Use nano to edit the config.py and change IMAGE_VIEW_FT variable value
-  to new calculated value.  Also change variable calibrate = False
-* Restart speed_cam.py and monitor console messages.
+* Use nano to edit the config.py and change values for variables cal_obj_px and cal_obj_mm
+  to new values.  Also change variable calibrate = False
+* Exit nano then start speed_cam.py and monitor console messages.
   Perform a test using a vehicle at a known speed to verify calibration.
 * Make sure y_upper and y_lower variables are correctly set for the area to
-  monitor. This will restrict motion detection to area between these variable
+  monitor zone. This will restrict motion detection to area between these variable
   values.  Make sure top of vehicles is included.
   
 Please note that if road is too close and/or vehicles are moving too quickly then
 the camera may not capture motion and/or record vehicle in speed photo.
-  
-### Calibration Formula  
-Use this formula to calculate a value for IMAGE_VIEW_FT
- 
-IMAGE_VIEW_FT = (CAMERA_WIDTH * Ref_Obj_ft) / num_px_for_Ref_Object
-
-eg (320 * 18) / 80 = 72
-  
+    
 ### Configuration Settings  
 Variable values are stored in the config.py file and are imported
 when speed-cam.py is run.  Use the nano editor to modify these settings
@@ -183,7 +178,6 @@ These are some of the improvements I have been thinking about.  Not sure
 when I will actually implement as this is just a personal project challenge done for fun.
 
 * Move project documentation into GitHub wiki for easier maintenance.
-* Add ability to track object direction eg left-right or right-left.
 * Extract and store vehicle colour from image countour data
 * Add ability to set camera time of day schedule. Eg no night or specific time of day
 * Implement gdrive feature to sync data and/or images to users google or dropbox cloud storage 
