@@ -1,9 +1,9 @@
 # speed-cam.py - RPI Speed Camera Object Motion Tracker
 ### A Raspberry Pi Speed Camera using python, openCV, pi-camera, Video Stream
 
-###For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/rpi-speed-camera/wiki)
+### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/rpi-speed-camera/wiki)
 
-***IMPORTANT*** speed-cam.py release 3.6 or above requires a full install.
+IMPORTANT speed-cam.py release 3.6 or above requires a full install.
 It is advised that you rename/delete previous rpi-speed-camera folder
 and rerun GitHub Quick Install or Manual Install.  This will avoid problems.
 Default config.py is designed for quad core RPI's.  If you have an older
@@ -72,7 +72,7 @@ The program will detect motion in the field of view and use opencv to calculate
 the largest contour and return its x,y coordinate. Motion detection is
 restricted between y_upper and y_lower variables (road or area of interest).
 If a track is longer than track_len_trig variable then average speed will be 
-calculated (based on IMAGE_VIEW_FT variable) and a speed photo will be
+calculated (based on cal_obj_px and cal_obj_mm variables) and a speed photo will be
 taken and saved in an images folder. If log_data_to_file=True then a
 speed2.csv file will be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet.
