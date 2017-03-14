@@ -54,7 +54,7 @@ earlier will work OK. A quad core processor will greatly improve performance
 due to threading. A recent version of Raspbian operating system is recommended.
     
 IMPORTANT - Review settings in config.py file and edit variables with nano as required.
-You will need to perform a calibration to set the correct value for IMAGE_VIEW_FT 
+You will need to perform a calibration to set the correct value for cal_obj_px and cal_obj_mm 
 variable based on the distance from camera to objects being measured for speed.  
 See video and this Readme.md below for more details.     
     
@@ -157,8 +157,8 @@ To Calibrate IMAGE_VIEW_FT variable perform the following
 * Exit nano then start speed_cam.py and monitor console messages.
   Perform a test using a vehicle at a known speed to verify calibration.
 * Make sure y_upper and y_lower variables are correctly set for the area to
-  monitor zone. This will restrict motion detection to area between these variable
-  values.  Make sure top of vehicles is included.
+  monitor. This will restrict motion detection to area between these variable
+  values.  Make sure top of vehicles/objects is included.
   
 Please note that if road is too close and/or vehicles are moving too quickly then
 the camera may not capture motion and/or record vehicle in speed photo.
