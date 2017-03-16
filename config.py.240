@@ -10,8 +10,9 @@
 # Calibrtion Settings
 # ===================
 calibrate = False      # Create a calibration image file with calibration hash markers 10 px per mark
-cal_obj_px = 30        # Length of a calibration object in pixels
-cal_obj_mm = 1625.0    # Length of the calibration object in millimeters
+cal_obj_px = 95        # Length of a calibration object in pixels
+cal_obj_mm = 4330.0    # Length of the calibration object in millimeters
+                       # For typical vehicle lengths see http://www.automobiledimension.com/
 
 # Crop Area for motion detection Tracking
 # =======================================
