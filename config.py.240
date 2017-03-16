@@ -9,15 +9,14 @@
 
 # Calibrtion Settings
 # ===================
-calibrate = False      # Create a calibration image file with calibration hash markers 10 px per mark
-cal_obj_px = 95        # Length of a calibration object in pixels
+calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
+cal_obj_px = 97        # Length of a calibration object in pixels
 cal_obj_mm = 4330.0    # Length of the calibration object in millimeters
-                       # For typical vehicle lengths see http://www.automobiledimension.com/
 
 # Crop Area for motion detection Tracking
 # =======================================
-y_upper = 100          # Exclude event if y less that this value default=100
-y_lower = 175          # Exclude event if y greater than this value default=175
+y_upper = 75           # Exclude event if y less that this value default=100
+y_lower = 185          # Exclude event if y greater than this value default=175
 x_left  = 25           # Exclude event if x less than this px position Default=25
 x_right = 295          # Exclude event if x greater than this px position Default=295
 
@@ -38,7 +37,7 @@ show_crop_on = False        # Same as show_thresh_on but in color. True=Show, Fa
 # Motion Event Settings
 # =====================
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
-track_len_trig = 50    # Length of track to trigger speed photo Default=50
+track_len_trig = 75    # Length of track to trigger speed photo Default=50
 track_timeout = 1      # Number of seconds to wait after track End (prevents dual tracking)
 event_timeout = 2      # Number of seconds to wait for next motion event before starting new track
 
@@ -46,7 +45,7 @@ event_timeout = 2      # Number of seconds to wait for next motion event before 
 # ===============
 CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning default=320
 CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  default=240
-CAMERA_FRAMERATE = 15  # framerate for video stream default=55 90 max for V1 cam. V2 can be higher
+CAMERA_FRAMERATE = 20  # framerate for video stream default=55 90 max for V1 cam. V2 can be higher
 CAMERA_ROTATION = 0    # Rotate camera image valid values are 0, 90, 180, 270
 CAMERA_VFLIP = False   # Flip the camera image vertically if required
 CAMERA_HFLIP = False   # Flip the camera image horizontally if required
@@ -55,7 +54,7 @@ CAMERA_HFLIP = False   # Flip the camera image horizontally if required
 # =====================
 image_path = "images"         # folder name to store images
 image_prefix = "speed-"       # image name prefix
-image_show_motion_area = False # True = Display motion detection rectangle area on saved images
+image_show_motion_area = True # True = Display motion detection rectangle area on saved images
 image_filename_speed = False  # True = Prefix filename with speed value
 image_text_bottom = True      # True = Show image text at bottom otherwise at top
 image_font_size = 10          # font text height in px for text on images default=10

@@ -130,7 +130,8 @@ value for IMAGE_VIEW_FT variable in the speed_settings.py
  
 
 ### Calibration Procedure   
-speed-cam.py needs to be calibrated in order to display a correct speed.
+speed-cam.py needs to be calibrated in order to display a correct speed. 
+Measure vehicle/object using a tape measure or reference make and model lengths here http://www.automobiledimension.com/
 
 To Calibrate cal_obj_px and cal_obj_mm variables perform the following
 

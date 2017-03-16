@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 4.00"
+version = "version 4.10"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -435,13 +435,13 @@ def speed_camera():
                 ( x, y, w, h ) = cv2.boundingRect(c)
                 # check if complete contour is completely within crop area
                 if ( x > x_buf and 
-                     x + w < abs(x_right - x_left) - x_buf and
+                     x + w < x_right - x_left - x_buf and
                      y > y_buf and
-                     y + h < abs(y_lower - y_upper) - y_buf ):
+                     y + h < y_lower - y_upper - y_buf ):
                     motion_found = True
                     biggest_area = found_area
-                    cx = int(x + w/2) + x_left   # put circle in middle of width
-                    cy = int(y + h/2) + y_upper  # put circle in middle of height
+                    cx = int(x + w/2)   # put circle in middle of width
+                    cy = int(y + h/2)   # put circle in middle of height
                     mx = x
                     my = y
                     mw = w
@@ -513,8 +513,8 @@ def speed_camera():
                         first_event = True                         
                         time.sleep( track_timeout )  # Pause so object is not immediately tracked again 
                     else:
-                        msgStr = (" Event Add   - cx=%3i cy=%3i %3.1f %s Len=%3i of %i px Contours=%2i Area=%i" % 
-                                                ( cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x), track_len_trig, total_contours, biggest_area ))
+                        msgStr = (" Event Add   - cx=%3i cy=%3i %s=%3.1f Len=%3i of %i px Contours=%2i Area=%i" % 
+                                                ( cx, cy, speed_units, ave_speed, abs( start_pos_x - end_pos_x), track_len_trig, total_contours, biggest_area ))
                         end_pos_x = cx
                         show_message("speed_camera", msgStr)
                     prev_image = image2  # keep a colour copy for saving to disk at end of Track
@@ -527,13 +527,14 @@ def speed_camera():
             if gui_window_on:
                 # show small circle at motion location
                 if SHOW_CIRCLE:
-                    cv2.circle(image2,( cx * WINDOW_BIGGER ,cy* WINDOW_BIGGER ),CIRCLE_SIZE,(0,255,0), LINE_THICKNESS)
+                    cv2.circle(image2,( cx + x_left * WINDOW_BIGGER ,cy + y_upper * WINDOW_BIGGER ),CIRCLE_SIZE,(0,255,0), LINE_THICKNESS)
                 else:
-                    cv2.rectangle(image2,( int(cx - mw/2) , int( cy - mh/2)),( ( int(cx + mw/2)) , int(cy + mh/2 )),(0,255,0), LINE_THICKNESS)                              
+                    cv2.rectangle(image2,( int( cx + x_left - mw/2) , int( cy + y_upper - mh/2)),
+                                        (( int( cx + x_left + mw/2)), int( cy + y_upper + mh/2 )),(0,255,0), LINE_THICKNESS)                              
 
                 if ave_speed > 0:
                     speed_text = str('%3.1f %s'  % ( ave_speed, speed_units )) 
-                    cv2.putText( image2, speed_text, (cx + 8, cy), cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE , (255,255,255), 1)                           
+                    cv2.putText( image2, speed_text, (cx + x_left + 8, cy + y_upper), cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE , (255,255,255), 1)                           
             event_timer = time.time()  # Reset event_timer since valid motion was found
             
         if gui_window_on:
