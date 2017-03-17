@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-import cgi, os, SocketServer, sys, time, urllib
+import cgi, os, socket, SocketServer, sys, time, urllib
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from StringIO import StringIO
 
-version = "ver 3.00 written by Claude Pageau"
+version = "ver 3.10 written by Claude Pageau"
 
 # SimpleHTTPServer python program to allow selection of images from right panel and display in an iframe left panel
 # Use for local network use only since this is not guaranteed to be a secure web server.
@@ -41,6 +41,20 @@ else:
     print("Importing Configuration Variables from File %s" % ( configFilePath ))    
     from config import *
 
+os.chdir(web_server_root)
+web_root = os.getcwd()
+os.chdir(base_dir)
+
+try:
+    myip = ([ l for l in ( [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], 
+           [[( s.connect(('8.8.8.8', 53)), 
+           s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, 
+           socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
+except:
+    print("Can't Find a Network IP Address on this Raspberry Pi")
+    print("Configure Network and Try Again")
+    quit()    
+    
 if web_list_by_datetime:
     dir_sort = 'DateTime'
 else:
@@ -170,8 +184,9 @@ print("Listing - web_max_list_entries = %s ( 0=all )" % ( web_max_list_entries )
 print("          web_list_by_datetime = %s  sort_decending = %s" % ( web_list_by_datetime, web_list_sort_descending ))
 print("----------------------------------------------------------------")
 print("From a computer on the same LAN. Use a Web Browser to access this server at")
-print("http://IP_Address:%i"  % web_server_port)
-print("Where IP_Address is IP address of this Raspberry Pi Eg. http://192.168.1.100:%i" % web_server_port)
+print("Type the URL below into the browser url bar then hit enter key.")
+print("")
+print("                 http://%s:%i"  % ( myip, web_server_port ))
 print("")
 print("IMPORTANT: If You Get - socket.error: [Errno 98] Address already in use")
 print("           Wait a minute or so for webserver to timeout and Retry.")
