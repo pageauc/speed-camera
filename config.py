@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 4.20 speed-cam.py 240p Stream Variable Configuration Settings
+#               Ver 4.30 speed-cam.py 240p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -26,6 +26,8 @@ verbose = True              # Display basic status information on console
 display_fps = False         # True = Show average frame count every 1000 loops
 log_data_to_file = True     # True = Save log data as CSV comma separated values (default=True)
 show_out_range = False      # Show Out of Range Events (default=False)
+loggingToFile = False       # True = Send logging to file
+logFilePath = 'speed-track.log'  # Location of log file when logDataToFile=True
 
 # Display opencv windows on rpi desktop
 # gui_window_on supresses All Windows if False
