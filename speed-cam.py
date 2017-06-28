@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 4.10"
+version = "version 4.20"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -145,6 +145,43 @@ class PiVideoStream:
         # indicate that the thread should be stopped
         self.stopped = True
 
+#-----------------------------------------------------------------------------------------------
+class WebcamVideoStream:
+    def __init__(self, src=0):
+        # initialize the video camera stream and read the first frame
+        # from the stream
+        self.stream = cv2.VideoCapture(src)
+        (self.grabbed, self.frame) = self.stream.read()
+
+        # initialize the variable used to indicate if the thread should
+        # be stopped
+        self.stopped = False
+
+    def start(self):
+        # start the thread to read frames from the video stream
+        t = Thread(target=self.update, args=())
+        t.daemon = True
+        t.start()
+        return self
+
+    def update(self):
+        # keep looping infinitely until the thread is stopped
+        while True:
+            # if the thread indicator variable is set, stop the thread
+            if self.stopped:
+                    return
+
+            # otherwise, read the next frame from the stream
+            (self.grabbed, self.frame) = self.stream.read()
+
+    def read(self):
+        # return the frame most recently read
+        return self.frame
+
+    def stop(self):
+        # indicate that the thread should be stopped
+        self.stopped = True    
+        
 import io
 import time
 import datetime
@@ -352,17 +389,24 @@ def speed_camera():
         else:
             print("Press ctrl-c in this terminal session to Quit")
         print("")
-        
-    msg_str = "Initializing Pi Camera ...."
+    
+    if WEBCAM:
+        msg_str = "Initializing USB Web Camera ...."    
+    else:    
+        msg_str = "Initializing Pi Camera ...."
     show_message("speed_camera", msg_str)
 
-    # Setup video stream on a processor Thread for faster speed
-    vs = PiVideoStream().start()
-    vs.camera.rotation = CAMERA_ROTATION
-    vs.camera.hflip = CAMERA_HFLIP
-    vs.camera.vflip = CAMERA_VFLIP
+    if WEBCAM:   #  Start Web Cam stream (Note USB webcam must be plugged in) 
+        vs = WebcamVideoStream().start()    
+    else:
+        # Setup video stream on a processor Thread for faster speed
+        vs = PiVideoStream().start()
+        vs.camera.rotation = CAMERA_ROTATION
+        vs.camera.hflip = CAMERA_HFLIP
+        vs.camera.vflip = CAMERA_VFLIP
+        
     time.sleep(2.0)  # Give Camera time to initialize
-     
+         
     # initialize variables
     frame_count = 0
     fps_time = time.time()
@@ -381,7 +425,7 @@ def speed_camera():
     # Only needs to be done once 
     image2 = vs.read()    # Get image from PiVideoSteam thread instance
     # crop image to motion tracking area only
-    image_crop = image2[y_upper:y_lower,x_left:x_right]
+    image_crop = image2[y_upper:y_lower,x_left:x_right]        
     grayimage1 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
     event_timer = time.time()
     # Initialize prev_image used for taking speed image photo

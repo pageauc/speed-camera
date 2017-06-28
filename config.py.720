@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 4.00  speed-cam.py 720p stream Variable Configuration Settings
+#               Ver 4.20  speed-cam.py 720p stream Variable Configuration Settings
 
 #######################################
 #
@@ -41,6 +41,7 @@ event_timeout = 2      # Number of seconds to wait for next motion event before 
 
 # Camera Settings
 # ===============
+WEBCAM = False         # default=False ( IMPORTANT - WEBCAM=True is not compatible with 720p resolution)
 CAMERA_WIDTH = 1280    # Image stream width for opencv motion scanning default=1280
 CAMERA_HEIGHT = 720    # Image stream height for opencv motion scanning  default=720
 CAMERA_FRAMERATE = 15  # framerate for video stream default=15 90 max for V1 cam. V2 can be higher

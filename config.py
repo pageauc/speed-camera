@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 4.00 speed-cam.py 240p Stream Variable Configuration Settings
+#               Ver 4.20 speed-cam.py 240p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -9,7 +9,7 @@
 
 # Calibrtion Settings
 # ===================
-calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
+calibrate = False      # Create a calibration image file with calibration hash markers 10 px per mark
 cal_obj_px = 97        # Length of a calibration object in pixels
 cal_obj_mm = 4330.0    # Length of the calibration object in millimeters
 
@@ -43,6 +43,7 @@ event_timeout = 2      # Number of seconds to wait for next motion event before 
 
 # Camera Settings
 # ===============
+WEBCAM = False         # default=False video cam source False=PiCamera True=WebCam (usb)
 CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning default=320
 CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  default=240
 CAMERA_FRAMERATE = 20  # framerate for video stream default=55 90 max for V1 cam. V2 can be higher
