@@ -9,7 +9,7 @@
 
 # Calibration  Settings
 # =====================
-calibrate = False       # Create a calibration image with hash markers 10 px per mark
+calibrate = True        # Create a calibration image with hash markers 10 px per mark
 cal_obj_px = 220        # Length of calibration object in pixels
 cal_obj_mm = 3370.0     # Length of calibration object in millimeters
 
