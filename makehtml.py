@@ -58,29 +58,33 @@ def make_web_page(up_html, row_data, dn_html):
     <body>
     <table style="border-spacing: 15px;" cellspacing="10">
     <tr>
-    <td>
-      <div style="font-size:x-large">
-      <a href="%s" target="_blank" ><img src="%s" width="640" height="480" alt="Speed Image"></a>
-      </div>      
-    </td>      
-      <td valign="center">
-        <h4><center>Object Motion Speed Tracker</center></h4>
-        <h2><center>Speed Camera Data</center></h2>
-        <hr>
-        <h3>Taken: %s at %s:%s</h3>
-        <h3>Speed: %s %s</h3>
-        <h3>File: <a href="%s" target="_blank" >%s</a></h3>
-        <h3>Contour: %s x %s = %s sq px</h3>
-        <h3>Aspect Ratio: %.3f w/h</h3>
-        <h3>Guess: %s</h3>
-        <hr>
-        <h1><center><a href="%s">UP</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="%s">DOWN</a></center></h1>
-      </td>
+        <td>
+          <span style="float: left">
+          <a href="%s" target="_blank" ><img src="%s" width="640" height="480"  hspace="20" ALIGN="left" alt="Speed Image"/></a>
+          </span>
+          <span style="float: right">
+          <div>          
+            <h4><center>Object Motion Speed Tracker</center></h4>
+            <h2><center>Speed Camera Data</center></h2>
+            <hr>
+            <h3>Taken: %s at %s:%s</h3>
+            <h3>Speed: %s %s</h3>
+            <h3>Contour: %s x %s = %s sq px</h3>
+            <h3>Aspect Ratio: %.3f w/h</h3>
+            <h3>Guess: %s</h3>
+            <hr>
+            <center>
+              <h4><a href="%s" target="_blank" >%s</a></h4>
+              <h1><a href="%s">UP</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="%s">DOWN</a></h1>
+            </center>          
+          </div>
+          </span>
+        </td>
     </tr>
     </table>
     </body>
     </html>''' % ( img_path, img_path, YYYYMMDD, HH, MM, Speed, Unit, 
-                  img_path, img_path, W, H, Area, aspect_ratio, Guess, dn_html, up_html))
+                  W, H, Area, aspect_ratio, Guess, img_path, img_path, dn_html, up_html))
 
     # Write the html file
     base_filename = os.path.splitext(os.path.basename(img_path))[0]
