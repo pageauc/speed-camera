@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 4.30"
+version = "version 4.40"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -175,10 +175,12 @@ class PiVideoStream:
 
 #-----------------------------------------------------------------------------------------------
 class WebcamVideoStream:
-    def __init__(self, src=0):
+    def __init__(self, src=0, WEBCAM_WIDTH=320, WEBCAM_HEIGHT=240):
         # initialize the video camera stream and read the first frame
         # from the stream
         self.stream = cv2.VideoCapture(src)
+        self.stream.set(3,WEBCAM_WIDTH)
+        self.stream.set(4,WEBCAM_HEIGHT)        
         (self.grabbed, self.frame) = self.stream.read()
 
         # initialize the variable used to indicate if the thread should
@@ -226,20 +228,13 @@ else:
 
 quote = '"'  # Used for creating quote delimited log file of speed data
 
-#-----------------------------------------------------------------------------------------------
-def show_time():
-    rightNow = datetime.datetime.now()
-    currentTime = ("%04d%02d%02d_%02d:%02d:%02d" %
-                 ( rightNow.year, rightNow.month, rightNow.day, rightNow.hour, rightNow.minute, rightNow.second ))
-    return currentTime
-
 #----------------------------------------------------------------------------------------------
 def get_fps( start_time, frame_count ):
     # Calculate and display frames per second processing
     if frame_count >= 1000:
         duration = float( time.time() - start_time )
         FPS = float( frame_count / duration )
-        print("%s get_fps - %.2f fps Last %i Frames" %( show_time(), FPS, frame_count ))
+        logging.info("%.2f fps Last %i Frames", FPS, frame_count )
         frame_count = 0
         start_time = time.time()
     else:
@@ -406,7 +401,11 @@ def speed_camera():
         logging.info("Initializing Pi Camera ....")
 
     if WEBCAM:   #  Start Web Cam stream (Note USB webcam must be plugged in)
+        WEBCAMSRC=0
         vs = WebcamVideoStream().start()
+        vs.src = WEBCAMSRC
+        vs.WEBCAM_WIDTH = CAMERA_WIDTH
+        vs.WEBCAM_HEIGHT = CAMERA_HEIGHT
     else:
         # Setup video stream on a processor Thread for faster speed
         vs = PiVideoStream().start()
