@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 4.00 speed-cam.py 240p Stream Variable Configuration Settings
+#               Ver 4.30 speed-cam.py 240p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -26,6 +26,8 @@ verbose = True              # Display basic status information on console
 display_fps = False         # True = Show average frame count every 1000 loops
 log_data_to_file = True     # True = Save log data as CSV comma separated values (default=True)
 show_out_range = False      # Show Out of Range Events (default=False)
+loggingToFile = False       # True = Send logging to file
+logFilePath = 'speed-track.log'  # Location of log file when logDataToFile=True
 
 # Display opencv windows on rpi desktop
 # gui_window_on supresses All Windows if False
@@ -43,6 +45,7 @@ event_timeout = 2      # Number of seconds to wait for next motion event before 
 
 # Camera Settings
 # ===============
+WEBCAM = False         # default=False video cam source False=PiCamera True=WebCam (usb)
 CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning default=320
 CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  default=240
 CAMERA_FRAMERATE = 20  # framerate for video stream default=55 90 max for V1 cam. V2 can be higher

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 4.10"
+version = "version 4.40"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -11,11 +11,11 @@ It will detect speed in the field of view and use opencv to calculate the
 largest contour and return its x,y coordinate.  The image is tracked for
 a specified threshold length and then the speed is calculated.
 Note: Variables for this program are stored in config.py
-  
+
 Some of this code is based on a YouTube tutorial by
 Kyle Hounslow using C here https://www.youtube.com/watch?v=X6rPdRZzgjg
 
-Thanks to Adrian Rosebrock jrosebr1 at http://www.pyimagesearch.com 
+Thanks to Adrian Rosebrock jrosebr1 at http://www.pyimagesearch.com
 for the PiVideoStream Class code available on github at
 https://github.com/jrosebr1/imutils/blob/master/imutils/video/pivideostream.py
 
@@ -61,7 +61,7 @@ if not os.path.exists(configFilePath):
         quit()
     f = open('config.py','wb')
     f.write(wgetfile.read())
-    f.close()   
+    f.close()
 # Read Configuration variables from config.py file
 from config import *
 
@@ -76,8 +76,17 @@ from picamera.array import PiRGBArray
 import numpy as np
 from picamera import PiCamera
 from threading import Thread
+import logging
+import io
+import time
+import datetime
+import sys
+if not (sys.version_info > (3, 0)):
+    import pyexiv2
+from PIL import Image
+from PIL import ImageFont
+from PIL import ImageDraw
 
-import sys  
 try:
     import cv2
 except:
@@ -96,6 +105,25 @@ except:
     print("Exiting speed2.py Due to Error")
     quit()
 
+# Now that variables are imported from config.py Setup Logging
+if loggingToFile:
+    logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    filename=logFilePath,
+                    filemode='w')
+elif verbose:
+    print("Logging to Console per Variable verbose=True")
+    logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
+else:
+    print("Logging Disabled per Variable verbose=False")
+    logging.basicConfig(level=logging.CRITICAL,
+                    format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
+
+#-----------------------------------------------------------------------------------------------
 class PiVideoStream:
     def __init__(self, resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=CAMERA_FRAMERATE, rotation=0, hflip=False, vflip=False):
         # initialize the camera and stream
@@ -145,19 +173,49 @@ class PiVideoStream:
         # indicate that the thread should be stopped
         self.stopped = True
 
-import io
-import time
-import datetime
-if not (sys.version_info > (3, 0)):
-    import pyexiv2
-from PIL import Image
-from PIL import ImageFont
-from PIL import ImageDraw
+#-----------------------------------------------------------------------------------------------
+class WebcamVideoStream:
+    def __init__(self, src=0, WEBCAM_WIDTH=320, WEBCAM_HEIGHT=240):
+        # initialize the video camera stream and read the first frame
+        # from the stream
+        self.stream = cv2.VideoCapture(src)
+        self.stream.set(3,WEBCAM_WIDTH)
+        self.stream.set(4,WEBCAM_HEIGHT)        
+        (self.grabbed, self.frame) = self.stream.read()
 
-# System Settings    
-image_width  = int(CAMERA_WIDTH * image_bigger)        # Set width of trigger point image to save 
-image_height = int(CAMERA_HEIGHT * image_bigger)       # Set height of trigger point image to save    
-    
+        # initialize the variable used to indicate if the thread should
+        # be stopped
+        self.stopped = False
+
+    def start(self):
+        # start the thread to read frames from the video stream
+        t = Thread(target=self.update, args=())
+        t.daemon = True
+        t.start()
+        return self
+
+    def update(self):
+        # keep looping infinitely until the thread is stopped
+        while True:
+            # if the thread indicator variable is set, stop the thread
+            if self.stopped:
+                    return
+
+            # otherwise, read the next frame from the stream
+            (self.grabbed, self.frame) = self.stream.read()
+
+    def read(self):
+        # return the frame most recently read
+        return self.frame
+
+    def stop(self):
+        # indicate that the thread should be stopped
+        self.stopped = True
+
+# System Settings
+image_width  = int(CAMERA_WIDTH * image_bigger)        # Set width of trigger point image to save
+image_height = int(CAMERA_HEIGHT * image_bigger)       # Set height of trigger point image to save
+
 # Calculate conversion from camera pixel width to actual speed.
 px_to_kph = float(cal_obj_mm/cal_obj_px * 0.0036)
 
@@ -169,105 +227,89 @@ else:
     speed_conv  = px_to_kph
 
 quote = '"'  # Used for creating quote delimited log file of speed data
-    
-#-----------------------------------------------------------------------------------------------    
-def show_time():
-    rightNow = datetime.datetime.now()
-    currentTime = ("%04d%02d%02d_%02d:%02d:%02d" % 
-                 ( rightNow.year, rightNow.month, rightNow.day, rightNow.hour, rightNow.minute, rightNow.second ))
-    return currentTime    
 
-#-----------------------------------------------------------------------------------------------    
-def show_message(function_name, message_str):
-    if verbose:
-        now = show_time()
-        print("%s %s - %s " % ( now, function_name, message_str ))
-    return
-    
 #----------------------------------------------------------------------------------------------
 def get_fps( start_time, frame_count ):
     # Calculate and display frames per second processing
     if frame_count >= 1000:
         duration = float( time.time() - start_time )
         FPS = float( frame_count / duration )
-        print("%s get_fps - %.2f fps Last %i Frames" %( show_time(), FPS, frame_count ))
+        logging.info("%.2f fps Last %i Frames", FPS, frame_count )
         frame_count = 0
         start_time = time.time()
     else:
         frame_count += 1
-    return start_time, frame_count   
-    
+    return start_time, frame_count
+
 #-----------------------------------------------------------------------------------------------
 def show_settings():
     cwd = os.getcwd()
     html_path = "html"
-    sym_name = "images" 
+    sym_name = "images"
     if not os.path.isdir(image_path):
-        msgStr = "Creating Image Storage Folder " + image_path
-        show_message ("show_settings", msgStr)
+        logging.info("Creating Image Storage Folder %s", image_path )
         os.makedirs(image_path)
     os.chdir(image_path)
     img_dir = os.getcwd()
     os.chdir(cwd)
     if not os.path.isdir(html_path):
-        msgStr = "Creating html Folder " + html_path
-        show_message ("show_settings", msgStr)
+        logging.info("Creating html Folder %s", html_path)
         os.makedirs(html_path)
     os.chdir(html_path)
     html_dir = os.getcwd()
     sym_path = html_dir + "/" + sym_name
     if not os.path.isdir(sym_path):
         os.chdir(html_dir)
-        msgStr = "Creating html Folder images symlink " + sym_path
-        show_message ("show_settings", msgStr)
+        logging.info("Creating html Folder images symlink %s", sym_path)
         os.symlink(img_dir, sym_name)
     os.chdir(cwd)
     if verbose:
         print("")
         print("Note: To Send Full Output to File Use command -   python -u ./%s | tee -a log.txt" % progName)
-        print("      Set log_data_to_file=True to Send speed_Data to CSV File %s.log" % baseFileName) 
+        print("      Set log_data_to_file=True to Send speed_Data to CSV File %s.log" % baseFileName)
         print("-------------------------------------- Settings -------------------------------------------------")
         print("")
         print("Message Display . verbose=%s  display_fps=%s calibrate=%s" % ( verbose, display_fps, calibrate ))
         print("                  show_out_range=%s" % ( show_out_range ))
         print("Logging ......... Log_data_to_file=%s  log_filename=%s.csv (CSV format)"  % ( log_data_to_file, baseFileName ))
-        print("                  Log if max_speed_over > %i %s" % ( max_speed_over, speed_units))        
-        print("Speed Trigger ... If  track_len_trig > %i px" % ( track_len_trig ))                      
-        print("Exclude Events .. If  x_diff_min < %i or x_diff_max > %i px" % ( x_diff_min, x_diff_max )) 
+        print("                  loggingToFile=%s  logFilePath=%s" % (loggingToFile, logFilePath))        
+        print("                  Log if max_speed_over > %i %s" % ( max_speed_over, speed_units))
+        print("Speed Trigger ... If  track_len_trig > %i px" % ( track_len_trig ))
+        print("Exclude Events .. If  x_diff_min < %i or x_diff_max > %i px" % ( x_diff_min, x_diff_max ))
         print("                  If  y_upper < %i or y_lower > %i px" % ( y_upper, y_lower ))
-        print("                  or  x_left < %i or x_right > %i px" % ( x_left, x_right ))        
-        print("                  If  max_speed_over < %i %s" % ( max_speed_over, speed_units ))         
-        print("                  If  event_timeout > %i seconds Start New Track" % ( event_timeout ))         
-        print("                  track_timeout=%i sec wait after Track Ends (avoid retrack of same object)" % ( track_timeout ))      
-        print("Speed Photo ..... Size=%ix%i px  image_bigger=%i  rotation=%i  VFlip=%s  HFlip=%s " % 
+        print("                  or  x_left < %i or x_right > %i px" % ( x_left, x_right ))
+        print("                  If  max_speed_over < %i %s" % ( max_speed_over, speed_units ))
+        print("                  If  event_timeout > %i seconds Start New Track" % ( event_timeout ))
+        print("                  track_timeout=%i sec wait after Track Ends (avoid retrack of same object)" % ( track_timeout ))
+        print("Speed Photo ..... Size=%ix%i px  image_bigger=%i  rotation=%i  VFlip=%s  HFlip=%s " %
                                  ( image_width, image_height, image_bigger, CAMERA_ROTATION, CAMERA_VFLIP, CAMERA_HFLIP ))
         print("                  image_path=%s  image_Prefix=%s" % ( image_path, image_prefix ))
         print("                  image_font_size=%i px high  image_text_bottom=%s" % ( image_font_size, image_text_bottom ))
-        print("Motion Settings . Size=%ix%i px  px_to_kph=%f  speed_units=%s" % 
+        print("Motion Settings . Size=%ix%i px  px_to_kph=%f  speed_units=%s" %
                               ( CAMERA_WIDTH, CAMERA_HEIGHT, px_to_kph, speed_units ))
-        print("OpenCV Settings . MIN_AREA=%i sq-px  BLUR_SIZE=%i  THRESHOLD_SENSITIVITY=%i  CIRCLE_SIZE=%i px" % 
+        print("OpenCV Settings . MIN_AREA=%i sq-px  BLUR_SIZE=%i  THRESHOLD_SENSITIVITY=%i  CIRCLE_SIZE=%i px" %
                                ( MIN_AREA, BLUR_SIZE, THRESHOLD_SENSITIVITY, CIRCLE_SIZE ))
-        print("                  WINDOW_BIGGER=%i gui_window_on=%s (Display OpenCV Status Windows on GUI Desktop)" % 
+        print("                  WINDOW_BIGGER=%i gui_window_on=%s (Display OpenCV Status Windows on GUI Desktop)" %
                                ( WINDOW_BIGGER, gui_window_on ))
         print("                  CAMERA_FRAMERATE=%i fps video stream speed" % ( CAMERA_FRAMERATE ))
         print("")
         print("-------------------------------------------------------------------------------------------------")
     return
-  
+
 def take_calibration_image(filename, cal_image):
-    # Create a calibration image for determining value of IMG_VIEW_FT variable 
+    # Create a calibration image for determining value of IMG_VIEW_FT variable
     # This is calibation has marks
     cv2.line( cal_image,( 0,y_upper ),( CAMERA_WIDTH, y_upper ),(255,0,0), 1 )
     cv2.line( cal_image,( 0,y_lower ),( CAMERA_WIDTH, y_lower ),(255,0,0), 1 )
     for i in range ( 10, CAMERA_WIDTH - 9, 10 ):
         cv2.line( cal_image,( i ,y_upper - 5 ),( i, y_upper + 30 ),(255,0,0), 1 )
-    # This is motion window      
+    # This is motion window
     cv2.line( cal_image,( x_left, y_upper ),( x_right, y_upper ),(0,0,255),1 )
-    cv2.line( cal_image,( x_left, y_lower ),( x_right, y_lower ),(0,0,255),1 )                              
+    cv2.line( cal_image,( x_left, y_lower ),( x_right, y_lower ),(0,0,255),1 )
     cv2.line( cal_image,( x_left, y_upper ),( x_left , y_lower ),(0,0,255),1 )
     cv2.line( cal_image,( x_right, y_upper ),( x_right, y_lower ),(0,0,255),1 )
     print("")
-    print("----------------------------------- Create Calibration Image --------------------------------------")    
+    print("----------------------------------- Create Calibration Image --------------------------------------")
     print("")
     print("    Instructions for using %s image for camera calibration" % ( filename ))
     print("")
@@ -279,18 +321,18 @@ def take_calibration_image(filename, cal_image):
     print("    Calibration Image Saved To %s%s" % ( baseDir, filename ))
     print("")
     print("---------------------------- Press cntl-c to Quit Calibration Mode --------------------------------")
-    print("")   
+    print("")
     return cal_image
-  
-#-----------------------------------------------------------------------------------------------       
+
+#-----------------------------------------------------------------------------------------------
 def get_image_name(path, prefix):
     # build image file names by number sequence or date/time
     rightNow = datetime.datetime.now()
-    filename = ("%s/%s%04d%02d%02d-%02d%02d%02d.jpg" % 
-          ( path, prefix ,rightNow.year, rightNow.month, rightNow.day, rightNow.hour, rightNow.minute, rightNow.second ))     
-    return filename  
+    filename = ("%s/%s%04d%02d%02d-%02d%02d%02d.jpg" %
+          ( path, prefix ,rightNow.year, rightNow.month, rightNow.day, rightNow.hour, rightNow.minute, rightNow.second ))
+    return filename
 
-#-----------------------------------------------------------------------------------------------    
+#-----------------------------------------------------------------------------------------------
 def log_to_file(data_to_append):
     if log_data_to_file:
         log_file_path = baseDir + baseFileName + ".csv"
@@ -300,14 +342,13 @@ def log_to_file(data_to_append):
             f = open( log_file_path, 'ab' )
             # f.write( header_text )
             f.close()
-            msgStr = "Create New Data Log File %s" % log_file_path
-            show_message("log_to_file ", msgStr)
+            logging.info("Create New Data Log File %s", log_file_path )
         filecontents = data_to_append + "\n"
         f = open( log_file_path, 'a+' )
         f.write( filecontents )
         f.close()
     return
-          
+
 #-----------------------------------------------------------------------------------------------
 def image_write(image_filename, text_to_print):
     # function to write date/time stamp directly on top or bottom of images.
@@ -318,7 +359,7 @@ def image_write(image_filename, text_to_print):
     # centre text and compensate for graphics text being wider
     x =  int(( image_width / 2) - (len( text_to_print ) * font_size / 4) )
     if image_text_bottom:
-        y = ( image_height - 50 )  # show text at bottom of image 
+        y = ( image_height - 50 )  # show text at bottom of image
     else:
         y = 10  # show text at top of image
     text = text_to_print
@@ -327,82 +368,92 @@ def image_write(image_filename, text_to_print):
 
     # Read exif data since ImageDraw does not save this metadata
     if not (sys.version_info > (3, 0)):
-        metadata = pyexiv2.ImageMetadata(image_filename) 
-        metadata.read()  
+        metadata = pyexiv2.ImageMetadata(image_filename)
+        metadata.read()
     img = Image.open( image_filename )
     draw = ImageDraw.Draw( img )
     # draw.text((x, y),"Sample Text",(r,g,b))
     draw.text( ( x, y ), text, FOREGROUND, font=font )
     img.save( image_filename )
     if not (sys.version_info > (3, 0)):
-        metadata.write()    # Write previously saved exif data to image file       
-    msgStr = " Image Saved - " + text_to_print
-    show_message("image_write ", msgStr)
+        metadata.write()    # Write previously saved exif data to image file
+    logging.info("  Image Saved - %s", text_to_print )
     return
-         
-#----------------------------------------------------------------------------------------------    
+
+#----------------------------------------------------------------------------------------------
 def speed_camera():
     ave_speed = 0.0
     if verbose:
+        if loggingToFile:
+            print("Sending Logging Data to %s  (Console Messages Disabled)" %( logFilePath ))        
         if calibrate:
             print("In Calibration Mode ....")
         if gui_window_on:
             print("Press lower case q on OpenCV GUI Window to Quit program")
             print("or ctrl-c in this terminal session to Quit")
         else:
-            print("Press ctrl-c in this terminal session to Quit")
+            print("Press ctrl-c in this terminal session to Quit") 
         print("")
-        
-    msg_str = "Initializing Pi Camera ...."
-    show_message("speed_camera", msg_str)
 
-    # Setup video stream on a processor Thread for faster speed
-    vs = PiVideoStream().start()
-    vs.camera.rotation = CAMERA_ROTATION
-    vs.camera.hflip = CAMERA_HFLIP
-    vs.camera.vflip = CAMERA_VFLIP
+    if WEBCAM:
+        logging.info("Initializing USB Web Camera ....")
+    else:
+        logging.info("Initializing Pi Camera ....")
+
+    if WEBCAM:   #  Start Web Cam stream (Note USB webcam must be plugged in)
+        WEBCAMSRC=0
+        vs = WebcamVideoStream().start()
+        vs.src = WEBCAMSRC
+        vs.WEBCAM_WIDTH = CAMERA_WIDTH
+        vs.WEBCAM_HEIGHT = CAMERA_HEIGHT
+    else:
+        # Setup video stream on a processor Thread for faster speed
+        vs = PiVideoStream().start()
+        vs.camera.rotation = CAMERA_ROTATION
+        vs.camera.hflip = CAMERA_HFLIP
+        vs.camera.vflip = CAMERA_VFLIP
+
     time.sleep(2.0)  # Give Camera time to initialize
-     
+
     # initialize variables
     frame_count = 0
     fps_time = time.time()
-    first_event = True   # Start a New Motion Track      
+    first_event = True   # Start a New Motion Track
     event_timer = time.time()
     start_pos_x = 0
     end_pos_x = 0
     # setup buffer area to ensure contour is fully contained in crop area
     x_buf = int((x_right - x_left) / 10 )
     y_buf = int((y_lower - y_upper) / 8 )
-    msgStr = "Start Speed Motion Tracking"
-    show_message("speed_camera", msgStr) 
-    travel_direction = ""    
+    logging.info("Start Speed Motion Tracking")
+    travel_direction = ""
 
     # initialize a cropped grayimage1 image
-    # Only needs to be done once 
+    # Only needs to be done once
     image2 = vs.read()    # Get image from PiVideoSteam thread instance
     # crop image to motion tracking area only
     image_crop = image2[y_upper:y_lower,x_left:x_right]
     grayimage1 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
     event_timer = time.time()
     # Initialize prev_image used for taking speed image photo
-    prev_image = image2   
+    prev_image = image2
     still_scanning = True
     while still_scanning:    # process camera thread images and calculate speed
         image2 = vs.read()    # Get image from PiVideoSteam thread instance
         # crop image to motion tracking area only
         image_crop = image2[y_upper:y_lower,x_left:x_right]
-        
+
         if time.time() - event_timer > event_timeout:  # Check if event timed out
-            # event_timer exceeded so reset for new track             
+            # event_timer exceeded so reset for new track
             event_timer = time.time()
             first_event = True
             start_pos_x = 0
             end_pos_x = 0
-            
-        if display_fps:   # Optionally show motion image processing loop fps 
+
+        if display_fps:   # Optionally show motion image processing loop fps
             fps_time, frame_count = get_fps( fps_time, frame_count )
-            
-        # initialize variables          
+
+        # initialize variables
         motion_found = False
         biggest_area = MIN_AREA
         cx = 0
@@ -418,15 +469,15 @@ def speed_camera():
         # Blur difference image to enhance motion vectors
         differenceimage = cv2.blur( differenceimage,(BLUR_SIZE,BLUR_SIZE ))
         # Get threshold of blurred difference image based on THRESHOLD_SENSITIVITY variable
-        retval, thresholdimage = cv2.threshold( differenceimage, THRESHOLD_SENSITIVITY, 255, cv2.THRESH_BINARY )         
+        retval, thresholdimage = cv2.threshold( differenceimage, THRESHOLD_SENSITIVITY, 255, cv2.THRESH_BINARY )
         try:
-            thresholdimage, contours, hierarchy = cv2.findContours( thresholdimage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE )        
-        except:       
-            contours, hierarchy = cv2.findContours( thresholdimage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE )               
+            thresholdimage, contours, hierarchy = cv2.findContours( thresholdimage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE )
+        except:
+            contours, hierarchy = cv2.findContours( thresholdimage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE )
         total_contours = len( contours )
         # Update grayimage1 to grayimage2 ready for next image2
         grayimage1 = grayimage2
-        
+
         # find contour with biggest area
         for c in contours:
             # get area of next contour
@@ -434,7 +485,7 @@ def speed_camera():
             if found_area > biggest_area:
                 ( x, y, w, h ) = cv2.boundingRect(c)
                 # check if complete contour is completely within crop area
-                if ( x > x_buf and 
+                if ( x > x_buf and
                      x + w < x_right - x_left - x_buf and
                      y > y_buf and
                      y + h < y_lower - y_upper - y_buf ):
@@ -446,16 +497,15 @@ def speed_camera():
                     my = y
                     mw = w
                     mh = h
-                
+
         if motion_found:
             # Process motion event and track data
             if first_event:   # This is a first valide motion event
                 first_event = False
                 start_pos_x = cx
                 end_pos_x = cx
-                track_start_time = time.time()                                   
-                msgStr = "New Track    - Motion at cx=%3i cy=%3i" % ( cx, cy )
-                show_message("speed_camera", msgStr)           
+                track_start_time = time.time()
+                logging.info("New Track    - Motion at cx,cy(%i,%i)", cx, cy )
             else:
                 if ( abs( cx - end_pos_x ) > x_diff_min and abs( cx - end_pos_x ) < x_diff_max ):
                 # movement is within acceptable distance range of last event
@@ -468,84 +518,87 @@ def speed_camera():
                             travel_direction = "L2R"
                         else:
                             travel_direction = "R2L"
-                        # Track length exceeded so take process speed photo                                     
+                        # Track length exceeded so take process speed photo
                         if ave_speed > max_speed_over or calibrate:
-                            # Resized and process prev image before saving to disk 
-                            if calibrate:       # Create a calibration image                                             
-                                filename = get_image_name( image_path, "calib-" )                                               
-                                prev_image = take_calibration_image( filename, prev_image )                    
+                            # Resized and process prev image before saving to disk
+                            if calibrate:       # Create a calibration image
+                                filename = get_image_name( image_path, "calib-" )
+                                prev_image = take_calibration_image( filename, prev_image )
                             else:
                                 if image_filename_speed :
                                     speed_prefix = str(int(round(ave_speed))) + "-" + image_prefix
                                 else:
-                                    speed_prefix = image_prefix                               
+                                    speed_prefix = image_prefix
                                 filename = get_image_name( image_path, speed_prefix)
                                 # Add motion rectangle to image
                                 if image_show_motion_area:
                                     cv2.line( prev_image ,( x_left, y_upper ),( x_right, y_upper ),(0,0,255),1 )
-                                    cv2.line( prev_image ,( x_left, y_lower ),( x_right, y_lower ),(0,0,255),1 )                              
+                                    cv2.line( prev_image ,( x_left, y_lower ),( x_right, y_lower ),(0,0,255),1 )
                                     cv2.line( prev_image ,( x_left, y_upper ),( x_left , y_lower ),(0,0,255),1 )
                                     cv2.line( prev_image ,( x_right, y_upper ),( x_right, y_lower ),(0,0,255),1 )
-                            big_image = cv2.resize(prev_image,(image_width, image_height))                                            
+                            big_image = cv2.resize(prev_image,(image_width, image_height))
                             cv2.imwrite(filename, big_image)
-                            msgStr = (" Event Add   - cx=%3i cy=%3i %3.1f %s Len=%3i of %i px Contours=%2i Area=%i Moving=%s" % 
-                                                   ( cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x), track_len_trig, total_contours, biggest_area, travel_direction ))
-                            show_message("speed_camera", msgStr)                  
+                            logging.info(" Event Add   - cx,cy(%i,%i) %3.1f %s Len=%i/%i px Contours=%i Area=%i Moving=%s",
+                                                  cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x),
+                                                  track_len_trig, total_contours, biggest_area, travel_direction )
+                                                  
                             # Format and Save Data to CSV Log File
-                            log_time = datetime.datetime.now()                                               
-                            log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" % 
-                                          ( quote, log_time.year, log_time.month, log_time.day, quote, quote, log_time.hour, quote, quote, log_time.minute, quote))                                          
-                            # Add Text to image                                                
+                            log_time = datetime.datetime.now()
+                            log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" %
+                                          ( quote, log_time.year, log_time.month, 
+                                            log_time.day, quote, quote, log_time.hour, 
+                                            quote, quote, log_time.minute, quote))
+                            # Add Text to image
                             image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
                             image_write( filename, image_text )
-                            log_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%s%s%s" % 
-                                      ( log_csv_time, ave_speed, quote, speed_units, quote, quote, filename, quote, mw, mh, mw * mh, quote, travel_direction, quote ))
+                            log_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%s%s%s" %
+                                      ( log_csv_time, ave_speed, quote, speed_units, 
+                                        quote, quote, filename, quote, mw, mh, mw * mh, 
+                                        quote, travel_direction, quote ))
                             log_to_file( log_text )
-                            msgStr = "End Track    - Tracked %i px in %.1f sec" % ( tot_track_dist, tot_track_time )
-                            show_message("speed_camera", msgStr)                                                  
+                            logging.info("End Track    - Tracked %i px in %.1f sec", tot_track_dist, tot_track_time )
                         else:
-                            msgStr = ("End Track    - Skip Photo SPEED %.1f %s max_speed_over=%i  %i px in %.1f sec  Contours=%2i Area=%i sq-px " 
-                                                        % ( ave_speed, speed_units, max_speed_over, tot_track_dist, tot_track_time, total_contours, biggest_area ))
-                            show_message("speed_camera", msgStr)
+                            logging.info("End Track    - Skip Photo SPEED %.1f %s max_speed_over=%i  %i px in %.1f sec  Contours=%i Area=%i sq-px ",
+                                                        ave_speed, speed_units, max_speed_over, tot_track_dist,
+                                                        tot_track_time, total_contours, biggest_area )
                         # Track Ended so Reset Variables for next cycle through loop
                         start_pos_x = 0
                         end_pos_x = 0
-                        first_event = True                         
-                        time.sleep( track_timeout )  # Pause so object is not immediately tracked again 
+                        first_event = True
+                        time.sleep( track_timeout )  # Pause so object is not immediately tracked again
                     else:
-                        msgStr = (" Event Add   - cx=%3i cy=%3i %s=%3.1f Len=%3i of %i px Contours=%2i Area=%i" % 
-                                                ( cx, cy, speed_units, ave_speed, abs( start_pos_x - end_pos_x), track_len_trig, total_contours, biggest_area ))
+                        logging.info(" Event Add   - cx,cy(%i,%i) %3.1f %s Len=%i/%i px Contours=%i Area=%i",
+                                                     cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x), 
+                                                     track_len_trig, total_contours, biggest_area )
                         end_pos_x = cx
-                        show_message("speed_camera", msgStr)
                     prev_image = image2  # keep a colour copy for saving to disk at end of Track
                 else:
                     if show_out_range:
-                        msgStr = (" Out Range   - cx=%3i cy=%3i Dist=%3i is <%i or >%i px  Contours=%2i Area=%i" % 
-                                                ( cx, cy, abs( cx - end_pos_x ), x_diff_min, x_diff_max, total_contours, biggest_area  ))                                   
-                        show_message("speed_camera", msgStr)                             
-             
+                        logging.info(" Out Range   - cx,cy(%i,%i) Dist=%i is <%i or >%i px  Contours=%2i Area=%i",
+                                                     cx, cy, abs( cx - end_pos_x ), x_diff_min, x_diff_max, 
+                                                     total_contours, biggest_area  )
             if gui_window_on:
                 # show small circle at motion location
                 if SHOW_CIRCLE:
                     cv2.circle(image2,( cx + x_left * WINDOW_BIGGER ,cy + y_upper * WINDOW_BIGGER ),CIRCLE_SIZE,(0,255,0), LINE_THICKNESS)
                 else:
                     cv2.rectangle(image2,( int( cx + x_left - mw/2) , int( cy + y_upper - mh/2)),
-                                        (( int( cx + x_left + mw/2)), int( cy + y_upper + mh/2 )),(0,255,0), LINE_THICKNESS)                              
+                                        (( int( cx + x_left + mw/2)), int( cy + y_upper + mh/2 )),(0,255,0), LINE_THICKNESS)
 
                 if ave_speed > 0:
-                    speed_text = str('%3.1f %s'  % ( ave_speed, speed_units )) 
-                    cv2.putText( image2, speed_text, (cx + x_left + 8, cy + y_upper), cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE , (255,255,255), 1)                           
+                    speed_text = str('%3.1f %s'  % ( ave_speed, speed_units ))
+                    cv2.putText( image2, speed_text, (cx + x_left + 8, cy + y_upper), cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE , (255,255,255), 1)
             event_timer = time.time()  # Reset event_timer since valid motion was found
-            
+
         if gui_window_on:
-            # cv2.imshow('Difference Image',difference image) 
+            # cv2.imshow('Difference Image',difference image)
             cv2.line( image2,( x_left, y_upper ),( x_right, y_upper ),(255,0,0),1 )
-            cv2.line( image2,( x_left, y_lower ),( x_right, y_lower ),(255,0,0),1 )                              
+            cv2.line( image2,( x_left, y_lower ),( x_right, y_lower ),(255,0,0),1 )
             cv2.line( image2,( x_left, y_upper ),( x_left , y_lower ),(255,0,0),1 )
             cv2.line( image2,( x_right, y_upper ),( x_right, y_lower ),(255,0,0),1 )
             image2 = cv2.resize( image2,( image_width, image_height ))
             cv2.imshow('Movement (q Quits)', image2)
-            if show_thresh_on:            
+            if show_thresh_on:
                 cv2.imshow('Threshold', thresholdimage)
             if show_crop_on:
                 cv2.imshow('Crop Area',image_crop)
@@ -556,17 +609,17 @@ def speed_camera():
                 vs.stop()
                 still_scanning = False
 
-#-----------------------------------------------------------------------------------------------    
+#-----------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     try:
-        show_settings()  
+        show_settings()
         speed_camera()
     finally:
         print("")
         print("+++++++++++++++++++++++++++++++++++")
         print("%s - Exiting Program" % progName)
         print("+++++++++++++++++++++++++++++++++++")
-        print("")                           
-                            
+        print("")
+
 
 
