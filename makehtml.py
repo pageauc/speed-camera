@@ -4,7 +4,7 @@
 # Create html pages from csv log file entries
 # for viewing speed images and data on a web server
 
-ver = "3.30"
+ver = "4.40"
 
 import glob, os
 import csv
@@ -43,7 +43,7 @@ def make_web_page(up_html, row_data, dn_html):
     if (aspect_ratio < .73) :
         Guess = "Person Walking"
     elif ( aspect_ratio < 1.1 ) :
-        Guess = "Golf Cart or Person on Bike"
+        Guess = "Person on Bike, Golf Cart"
     else:
         Guess = "Vehicle"
     Area=row_data[8]
@@ -59,29 +59,30 @@ def make_web_page(up_html, row_data, dn_html):
     <table style="border-spacing: 15px;" cellspacing="10">
     <tr>
     <td>
-      <a href="%s" alt="Previous Speed Record" >UP</a>  
-      <a href="%s" target="_blank" ><img src="%s" width="640" height="480" alt="Speed Image" ></a>
-      <a href="%s" alt="Next Speed Record" >DN</a>         
+      <div style="font-size:x-large">
+      <a href="%s" alt="Previous Speed Record" style="text-decoration:none;" >&#60;</a>  
+      <a href="%s" target="_blank" ><img src="%s" width="640" height="480" alt="Speed Image"></a>
+      <a href="%s" alt="Next Speed Record" style="text-decoration:none;" >&#62;</a> 
+      </div>      
     </td>      
-      <td valign="top" align="center">
-        <h4>Object Motion Speed Tracker</h4>
-        <h2>Speed Camera Data</h2>       
+      <td valign="center">
+        <h4><center>Object Motion Speed Tracker</center></h4>
+        <h2><center>Speed Camera Data</center></h2>
         <hr>
-        <h3>Taken on %s at %s:%s</h3>
-        <h3>Speed was %s %s</h3>
-        <h4>Image <a href="%s" target="_blank" >%s</a></h4>
-        <h3>Last Contour Size</h3>
-        <h4>%s x %s px  is %s sq px</h4>
-        <h4>Aspect Ratio w/h = %.3f</h4>
-        <h3>Guess</h3>
-        <h4>%s</h3>
-        <p>Click Image or Link to View Full Size Image</p>
+        <h3>Taken: %s at %s:%s</h3>
+        <h3>Speed: %s %s</h3>
+        <h3>Image: <a href="%s" target="_blank" >%s</a></h3>
+        <h3>Contour: %s x %s = %s sq px</h3>
+        <h3>Aspect Ratio: %.3f w/h</h3>
+        <h3>Guess: %s</h3>
+        <hr>
+        <h4><center>Click chevrons <a href="%s">Next</a>/<a href="%s">Prev</a> Record or Image</center></h4>
       </td>
-    </tr><center>
+    </tr>
     </table>
     </body>
     </html>''' % ( dn_html ,img_path, img_path , up_html, YYYYMMDD, HH, MM, Speed, Unit, 
-                  img_path, img_path, W, H, Area, aspect_ratio, Guess))
+                  img_path, img_path, W, H, Area, aspect_ratio, Guess, dn_html, up_html))
 
     # Write the html file
     base_filename = os.path.splitext(os.path.basename(img_path))[0]
