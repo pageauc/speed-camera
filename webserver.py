@@ -56,14 +56,14 @@ except:
     quit()    
     
 if web_list_by_datetime:
-    dir_sort = 'DateTime'
+    dir_sort = 'sort: Date Time'
 else:
-    dir_sort = 'FileName'
+    dir_sort = 'sort: File Name'
 
 if web_list_sort_descending:
-    dir_order = 'Descend'
+    dir_order = ' Descend'
 else:
-    dir_order = 'Ascend'
+    dir_order = ' Ascend'
 
 list_title = "%s %s" % ( dir_sort, dir_order )
 

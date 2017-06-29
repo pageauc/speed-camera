@@ -60,9 +60,7 @@ def make_web_page(up_html, row_data, dn_html):
     <tr>
     <td>
       <div style="font-size:x-large">
-      <a href="%s" alt="Previous Speed Record" style="text-decoration:none;" >&#60;</a>  
       <a href="%s" target="_blank" ><img src="%s" width="640" height="480" alt="Speed Image"></a>
-      <a href="%s" alt="Next Speed Record" style="text-decoration:none;" >&#62;</a> 
       </div>      
     </td>      
       <td valign="center">
@@ -71,17 +69,17 @@ def make_web_page(up_html, row_data, dn_html):
         <hr>
         <h3>Taken: %s at %s:%s</h3>
         <h3>Speed: %s %s</h3>
-        <h3>Image: <a href="%s" target="_blank" >%s</a></h3>
+        <h3>File: <a href="%s" target="_blank" >%s</a></h3>
         <h3>Contour: %s x %s = %s sq px</h3>
         <h3>Aspect Ratio: %.3f w/h</h3>
         <h3>Guess: %s</h3>
         <hr>
-        <h4><center>Click chevrons <a href="%s">Next</a>/<a href="%s">Prev</a> Record or Image</center></h4>
+        <h1><center><a href="%s">UP</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="%s">DOWN</a></center></h1>
       </td>
     </tr>
     </table>
     </body>
-    </html>''' % ( dn_html ,img_path, img_path , up_html, YYYYMMDD, HH, MM, Speed, Unit, 
+    </html>''' % ( img_path, img_path, YYYYMMDD, HH, MM, Speed, Unit, 
                   img_path, img_path, W, H, Area, aspect_ratio, Guess, dn_html, up_html))
 
     # Write the html file
