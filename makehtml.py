@@ -75,7 +75,11 @@ def make_web_page(up_html, row_data, dn_html):
             <hr>
             <center>
               <h4><a href="%s" target="_blank" >%s</a></h4>
-              <h1><a href="%s">UP</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="%s">DOWN</a></h1>
+              <h1>
+                <a href="%s" style="text-decoration:none;" >UP</a>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="%s" style="text-decoration:none";>DOWN</a>
+              </h1>
             </center>          
           </div>
           </span>
