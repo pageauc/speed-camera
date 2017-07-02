@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 4.30 speed-cam.py 240p Stream Variable Configuration Settings
+#               Ver 4.50 speed-cam.py 240p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -7,11 +7,11 @@
 #
 #######################################
 
-# Calibrtion Settings
+# Calibration Settings
 # ===================
 calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
 cal_obj_px = 97        # Length of a calibration object in pixels
-cal_obj_mm = 4330.0    # Length of the calibration object in millimeters
+cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 
 # Crop Area for motion detection Tracking
 # =======================================
@@ -30,7 +30,7 @@ loggingToFile = False       # True = Send logging to file
 logFilePath = 'speed-track.log'  # Location of log file when logDataToFile=True
 
 # Display opencv windows on rpi desktop
-# gui_window_on supresses All Windows if False
+# gui_window_on suppresses All Windows if False
 # =============================================
 gui_window_on = False       # True = Turn On All desktop GUI openCV windows. False=Don't Show (req'd for SSH) .
 show_thresh_on = True       # Display desktop GUI openCV cropped threshold window. True=Show, False=Don't Show
@@ -44,8 +44,17 @@ track_timeout = 1      # Number of seconds to wait after track End (prevents dua
 event_timeout = 2      # Number of seconds to wait for next motion event before starting new track
 
 # Camera Settings
-# ===============
-WEBCAM = False         # default=False video cam source False=PiCamera True=WebCam (usb)
+# ---------------
+WEBCAM = False        # default = False False=PiCamera True=USB WebCamera
+
+# Web Camera Settings
+WEBCAM_SRC = 0        # default = 0   USB opencv connection number
+WEBCAM_WIDTH = 320    # default = 320 USB Webcam Image width
+WEBCAM_HEIGHT = 240   # default = 240 USB Webcam Image height
+WEBCAM_HFLIP = False  # default = False USB Webcam flip image horizontally
+WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
+
+# Pi Camera Settings 
 CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning default=320
 CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  default=240
 CAMERA_FRAMERATE = 20  # framerate for video stream default=55 90 max for V1 cam. V2 can be higher
