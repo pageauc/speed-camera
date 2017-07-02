@@ -1,9 +1,9 @@
 # speed-cam.py - RPI Speed Camera Object Motion Tracker
-### A Raspberry Pi Speed Camera using python, openCV, pi-camera, Video Stream
+### A Raspberry Pi Speed Camera using python, openCV, pi-camera, USB Cam, Video Stream
 
 ### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/rpi-speed-camera/wiki)
 
-IMPORTANT speed-cam.py release 3.6 or above requires a full install.
+IMPORTANT speed-cam.py release 4.5 or above requires a full install.
 It is advised that you rename/delete previous rpi-speed-camera folder
 and rerun GitHub Quick Install or Manual Install.  This will avoid problems.
 Default config.py is designed for quad core RPI's.  If you have an older
@@ -42,13 +42,14 @@ Admin speed-cam Easier using menubox.sh
 ### Links  
 
 * YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
+* YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
 * Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
 * YouTube motion-track video https://youtu.be/09JS7twPBsQ
 * YouTube Channel https://www.youtube.com/user/pageaucp 
 * Speed Camera GitHub Repo https://github.com/pageauc/rpi-speed-camera     
     
 ### Requirements
-Requires a Raspberry Pi computer with a RPI camera module installed, configured
+Requires a Raspberry Pi computer with a RPI camera module or a USB Web Camera installed, configured
 and tested to verify it is working. I used a RPI model B2 but a B+ , 3 or 
 earlier will work OK. A quad core processor will greatly improve performance
 due to threading. A recent version of Raspbian operating system is recommended.
@@ -64,9 +65,11 @@ See How to Run speed-cam.py section below
 This is a raspberry pi computer openCV2 object speed camera demo program.
 It is written in python and uses openCV2 to detect and track object motion.
 This can be vehicles or any other moving objects.  It tracks the speed of
-the largest moving object in the camera view.
+the largest moving object in the camera view above a minimum pixel area.
 The results are recorded on speed photos and in a CSV data file that can be
-imported to a spreadsheet or other program for additiona processing.  
+imported to a spreadsheet or other program for additional processing.  You
+can also run makehtml.sh to generate html files that combine csv and image
+data.
 
 The program will detect motion in the field of view and use opencv to calculate
 the largest contour and return its x,y coordinate. Motion detection is
@@ -130,8 +133,7 @@ value for IMAGE_VIEW_FT variable in the speed_settings.py
  
 
 ### Calibration Procedure   
-speed-cam.py needs to be calibrated in order to display a correct speed. 
-Measure vehicle/object using a tape measure or reference make and model lengths here http://www.automobiledimension.com/
+speed-cam.py needs to be calibrated in order to display a correct speed.
 
 To Calibrate cal_obj_px and cal_obj_mm variables perform the following
 

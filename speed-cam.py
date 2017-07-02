@@ -274,7 +274,7 @@ def show_settings():
         print("Message Display . verbose=%s  display_fps=%s calibrate=%s" % ( verbose, display_fps, calibrate ))
         print("                  show_out_range=%s" % ( show_out_range ))
         print("Logging ......... Log_data_to_file=%s  log_filename=%s.csv (CSV format)"  % ( log_data_to_file, baseFileName ))
-        print("                  loggingToFile=%s  logFilePath=%s" % (loggingToFile, logFilePath))        
+        print("                  loggingToFile=%s  logFilePath=%s" % (loggingToFile, logFilePath))
         print("                  Log if max_speed_over > %i %s" % ( max_speed_over, speed_units))
         print("Speed Trigger ... If  track_len_trig > %i px" % ( track_len_trig ))
         print("Exclude Events .. If  x_diff_min < %i or x_diff_max > %i px" % ( x_diff_min, x_diff_max ))
@@ -298,6 +298,7 @@ def show_settings():
         print("-------------------------------------------------------------------------------------------------")
     return
 
+#-----------------------------------------------------------------------------------------------
 def take_calibration_image(filename, cal_image):
     # Create a calibration image for determining value of IMG_VIEW_FT variable
     # This is calibation has marks
@@ -387,14 +388,14 @@ def speed_camera():
     ave_speed = 0.0
     if verbose:
         if loggingToFile:
-            print("Sending Logging Data to %s  (Console Messages Disabled)" %( logFilePath ))        
+            print("Sending Logging Data to %s  (Console Messages Disabled)" %( logFilePath ))
         if calibrate:
             print("In Calibration Mode ....")
         if gui_window_on:
             print("Press lower case q on OpenCV GUI Window to Quit program")
             print("or ctrl-c in this terminal session to Quit")
         else:
-            print("Press ctrl-c in this terminal session to Quit") 
+            print("Press ctrl-c in this terminal session to Quit")
 
     # initialize variables
     frame_count = 0
@@ -411,7 +412,7 @@ def speed_camera():
 
     # initialize a cropped grayimage1 image
     # Only needs to be done once
-    image2 = vs.read()    # Get image from PiVideoSteam thread instance   
+    image2 = vs.read()    # Get image from PiVideoSteam thread instance
     try:
         # crop image to motion tracking area only
         image_crop = image2[y_upper:y_lower,x_left:x_right]
@@ -420,8 +421,8 @@ def speed_camera():
         print("Problem Connecting To Camera Stream.")
         print("Restarting Camera.  One Moment Please .....")
         time.sleep(4)
-        return 
-        
+        return
+
     grayimage1 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
     event_timer = time.time()
     # Initialize prev_image used for taking speed image photo
@@ -429,14 +430,14 @@ def speed_camera():
     still_scanning = True
     while still_scanning:    # process camera thread images and calculate speed
         image2 = vs.read()    # Get image from PiVideoSteam thread instance
-        if WEBCAM:      
+        if WEBCAM:
             if ( WEBCAM_HFLIP and WEBCAM_VFLIP ):
                 image2 = cv2.flip( image2, -1 )
             elif WEBCAM_HFLIP:
-                image2 = cv2.flip( image2, 1 )          
+                image2 = cv2.flip( image2, 1 )
             elif WEBCAM_VFLIP:
-                image2 = cv2.flip( image2, 0 )               
-        
+                image2 = cv2.flip( image2, 0 )
+
         # crop image to motion tracking area only
         image_crop = image2[y_upper:y_lower,x_left:x_right]
 
@@ -538,19 +539,19 @@ def speed_camera():
                             logging.info(" Event Add   - cx,cy(%i,%i) %3.1f %s Len=%i/%i px Contours=%i Area=%i Moving=%s",
                                                   cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x),
                                                   track_len_trig, total_contours, biggest_area, travel_direction )
-                                                  
+
                             # Format and Save Data to CSV Log File
                             log_time = datetime.datetime.now()
                             log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" %
-                                          ( quote, log_time.year, log_time.month, 
-                                            log_time.day, quote, quote, log_time.hour, 
+                                          ( quote, log_time.year, log_time.month,
+                                            log_time.day, quote, quote, log_time.hour,
                                             quote, quote, log_time.minute, quote))
                             # Add Text to image
                             image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
                             image_write( filename, image_text )
                             log_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%s%s%s" %
-                                      ( log_csv_time, ave_speed, quote, speed_units, 
-                                        quote, quote, filename, quote, mw, mh, mw * mh, 
+                                      ( log_csv_time, ave_speed, quote, speed_units,
+                                        quote, quote, filename, quote, mw, mh, mw * mh,
                                         quote, travel_direction, quote ))
                             log_to_file( log_text )
                             logging.info("End Track    - Tracked %i px in %.1f sec", tot_track_dist, tot_track_time )
@@ -565,14 +566,14 @@ def speed_camera():
                         time.sleep( track_timeout )  # Pause so object is not immediately tracked again
                     else:
                         logging.info(" Event Add   - cx,cy(%i,%i) %3.1f %s Len=%i/%i px Contours=%i Area=%i",
-                                                     cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x), 
+                                                     cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x),
                                                      track_len_trig, total_contours, biggest_area )
                         end_pos_x = cx
                     prev_image = image2  # keep a colour copy for saving to disk at end of Track
                 else:
                     if show_out_range:
                         logging.info(" Out Range   - cx,cy(%i,%i) Dist=%i is <%i or >%i px  Contours=%2i Area=%i",
-                                                     cx, cy, abs( cx - end_pos_x ), x_diff_min, x_diff_max, 
+                                                     cx, cy, abs( cx - end_pos_x ), x_diff_min, x_diff_max,
                                                      total_contours, biggest_area  )
             if gui_window_on:
                 # show small circle at motion location
@@ -611,7 +612,8 @@ if __name__ == '__main__':
 
     show_settings()
     try:
-        while True:        # Save images to an in-program stream
+        while True:
+            # Save images to an in-program stream
             # Setup video stream on a processor Thread for faster speed
             if WEBCAM:   #  Start Web Cam stream (Note USB webcam must be plugged in)
                 print("Initializing USB Web Camera ....")
@@ -626,9 +628,8 @@ if __name__ == '__main__':
                 vs.camera.rotation = CAMERA_ROTATION
                 vs.camera.hflip = CAMERA_HFLIP
                 vs.camera.vflip = CAMERA_VFLIP
-                time.sleep(2.0)  # Allow PiCamera to initialize        
+                time.sleep(2.0)  # Allow PiCamera to initialize
             speed_camera()
-            
     except KeyboardInterrupt:
         vs.stop()
         print("")
