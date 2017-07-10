@@ -4,7 +4,7 @@
 # Create html pages from csv log file entries
 # for viewing speed images and data on a web server
 
-ver = "4.40"
+progVer = "4.41"
 
 import glob, os
 import csv
@@ -13,8 +13,8 @@ import datetime
 import shutil
 
 # Change to Folder that this script is run from
-mypath = os.path.abspath(__file__)  # Find the full path of this python script
-baseDir = os.path.dirname(mypath)  # get the path location only (excluding script name)
+progName = os.path.abspath(__file__)  # Find the full path of this python script
+baseDir = os.path.dirname(progName)  # get the path location only (excluding script name)
 os.chdir(baseDir)
 
 verbose = True
@@ -128,9 +128,12 @@ def read_from_csv(filename):
 
     f = open(filename, 'rt')
     cnt=0
+    workStart = time.time()
+    workCount = 0
     try:
         reader = csv.reader(f)
         for row in reader: 
+            workCount += 1
             if not next_row:                     
                 jpg_exists, next_link = check_row(row)
                 if jpg_exists:
@@ -168,6 +171,13 @@ def read_from_csv(filename):
   
     finally:    
         f.close()
+        workEnd = time.time()
+        outDir = os.path.abspath(web_root_dir)
+        print("-----------------")
+        print("%s ver %s - written by Claude Pageau" % (progName, progVer))
+        print("Processed %i web pages in %i seconds in Folder %s" % (workCount, workEnd - workStart, outDir))
+        print("Done ...")
+
 
 read_from_csv(source_csv)
 
