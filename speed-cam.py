@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 4.50"
+version = "version 4.51"
 
 """
 speed2 written by Claude Pageau pageauc@gmail.com
@@ -547,12 +547,13 @@ def speed_camera():
                                             log_time.day, quote, quote, log_time.hour,
                                             quote, quote, log_time.minute, quote))
                             # Add Text to image
-                            image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
-                            image_write( filename, image_text )
+                            if image_text_on:
+                                image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
+                                image_write( filename, image_text )
                             log_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%s%s%s" %
-                                      ( log_csv_time, ave_speed, quote, speed_units,
-                                        quote, quote, filename, quote, mw, mh, mw * mh,
-                                        quote, travel_direction, quote ))
+                                        ( log_csv_time, ave_speed, quote, speed_units,
+                                          quote, quote, filename, quote, mw, mh, mw * mh,
+                                          quote, travel_direction, quote ))
                             log_to_file( log_text )
                             logging.info("End Track    - Tracked %i px in %.1f sec", tot_track_dist, tot_track_time )
                         else:

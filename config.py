@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 4.50 speed-cam.py 240p Stream Variable Configuration Settings
+#               Ver 4.51 speed-cam.py 240p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -66,9 +66,10 @@ CAMERA_HFLIP = False   # Flip the camera image horizontally if required
 # =====================
 image_path = "images"         # folder name to store images
 image_prefix = "speed-"       # image name prefix
-image_show_motion_area = True # True = Display motion detection rectangle area on saved images
-image_filename_speed = False  # True = Prefix filename with speed value
-image_text_bottom = True      # True = Show image text at bottom otherwise at top
+image_show_motion_area = True # True= Display motion detection rectangle area on saved images
+image_filename_speed = False  # True= Prefix filename with speed value
+image_text_on = True          # True= Show Text on speed images
+image_text_bottom = True      # True= Show image text at bottom otherwise at top
 image_font_size = 15          # font text height in px for text on images default=10
 image_bigger = 2              # Default=1 multiply saved speed image by value
 
