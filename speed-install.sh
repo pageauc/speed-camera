@@ -1,18 +1,18 @@
 #!/bin/bash
 # Convenient speed-install.sh script written by Claude Pageau 1-Jul-2016
-ver="3.80"
+ver="5.00"
 SPEED_DIR='rpi-speed-camera'  # Default folder install location
 
 cd ~
 if [ -d "$SPEED_DIR" ] ; then
   STATUS="Upgrade"
   echo "Upgrade rpi-speed-camera files"
-else  
+else
   echo "New rpi-speed-camera Install"
   STATUS="New Install"
   mkdir -p $SPEED_DIR
   echo "$SPEED_DIR Folder Created"
-fi 
+fi
 
 cd $SPEED_DIR
 INSTALL_PATH=$( pwd )
@@ -36,12 +36,13 @@ if [ -e config.py ]; then
 else
   wget -O config.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/source/config.py
 fi
- 
+
 wget -O speed-install.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
 if [ $? -ne 0 ] ;  then
   wget -O speed-install.sh https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
   wget -O speed-cam.py https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.py
   wget -O speed-cam.sh https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.sh
+  wget -O speed-search.py https://raw.github.com/pageauc/rpi-speed-camera/master/speed-search.py
   wget -O Readme.md https://raw.github.com/pageauc/rpi-speed-camera/master/Readme.md
   wget -O makehtml.py https://raw.github.com/pageauc/rpi-speed-camera/master/makehtml.py
   wget -O menubox.sh https://raw.github.com/pageauc/rpi-speed-camera/master/menubox.sh
@@ -53,6 +54,7 @@ if [ $? -ne 0 ] ;  then
 else
   wget -O speed-cam.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.py
   wget -O speed-cam.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.sh
+  wget -O speed-search.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-search.py
   wget -O Readme.md -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/Readme.md
   wget -O makehtml.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/makehtml.py
   wget -O menubox.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/menubox.sh
@@ -68,7 +70,7 @@ echo "2 - Make required Files Executable"
 echo ""
 chmod +x *.py
 chmod +x *.sh
-chmod -x config.py
+chmod -x config*
 echo "Done Permissions"
 echo "------------------------------------------------"
 echo "3 - Performing Raspbian System Update"
@@ -85,9 +87,11 @@ echo "Done upgrade"
 echo "------------------------------------------------"
 echo "5 - Installing speed-cam.py Dependencies"
 echo ""
-sudo apt-get install -y python-opencv python-picamera python-imaging python-pyexiv2 libgl1-mesa-dri
+sudo apt-get install -y python-opencv dos2unix python-picamera python-imaging python-pyexiv2 libgl1-mesa-dri
 sudo apt-get install -y fonts-freefont-ttf # Required for Jessie Lite Only
 echo "Done Dependencies"
+dos2unix *sh
+dos2unix *py
 cd $DIR
 # Check if speed-install.sh was launched from speed-cam folder
 if [ "$DIR" != "$INSTALL_PATH" ]; then
@@ -104,7 +108,7 @@ echo "1. Reboot RPI if there are significant Raspbian system updates"
 echo "2. Raspberry pi optionally needs a monitor/TV attached to display openCV window"
 echo "3. Run speed-cam.py in SSH Terminal (default) or optional GUI Desktop"
 echo "   Review and modify the config.py settings as required using nano editor"
-echo "4. To start speed-cam open SSH or a GUI desktop Terminal session" 
+echo "4. To start speed-cam open SSH or a GUI desktop Terminal session"
 echo "   and change to rpi-speed-camera folder and launch per commands below"
 echo ""
 echo "   cd ~/rpi-speed-camera"

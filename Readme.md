@@ -3,7 +3,14 @@
 
 ### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/rpi-speed-camera/wiki)
 
-IMPORTANT speed-cam.py release 4.5 or above requires a full install.
+* NEW - Added speed-search.py that uses opencv template matching to find similar images
+        Copy on or more search image(s) to search folder and run speed-search.py.  
+        if config.py variable copy_results_on = True then copies of the image matches including original
+        search image will be placed in a subfolder with the same name as the search image filename
+        but without the file extension.  You can review results from a web browser if you run the webserver.py
+        (still under development)
+          
+IMPORTANT speed-cam.py release 5.00 or above requires a full install.
 It is advised that you rename/delete previous rpi-speed-camera folder
 and rerun GitHub Quick Install or Manual Install.  This will avoid problems.
 Default config.py is designed for quad core RPI's.  If you have an older

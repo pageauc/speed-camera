@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 4.51 speed-cam.py 240p Stream Variable Configuration Settings
+#               Ver 5.00 speed-cam.py 240p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -15,10 +15,10 @@ cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 
 # Crop Area for motion detection Tracking
 # =======================================
-y_upper = 75           # Exclude event if y less that this value default=100
-y_lower = 185          # Exclude event if y greater than this value default=175
 x_left  = 25           # Exclude event if x less than this px position Default=25
 x_right = 295          # Exclude event if x greater than this px position Default=295
+y_upper = 75           # Exclude event if y less that this value default=100
+y_lower = 185          # Exclude event if y greater than this value default=175
 
 # Display and Log settings
 # ========================
@@ -39,9 +39,9 @@ show_crop_on = False        # Same as show_thresh_on but in color. True=Show, Fa
 # Motion Event Settings
 # =====================
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
-track_len_trig = 75    # Length of track to trigger speed photo Default=50
+track_len_trig = 75    # Default=75 Length of track to trigger speed photo
 track_timeout = 1      # Number of seconds to wait after track End (prevents dual tracking)
-event_timeout = 2      # Number of seconds to wait for next motion event before starting new track
+event_timeout = 1      # Number of seconds to wait for next motion event before starting new track
 
 # Camera Settings
 # ---------------
@@ -54,24 +54,39 @@ WEBCAM_HEIGHT = 240   # default = 240 USB Webcam Image height
 WEBCAM_HFLIP = False  # default = False USB Webcam flip image horizontally
 WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
 
-# Pi Camera Settings 
+# Pi Camera Settings
 CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning default=320
 CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  default=240
-CAMERA_FRAMERATE = 20  # framerate for video stream default=55 90 max for V1 cam. V2 can be higher
+CAMERA_FRAMERATE = 20  # Default = 20 Frame rate for video stream V2 picam can be higher
 CAMERA_ROTATION = 0    # Rotate camera image valid values are 0, 90, 180, 270
 CAMERA_VFLIP = False   # Flip the camera image vertically if required
 CAMERA_HFLIP = False   # Flip the camera image horizontally if required
 
 # Camera Image Settings
 # =====================
-image_path = "images"         # folder name to store images
+image_path = "media/images"   # folder name to store images
 image_prefix = "speed-"       # image name prefix
 image_show_motion_area = True # True= Display motion detection rectangle area on saved images
 image_filename_speed = False  # True= Prefix filename with speed value
-image_text_on = True          # True= Show Text on speed images
+image_text_on = True          # True= Show Text on speed images   False= No Text on images
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
-image_font_size = 15          # font text height in px for text on images default=10
-image_bigger = 2              # Default=1 multiply saved speed image by value
+image_font_size = 15          # Default = 15 Font text height in px for text on images
+image_bigger = 2              # Default = 2 multiply saved speed image by value
+
+# Image Search Settings
+# =====================
+search_value = 0.97           # Default = 0.97 Accuracy setting for Image Searches 0=Lowest 1=Highest
+copy_results_on = True        # Copy matching image files to search_path subfolder (based on search filename minus ext)
+search_path = 'media/search'  # Put file(s) to search in this folder.
+MATCH_METHOD = 3              # Valid MatchTemplate COMPARE_METHOD Int Values
+                              # 0 = cv2.TM_SQDIFF
+                              # 1 = cv2.TM_SQDIFF_NORMED
+                              # 2 = cv2.TM_CCORR
+                              # 3 = cv2.TM_CCORR_NORMED   Default
+                              # 4 = cv2.TM_CCOEFF
+                              # 5 = cv2.TM_CCOEFF_NORMED
+                              # For other comparison methods
+                              # see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
 
 # Motion Event Exclusion Settings
 # ===============================
@@ -105,7 +120,7 @@ web_max_list_entries = 0    # 0 = All or Specify Max right side file entries to 
 
 # Web Server settings
 # ===================
-web_server_root = "/home/pi/rpi-speed-camera/html"     # webserver root path to webserver image folder
+web_server_root = "media"          # webserver root path to webserver image folder
 web_server_port = 8080             # Web server access port eg http://192.168.1.100:8080
 web_page_title = "Speed-Camera"    # web page title that browser show (not displayed on web page)
 web_page_refresh_on = False        # False=Off (never)  Refresh True=On (per seconds below)

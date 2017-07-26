@@ -4,7 +4,7 @@
 # Create html pages from csv log file entries
 # for viewing speed images and data on a web server
 
-progVer = "4.41"
+progVer = "4.60"
 
 import glob, os
 import csv
@@ -37,8 +37,10 @@ def make_web_page(up_html, row_data, dn_html):
     Speed=row_data[3]
     Unit=row_data[4]
     img_path=row_data[5]
-    W=row_data[6]
-    H=row_data[7]
+    X=row_data[6]
+    Y=row_data[7]    
+    W=row_data[8]
+    H=row_data[9]
     aspect_ratio = float(W)/int(H)
     if (aspect_ratio < .73) :
         Guess = "Person Walking"
@@ -46,7 +48,7 @@ def make_web_page(up_html, row_data, dn_html):
         Guess = "Person on Bike, Golf Cart"
     else:
         Guess = "Vehicle"
-    Area=row_data[8]
+    Area=row_data[10]
     
     pageTemplate = ('''<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
     <html>

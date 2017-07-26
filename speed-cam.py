@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-version = "version 4.51"
+version = "version 5.00"
 
 """
-speed2 written by Claude Pageau pageauc@gmail.com
-Raspberry (Pi) - python opencv2 Speed tracking using picamera module
+speed-cam.py written by Claude Pageau pageauc@gmail.com
+Raspberry (Pi) - python opencv2 Speed tracking using picamera module or web cam
 GitHub Repo here https://github.com/pageauc/rpi-speed-camera/tree/master/
 
 This is a raspberry pi python opencv2 speed tracking demonstration program.
@@ -41,6 +41,13 @@ mypath=os.path.abspath(__file__)       # Find the full path of this python scrip
 baseDir=mypath[0:mypath.rfind("/")+1]  # get the path location only (excluding script name)
 baseFileName=mypath[mypath.rfind("/")+1:mypath.rfind(".")]
 progName = os.path.basename(__file__)
+
+# Color data for OpenCV lines and text
+cvWhite = (255,255,255)
+cvBlack = (0,0,0)
+cvBlue = (255,0,0)
+cvGreen = (0,255,0)
+cvRed = (0,0,255)
 
 # Check for variable file to import and error out if not found.
 configFilePath = baseDir + "config.py"
@@ -301,23 +308,22 @@ def show_settings():
 #-----------------------------------------------------------------------------------------------
 def take_calibration_image(filename, cal_image):
     # Create a calibration image for determining value of IMG_VIEW_FT variable
-    # This is calibation has marks
-    cv2.line( cal_image,( 0,y_upper ),( CAMERA_WIDTH, y_upper ),(255,0,0), 1 )
-    cv2.line( cal_image,( 0,y_lower ),( CAMERA_WIDTH, y_lower ),(255,0,0), 1 )
+    # Create calibation hash marks
     for i in range ( 10, CAMERA_WIDTH - 9, 10 ):
-        cv2.line( cal_image,( i ,y_upper - 5 ),( i, y_upper + 30 ),(255,0,0), 1 )
+        cv2.line( cal_image,( i ,y_upper - 5 ),( i, y_upper + 30 ),cvRed, 1 )
     # This is motion window
-    cv2.line( cal_image,( x_left, y_upper ),( x_right, y_upper ),(0,0,255),1 )
-    cv2.line( cal_image,( x_left, y_lower ),( x_right, y_lower ),(0,0,255),1 )
-    cv2.line( cal_image,( x_left, y_upper ),( x_left , y_lower ),(0,0,255),1 )
-    cv2.line( cal_image,( x_right, y_upper ),( x_right, y_lower ),(0,0,255),1 )
+    cv2.line( cal_image,( x_left, y_upper ),( x_right, y_upper ),cvBlue,1 )
+    cv2.line( cal_image,( x_left, y_lower ),( x_right, y_lower ),cvBlue,1 )
+    cv2.line( cal_image,( x_left, y_upper ),( x_left , y_lower ),cvBlue,1 )
+    cv2.line( cal_image,( x_right, y_upper ),( x_right, y_lower ),cvBlue,1 )
+    
     print("")
     print("----------------------------------- Create Calibration Image --------------------------------------")
     print("")
     print("    Instructions for using %s image for camera calibration" % ( filename ))
     print("")
     print("1 - Use a known size reference object in the image like a vehicle at the required distance.")
-    print("2 - Record cal_obj_px of object using the calibration y_upper hash marks at every 10 px")
+    print("2 - Record cal_obj_px  Value using Red y_upper hash marks at every 10 px")
     print("3 - Record cal_obj_mm of object. This is Actual length in mm of object above")
     print("4 - Edit config.py and enter the values for the above variables.")
     print("")
@@ -336,13 +342,13 @@ def get_image_name(path, prefix):
     return filename
 
 #-----------------------------------------------------------------------------------------------
-def log_to_file(data_to_append):
+def log_to_csv_file(data_to_append):
     if log_data_to_file:
         log_file_path = baseDir + baseFileName + ".csv"
         if not os.path.exists(log_file_path):
             open( log_file_path, 'w' ).close()
-            # header_text = '"YYYYMMDD","HH","MM","Speed","Unit","    Speed Photo Path            ","W","H","Area"' + "\n"
             f = open( log_file_path, 'ab' )
+            # header_text = '"YYYYMMDD","HH","MM","Speed","Unit","    Speed Photo Path            ","X","Y","W","H","Area","Direction"' + "\n"
             # f.write( header_text )
             f.close()
             logging.info("Create New Data Log File %s", log_file_path )
@@ -407,7 +413,7 @@ def speed_camera():
     # setup buffer area to ensure contour is fully contained in crop area
     x_buf = int((x_right - x_left) / 10 )
     y_buf = int((y_lower - y_upper) / 8 )
-    print("Start Speed Motion Tracking")
+    print("Start Speed Motion Tracking Ready ....")
     travel_direction = ""
 
     # initialize a cropped grayimage1 image
@@ -454,12 +460,10 @@ def speed_camera():
         # initialize variables
         motion_found = False
         biggest_area = MIN_AREA
-        cx = 0
-        cy = 0
-        mx = 0
-        my = 0
-        mw = 0   # movement width
-        mh = 0   # movement height
+        cx, cy = 0, 0   # Center of contour used for tracking
+        mx, my = 0, 0   # x,y of top right position contour
+        mw, mh = 0, 0   # w,h width, height of contour
+        
         # Convert to gray scale, which is easier
         grayimage2 = cv2.cvtColor( image_crop, cv2.COLOR_BGR2GRAY )
         # Get differences between the two greyed images
@@ -477,124 +481,127 @@ def speed_camera():
         grayimage1 = grayimage2
 
         # find contour with biggest area
-        for c in contours:
-            # get area of next contour
-            found_area = cv2.contourArea(c)
-            if found_area > biggest_area:
-                ( x, y, w, h ) = cv2.boundingRect(c)
-                # check if complete contour is completely within crop area
-                if ( x > x_buf and
-                     x + w < x_right - x_left - x_buf and
-                     y > y_buf and
-                     y + h < y_lower - y_upper - y_buf ):
-                    motion_found = True
-                    biggest_area = found_area
-                    cx = int(x + w/2)   # put circle in middle of width
-                    cy = int(y + h/2)   # put circle in middle of height
-                    mx = x
-                    my = y
-                    mw = w
-                    mh = h
+        if contours:
+            for c in contours:
+                # get area of next contour
+                found_area = cv2.contourArea(c)
+                if found_area > biggest_area:
+                    ( x, y, w, h ) = cv2.boundingRect(c)
+                    # check if complete contour is completely within crop area
+                    if ( x > x_buf and
+                         x + w < x_right - x_left - x_buf and
+                         y > y_buf and
+                         y + h < y_lower - y_upper - y_buf ):
+                        motion_found = True
+                        biggest_area = found_area
+                        cx = int(x + w/2)   # put circle in middle of width
+                        cy = int(y + h/2)   # put circle in middle of height
+                        mx = x
+                        my = y
+                        mw = w
+                        mh = h
 
-        if motion_found:
-            # Process motion event and track data
-            if first_event:   # This is a first valide motion event
-                first_event = False
-                start_pos_x = cx
-                end_pos_x = cx
-                track_start_time = time.time()
-                logging.info("New Track    - Motion at cx,cy(%i,%i)", cx, cy )
-            else:
-                if ( abs( cx - end_pos_x ) > x_diff_min and abs( cx - end_pos_x ) < x_diff_max ):
-                # movement is within acceptable distance range of last event
+            if motion_found:
+                # Process motion event and track data
+                if first_event:   # This is a first valide motion event
+                    first_event = False
+                    start_pos_x = cx
                     end_pos_x = cx
-                    tot_track_dist = abs( end_pos_x - start_pos_x )
-                    tot_track_time = abs( time.time() - track_start_time )
-                    ave_speed = float((abs( tot_track_dist / tot_track_time)) *  speed_conv)
-                    if abs( end_pos_x - start_pos_x ) > track_len_trig:
-                        if end_pos_x - start_pos_x > 0:
-                            travel_direction = "L2R"
-                        else:
-                            travel_direction = "R2L"
-                        # Track length exceeded so take process speed photo
-                        if ave_speed > max_speed_over or calibrate:
-                            # Resized and process prev image before saving to disk
-                            if calibrate:       # Create a calibration image
-                                filename = get_image_name( image_path, "calib-" )
-                                prev_image = take_calibration_image( filename, prev_image )
-                            else:
-                                if image_filename_speed :
-                                    speed_prefix = str(int(round(ave_speed))) + "-" + image_prefix
-                                else:
-                                    speed_prefix = image_prefix
-                                filename = get_image_name( image_path, speed_prefix)
-                                # Add motion rectangle to image
-                                if image_show_motion_area:
-                                    cv2.line( prev_image ,( x_left, y_upper ),( x_right, y_upper ),(0,0,255),1 )
-                                    cv2.line( prev_image ,( x_left, y_lower ),( x_right, y_lower ),(0,0,255),1 )
-                                    cv2.line( prev_image ,( x_left, y_upper ),( x_left , y_lower ),(0,0,255),1 )
-                                    cv2.line( prev_image ,( x_right, y_upper ),( x_right, y_lower ),(0,0,255),1 )
-                            big_image = cv2.resize(prev_image,(image_width, image_height))
-                            cv2.imwrite(filename, big_image)
-                            logging.info(" Event Add   - cx,cy(%i,%i) %3.1f %s Len=%i/%i px Contours=%i Area=%i Moving=%s",
-                                                  cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x),
-                                                  track_len_trig, total_contours, biggest_area, travel_direction )
-
-                            # Format and Save Data to CSV Log File
-                            log_time = datetime.datetime.now()
-                            log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" %
-                                          ( quote, log_time.year, log_time.month,
-                                            log_time.day, quote, quote, log_time.hour,
-                                            quote, quote, log_time.minute, quote))
-                            # Add Text to image
-                            if image_text_on:
-                                image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
-                                image_write( filename, image_text )
-                            log_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%s%s%s" %
-                                        ( log_csv_time, ave_speed, quote, speed_units,
-                                          quote, quote, filename, quote, mw, mh, mw * mh,
-                                          quote, travel_direction, quote ))
-                            log_to_file( log_text )
-                            logging.info("End Track    - Tracked %i px in %.1f sec", tot_track_dist, tot_track_time )
-                        else:
-                            logging.info("End Track    - Skip Photo SPEED %.1f %s max_speed_over=%i  %i px in %.1f sec  Contours=%i Area=%i sq-px ",
-                                                        ave_speed, speed_units, max_speed_over, tot_track_dist,
-                                                        tot_track_time, total_contours, biggest_area )
-                        # Track Ended so Reset Variables for next cycle through loop
-                        start_pos_x = 0
-                        end_pos_x = 0
-                        first_event = True
-                        time.sleep( track_timeout )  # Pause so object is not immediately tracked again
-                    else:
-                        logging.info(" Event Add   - cx,cy(%i,%i) %3.1f %s Len=%i/%i px Contours=%i Area=%i",
-                                                     cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x),
-                                                     track_len_trig, total_contours, biggest_area )
-                        end_pos_x = cx
-                    prev_image = image2  # keep a colour copy for saving to disk at end of Track
+                    track_start_time = time.time()
+                    logging.info("New Track    - Motion at cx,cy(%i,%i)", cx, cy )
                 else:
-                    if show_out_range:
-                        logging.info(" Out Range   - cx,cy(%i,%i) Dist=%i is <%i or >%i px  Contours=%2i Area=%i",
-                                                     cx, cy, abs( cx - end_pos_x ), x_diff_min, x_diff_max,
-                                                     total_contours, biggest_area  )
+                    if ( abs( cx - end_pos_x ) > x_diff_min and abs( cx - end_pos_x ) < x_diff_max ):
+                    # movement is within acceptable distance range of last event
+                        end_pos_x = cx
+                        tot_track_dist = abs( end_pos_x - start_pos_x )
+                        tot_track_time = abs( time.time() - track_start_time )
+                        ave_speed = float((abs( tot_track_dist / tot_track_time)) *  speed_conv)
+                        if abs( end_pos_x - start_pos_x ) > track_len_trig:
+                            if end_pos_x - start_pos_x > 0:
+                                travel_direction = "L2R"
+                            else:
+                                travel_direction = "R2L"
+                            # Track length exceeded so take process speed photo
+                            if ave_speed > max_speed_over or calibrate:
+                                # Resized and process prev image before saving to disk
+                                if calibrate:       # Create a calibration image
+                                    filename = get_image_name( image_path, "calib-" )
+                                    prev_image = take_calibration_image( filename, prev_image )
+                                else:
+                                    if image_filename_speed :
+                                        speed_prefix = str(int(round(ave_speed))) + "-" + image_prefix
+                                    else:
+                                        speed_prefix = image_prefix
+                                    filename = get_image_name( image_path, speed_prefix)
+                                    # Add motion rectangle to image
+                                    if image_show_motion_area:
+                                        cv2.line( prev_image ,( x_left, y_upper ),( x_right, y_upper ),cvRed,1 )
+                                        cv2.line( prev_image ,( x_left, y_lower ),( x_right, y_lower ),cvRed,1 )
+                                        cv2.line( prev_image ,( x_left, y_upper ),( x_left , y_lower ),cvRed,1 )
+                                        cv2.line( prev_image ,( x_right, y_upper ),( x_right, y_lower ),cvRed,1 )
+                                big_image = cv2.resize(prev_image,(image_width, image_height))
+                                cv2.imwrite(filename, big_image)
+                                logging.info(" Event Add   - cx,cy(%i,%i) %3.2f %s %s Len=%i/%i px C=%i A=%i sqPx",
+                                                            cx, cy, ave_speed, speed_units, travel_direction, 
+                                                            abs( start_pos_x - end_pos_x), track_len_trig,
+                                                            total_contours, biggest_area)
+
+                                # Format and Save Data to CSV Log File
+                                log_time = datetime.datetime.now()
+                                log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" %
+                                              ( quote, log_time.year, log_time.month,
+                                                log_time.day, quote, quote, log_time.hour,
+                                                quote, quote, log_time.minute, quote))
+                                # Add Text to image
+                                if image_text_on:
+                                    image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
+                                    image_write( filename, image_text )
+                                log_csv_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%i,%i,%s%s%s" %
+                                            ( log_csv_time, ave_speed, quote, speed_units,
+                                              quote, quote, filename, quote, mx, my, mw, mh, mw * mh,
+                                              quote, travel_direction, quote ))
+                                log_to_csv_file( log_csv_text )
+                                logging.info("End Track    - Tracked %i px in %.2f sec", tot_track_dist, tot_track_time )
+                            else:
+                                logging.info("End Track    - Skip Photo SPEED %.1f %s max_speed_over=%i  %i px in %.1f sec  C=%i A=%i sqPx ",
+                                                            ave_speed, speed_units, max_speed_over, tot_track_dist,
+                                                            tot_track_time, total_contours, biggest_area )
+                                                            
+                            # Track Ended so Reset Variables for next cycle through loop
+                            start_pos_x = 0
+                            end_pos_x = 0
+                            first_event = True
+                            time.sleep( track_timeout )  # Pause so object is not immediately tracked again
+                        else:
+                            logging.info(" Event Add   - cx,cy(%i,%i) %3.1f %s Len=%i/%i px C=%i A=%i sqPx",
+                                                         cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x),
+                                                         track_len_trig, total_contours, biggest_area )
+                            end_pos_x = cx
+                        prev_image = image2  # keep a colour copy for saving to disk at end of Track
+                    else:
+                        if show_out_range:
+                            logging.info(" Out Range   - cx,cy(%i,%i) Dist=%i is <%i or >%i px  C=%2i A=%i sqPx",
+                                                         cx, cy, abs( cx - end_pos_x ), x_diff_min, x_diff_max,
+                                                         total_contours, biggest_area  )
             if gui_window_on:
                 # show small circle at motion location
                 if SHOW_CIRCLE:
-                    cv2.circle(image2,( cx + x_left * WINDOW_BIGGER ,cy + y_upper * WINDOW_BIGGER ),CIRCLE_SIZE,(0,255,0), LINE_THICKNESS)
+                    cv2.circle(image2,( cx + x_left * WINDOW_BIGGER ,cy + y_upper * WINDOW_BIGGER ),CIRCLE_SIZE,cvGreen, LINE_THICKNESS)
                 else:
                     cv2.rectangle(image2,( int( cx + x_left - mw/2) , int( cy + y_upper - mh/2)),
-                                        (( int( cx + x_left + mw/2)), int( cy + y_upper + mh/2 )),(0,255,0), LINE_THICKNESS)
+                                        (( int( cx + x_left + mw/2)), int( cy + y_upper + mh/2 )),cvGreen, LINE_THICKNESS)
 
                 if ave_speed > 0:
                     speed_text = str('%3.1f %s'  % ( ave_speed, speed_units ))
-                    cv2.putText( image2, speed_text, (cx + x_left + 8, cy + y_upper), cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE , (255,255,255), 1)
+                    cv2.putText( image2, speed_text, (cx + x_left + 8, cy + y_upper), cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE , cvWhite, 1)
             event_timer = time.time()  # Reset event_timer since valid motion was found
 
         if gui_window_on:
             # cv2.imshow('Difference Image',difference image)
-            cv2.line( image2,( x_left, y_upper ),( x_right, y_upper ),(255,0,0),1 )
-            cv2.line( image2,( x_left, y_lower ),( x_right, y_lower ),(255,0,0),1 )
-            cv2.line( image2,( x_left, y_upper ),( x_left , y_lower ),(255,0,0),1 )
-            cv2.line( image2,( x_right, y_upper ),( x_right, y_lower ),(255,0,0),1 )
+            cv2.line( image2,( x_left, y_upper ),( x_right, y_upper ),cvBlue,1 )
+            cv2.line( image2,( x_left, y_lower ),( x_right, y_lower ),cvBlue,1 )
+            cv2.line( image2,( x_left, y_upper ),( x_left , y_lower ),cvBlue,1 )
+            cv2.line( image2,( x_right, y_upper ),( x_right, y_lower ),cvBlue,1 )
             image2 = cv2.resize( image2,( image_width, image_height ))
             cv2.imshow('Movement (q Quits)', image2)
             if show_thresh_on:
