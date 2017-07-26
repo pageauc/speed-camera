@@ -4,7 +4,7 @@
 # Create html pages from csv log file entries
 # for viewing speed images and data on a web server
 
-progVer = "4.60"
+progVer = "5.10"
 
 import glob, os
 import csv
@@ -20,7 +20,7 @@ os.chdir(baseDir)
 verbose = True
 
 source_csv = "speed-cam.csv"
-web_root_dir = "html"
+web_root_dir = "media/html"
 web_root_image_dir = "images"
 image_ext = ".jpg"
 
