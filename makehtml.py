@@ -4,7 +4,7 @@
 # Create html pages from csv log file entries
 # for viewing speed images and data on a web server
 
-progVer = "5.10"
+progVer = "5.20"
 
 import glob, os
 import csv
@@ -20,8 +20,8 @@ os.chdir(baseDir)
 verbose = True
 
 source_csv = "speed-cam.csv"
-web_root_dir = "media/html"
-web_root_image_dir = "images"
+web_root_dir = "media/html"   # location of html files relative to web root
+web_image_dir = "images"      # location of image link off html folder
 image_ext = ".jpg"
 
 # contour width to height ratio
@@ -37,6 +37,7 @@ def make_web_page(up_html, row_data, dn_html):
     Speed=row_data[3]
     Unit=row_data[4]
     img_path=row_data[5]
+    img_html_path = os.path.join(web_image_dir, os.path.basename(row_data[5]))
     X=row_data[6]
     Y=row_data[7]    
     W=row_data[8]
@@ -89,12 +90,12 @@ def make_web_page(up_html, row_data, dn_html):
     </tr>
     </table>
     </body>
-    </html>''' % ( img_path, img_path, YYYYMMDD, HH, MM, Speed, Unit, 
-                  W, H, Area, aspect_ratio, Guess, img_path, img_path, dn_html, up_html))
+    </html>''' % ( img_html_path, img_html_path, YYYYMMDD, HH, MM, Speed, Unit, 
+                  W, H, Area, aspect_ratio, Guess, img_html_path, img_html_path, dn_html, up_html))
 
     # Write the html file
     base_filename = os.path.splitext(os.path.basename(img_path))[0]
-    web_html_path = os.path.join(web_root_dir, base_filename+'.html')
+    web_html_path = os.path.join(web_root_dir, base_filename + '.html')
 
     if os.path.isfile(img_path):
         f = open(web_html_path, "w")
