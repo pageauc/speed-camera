@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 5.00"
+version = "version 5.10"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -253,7 +253,7 @@ def get_fps( start_time, frame_count ):
 #-----------------------------------------------------------------------------------------------
 def show_settings():
     cwd = os.getcwd()
-    html_path = "html"
+    html_path = "media/html"
     sym_name = "images"
     if not os.path.isdir(image_path):
         logging.info("Creating Image Storage Folder %s", image_path )
