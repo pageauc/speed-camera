@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 5.10"
+version = "version 5.20"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -261,6 +261,9 @@ def show_settings():
     os.chdir(image_path)
     img_dir = os.getcwd()
     os.chdir(cwd)
+    if not os.path.isdir(search_path):
+        logging.info("Creating Search Folder %s", search_path)
+        os.makedirs(search_path)    
     if not os.path.isdir(html_path):
         logging.info("Creating html Folder %s", html_path)
         os.makedirs(html_path)
