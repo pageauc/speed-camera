@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-ver = "version 5.00"  # Original issue on 26-Jul-2017 by Claude Pageau
+ver = "version 5.20"  # Original issue on 26-Jul-2017 by Claude Pageau
 
 """
 speed-search.py written by Claude Pageau pageauc@gmail.com
@@ -87,19 +87,19 @@ def check_image_match(full_image, small_image):
     return maxVal
 
 #-----------------------------------------------------------------------------------------------
-def get_search_rect(search_image):
-    if os.path.isfile(search_image):   # check if file exists
-        print("Loading Search Image %s" % (search_image))
-        search_image = cv2.imread(search_image)  # read color image in BGR format
+def get_search_rect(search_filepath):
+    if os.path.isfile(search_filepath):   # check if file exists
+        print("Loading Search Image %s" % (search_filepath))
+        search_image = cv2.imread(search_filepath)  # read color image in BGR format
         try:
             search_rect = search_image[crop_y_U:crop_y_D,crop_x_L:crop_x_R]
         except:
-            print("ERROR: Problem Extracting search_rect from %s" % search_image)
+            print("ERROR: Problem Extracting search_rect from %s" % search_filepath)
             quit()
     else:
-        print("ERROR: File Not Found %s" % search_image)
+        print("ERROR: File Not Found %s" % search_filepath)
         quit()
-    print("Successfully Created Search Rectangle from %s" % search_image)
+    print("Successfully Created Search Rectangle from %s" % search_filepath)
     return search_rect
 
 #-----------------------------------------------------------------------------------------------
