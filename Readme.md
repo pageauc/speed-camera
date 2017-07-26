@@ -8,7 +8,7 @@
         if config.py variable copy_results_on = True then copies of the image matches including original
         search image will be placed in a subfolder with the same name as the search image filename
         but without the file extension.  You can review results from a web browser if you run the webserver.py
-        (still under development)
+        (Note speed-search.py is still under development)
           
 IMPORTANT speed-cam.py release 5.00 or above requires a full install.
 It is advised that you rename/delete previous rpi-speed-camera folder
@@ -148,7 +148,7 @@ To Calibrate cal_obj_px and cal_obj_mm variables perform the following
 * Login to RPI using SSH or desktop terminal session and cd to rpi-speed-camera folder
 * Use nano to edit config.py. 
 * Edit variable calibrate=True
-* I required Adjust the y_upper and y_lower variables to cover the road area.  Note
+* If required Adjust the y_upper and y_lower variables to cover the road area.  Note
   image 0,0 is the top left hand corner and values are in pixels.  Do not
   exceed the CAMERA_HEIGHT value  
 * In nano save changes ( ctl-x y to save )
