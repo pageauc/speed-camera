@@ -12,8 +12,8 @@
           
 * IMPORTANT: speed-cam.py release 5.x or above requires a full install.
 It is advised that you rename/delete previous rpi-speed-camera folder
-and rerun GitHub Quick Install or Manual Install.  The default config.py based on
-config.py.240 file works with single core RPI's. The config.py.720 is designed for quad core RPI's.
+and rerun GitHub Quick Install or Manual Install.  The default config.py is based on the
+config.py.240 file and works with single core RPI's. The config.py.720 is designed for quad core RPI's.
 Use menubox.sh to change settings or nano config.py
 
 ### Quick Install   
