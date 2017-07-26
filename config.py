@@ -41,7 +41,7 @@ show_crop_on = False        # Same as show_thresh_on but in color. True=Show, Fa
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
 track_len_trig = 75    # Default=75 Length of track to trigger speed photo
 track_timeout = 1      # Number of seconds to wait after track End (prevents dual tracking)
-event_timeout = 1      # Number of seconds to wait for next motion event before starting new track
+event_timeout = 2      # Number of seconds to wait for next motion event before starting new track
 
 # Camera Settings
 # ---------------
