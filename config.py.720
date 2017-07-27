@@ -77,7 +77,7 @@ image_bigger = 1              # Default = 1 multiply saved speed image by value
 # =====================
 search_value = 0.97           # Default = 0.97 Accuracy setting for Image Searches 0=Lowest 1=Highest
 copy_results_on = True        # Copy matching image files to search_path subfolder (based on search filename minus ext)
-search_path = 'media/search'  # Put file(s) to search in this folder.
+search_path = 'media/search'  # Copy search match image file(s) into subfolder here if copy_results_on=True.
 MATCH_METHOD = 3              # Default = 3 Valid MatchTemplate COMPARE_METHOD Int Values
                               # 0 = cv2.TM_SQDIFF
                               # 1 = cv2.TM_SQDIFF_NORMED
