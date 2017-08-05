@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 5.00 speed-search.py Variable Configuration Settings
+#               Ver 5.00 search-speed.py Variable Configuration Settings
 
 # ======================================
 #    speed-search.py variable settings

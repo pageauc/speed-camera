@@ -42,7 +42,8 @@ if [ $? -ne 0 ] ;  then
   wget -O speed-install.sh https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
   wget -O speed-cam.py https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.py
   wget -O speed-cam.sh https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.sh
-  wget -O speed-search.py https://raw.github.com/pageauc/rpi-speed-camera/master/speed-search.py
+  wget -O search-speed.py https://raw.github.com/pageauc/rpi-speed-camera/master/search-speed.py
+  wget -O search_config.py https://raw.github.com/pageauc/rpi-speed-camera/master/search_config.py  
   wget -O Readme.md https://raw.github.com/pageauc/rpi-speed-camera/master/Readme.md
   wget -O makehtml.py https://raw.github.com/pageauc/rpi-speed-camera/master/makehtml.py
   wget -O menubox.sh https://raw.github.com/pageauc/rpi-speed-camera/master/menubox.sh
@@ -54,7 +55,8 @@ if [ $? -ne 0 ] ;  then
 else
   wget -O speed-cam.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.py
   wget -O speed-cam.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.sh
-  wget -O speed-search.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-search.py
+  wget -O search-speed.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/search-speed.py
+  wget -O search_config.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/search_config.py
   wget -O Readme.md -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/Readme.md
   wget -O makehtml.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/makehtml.py
   wget -O menubox.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/menubox.sh
