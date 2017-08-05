@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 5.20"
+version = "version 5.50"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -71,6 +71,7 @@ if not os.path.exists(configFilePath):
     f.close()
 # Read Configuration variables from config.py file
 from config import *
+from search_config import search_dest_path
 
 # fix possible invalid values
 if WINDOW_BIGGER < 1:
@@ -79,9 +80,14 @@ if image_bigger < 1:
     image_bigger = 1
 
 # import the necessary packages
-from picamera.array import PiRGBArray
+# -----------------------------
+try:  #Add this check in case running on non RPI platform using web cam
+    from picamera.array import PiRGBArray
+    from picamera import PiCamera
+except:
+    pass
+    
 import numpy as np
-from picamera import PiCamera
 from threading import Thread
 import logging
 import io
@@ -103,7 +109,7 @@ except:
     if (sys.version_info > (2, 9)):
         print("python3 failed to import cv2")
         print("Try installing opencv for python3")
-        print("google for details regarding installing opencv for python3")
+        print("See https://github.com/pageauc/opencv3-setup")
     else:
         print("python2 failed to import cv2")
         print("Try reinstalling per command")
@@ -261,9 +267,9 @@ def show_settings():
     os.chdir(image_path)
     img_dir = os.getcwd()
     os.chdir(cwd)
-    if not os.path.isdir(search_path):
-        logging.info("Creating Search Folder %s", search_path)
-        os.makedirs(search_path)    
+    if not os.path.isdir(search_dest_path):
+        logging.info("Creating Search Folder %s", search_dest_path)
+        os.makedirs(search_dest_path)    
     if not os.path.isdir(html_path):
         logging.info("Creating html Folder %s", html_path)
         os.makedirs(html_path)
@@ -527,6 +533,7 @@ def speed_camera():
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
                                 # Resized and process prev image before saving to disk
+                                prev_image = image2                                
                                 if calibrate:       # Create a calibration image
                                     filename = get_image_name( image_path, "calib-" )
                                     prev_image = take_calibration_image( filename, prev_image )
@@ -538,6 +545,9 @@ def speed_camera():
                                     filename = get_image_name( image_path, speed_prefix)
                                     # Add motion rectangle to image
                                     if image_show_motion_area:
+                                        if SHOW_CIRCLE:
+                                            cv2.circle(prev_image,( cx + x_left ,cy + y_upper ),
+                                                                 CIRCLE_SIZE,cvRed, LINE_THICKNESS)
                                         cv2.line( prev_image ,( x_left, y_upper ),( x_right, y_upper ),cvRed,1 )
                                         cv2.line( prev_image ,( x_left, y_lower ),( x_right, y_lower ),cvRed,1 )
                                         cv2.line( prev_image ,( x_left, y_upper ),( x_left , y_lower ),cvRed,1 )
@@ -561,7 +571,7 @@ def speed_camera():
                                     image_write( filename, image_text )
                                 log_csv_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%i,%i,%s%s%s" %
                                             ( log_csv_time, ave_speed, quote, speed_units,
-                                              quote, quote, filename, quote, mx, my, mw, mh, mw * mh,
+                                              quote, quote, filename, quote, cx, cy, mw, mh, mw * mh,
                                               quote, travel_direction, quote ))
                                 log_to_csv_file( log_csv_text )
                                 logging.info("End Track    - Tracked %i px in %.2f sec", tot_track_dist, tot_track_time )
@@ -580,7 +590,6 @@ def speed_camera():
                                                          cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x),
                                                          track_len_trig, total_contours, biggest_area )
                             end_pos_x = cx
-                        prev_image = image2  # keep a colour copy for saving to disk at end of Track
                     else:
                         if show_out_range:
                             logging.info(" Out Range   - cx,cy(%i,%i) Dist=%i is <%i or >%i px  C=%2i A=%i sqPx",
