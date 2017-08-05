@@ -96,7 +96,7 @@ def check_image_match(full_image, small_image):
 #-----------------------------------------------------------------------------------------------
 def get_search_rect(search_filepath):
     if os.path.isfile(search_filepath):   # check if file exists
-        print("Loading Search Image %s" % (search_filepath))
+        print("Loading Target Search Image %s" % (search_filepath))
         image1 = cv2.imread(search_filepath)  # read color image in BGR format
         try:
             search_rect = image1[crop_y_U:crop_y_D,crop_x_L:crop_x_R]
@@ -106,7 +106,7 @@ def get_search_rect(search_filepath):
     else:
         print("ERROR: File Not Found %s" % search_filepath)
         return None
-    print("Successfully Created Search Rectangle from %s" % search_filepath)
+    print("Successfully Created Target Search Rectangle from %s" % search_filepath)
     return search_rect
 
 #-----------------------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ def search_for_match(search_image, search_rect):
     # Construct a results folder name based on original search filename minus extension
     results_dir_path = os.path.join(search_dest_path,
                        os.path.splitext(os.path.basename(search_image))[0])
-    print_at(1,1,"For %s Find Matches with search_match_value>%.4f" % ( search_image, search_match_value ))
+    print_at(1,1,"Target %s Find Matches with search_match_value>%.4f" % ( search_image, search_match_value ))
     if search_copy_on:  # Create a search results dest folder if required otherwise results is view only
         if not os.path.exists(results_dir_path):
             try:
@@ -159,7 +159,7 @@ def search_for_match(search_image, search_rect):
                 if search_result_value >= search_match_value and not (current_image_path == search_image_path):   # Check if result is OK and not itself
                     result_count += 1   # increment valid search result counter
                     result_list.append([search_result_value, current_image_path])  # Update search result_list
-                    print_at(3,1,"Matched %i  Last: %i/%i  value=%.4f/%.4f  MATCH=%s       " %
+                    print_at(3,1,"Matched %i Last: %i/%i  value=%.4f/%.4f  MATCH=%s       " %
                          ( result_count, cnt, search_images_total, search_result_value, search_match_value, current_image_path))
                     if search_copy_on:
                         # Put a copy of search match file into results subfolder (named with search file name without ext)
@@ -222,7 +222,12 @@ def search_for_match(search_image, search_rect):
 search_list = glob.glob(search_dest_path + '/*jpg')
 if search_list:  # Are there any search files found in search_path
     os.system('clear')
-    print_at(1,5,"Found Search Files in Folder: %s" % search_dest_path)
+    print("")
+    print("")
+    print("")
+    print("------------------------------------------------")
+    print("Found the Followiing Target Search Image Files")
+    print("in Folder: %s" % search_dest_path)
     print("------------------------------------------------")
     for files in search_list:
         print(files)
