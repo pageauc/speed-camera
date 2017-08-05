@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-ver = "version 5.30"  # Original issue on 26-Jul-2017 by Claude Pageau
+ver = "version 5.50"  # Original issue on 26-Jul-2017 by Claude Pageau
 
 """
 speed-search.py written by Claude Pageau pageauc@gmail.com
@@ -119,7 +119,7 @@ def search_for_match(search_image, search_rect):
     # Construct a results folder name based on original search filename minus extension
     results_dir_path = os.path.join(search_dest_path,
                        os.path.splitext(os.path.basename(search_image))[0])
-    print_at(1,1,"Target %s Find Matches with search_match_value>%.4f" % ( search_image, search_match_value ))
+    print_at(2,1,"Target %s  Match for search_match_value>%.4f" % ( search_image, search_match_value ))
     if search_copy_on:  # Create a search results dest folder if required otherwise results is view only
         if not os.path.exists(results_dir_path):
             try:
@@ -159,7 +159,7 @@ def search_for_match(search_image, search_rect):
                 if search_result_value >= search_match_value and not (current_image_path == search_image_path):   # Check if result is OK and not itself
                     result_count += 1   # increment valid search result counter
                     result_list.append([search_result_value, current_image_path])  # Update search result_list
-                    print_at(3,1,"Matched %i Last: %i/%i  value=%.4f/%.4f  MATCH=%s       " %
+                    print_at(4,1,"Matched %i Last:%i/%i value:%.4f/%.4f  MATCH=%s       " %
                          ( result_count, cnt, search_images_total, search_result_value, search_match_value, current_image_path))
                     if search_copy_on:
                         # Put a copy of search match file into results subfolder (named with search file name without ext)
@@ -173,7 +173,7 @@ def search_for_match(search_image, search_rect):
                         cv2.imshow("Target", target_rect)
                         cv2.waitKey(3000)  # pause for 3 seconds if match found
                 else:
-                    print_at(2,1,"Progress: %i/%i  value=%.4f/%.4f  SKIP=%s    " %
+                    print_at(3,1,"Progress: %i/%i  value=%.4f/%.4f  SKIP=%s    " %
                          ( cnt, search_images_total, search_result_value, search_match_value, current_image_path))
                     if gui_window_on:
                         cv2.imshow("Searching", search_rect)
@@ -222,12 +222,12 @@ def search_for_match(search_image, search_rect):
 search_list = glob.glob(search_dest_path + '/*jpg')
 if search_list:  # Are there any search files found in search_path
     os.system('clear')
+    print("%s %s written by Claude Pageau" % ( progName, ver))
     print("")
     print("")
     print("")
     print("------------------------------------------------")
-    print("Found the Followiing Target Search Image Files")
-    print("in Folder: %s" % search_dest_path)
+    print("Found Target Search Image Files in %s" % search_dest_path)
     print("------------------------------------------------")
     for files in search_list:
         print(files)
