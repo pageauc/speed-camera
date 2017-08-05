@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 5.00 speed-cam.py 720p Stream Variable Configuration Settings
+#               Ver 5.50 speed-cam.py 720p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -10,7 +10,7 @@
 # Calibration Settings
 # ===================
 calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
-cal_obj_px = 97        # Length of a calibration object in pixels
+cal_obj_px = 90        # Length of a calibration object in pixels
 cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 
 # Crop Area for motion detection Tracking
@@ -39,15 +39,16 @@ show_crop_on = False        # Same as show_thresh_on but in color. True=Show, Fa
 # Motion Event Settings
 # =====================
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
-track_len_trig = 75    # Length of track to trigger speed photo Default=50
+track_len_trig = 70    # Length of track to trigger speed photo Default=70
 track_timeout = 1      # Number of seconds to wait after track End (prevents dual tracking)
 event_timeout = 2      # Number of seconds to wait for next motion event before starting new track
 
 # Camera Settings
-# ---------------
+# ===============
 WEBCAM = False        # default = False False=PiCamera True=USB WebCamera
 
 # Web Camera Settings
+# -------------------
 WEBCAM_SRC = 0        # default = 0   USB opencv connection number
 WEBCAM_WIDTH = 640    # default = 640 USB Webcam Image width
 WEBCAM_HEIGHT = 480   # default = 480 USB Webcam Image height
@@ -55,6 +56,7 @@ WEBCAM_HFLIP = False  # default = False USB Webcam flip image horizontally
 WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
 
 # Pi Camera Settings
+# ------------------
 CAMERA_WIDTH = 1280    # default = 1280 Image stream width for opencv motion scanning (quad core)
 CAMERA_HEIGHT = 720    # default = 720 Image stream height for opencv motion scanning (quad core)
 CAMERA_FRAMERATE = 15  # default = 15 framerate for video stream max for V2 can be higher
@@ -72,21 +74,6 @@ image_text_on = True          # True= Show Text on speed images   False= No Text
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
 image_font_size = 20          # default = 20 Font text height in px for text on images
 image_bigger = 1              # Default = 1 multiply saved speed image by value
-
-# Image Search Settings
-# =====================
-search_value = 0.97           # Default = 0.97 Accuracy setting for Image Searches 0=Lowest 1=Highest
-copy_results_on = True        # Copy matching image files to search_path subfolder (based on search filename minus ext)
-search_path = 'media/search'  # Copy search match image file(s) into subfolder here if copy_results_on=True.
-MATCH_METHOD = 3              # Default = 3 Valid MatchTemplate COMPARE_METHOD Int Values
-                              # 0 = cv2.TM_SQDIFF
-                              # 1 = cv2.TM_SQDIFF_NORMED
-                              # 2 = cv2.TM_CCORR
-                              # 3 = cv2.TM_CCORR_NORMED   Default
-                              # 4 = cv2.TM_CCOEFF
-                              # 5 = cv2.TM_CCOEFF_NORMED
-                              # For other comparison methods
-                              # see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
 
 # Motion Event Exclusion Settings
 # ===============================

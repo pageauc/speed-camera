@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 5.00 speed-cam.py 240p Stream Variable Configuration Settings
+#               Ver 5.50 speed-cam.py 240p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -7,21 +7,9 @@
 #
 #######################################
 
-# Calibration Settings
-# ===================
-calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
-cal_obj_px = 97        # Length of a calibration object in pixels
-cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
-
-# Crop Area for motion detection Tracking
-# =======================================
-x_left  = 25           # Exclude event if x less than this px position Default=25
-x_right = 295          # Exclude event if x greater than this px position Default=295
-y_upper = 75           # Exclude event if y less that this value default=100
-y_lower = 185          # Exclude event if y greater than this value default=175
-
+# Note - Set verbose to False if script is run in background or from /etc/rc.local
 # Display and Log settings
-# ========================
+# ------------------------
 verbose = True              # Display basic status information on console
 display_fps = False         # True = Show average frame count every 1000 loops
 log_data_to_file = True     # True = Save log data as CSV comma separated values (default=True)
@@ -29,15 +17,28 @@ show_out_range = False      # Show Out of Range Events (default=False)
 loggingToFile = False       # True = Send logging to file
 logFilePath = 'speed-track.log'  # Location of log file when logDataToFile=True
 
+# Calibration Settings
+# --------------------
+calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
+cal_obj_px = 90        # Length of a calibration object in pixels
+cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
+
+# Crop Area for motion detection Tracking
+# ---------------------------------------
+x_left  = 25           # Exclude event if x less than this px position Default=25
+x_right = 295          # Exclude event if x greater than this px position Default=295
+y_upper = 75           # Exclude event if y less that this value default=100
+y_lower = 185          # Exclude event if y greater than this value default=175
+
 # Display opencv windows on rpi desktop
 # gui_window_on suppresses All Windows if False
-# =============================================
+# ----------------------------------------------
 gui_window_on = False       # True = Turn On All desktop GUI openCV windows. False=Don't Show (req'd for SSH) .
 show_thresh_on = True       # Display desktop GUI openCV cropped threshold window. True=Show, False=Don't Show
 show_crop_on = False        # Same as show_thresh_on but in color. True=Show, False=Don't Show (default)
 
 # Motion Event Settings
-# =====================
+# ---------------------
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
 track_len_trig = 75    # Default=75 Length of track to trigger speed photo
 track_timeout = 1      # Number of seconds to wait after track End (prevents dual tracking)
@@ -55,6 +56,7 @@ WEBCAM_HFLIP = False  # default = False USB Webcam flip image horizontally
 WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
 
 # Pi Camera Settings
+# ------------------
 CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning default=320
 CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  default=240
 CAMERA_FRAMERATE = 20  # Default = 20 Frame rate for video stream V2 picam can be higher
@@ -63,7 +65,7 @@ CAMERA_VFLIP = False   # Flip the camera image vertically if required
 CAMERA_HFLIP = False   # Flip the camera image horizontally if required
 
 # Camera Image Settings
-# =====================
+# ---------------------
 image_path = "media/images"   # folder name to store images
 image_prefix = "speed-"       # image name prefix
 image_show_motion_area = True # True= Display motion detection rectangle area on saved images
@@ -73,30 +75,16 @@ image_text_bottom = True      # True= Show image text at bottom otherwise at top
 image_font_size = 15          # Default = 15 Font text height in px for text on images
 image_bigger = 2              # Default = 2 multiply saved speed image by value
 
-# Image Search Settings
-# =====================
-search_value = 0.97           # Default = 0.97 Accuracy setting for Image Searches 0=Lowest 1=Highest
-copy_results_on = True        # Copy matching image files to search_path subfolder (based on search filename minus ext)
-search_path = 'media/search'  # Copy search match image file(s) into subfolder here if copy_results_on=True.
-MATCH_METHOD = 3              # Valid MatchTemplate COMPARE_METHOD Int Values
-                              # 0 = cv2.TM_SQDIFF
-                              # 1 = cv2.TM_SQDIFF_NORMED
-                              # 2 = cv2.TM_CCORR
-                              # 3 = cv2.TM_CCORR_NORMED   Default
-                              # 4 = cv2.TM_CCOEFF
-                              # 5 = cv2.TM_CCOEFF_NORMED
-                              # For other comparison methods
-                              # see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
 
 # Motion Event Exclusion Settings
-# ===============================
+# -------------------------------
 MIN_AREA = 170         # Exclude all contours less than or equal to this sq-px Area
 x_diff_min = 1         # Exclude if min px away exceeds last event x pos
 x_diff_max = 50        # Exclude if max px away for last motion event x pos
 max_speed_over = 0     # Exclude track if Speed less than or equal to value specified 0=All
 
 # OpenCV Motion Settings
-# ======================
+# ----------------------
 SHOW_CIRCLE = True          # True=circle in center of motion, False=rectangle
 CIRCLE_SIZE = 2             # Diameter circle in px if SHOW_CIRCLE = True
 LINE_THICKNESS = 1          # Size of lines for circle or Rectangle
@@ -105,39 +93,32 @@ WINDOW_BIGGER = 1           # default=1 resize multiplier for opencv window if g
 BLUR_SIZE = 10              # OpenCV setting for Gaussian difference image blur
 THRESHOLD_SENSITIVITY = 20  # OpenCV setting for difference image threshold
 
-#######################################
-#
+#======================================
 #       webserver.py Settings
-#
-#######################################
-
-# Left iFrame Image Settings
-# ==========================
-web_image_height = "768"    # px height of images to display in iframe default 768
-web_iframe_width = "75%"    # Desired frame width to display images. can be eg percent "80%" or px "1280"
-web_iframe_height = "100%"  # Desired frame height to display images. Scroll bars if image larger (percent or px)
-web_max_list_entries = 0    # 0 = All or Specify Max right side file entries to show (must be > 1)
+#======================================
 
 # Web Server settings
-# ===================
-web_server_root = "media"          # webserver root path to webserver image folder
-web_server_port = 8080             # Web server access port eg http://192.168.1.100:8080
-web_page_title = "Speed-Camera"    # web page title that browser show (not displayed on web page)
-web_page_refresh_on = False        # False=Off (never)  Refresh True=On (per seconds below)
-web_page_refresh_sec = "180"       # seconds to wait for web page refresh default=180 seconds (three minutes)
-web_page_blank = True              # Start left image with a blank page until a right menu item is selected
-                                   # Otherwise False displays second list[1] item since first may be in progress
-web_iframe_width_usage = "70%"     # Left Pane - Sets % of total screen width allowed for iframe with rest for right list
-web_list_height = web_image_height # Right List - side menu height in px (link selection)
+# -------------------
+web_server_port = 8080        # default= 8080 Web server access port eg http://192.168.1.100:8080
+web_server_root = "media"     # default= "media" webserver root path to webserver image/video sub-folders
+web_page_title = "Speed Camera"  # web page title that browser show (not displayed on web page)
+web_page_refresh_on = False   # False=Off (never)  Refresh True=On (per seconds below)
+web_page_refresh_sec = "180"  # default= "180" seconds to wait for web page refresh  seconds (three minutes)
+web_page_blank = True         # True Starts left image with a blank page until a right menu item is selected
+                              # False displays second list[1] item since first may be in progress
 
-# Settings for right side files list
-# ==================================
-web_list_by_datetime = True          # True=datetime False=filename
-web_list_sort_descending = True      # reverse sort order (filename or datetime per show_by_date setting
+# Left iFrame Image Settings
+# --------------------------
+web_image_height = "768"       # default= "768" px height of images to display in iframe
+web_iframe_width_usage = "70%" # Left Pane - Sets % of total screen width allowed for iframe. Rest for right list
+web_iframe_width = "100%"      # Desired frame width to display images. can be eg percent "80%" or px "1280"
+web_iframe_height = "100%"     # Desired frame height to display images. Scroll bars if image larger (percent or px)
+
+# Right Side Files List
+# ---------------------
+web_max_list_entries = 0         # 0 = All or Specify Max right side file entries to show (must be > 1)
+web_list_height = web_image_height  # Right List - side menu height in px (link selection)
+web_list_by_datetime = True      # True=datetime False=filename
+web_list_sort_descending = True  # reverse sort order (filename or datetime per web_list_by_datetime setting
 
 # ---------------------------------------------- End of User Variables -----------------------------------------------------
-
-
-
-
-

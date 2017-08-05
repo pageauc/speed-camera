@@ -124,6 +124,9 @@ def check_row(row_data):
 def read_from_csv(filename):
     this_is_first_row = True
     this_is_third_row = True
+    cur_link = ""
+    next_link = ""
+    new_link = ""
     second_row = []
     next_row = []
     cur_row  = []
