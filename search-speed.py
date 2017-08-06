@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-ver = "version 5.50"  # Original issue on 26-Jul-2017 by Claude Pageau
+ver = "ver 5.50"  # Original issue on 26-Jul-2017 by Claude Pageau
 
 """
 speed-search.py written by Claude Pageau pageauc@gmail.com
@@ -33,20 +33,21 @@ good enough to release.
 Claude  ...
 
 """
-print("Loading  Please Wait .....")
-import time
-import cv2
-import csv
-import glob
-import shutil
 import os
-import sys
-
+os.system('clear')
 # Create some system variables
 mypath=os.path.abspath(__file__)       # Find the full path of this python script
 baseDir=mypath[0:mypath.rfind("/")+1]  # get the path location only (excluding script name)
 baseFileName=mypath[mypath.rfind("/")+1:mypath.rfind(".")]
 progName = os.path.basename(__file__)  # Get name of this script with no path
+
+print("%s %s Loading  Please Wait ....." % (progName, ver))
+import time
+import cv2
+import csv
+import glob
+import shutil
+import sys
 
 configFilePath = baseDir + "search_config.py"
 if not os.path.exists(configFilePath):  # check if config.py file exist if not wget github copy
@@ -119,7 +120,7 @@ def search_for_match(search_image, search_rect):
     # Construct a results folder name based on original search filename minus extension
     results_dir_path = os.path.join(search_dest_path,
                        os.path.splitext(os.path.basename(search_image))[0])
-    print_at(2,1,"Target %s  Match for search_match_value>%.4f" % ( search_image, search_match_value ))
+    print_at(2,1,"Target  : %s with search_match_value>%.4f" % ( search_image, search_match_value ))
     if search_copy_on:  # Create a search results dest folder if required otherwise results is view only
         if not os.path.exists(results_dir_path):
             try:
@@ -159,7 +160,7 @@ def search_for_match(search_image, search_rect):
                 if search_result_value >= search_match_value and not (current_image_path == search_image_path):   # Check if result is OK and not itself
                     result_count += 1   # increment valid search result counter
                     result_list.append([search_result_value, current_image_path])  # Update search result_list
-                    print_at(4,1,"Matched %i Last:%i/%i value:%.4f/%.4f  MATCH=%s       " %
+                    print_at(4,1,"Matched : %i Last: %i/%i  value: %.4f/%.4f  MATCH=%s       " %
                          ( result_count, cnt, search_images_total, search_result_value, search_match_value, current_image_path))
                     if search_copy_on:
                         # Put a copy of search match file into results subfolder (named with search file name without ext)
@@ -173,7 +174,7 @@ def search_for_match(search_image, search_rect):
                         cv2.imshow("Target", target_rect)
                         cv2.waitKey(3000)  # pause for 3 seconds if match found
                 else:
-                    print_at(3,1,"Progress: %i/%i  value=%.4f/%.4f  SKIP=%s    " %
+                    print_at(3,1,"Progress: %i/%i  value: %.4f/%.4f  SKIP=%s    " %
                          ( cnt, search_images_total, search_result_value, search_match_value, current_image_path))
                     if gui_window_on:
                         cv2.imshow("Searching", search_rect)
@@ -218,40 +219,56 @@ def search_for_match(search_image, search_rect):
                        (work_count, work_end - work_start, result_count))
     return success
 
+blank = "                                                              "
 # Start Main
 search_list = glob.glob(search_dest_path + '/*jpg')
-if search_list:  # Are there any search files found in search_path
-    os.system('clear')
-    print("%s %s written by Claude Pageau" % ( progName, ver))
-    print("")
-    print("")
-    print("")
+target_total = len(search_list)
+try:
+    if search_list:  # Are there any search files found in search_path
+        for filePath in search_list:  # process each search_list entry
+            os.system('clear')        
+            for i in range(1,5): 
+                print("")
+                print_at(1,i,blank)
+            print_at(1,1,"%s %s written by Claude Pageau       " % ( progName, ver))
+            print("------------------------------------------------")
+            print("Found %i Target Search Image Files in %s" % 
+                                 ( target_total, search_dest_path))
+            print("------------------------------------------------")
+            for files in search_list:
+                current = files
+                if current == filePath:
+                    print("%s  Current Search" % current)
+                else:
+                    print(files)
+            print("------------------------------------------------")
+            search_rect = get_search_rect(filePath)  # Get search_rect of file
+            if search_rect == None:  # Check if search_rect created
+                print("ERROR: Problem Creating Search Rectangle.")
+                print("       Cannot Search Match %s" % filePath)
+            else:
+                search_for_match(filePath, search_rect)  # Look for matches
+    else:
+        print("------------- Instructions ---------------------")
+        print("")
+        print("No Search Files Found in Folder %s" % search_dest_path)
+        print("To enable a search")
+        print("1 Copy one or more Speed Image File(s) to Folder: %s" % search_dest_path)
+        print("2 Restart this script.")
+        print("")
+        print("Note: search_config.py variable search_copy_on = %s" % search_copy_on)
+        print("if True Then a copy of all search match files will be copied")
+        print("To a search subfolder named after the search image name minus extension")
+        print("Otherwise search results will be displayed with no copying (useful for testing)")
+        print("")
     print("------------------------------------------------")
-    print("Found Target Search Image Files in %s" % search_dest_path)
-    print("------------------------------------------------")
-    for files in search_list:
-        print(files)
-    print("------------------------------------------------")
-    for filePath in search_list:  # process each search_list entry
-        search_rect = get_search_rect(filePath)  # Get search_rect of file
-        if search_rect == None:  # Check if search_rect created
-            print("ERROR: Problem Creating Search Rectangle.")
-            print("       Cannot Search Match %s" % filePath)
-        else:
-            search_for_match(filePath, search_rect)  # Look for matches
-else:
-    print("------------- Instructions ---------------------")
+    print("%s %s  written by Claude Pageau" % (progName, ver))
+    print("Done ...")
+except KeyboardInterrupt:
     print("")
-    print("No Search Files Found in Folder %s" % search_dest_path)
-    print("To enable a search")
-    print("1 Copy one or more Speed Image File(s) to Folder: %s" % search_dest_path)
-    print("2 Restart this script.")
+    print("+++++++++++++++++++++++++++++++++++")
+    print("User Pressed Keyboard ctrl-c")
+    print("%s %s - Exiting" % (progName, ver))
+    print("+++++++++++++++++++++++++++++++++++")
     print("")
-    print("Note: search_config.py variable search_copy_on = %s" % search_copy_on)
-    print("if True Then a copy of all search match files will be copied")
-    print("To a search subfolder named after the search image name minus extension")
-    print("Otherwise search results will be displayed with no copying (useful for testing)")
-    print("")
-print("------------------------------------------------")
-print("%s %s  written by Claude Pageau" % (progName, ver))
-print("Done ...")
+    quit(0)
