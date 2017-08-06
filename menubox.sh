@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="5.60"
+ver="5.61"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -83,11 +83,12 @@ function do_webserver ()
   do_main_menu
 }
 
-function do_makehtml ()
+function do_makehtml_menu ()
 {
   SET_SEL=$( whiptail --title "makehtml Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --ok-button Select --cancel-button Back \
-  "a RUN" "makehtml.py nano $config_file for speed_cam & webserver" \
-  "b VIEW" "How to View speed HTML Files" \
+  "a RUN" "makehtml.py Create speed cam html files" \
+  "b CLEAN" "Delete all html Files then RUN makehtml.py" \
+  "c ABOUT" "How to View speed-cam html Files" \
   "q QUIT" "Back to Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
@@ -99,10 +100,18 @@ function do_makehtml ()
             ./makehtml.py
             do_anykey
             do_makehtml_about
-            do_makehtml ;;
-      b\ *) do_makehtml_about
-            do_makehtml ;;
-      q\ *) do_main_menu ;;
+            do_makehtml_menu ;;
+      b\ *) clear
+            echo "Deleting all html files in media/html"
+            rm media/html/*html
+            ./makehtml.py
+            do_anykey
+            do_makehtml_about
+            do_makehtml_menu ;;
+      c\ *) do_makehtml_about
+            do_makehtml_menu ;;
+      q\ *) clear
+            do_main_menu ;;
       *) whiptail --msgbox "Programmer error: un recognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running selection $SET_SEL" 20 60 1
   fi
@@ -111,6 +120,11 @@ function do_makehtml ()
 function do_makehtml_about ()
 {
   whiptail --title "About makehtml.py" --msgbox " \
+
+  makehtml.py will combine speed-cam.csv data with the
+  associated images into a formatted html page.  You
+  can view pages from the webserver using a web browser
+  and can easily navigate up and down the pages.
 
   You must have several speed images in media/images
   and an associated speed-cam.csv file.
@@ -144,7 +158,6 @@ function do_edit_save ()
   fi
   rm $filename_temp
   rm $filename_conf
-  do_settings_menu
 }
 
 #------------------------------------------------------------------------------
@@ -185,7 +198,8 @@ function do_settings_menu ()
 #------------------------------------------------------------------------------
 function do_search_selections ()
 {
-    comment="Select File Search Filter"
+
+    comment="Enter File Name or file filter"
     var="*"
     value="This is a Value"
 
@@ -222,7 +236,7 @@ function do_search_about ()
   ctrl-x y to exit nano then save changes
 3 Run search-speed.py using Menu Pick or console command
 
-Note: I will be working on a menu selection for copying
+Note: I will be working on a selection menu pick for copying
       target files.
 
 " 0 0 0
@@ -276,29 +290,26 @@ function do_about()
 {
   whiptail --title "About menubox.sh" --msgbox " \
        speed-cam - Object Motion Speed Tracking
-        using Raspberry Pi, picamera and openCV
-              written by Claude Pageau
-
  menubox.sh manages speed-cam operation, settings and utilities
 
- 1. Start and Calibrate the camera distance settings using calib images.
+ 1. Start speed-cam.py and Calibrate the camera distance settings
+    using calib images.
  2. Edit config.py and set calibrate=False
  3. Start speed-cam.py and create speed images.  These can
-    be viewed using the web server.
- 4. Data will be in speed-cam.csv
- 5. If you want to search for a image matches run the
+    be viewed from a web browser using the web server url.
+ 4. Speed Cam Data will be in speed-cam.csv file
+ 5. If you want to search for image matches run then
     copy target image(s) to media/search then run
     search-speed.py
- 6. You can also create html files to combine csv and image data
-    run make
- file and images will be in images folder (links to html/images).
- Run makehtml.py and start the webserver.  View html files on a
- network pc web browser by accessing rpi IP address and port.
- eg 192.168.1.100:8080 (replace ip with your rpi ip)
+ 6. You can also create html files that combine csv and image data
+    into formatted html pages. Output will be put in media/html folder
+    Run makehtml.py. check that webserver is running.  View html files
+    on a network pc web browser by accessing rpi IP address and port.
+    eg 192.168.1.100:8080 (replace ip with your rpi ip)
 
-           For more detailed instructions see
-       https://github.com/pageauc/rpi-speed-camera
+ For more see  https://github.com/pageauc/rpi-speed-camera
 
+ To Exit this About Press TAB key then Enter on OK
  Good Luck and Enjoy .... Claude
 \
 " 0 0 0
@@ -327,7 +338,7 @@ function do_main_menu ()
       a\ *) do_speed_cam ;;
       b\ *) do_webserver ;;
       c\ *) do_settings_menu ;;
-      d\ *) do_makehtml ;;
+      d\ *) do_makehtml_menu ;;
       e\ *) clear
             more ./speed-cam.csv
             do_anykey ;;
