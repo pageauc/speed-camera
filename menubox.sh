@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="3.40"
+ver="5.60"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -98,6 +98,7 @@ function do_makehtml ()
       a\ *) clear
             ./makehtml.py
             do_anykey
+            do_makehtml_about
             do_makehtml ;;
       b\ *) do_makehtml_about
             do_makehtml ;;
@@ -109,7 +110,6 @@ function do_makehtml ()
 #--------------------------------------------------------------------
 function do_makehtml_about ()
 {
-  python "./makehtml.py"
   whiptail --title "About makehtml.py" --msgbox " \
 
   You must have several speed images in media/images

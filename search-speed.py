@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-ver = "ver 5.50"  # Original issue on 26-Jul-2017 by Claude Pageau
+ver = "ver 5.60"  # Original issue on 26-Jul-2017 by Claude Pageau
 
 """
 speed-search.py written by Claude Pageau pageauc@gmail.com
@@ -11,10 +11,10 @@ This is program works in conjunction with speed-cam.py data output images and cs
 It needs a speed camera csv file and related images.  To initiate a search make sure
 there is sufficient images (suggest > 100).  Find a single speed image that you want
 to find matches for.  Copy this image into the search folder (default media/search)
-Start speed-search.py
+Start search-speed.py
 
     cd ~/rpi-speed-camera
-    ./speed-search.py
+    ./search-speed.py
 
 If config.py variable copy_results_on = True then copies of the matching image files
 will be put in a subfolder named the same as the search image filename minus the extension.
@@ -33,6 +33,7 @@ good enough to release.
 Claude  ...
 
 """
+
 import os
 os.system('clear')
 # Create some system variables
@@ -112,7 +113,6 @@ def get_search_rect(search_filepath):
 
 #-----------------------------------------------------------------------------------------------
 def search_for_match(search_image, search_rect):
-    success = True      # Will be set to False if there is a processing error
     cnt = 0             # Initialize csv file row counter
     work_count = 0      # initialize number of images processed
     result_count = 0    # initialize search result counter
@@ -128,8 +128,6 @@ def search_for_match(search_image, search_rect):
             except OSError as err:
                 print('ERROR: Cannot Create Directory %s - %s, using default location.' %
                                                  ( results_dir_path, err))
-                success = False
-                return success
             else:
                 print('Created Search Results Dir %s' % (results_dir_path))
 
@@ -168,7 +166,6 @@ def search_for_match(search_image, search_rect):
                             shutil.copy(current_image_path, results_dir_path)  # put a copy of file in results folder
                         except OSError as err:
                             print('ERROR: Copy Failed from %s to %s - %s' % (current_image_path, results_dir_path, err))
-                            success = False
                     if gui_window_on:
                         cv2.imshow("Searching", search_rect)
                         cv2.imshow("Target", target_rect)
@@ -188,7 +185,6 @@ def search_for_match(search_image, search_rect):
                     os.remove(search_image)
         except OSError as err:
             print('ERROR: Copy Failed from %s to %s - %s' % (search_file, results_dir_path, err))
-            success = False
     finally:
         if search_using_csv:
             f.close()   # close csv file
@@ -214,10 +210,9 @@ def search_for_match(search_image, search_rect):
             print("From %.4f to a lower value." % search_match_value)
             print("Then Try Again")
             print("")
-            success = False
         print("Processed %i Images in %i seconds Found %i Matches" %
                        (work_count, work_end - work_start, result_count))
-    return success
+    return result_list
 
 blank = "                                                              "
 # Start Main
@@ -226,13 +221,13 @@ target_total = len(search_list)
 try:
     if search_list:  # Are there any search files found in search_path
         for filePath in search_list:  # process each search_list entry
-            os.system('clear')        
-            for i in range(1,5): 
+            os.system('clear')
+            for i in range(1,5):
                 print("")
                 print_at(1,i,blank)
             print_at(1,1,"%s %s written by Claude Pageau       " % ( progName, ver))
             print("------------------------------------------------")
-            print("Found %i Target Search Image Files in %s" % 
+            print("Found %i Target Search Image Files in %s" %
                                  ( target_total, search_dest_path))
             print("------------------------------------------------")
             for files in search_list:
@@ -247,7 +242,10 @@ try:
                 print("ERROR: Problem Creating Search Rectangle.")
                 print("       Cannot Search Match %s" % filePath)
             else:
-                search_for_match(filePath, search_rect)  # Look for matches
+                results = search_for_match(filePath, search_rect)  # Look for matches
+               # if results:
+               #     for rows in results:
+               #         print(rows)
     else:
         print("------------- Instructions ---------------------")
         print("")
@@ -268,7 +266,7 @@ except KeyboardInterrupt:
     print("")
     print("+++++++++++++++++++++++++++++++++++")
     print("User Pressed Keyboard ctrl-c")
-    print("%s %s - Exiting" % (progName, ver))
+    print("%s %s - Exiting ..." % (progName, ver))
     print("+++++++++++++++++++++++++++++++++++")
     print("")
     quit(0)
