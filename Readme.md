@@ -3,14 +3,14 @@
 
 ### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/rpi-speed-camera/wiki)
 
-* NEW: Added speed-search.py that uses opencv template matching to find similar images.  To use,
-        copy one or more search image(s) to the default search folder media/search and run speed-search.py.  
+* NEW: Added search-speed.py that uses opencv template matching to find similar images.  To use,
+        copy one or more search image(s) to the default search folder media/search and run search-speed.py.  
         if the config.py variable copy_results_on=True then image match files including orignal search file 
         are copied to a subfolder with the same name as the search image filename but without the file extension. 
         If you set config.py gui_window_on=True a Searching and Target window will be displayed on the
         RPI desktop.  When a match is found it will be displayed for 4 seconds.
         Results can also be reviewed from a web browser by running ./webserver.py and accessing link for search/subfolder
-        (Note: speed-search.py is still under development)
+        (Note: search-speed.py is still under development)
           
 * IMPORTANT: speed-cam.py release 5.x or above requires a full install.
 It is advised that you rename/delete previous rpi-speed-camera folder
