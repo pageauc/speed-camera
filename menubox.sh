@@ -319,7 +319,7 @@ function do_about()
 function do_main_menu ()
 {
   init_status
-  SELECTION=$(whiptail --title "Main Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --cancel-button Quit --ok-button Select \
+  SELECTION=$(whiptail --title "Speed Cam Main Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --cancel-button Quit --ok-button Select \
   "a $SPEED_1" "$SPEED_2" \
   "b $WEB_1" "$WEB_2" \
   "c SETTINGS" "Change speed_cam and webserver settings" \
