@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="5.7"
+ver="5.71"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -354,6 +354,7 @@ function do_speed_search_menu ()
   elif [ $RET -eq 0 ]; then
     case "$SET_SEL" in
       a\ *) do_search_file_select
+            cd $DIR
             do_speed_search_menu ;;
       b\ *) do_search_file_view
             do_speed_search_menu ;;
@@ -365,7 +366,8 @@ function do_speed_search_menu ()
             do_speed_search_menu ;;
       e\ *) do_search_about
             do_speed_search_menu ;;
-      q\ *) do_main_menu ;;
+      q\ *) cd $DIR
+            do_main_menu ;;
       *) whiptail --msgbox "Programmer error: unrecognized option" 0 0 0 ;;
     esac || whiptail --msgbox "There was an error running menu item $SET_SEL" 0 0 0
   fi
@@ -418,6 +420,7 @@ function do_about()
 function do_main_menu ()
 {
   init_status
+  cd $DIR
   SELECTION=$(whiptail --title "Speed Cam Main Menu" \
                        --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
                        --cancel-button Quit \
@@ -448,7 +451,8 @@ function do_main_menu ()
       g\ *) clear
             do_upgrade ;;
       h\ *) do_about ;;
-      q\ *) exit 0 ;;
+      q\ *) rm -r filename_conf filename_temp
+            exit 0 ;;
          *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running menu item $SELECTION" 20 60 1
   fi
