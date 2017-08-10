@@ -212,7 +212,8 @@ function do_settings_menu ()
 }
 
 #------------------------------------------------------------------------------
-Filebrowser() {
+function Filebrowser()
+{
 # written by Claude Pageau
 # first parameter is Menu Title
 # second parameter is optional dir path to starting folder
@@ -308,7 +309,6 @@ $search_list
 " 0 0 0
 }
 
-
 #------------------------------------------------------------------------------
 function do_search_about ()
 {
@@ -327,11 +327,10 @@ whiptail --title "About Search" --msgbox " \
     NOTE To activate copy, Make sure search_config.py variable
     search_copy_on=True
     If False then no copy will occur (use for testing value settings)
- 4. Use Webserver and browser to view match result files 
+ 4. Use Webserver and browser to view match result files
     in /media/search folder
 \
 " 0 0 0
-
 }
 
 #------------------------------------------------------------------------------
