@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="5.61"
+ver="5.7"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -8,6 +8,14 @@ cd $DIR
 progname="speed-cam.py"
 speedconfig="config.py"
 searchconfig="search_config.py"
+imagedir="media/images"
+searchdir="media/search"
+
+# Setup search target variables
+imagedir="$DIR/$imagedir"   # Setup full path to images directory
+searchdir="$DIR/$searchdir"  # Setup full path to search directory
+searchconfig="$DIR/$searchconfig"
+
 filename_conf="work_config.txt"
 filename_temp="work_temp.txt"
 
@@ -85,7 +93,10 @@ function do_webserver ()
 
 function do_makehtml_menu ()
 {
-  SET_SEL=$( whiptail --title "makehtml Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --ok-button Select --cancel-button Back \
+  SET_SEL=$( whiptail --title "makehtml Menu" \
+                      --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
+                      --ok-button Select \
+                      --cancel-button Back \
   "a RUN" "makehtml.py Create speed cam html files" \
   "b CLEAN" "Delete all html Files then RUN makehtml.py" \
   "c ABOUT" "How to View speed-cam html Files" \
@@ -136,7 +147,7 @@ function do_makehtml_about ()
   3. From a web browser connect to speed-cam web server
      using RPI IP:PORT url
   4. View html files in media/html folder
-
+\
 " 0 0 0
 }
 
@@ -165,7 +176,9 @@ function do_nano_main ()
 {
   cp $config_file $filename_conf
   nano $filename_conf
-  if (whiptail --title "Save Nano Edits" --yesno "Save nano changes to $config_file\n or cancel all changes" 8 65 --yes-button "Save" --no-button "Cancel" ) then
+  if (whiptail --title "Save Nano Edits" --yesno "Save nano changes to $config_file\n or cancel all changes" 0 0 \
+                                         --yes-button "Save" \
+                                         --no-button "Cancel" ); then
     cp $filename_conf $config_file
   fi
 }
@@ -174,7 +187,10 @@ function do_nano_main ()
 function do_settings_menu ()
 {
   config_file=$speedconfig
-  SET_SEL=$( whiptail --title "Settings Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --ok-button Select --cancel-button Back \
+  SET_SEL=$( whiptail --title "Settings Menu" \
+                      --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
+                      --ok-button Select \
+                      --cancel-button Back \
   "a EDIT" "nano $config_file for speed_cam & webserver" \
   "b VIEW" "config.py for speed_cam & webserver" \
   "q QUIT" "Back to Main Menu" 3>&1 1>&2 2>&3 )
@@ -190,55 +206,130 @@ function do_settings_menu ()
             do_anykey
             do_settings_menu ;;
       q\ *) do_main_menu ;;
-      *) whiptail --msgbox "Programmer error: un recognized option" 20 60 1 ;;
-    esac || whiptail --msgbox "There was an error running menu item $SET_SEL" 20 60 1
+      *) whiptail --msgbox "Programmer error: un recognized option" 0 0 0 ;;
+    esac || whiptail --msgbox "There was an error running menu item $SET_SEL" 0 0 0
   fi
 }
 
 #------------------------------------------------------------------------------
-function do_search_selections ()
-{
+Filebrowser() {
+# written by Claude Pageau
+# first parameter is Menu Title
+# second parameter is optional dir path to starting folder
+# otherwise current folder is selected
+    if [ -z $2 ] ; then
+        dir_list=$(ls -lhp  | awk -F ' ' ' { print $9 " " $5 } ')
+    else
+        cd "$2"
+        dir_list=$(ls -lhp  | awk -F ' ' ' { print $9 " " $5 } ')
+    fi
 
-    comment="Enter File Name or file filter"
-    var="*"
-    value="This is a Value"
+    curdir=$(pwd)
+    if [ "$curdir" == "/" ] ; then  # Check if you are at root folder
+        selection=$(whiptail --title "$1" \
+                              --menu "PgUp/PgDn/Arrow Enter Selects File/Folder\nor Tab Key\n$curdir" 0 0 0 \
+                              --cancel-button Cancel \
+                              --ok-button Select $dir_list 3>&1 1>&2 2>&3)
+    else   # Not Root Dir so show ../ BACK Selection in Menu
+        selection=$(whiptail --title "$1" \
+                              --menu "PgUp/PgDn/Arrow Enter Selects File/Folder\nor Tab Key\n$curdir" 0 0 0 \
+                              --cancel-button Cancel \
+                              --ok-button Select ../ BACK $dir_list 3>&1 1>&2 2>&3)
+    fi
 
-    searchvalue=$(whiptail --title "Image Directory Select (Enter Saves or Tab)" \
-                           --inputbox "$comment\n $var=$value" 10 65 "$value" \
-                           --ok-button "Save" 3>&1 1>&2 2>&3)
-    exitstatus=$?
-    if [ ! "$newvalue" = "" ] ; then   # Variable was changed
-       if [ $exitstatus -eq 1 ] ; then  # Check if Save selected otherwise it was cancelled
-          do_edit_save
-       elif [ $exitstatus -eq 0 ] ; then
-         echo "do_edit_variable - Cancel was pressed"
-         if echo "${value}" | grep --quiet "${newvalue}" ; then
-            do_settings_menu
-         else
-            do_edit_save
-         fi
+    RET=$?
+    if [ $RET -eq 1 ]; then  # Check if User Selected Cancel
+       return 1
+    elif [ $RET -eq 0 ]; then
+       if [[ -d "$selection" ]]; then  # Check if Directory Selected
+          Filebrowser "$1" "$selection"
+       elif [[ -f "$selection" ]]; then  # Check if File Selected
+          if [[ $selection == *.jpg ]]; then   # Check if selected File has .jpg extension
+            if (whiptail --title "Confirm Selection" --yesno "DirPath : $curdir\nFileName: $selection" 0 0 \
+                         --yes-button "Confirm" \
+                         --no-button "Retry"); then
+                filename="$selection"
+                filepath="$curdir"    # Return full filepath  and filename as selection variables
+            else
+                Filebrowser "$1" "$curdir"
+            fi
+          else   # Not jpg so Inform User and restart
+             whiptail --title "ERROR: File Must have .jpg Extension" \
+                      --msgbox "$selection\nYou Must Select a jpg Image File" 0 0
+             Filebrowser "$1" "$curdir"
+          fi
+       else
+          # Could not detect a file or folder so Try Again
+          whiptail --title "ERROR: Selection Error" \
+                   --msgbox "Error Changing to Path $selection" 0 0
+          Filebrowser "$1" "$curdir"
        fi
     fi
-  do_speed_search_menu
 }
+
+#------------------------------------------------------------------------------
+function do_search_file_select ()
+{
+    Filebrowser "Search Target File Selection Menu" media/images
+
+    exitstatus=$?
+    if [ $exitstatus -eq 0 ]; then
+        if [ "$selection" == "" ]; then
+            echo "User Pressed Esc with No File Selection"
+        else
+            whiptail --title "Copy Search Target File" --msgbox " \
+
+Copy Search Target File
+
+File: $filename
+From: $filepath
+ To : $searchdir
+\
+" 0 0 0
+            cp "$filepath/$filename" "$searchdir"
+        fi
+    else
+        echo "User Pressed Cancel. with No File Selected"
+    fi
+}
+
+#------------------------------------------------------------------------------
+function do_search_file_view ()
+{
+search_list=$(ls -lhp $searchdir/*jpg | awk -F ' ' ' { print $9 " " $5 } ')
+whiptail --title "View Search Target File(s)" --msgbox " \
+
+List of Current Search Target Files
+in folder $searchdir
+-----------------------------------
+$search_list
+-----------------------------------
+\
+" 0 0 0
+}
+
 
 #------------------------------------------------------------------------------
 function do_search_about ()
 {
-   whiptail --title "About Search" --msgbox " \
+whiptail --title "About Search" --msgbox " \
 
-1 From console copy one or more target images
-  From: media/images
-  To  : media/search
-2 Edit Search Settings if required.
-  You can use the menubox.sh EDIT Menu Pick
-  This will edit search_config.py using nano editor
-  ctrl-x y to exit nano then save changes
-3 Run search-speed.py using Menu Pick or console command
-
-Note: I will be working on a selection menu pick for copying
-      target files.
-
+ 1. Use SELECT menu pick from Search Images Menu
+    You can select one or more image files that will
+    be copied to $searchdir
+ 2. Use EDIT menu pick from Search Images Menu
+    This will edit search_config.py using nano editor
+    ctrl-x y to exit nano then save changes
+ 3. Use RUN menu pick from Search Images Menu
+    This will search for matches for each target search file
+    All specific target search file results will be put in a
+    folder named after the search target file name minus the extension.
+    NOTE To activate copy, Make sure search_config.py variable
+    search_copy_on=True
+    If False then no copy will occur (use for testing value settings)
+ 4. Use Webserver and browser to view match result files 
+    in /media/search folder
+\
 " 0 0 0
 
 }
@@ -247,11 +338,15 @@ Note: I will be working on a selection menu pick for copying
 function do_speed_search_menu ()
 {
   config_file=$searchconfig
-  SET_SEL=$( whiptail --title "Search Images Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --ok-button Select --cancel-button Back \
+  SET_SEL=$( whiptail --title "Search Images Menu" \
+                      --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
+                      --ok-button Select \
+                      --cancel-button Back \
   "a SELECT" "Image Target Files for Search" \
-  "b EDIT" "nano $config_file Settings" \
-  "c SEARCH" "Speed Images for Matches" \
-  "d ABOUT" "Images Search" \
+  "b VIEW" "Current Search Target Files" \
+  "c EDIT" "nano $config_file Settings" \
+  "d SEARCH" "Speed Images for Matches" \
+  "e ABOUT" "Images Search" \
   "q QUIT" "Back to Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
@@ -259,26 +354,31 @@ function do_speed_search_menu ()
     do_main_menu
   elif [ $RET -eq 0 ]; then
     case "$SET_SEL" in
-      a\ *) do_search_about
+      a\ *) do_search_file_select
             do_speed_search_menu ;;
-      b\ *) do_nano_main
+      b\ *) do_search_file_view
             do_speed_search_menu ;;
-      c\ *) clear
+      c\ *) /bin/nano "$searchconfig"
+            do_speed_search_menu ;;
+      d\ *) clear
             ./search-speed.py
             do_anykey
             do_speed_search_menu ;;
-      d\ *) do_search_about
+      e\ *) do_search_about
             do_speed_search_menu ;;
       q\ *) do_main_menu ;;
-      *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
-    esac || whiptail --msgbox "There was an error running menu item $SET_SEL" 20 60 1
+      *) whiptail --msgbox "Programmer error: unrecognized option" 0 0 0 ;;
+    esac || whiptail --msgbox "There was an error running menu item $SET_SEL" 0 0 0
   fi
 }
 
 #------------------------------------------------------------------------------
 function do_upgrade()
 {
-  if (whiptail --title "GitHub Upgrade speed-cam" --yesno "Upgrade speed-cam files from GitHub. Config files will not be changed" 8 65 --yes-button "upgrade" --no-button "Cancel" ) then
+  if (whiptail --title "GitHub Upgrade speed-cam" \
+               --yesno "Upgrade speed-cam Files from GitHub.\n Some config Files Will be Updated" 0 0 0 \
+               --yes-button "upgrade" \
+               --no-button "Cancel" ); then
     curlcmd=('/usr/bin/curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash')
     eval $curlcmd
     do_anykey
@@ -298,9 +398,9 @@ function do_about()
  3. Start speed-cam.py and create speed images.  These can
     be viewed from a web browser using the web server url.
  4. Speed Cam Data will be in speed-cam.csv file
- 5. If you want to search for image matches run then
-    copy target image(s) to media/search then run
-    search-speed.py
+ 5. If you want to search speed images for similar image matches.
+    Select the SEARCH Menu Pick then follow instructions
+    in ABOUT menu pick
  6. You can also create html files that combine csv and image data
     into formatted html pages. Output will be put in media/html folder
     Run makehtml.py. check that webserver is running.  View html files
@@ -319,7 +419,10 @@ function do_about()
 function do_main_menu ()
 {
   init_status
-  SELECTION=$(whiptail --title "Speed Cam Main Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --cancel-button Quit --ok-button Select \
+  SELECTION=$(whiptail --title "Speed Cam Main Menu" \
+                       --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
+                       --cancel-button Quit \
+                       --ok-button Select \
   "a $SPEED_1" "$SPEED_2" \
   "b $WEB_1" "$WEB_2" \
   "c SETTINGS" "Change speed_cam and webserver settings" \
