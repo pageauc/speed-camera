@@ -1,5 +1,5 @@
 # speed-cam.py - Speed Camera Object Motion Tracker 
-### RPI, Unix and Windows Speed Camera Using python, openCV, pi-camera or USB Cam
+### RPI, Unix and Windows Speed Camera Using python, openCV, USB Cam or RPI camera module
 
 ### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/rpi-speed-camera/wiki)
 
@@ -9,19 +9,20 @@
         here https://www.python.org/downloads/
 
 * 6.00  Added Optional SubDir creation by number of files or by SubDir Age
-        Also Added Disk Space Management that deletes oldest file in specified Dir Tree
+        Also Added Disk Space Management that deletes oldest files in specified Dir Tree
         to maintain a specified amount of Free disk space (default 500 MB)
         Also added try, except, pass for loading of pi-camera libraries
-        This should allow speed-cam.py to work on Non RPI platforms with Web Cam eg Ubuntu or windows       
+        This allows speed-cam.py to work on Non RPI platforms with Web Cam eg Ubuntu or MS Windows       
 
-* 5.00 Added search-speed.py that uses opencv template matching to find similar images.  To use,
-       use menubox.sh menuing or command line to copy one or more search image(s) to the
-       default media/search folder and run search-speed.py.  
-       if the config.py variable copy_results_on=True then image match files including orignal search file 
-       are copied to a subfolder with the same name as the search image filename but without the file extension. 
-       If you set config.py gui_window_on=True a Searching and Target window will be displayed on the
-       RPI desktop.  When a match is found it will be displayed for 4 seconds.
-       Results can also be reviewed from a web browser by running ./webserver.py and accessing link for search/subfolder
+* 5.00 Added search-speed.py that uses opencv template matching to find similar images.  Use menubox.sh 
+       menu system or command line to copy one or more search image(s) to the
+       default media/search folder and run ./search-speed.py  
+       if the config.py variable copy_results_on=True then image match files including original search file 
+       are copied to a sub folder with the same name as the search image file name but without the file extension. 
+       If you set config.py gui_window_on=True a Searching and Target window will displayed images on the
+       RPI desktop during search.  When a match is found it will be displayed in the Searching window for 4 seconds.
+       Results can also be reviewed from a web browser by running ./webserver.py and accessing link for 
+       media/search/subfolder after search is complete.
        (Note: search-speed.py is still under development)
           
 * IMPORTANT: speed-cam.py release 5.x or above requires a full install.
