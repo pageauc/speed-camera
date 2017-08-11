@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.50"
+version = "version 6.51"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -680,6 +680,10 @@ def speed_camera():
                                 travel_direction = "R2L"
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
+                                logging.info(" Event Add   - cx,cy(%i,%i) %3.2f %s %s px=%i/%i C=%i A=%i sqpx",
+                                                            cx, cy, ave_speed, speed_units, travel_direction,
+                                                            abs( start_pos_x - end_pos_x), track_len_trig,
+                                                            total_contours, biggest_area)                                    
                                 # Resized and process prev image before saving to disk
                                 prev_image = image2
                                 if calibrate:       # Create a calibration image
@@ -711,7 +715,7 @@ def speed_camera():
                                     cv2.line( prev_image ,( x_left, y_upper ),( x_left , y_lower ),cvRed,1 )
                                     cv2.line( prev_image ,( x_right, y_upper ),( x_right, y_lower ),cvRed,1 )
 
-                                big_image = cv2.resize(prev_image,(image_width, image_height))
+                                big_image = cv2.resize(prev_image,(image_width, image_height))                        
                                 if image_text_on:
                                     # Write text on image before saving
                                     image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
@@ -723,12 +727,8 @@ def speed_camera():
                                         y = 10  # show text at top of image
                                     logging.info(" Text: %s  ", image_text)
                                     cv2.putText( big_image,image_text,(x,y), font,FONT_SCALE,(cvWhite),2)
-                                logging.info(" Save Image: %s", filename)
+                                logging.info(" Save: %s", filename)
                                 cv2.imwrite(filename, big_image)
-                                logging.info(" Event Add   - cx,cy(%i,%i) %3.2f %s %s px=%i/%i C=%i A=%i sqpx",
-                                                            cx, cy, ave_speed, speed_units, travel_direction,
-                                                            abs( start_pos_x - end_pos_x), track_len_trig,
-                                                            total_contours, biggest_area)
 
                                 if log_data_to_CSV:    # Format and Save Data to CSV Log File
                                     log_time = datetime.datetime.now()
