@@ -721,9 +721,9 @@ def speed_camera():
                                         y = ( image_height - 50 )  # show text at bottom of image
                                     else:
                                         y = 10  # show text at top of image
-                                    logging.info("Add Text: %s  ", image_text)
+                                    logging.info(" Text: %s  ", image_text)
                                     cv2.putText( big_image,image_text,(x,y), font,FONT_SCALE,(cvWhite),2)
-                                logging.info("Save Speed Image to %s", filename)
+                                logging.info(" Save Image: %s", filename)
                                 cv2.imwrite(filename, big_image)
                                 logging.info(" Event Add   - cx,cy(%i,%i) %3.2f %s %s px=%i/%i C=%i A=%i sqpx",
                                                             cx, cy, ave_speed, speed_units, travel_direction,

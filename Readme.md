@@ -5,6 +5,8 @@
 
 * 6.50  Rewrote code to simplify image text and make compatible with Non RPI
         Unix or Windows platforms using a Web Cam.  Tested and Works OK.
+        If running on Windows download latest python that includes numpy and opencv
+        here https://www.python.org/downloads/
 
 * 6.00  Added Optional SubDir creation by number of files or by SubDir Age
         Also Added Disk Space Management that deletes oldest file in specified Dir Tree
