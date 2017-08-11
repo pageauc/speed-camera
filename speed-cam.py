@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.51"
+version = "version 6.53"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -582,7 +582,13 @@ def speed_camera():
         print("Restarting Camera.  One Moment Please .....")
         time.sleep(4)
         return
-
+    # Calculate position of text on the images
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    if image_text_bottom:
+        text_y = ( image_height - 50 )  # show text at bottom of image
+    else:
+        text_y = 10  # show text at top of image               
+        
     grayimage1 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
     event_timer = time.time()
     # Initialize prev_image used for taking speed image photo
@@ -719,14 +725,11 @@ def speed_camera():
                                 if image_text_on:
                                     # Write text on image before saving
                                     image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
-                                    font = cv2.FONT_HERSHEY_SIMPLEX
-                                    x =  int(( image_width / 2) - (len( image_text ) * image_font_size / 4) )
-                                    if image_text_bottom:
-                                        y = ( image_height - 50 )  # show text at bottom of image
-                                    else:
-                                        y = 10  # show text at top of image
+                                    text_x =  int(( image_width / 2) - (len( image_text ) * image_font_size / 3) )
+                                    if text_x < 2:
+                                        text_x = 2
                                     logging.info(" Text: %s  ", image_text)
-                                    cv2.putText( big_image,image_text,(x,y), font,FONT_SCALE,(cvWhite),2)
+                                    cv2.putText( big_image,image_text,(text_x,text_y), font,FONT_SCALE,(cvWhite),2)
                                 logging.info(" Save: %s", filename)
                                 cv2.imwrite(filename, big_image)
 
