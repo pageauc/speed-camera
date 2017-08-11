@@ -1,15 +1,15 @@
 #!/usr/bin/env python
-version = "version 6.00"
+version = "version 6.10"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
-Raspberry (Pi) - python opencv2 Speed tracking using picamera module or web cam
+Raspberry (Pi) - python opencv2 Speed tracking using picamera module or Web Cam
 GitHub Repo here https://github.com/pageauc/rpi-speed-camera/tree/master/
 
-This is a raspberry pi python opencv2 speed tracking demonstration program.
-It will detect speed in the field of view and use opencv to calculate the
+This is a python openCV object speed tracking demonstration program.
+It will detect speed in the field of view and use openCV to calculate the
 largest contour and return its x,y coordinate.  The image is tracked for
-a specified threshold length and then the speed is calculated.
+a specified pixel length and the final speed is calculated.
 Note: Variables for this program are stored in config.py
 
 Some of this code is based on a YouTube tutorial by
@@ -21,11 +21,14 @@ https://github.com/jrosebr1/imutils/blob/master/imutils/video/pivideostream.py
 
 Here is my YouTube video demonstrating a previous speed tracking demo
 program using a Raspberry Pi B2 https://youtu.be/09JS7twPBsQ
-
+and a fun speed lapse video https://youtu.be/-xdB_x_CbC8
 Installation
 Requires a Raspberry Pi with a RPI camera module or Web Cam installed and working
-Install from a logged in SSH session per commands below
+Install from a logged in SSH session per commands below.
+Code should run on a non RPI platform using a Web Cam
 
+curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash
+or
 wget https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
 chmod +x speed-install.sh
 ./speed-install.sh
@@ -716,15 +719,14 @@ def speed_camera():
                                     filename = get_image_name( speed_path, "calib-" )
                                     prev_image = take_calibration_image( filename, prev_image )
                                 else:
+                                    # Check if subdirectories configured and create as required
+                                    speed_path = subDirChecks( imageSubDirMaxHours, imageSubDirMaxFiles,
+                                                                                image_path, image_prefix)
                                     if image_filename_speed :
                                         speed_prefix = str(int(round(ave_speed))) + "-" + image_prefix
                                     else:
                                         speed_prefix = image_prefix
                                     filename = get_image_name( speed_path, speed_prefix)
-
-                                # Check if subdirectories configured and create as required
-                                speed_path = subDirChecks( imageSubDirMaxHours, imageSubDirMaxFiles,
-                                                                            image_path, image_prefix)
 
                                 if spaceTimerHrs > 0:  # if required check free disk space and delete older files (jpg)
                                     lastSpaceCheck = freeDiskSpaceCheck(lastSpaceCheck)
