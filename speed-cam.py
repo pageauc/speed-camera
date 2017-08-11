@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 5.50"
+version = "version 6.00"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -23,7 +23,7 @@ Here is my YouTube video demonstrating a previous speed tracking demo
 program using a Raspberry Pi B2 https://youtu.be/09JS7twPBsQ
 
 Installation
-Requires a Raspberry Pi with a RPI camera module installed and working
+Requires a Raspberry Pi with a RPI camera module or Web Cam installed and working
 Install from a logged in SSH session per commands below
 
 wget https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
@@ -86,13 +86,14 @@ try:  #Add this check in case running on non RPI platform using web cam
     from picamera import PiCamera
 except:
     pass
-    
+
 import numpy as np
 from threading import Thread
 import logging
-import io
 import time
 import datetime
+import io
+import glob
 import sys
 if not (sys.version_info > (3, 0)):
     import pyexiv2
@@ -269,7 +270,7 @@ def show_settings():
     os.chdir(cwd)
     if not os.path.isdir(search_dest_path):
         logging.info("Creating Search Folder %s", search_dest_path)
-        os.makedirs(search_dest_path)    
+        os.makedirs(search_dest_path)
     if not os.path.isdir(html_path):
         logging.info("Creating html Folder %s", html_path)
         os.makedirs(html_path)
@@ -310,6 +311,19 @@ def show_settings():
         print("                  WINDOW_BIGGER=%i gui_window_on=%s (Display OpenCV Status Windows on GUI Desktop)" %
                                ( WINDOW_BIGGER, gui_window_on ))
         print("                  CAMERA_FRAMERATE=%i fps video stream speed" % ( CAMERA_FRAMERATE ))
+        print("Sub-Directories . imageSubDirMaxHours=%i (0=off)  imageSubDirMaxFiles=%i (0=off)" %
+                                         ( imageSubDirMaxHours, imageSubDirMaxFiles ))
+        if spaceTimerHrs > 0:   # Check if disk mgmnt is enabled
+            print("Disk Space  ..... Enabled - Manage Target Free Disk Space. Delete Oldest %s Files if Needed" % (spaceFileExt))
+            print("                  Check Every spaceTimerHrs=%i hr(s) (0=off)  Target spaceFreeMB=%i MB  min is 100 MB)" %
+                                                   ( spaceTimerHrs, spaceFreeMB))
+            print("                  If Needed Delete Oldest spaceFileExt=%s  spaceMediaDir=%s" %
+                                                    ( spaceFileExt, spaceMediaDir ))
+        else:
+            print("Disk Space  ..... Disabled - spaceTimerHrs=%i  Manage Target Free Disk Space. Delete Oldest %s Files" %
+                                                    ( spaceTimerHrs, spaceFileExt ))
+            print("            ..... spaceTimerHrs=%i (0=Off)  Target spaceFreeMB=%i (min=100 MB)" %
+                                                    ( spaceTimerHrs, spaceFreeMB ))
         print("")
         print("-------------------------------------------------------------------------------------------------")
     return
@@ -325,7 +339,7 @@ def take_calibration_image(filename, cal_image):
     cv2.line( cal_image,( x_left, y_lower ),( x_right, y_lower ),cvBlue,1 )
     cv2.line( cal_image,( x_left, y_upper ),( x_left , y_lower ),cvBlue,1 )
     cv2.line( cal_image,( x_right, y_upper ),( x_right, y_lower ),cvBlue,1 )
-    
+
     print("")
     print("----------------------------------- Create Calibration Image --------------------------------------")
     print("")
@@ -341,6 +355,167 @@ def take_calibration_image(filename, cal_image):
     print("---------------------------- Press cntl-c to Quit Calibration Mode --------------------------------")
     print("")
     return cal_image
+
+#-----------------------------------------------------------------------------------------------
+def subDirLatest(directory): # Scan for directories and return most recent
+    dirList = [ name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name)) ]
+    if len(dirList) > 0:
+        lastSubDir = sorted(dirList)[-1]
+        lastSubDir = os.path.join(directory, lastSubDir)
+    else:
+        lastSubDir = directory
+    return lastSubDir
+
+#-----------------------------------------------------------------------------------------------
+def subDirCreate(directory, prefix):
+    now = datetime.datetime.now()
+    # Specify folder naming
+    subDirName = ('%s%d-%02d-%02d-%02d%02d' % (prefix, now.year, now.month, now.day, now.hour, now.minute))
+    subDirPath = os.path.join(directory, subDirName)
+    if not os.path.exists(subDirPath):
+        try:
+            os.makedirs(subDirPath)
+        except OSError as err:
+            logging.error('Cannot Create Directory %s - %s, using default location.', subDirPath, err)
+            subDirPath = directory
+        else:
+            logging.info('Created %s', subDirPath)
+    else:
+        subDirPath = directory
+    return subDirPath
+
+#-----------------------------------------------------------------------------------------------
+def deleteOldFiles(maxFiles, dirPath, prefix):
+    # Delete Oldest files gt or eq to maxfiles that match filename prefix
+    try:
+        fileList = sorted(glob.glob(os.path.join(dirPath, prefix + '*')))
+    except OSError as err:
+        logging.error('Problem Reading Directory %s - %s', dirPath, err)
+    else:
+        while len(fileList) >= maxFiles:
+            oldest = fileList[0]
+            oldestFile = oldest
+            try:   # Remove oldest file in recent folder
+                fileList.remove(oldest)
+                os.remove(oldestFile)
+            except OSError as err:
+                logging.error('Cannot Remove %s - %s', oldestFile, err)
+
+#-----------------------------------------------------------------------------------------------
+def subDirCheckMaxFiles(directory, filesMax):  # Count number of files in a folder path
+    fileList = glob.glob(directory + '/*jpg')
+    count = len(fileList)
+    if count > filesMax:
+        makeNewDir = True
+        dotCount = showDots(motionDotsMax + 2)
+        logging.info('Total Files in %s Exceeds %i ' % ( directory, filesMax ))
+    else:
+        makeNewDir = False
+    return makeNewDir
+
+#-----------------------------------------------------------------------------------------------
+def subDirCheckMaxHrs(directory, hrsMax, prefix):   # Note to self need to add error checking
+    # extract the date-time from the directory name
+    dirName = os.path.split(directory)[1]   # split dir path and keep dirName
+    dirStr = dirName.replace(prefix,'')   # remove prefix from dirName so just date-time left
+    dirDate = datetime.datetime.strptime(dirStr, "%Y-%m-%d-%H:%M")  # convert string to datetime
+    rightNow = datetime.datetime.now()   # get datetime now
+    diff =  rightNow - dirDate           # get time difference between dates
+    days, seconds = diff.days, diff.seconds
+    dirAgeHours = days * 24 + seconds // 3600  # convert to hours
+    if dirAgeHours > hrsMax:   # See if hours are exceeded
+        makeNewDir = True
+        dotCount = showDots(motionDotsMax + 2)
+        logging.info('MaxHrs %i Exceeds %i for %s' % ( dirAgeHours, hrsMax, directory ))
+    else:
+        makeNewDir = False
+    return makeNewDir
+
+#-----------------------------------------------------------------------------------------------
+def subDirChecks(maxHours, maxFiles, directory, prefix):
+    # Check if motion SubDir needs to be created
+    if maxHours < 1 and maxFiles < 1:  # No Checks required
+        # logging.info('No sub-folders Required in %s', directory)
+        subDirPath = directory
+    else:
+        subDirPath = subDirLatest(directory)
+        if subDirPath == directory:   # No subDir Found
+            logging.info('No sub folders Found in %s' % directory)
+            subDirPath = subDirCreate(directory, prefix)
+        elif ( maxHours > 0 and maxFiles < 1 ):   # Check MaxHours Folder Age Only
+            if subDirCheckMaxHrs(subDirPath, maxHours, prefix):
+                subDirPath = subDirCreate(directory, prefix)
+        elif ( maxHours < 1 and maxFiles > 0):   # Check Max Files Only
+            if subDirCheckMaxFiles(subDirPath, maxFiles):
+                subDirPath = subDirCreate(directory, prefix)
+        elif maxHours > 0 and maxFiles > 0:   # Check both Max Files and Age
+            if subDirCheckMaxHrs(subDirPath, maxHours, prefix):
+                if subDirCheckMaxFiles(subDirPath, maxFiles):
+                    subDirPath = subDirCreate(directory, prefix)
+                else:
+                    logging.info('MaxFiles Not Exceeded in %s', subDirPath)
+    os.path.abspath(subDirPath)
+    return subDirPath
+
+#-----------------------------------------------------------------------------------------------
+def filesToDelete(mediaDirPath, extension=image_format):
+    return sorted(
+        (os.path.join(dirname, filename)
+        for dirname, dirnames, filenames in os.walk(mediaDirPath)
+        for filename in filenames
+        if filename.endswith(extension)),
+        key=lambda fn: os.stat(fn).st_mtime, reverse=True)
+
+#-----------------------------------------------------------------------------------------------
+def freeSpaceUpTo(spaceFreeMB, mediaDir, extension=image_format):
+    # Walks mediaDir and deletes oldest files until spaceFreeMB is achieved
+    # Use with Caution
+    mediaDirPath = os.path.abspath(mediaDir)
+    if os.path.isdir(mediaDirPath):
+        MB2Bytes = 1000000  # Conversion from MB to Bytes
+        targetFreeBytes = spaceFreeMB * MB2Bytes
+        fileList = filesToDelete(mediaDir, extension)
+        totFiles = len(fileList)
+        delcnt = 0
+        logging.info('Session Started')
+        while fileList:
+            statv = os.statvfs(mediaDirPath)
+            availFreeBytes = statv.f_bfree*statv.f_bsize
+            if availFreeBytes >= targetFreeBytes:
+                break
+            filePath = fileList.pop()
+            try:
+                os.remove(filePath)
+            except OSError as err:
+                logging.error('Del Failed %s', filePath)
+                logging.error('Error: %s', err)
+            else:
+                delcnt += 1
+                logging.info('Del %s', filePath)
+                logging.info('Target=%i MB  Avail=%i MB  Deleted %i of %i Files ',
+                                   targetFreeBytes / MB2Bytes, availFreeBytes / MB2Bytes, delcnt, totFiles )
+                if delcnt > totFiles / 4:  # Avoid deleting more than 1/4 of files at one time
+                    logging.warning('Max Deletions Reached %i of %i', delcnt, totFiles)
+                    logging.warning('Deletions Restricted to 1/4 of total files per session.')
+                    break
+        logging.info('Session Ended')
+    else:
+        logging.error('Directory Not Found - %s', mediaDirPath)
+
+#-----------------------------------------------------------------------------------------------
+def freeDiskSpaceCheck(lastSpaceCheck):
+    if spaceTimerHrs > 0:   # Check if disk free space timer hours is enabled
+        # See if it is time to do disk clean-up check
+        if ((datetime.datetime.now() - lastSpaceCheck).total_seconds() > spaceTimerHrs * 3600):
+            lastSpaceCheck = datetime.datetime.now()
+            if spaceFreeMB < 100:   # set freeSpaceMB to reasonable value if too low
+                diskFreeMB = 100
+            else:
+                diskFreeMB = spaceFreeMB
+            logging.info('spaceTimerHrs=%i  diskFreeMB=%i  spaceMediaDir=%s spaceFileExt=%s',
+                           spaceTimerHrs, diskFreeMB, spaceMediaDir, spaceFileExt)
+            freeSpaceUpTo(diskFreeMB, spaceMediaDir, spaceFileExt)
+    return lastSpaceCheck
 
 #-----------------------------------------------------------------------------------------------
 def get_image_name(path, prefix):
@@ -443,7 +618,10 @@ def speed_camera():
     # Initialize prev_image used for taking speed image photo
     prev_image = image2
     still_scanning = True
+    lastSpaceCheck = datetime.datetime.now()
+    speed_path = image_path
     while still_scanning:    # process camera thread images and calculate speed
+
         image2 = vs.read()    # Get image from PiVideoSteam thread instance
         if WEBCAM:
             if ( WEBCAM_HFLIP and WEBCAM_VFLIP ):
@@ -472,7 +650,7 @@ def speed_camera():
         cx, cy = 0, 0   # Center of contour used for tracking
         mx, my = 0, 0   # x,y of top right position contour
         mw, mh = 0, 0   # w,h width, height of contour
-        
+
         # Convert to gray scale, which is easier
         grayimage2 = cv2.cvtColor( image_crop, cv2.COLOR_BGR2GRAY )
         # Get differences between the two greyed images
@@ -533,16 +711,27 @@ def speed_camera():
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
                                 # Resized and process prev image before saving to disk
-                                prev_image = image2                                
+                                prev_image = image2
                                 if calibrate:       # Create a calibration image
-                                    filename = get_image_name( image_path, "calib-" )
+                                    filename = get_image_name( speed_path, "calib-" )
                                     prev_image = take_calibration_image( filename, prev_image )
                                 else:
                                     if image_filename_speed :
                                         speed_prefix = str(int(round(ave_speed))) + "-" + image_prefix
                                     else:
                                         speed_prefix = image_prefix
-                                    filename = get_image_name( image_path, speed_prefix)
+                                    filename = get_image_name( speed_path, speed_prefix)
+
+                                # Check if subdirectories configured and create as required
+                                speed_path = subDirChecks( imageSubDirMaxHours, imageSubDirMaxFiles,
+                                                                            image_path, image_prefix)
+
+                                if spaceTimerHrs > 0:  # if required check free disk space and delete older files (jpg)
+                                    lastSpaceCheck = freeDiskSpaceCheck(lastSpaceCheck)
+
+                                if image_max_files > 0:    # Manage a maximum number of files and delete oldest if required.
+                                    deleteOldFiles(image_max_files, speed_path, image_prefix)
+
                                     # Add motion rectangle to image
                                     if image_show_motion_area:
                                         if SHOW_CIRCLE:
@@ -554,8 +743,8 @@ def speed_camera():
                                         cv2.line( prev_image ,( x_right, y_upper ),( x_right, y_lower ),cvRed,1 )
                                 big_image = cv2.resize(prev_image,(image_width, image_height))
                                 cv2.imwrite(filename, big_image)
-                                logging.info(" Event Add   - cx,cy(%i,%i) %3.2f %s %s Len=%i/%i px C=%i A=%i sqPx",
-                                                            cx, cy, ave_speed, speed_units, travel_direction, 
+                                logging.info(" Event Add   - cx,cy(%i,%i) %3.2f %s %s px=%i/%i C=%i A=%i sqpx",
+                                                            cx, cy, ave_speed, speed_units, travel_direction,
                                                             abs( start_pos_x - end_pos_x), track_len_trig,
                                                             total_contours, biggest_area)
 
@@ -574,25 +763,25 @@ def speed_camera():
                                               quote, quote, filename, quote, cx, cy, mw, mh, mw * mh,
                                               quote, travel_direction, quote ))
                                 log_to_csv_file( log_csv_text )
-                                logging.info("End Track    - Tracked %i px in %.2f sec", tot_track_dist, tot_track_time )
+                                logging.info("End Track    - Tracked %i px in %.3f sec", tot_track_dist, tot_track_time )
                             else:
-                                logging.info("End Track    - Skip Photo SPEED %.1f %s max_speed_over=%i  %i px in %.1f sec  C=%i A=%i sqPx ",
+                                logging.info("End Track    - Skip Photo SPEED %.1f %s max_speed_over=%i  %i px in %.3f sec  C=%i A=%i sqpx ",
                                                             ave_speed, speed_units, max_speed_over, tot_track_dist,
                                                             tot_track_time, total_contours, biggest_area )
-                                                            
+
                             # Track Ended so Reset Variables for next cycle through loop
                             start_pos_x = 0
                             end_pos_x = 0
                             first_event = True
                             time.sleep( track_timeout )  # Pause so object is not immediately tracked again
                         else:
-                            logging.info(" Event Add   - cx,cy(%i,%i) %3.1f %s Len=%i/%i px C=%i A=%i sqPx",
+                            logging.info(" Event Add   - cx,cy(%i,%i) %3.1f %s px=%i/%i C=%i A=%i sqpx",
                                                          cx, cy, ave_speed, speed_units, abs( start_pos_x - end_pos_x),
                                                          track_len_trig, total_contours, biggest_area )
                             end_pos_x = cx
                     else:
                         if show_out_range:
-                            logging.info(" Out Range   - cx,cy(%i,%i) Dist=%i is <%i or >%i px  C=%2i A=%i sqPx",
+                            logging.info(" Out Range   - cx,cy(%i,%i) Dist=%i is <%i or >%i px  C=%2i A=%i sqpx",
                                                          cx, cy, abs( cx - end_pos_x ), x_diff_min, x_diff_max,
                                                          total_contours, biggest_area  )
             if gui_window_on:

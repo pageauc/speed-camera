@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 5.51 speed-cam.py 720p Stream Variable Configuration Settings
+#           Ver 6.00 speed-cam.py 720p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -10,7 +10,7 @@
 # Calibration Settings
 # ===================
 calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
-cal_obj_px = 90        # Length of a calibration object in pixels
+cal_obj_px = 310       # Length of a calibration object in pixels
 cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 
 # Crop Area for motion detection Tracking
@@ -74,6 +74,19 @@ image_text_on = True          # True= Show Text on speed images   False= No Text
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
 image_font_size = 20          # default = 20 Font text height in px for text on images
 image_bigger = 1              # Default = 1 multiply saved speed image by value
+image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldest are deleted  default=0 (off)
+
+# Optional Manage SubDir Creation by time, number of files or both
+# ----------------------------------------------------------------
+imageSubDirMaxHours = 0       # 0=off or specify MaxHours - Creates New dated sub-folder if MaxHours exceeded
+imageSubDirMaxFiles = 0       # 0=off or specify MaxFiles - Creates New dated sub-folder if MaxFiles exceeded
+
+# Optional Manage Free Disk Space Settings
+# ----------------------------------------
+spaceTimerHrs = 0           # default= 0  0=off or specify hours frequency to perform free disk space check
+spaceFreeMB = 500           # default= 500  Target Free space in MB Required.
+spaceMediaDir = '/home/pi/rpi-speed-camera/media'  # default= '/home/pi/rpi-speed-camera/media'  Starting point for directory walk
+spaceFileExt  = 'jpg'       # default= 'jpg' File extension to Delete Oldest Files
 
 # Motion Event Exclusion Settings
 # ===============================

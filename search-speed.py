@@ -79,6 +79,7 @@ crop_x_L = (x_left + 10) * image_bigger
 crop_x_R = (x_right - 10) * image_bigger
 crop_y_U = (y_upper + 10) * image_bigger
 crop_y_D = (y_lower - 10) * image_bigger
+blank = "                                                              "
 
 #-----------------------------------------------------------------------------------------------
 def print_at(x, y, text):
@@ -214,8 +215,12 @@ def search_for_match(search_image, search_rect):
                        (work_count, work_end - work_start, result_count))
     return result_list
 
-blank = "                                                              "
-# Start Main
+# ------------------- Start Main --------------------------------
+
+if not os.path.isdir(search_dest_path):
+    print("Creating Search Folder %s" % ( search_dest_path))
+    os.makedirs(search_dest_path)
+    
 search_list = glob.glob(search_dest_path + '/*jpg')
 target_total = len(search_list)
 try:

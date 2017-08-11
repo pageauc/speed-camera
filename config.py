@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#               Ver 5.50 speed-cam.py 240p Stream Variable Configuration Settings
+#         Ver 6.00 speed-cam.py 240p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -68,13 +68,26 @@ CAMERA_HFLIP = False   # Flip the camera image horizontally if required
 # ---------------------
 image_path = "media/images"   # folder name to store images
 image_prefix = "speed-"       # image name prefix
+image_format = ".jpg"         # default = ".jpg"  image Formats .jpeg .png .gif .bmp
 image_show_motion_area = True # True= Display motion detection rectangle area on saved images
 image_filename_speed = False  # True= Prefix filename with speed value
 image_text_on = True          # True= Show Text on speed images   False= No Text on images
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
 image_font_size = 15          # Default = 15 Font text height in px for text on images
 image_bigger = 2              # Default = 2 multiply saved speed image by value
+image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldest are deleted  default=0 (off)
 
+# Optional Manage SubDir Creation by time, number of files or both
+# ----------------------------------------------------------------
+imageSubDirMaxHours = 0       # 0=off or specify MaxHours - Creates New dated sub-folder if MaxHours exceeded
+imageSubDirMaxFiles = 0       # 0=off or specify MaxFiles - Creates New dated sub-folder if MaxFiles exceeded
+
+# Optional Manage Free Disk Space Settings
+# ----------------------------------------
+spaceTimerHrs = 0           # default= 0  0=off or specify hours frequency to perform free disk space check
+spaceFreeMB = 500           # default= 500  Target Free space in MB Required.
+spaceMediaDir = '/home/pi/rpi-speed-camera/media'  # default= '/home/pi/rpi-speed-camera/media'  Starting point for directory walk
+spaceFileExt  = 'jpg'       # default= 'jpg' File extension to Delete Oldest Files
 
 # Motion Event Exclusion Settings
 # -------------------------------
