@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.10"
+version = "version 6.50"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -88,6 +88,7 @@ try:  #Add this check in case running on non RPI platform using web cam
     from picamera.array import PiRGBArray
     from picamera import PiCamera
 except:
+    WEBCAM = True
     pass
 
 import numpy as np
@@ -98,13 +99,8 @@ import datetime
 import io
 import glob
 import sys
-if not (sys.version_info > (3, 0)):
-    import pyexiv2
-from PIL import Image
-from PIL import ImageFont
-from PIL import ImageDraw
 
-try:
+try:   # Check to see if opencv is installed
     import cv2
 except:
     print("------------------------------------")
@@ -113,10 +109,10 @@ except:
     if (sys.version_info > (2, 9)):
         print("python3 failed to import cv2")
         print("Try installing opencv for python3")
-        print("See https://github.com/pageauc/opencv3-setup")
+        print("For RPI See https://github.com/pageauc/opencv3-setup")
     else:
         print("python2 failed to import cv2")
-        print("Try reinstalling per command")
+        print("Try RPI Install per command")
         print("sudo apt-get install python-opencv")
     print("")
     print("Exiting speed2.py Due to Error")
@@ -280,10 +276,13 @@ def show_settings():
     os.chdir(html_path)
     html_dir = os.getcwd()
     sym_path = html_dir + "/" + sym_name
-    if not os.path.isdir(sym_path):
-        os.chdir(html_dir)
-        logging.info("Creating html Folder images symlink %s", sym_path)
-        os.symlink(img_dir, sym_name)
+    try:
+        if not os.path.isdir(sym_path):
+            os.chdir(html_dir)
+            logging.info("Creating html Folder images symlink %s", sym_path)
+            os.symlink(img_dir, sym_name)
+    except:
+        pass
     os.chdir(cwd)
     if verbose:
         print("")
@@ -293,7 +292,7 @@ def show_settings():
         print("")
         print("Message Display . verbose=%s  display_fps=%s calibrate=%s" % ( verbose, display_fps, calibrate ))
         print("                  show_out_range=%s" % ( show_out_range ))
-        print("Logging ......... Log_data_to_file=%s  log_filename=%s.csv (CSV format)"  % ( log_data_to_file, baseFileName ))
+        print("Logging ......... Log_data_to_CSV=%s  log_filename=%s.csv (CSV format)"  % ( log_data_to_CSV, baseFileName ))
         print("                  loggingToFile=%s  logFilePath=%s" % (loggingToFile, logFilePath))
         print("                  Log if max_speed_over > %i %s" % ( max_speed_over, speed_units))
         print("Speed Trigger ... If  track_len_trig > %i px" % ( track_len_trig ))
@@ -530,50 +529,18 @@ def get_image_name(path, prefix):
 
 #-----------------------------------------------------------------------------------------------
 def log_to_csv_file(data_to_append):
-    if log_data_to_file:
-        log_file_path = baseDir + baseFileName + ".csv"
-        if not os.path.exists(log_file_path):
-            open( log_file_path, 'w' ).close()
-            f = open( log_file_path, 'ab' )
-            # header_text = '"YYYYMMDD","HH","MM","Speed","Unit","    Speed Photo Path            ","X","Y","W","H","Area","Direction"' + "\n"
-            # f.write( header_text )
-            f.close()
-            logging.info("Create New Data Log File %s", log_file_path )
-        filecontents = data_to_append + "\n"
-        f = open( log_file_path, 'a+' )
-        f.write( filecontents )
+    log_file_path = baseDir + baseFileName + ".csv"
+    if not os.path.exists(log_file_path):
+        open( log_file_path, 'w' ).close()
+        f = open( log_file_path, 'ab' )
+        # header_text = '"YYYYMMDD","HH","MM","Speed","Unit","    Speed Photo Path            ","X","Y","W","H","Area","Direction"' + "\n"
+        # f.write( header_text )
         f.close()
-    return
-
-#-----------------------------------------------------------------------------------------------
-def image_write(image_filename, text_to_print):
-    # function to write date/time stamp directly on top or bottom of images.
-    FOREGROUND = ( 255, 255, 255 )  # rgb settings for white text foreground
-    text_colour = "White"
-    font_size = image_font_size
-
-    # centre text and compensate for graphics text being wider
-    x =  int(( image_width / 2) - (len( text_to_print ) * font_size / 4) )
-    if image_text_bottom:
-        y = ( image_height - 50 )  # show text at bottom of image
-    else:
-        y = 10  # show text at top of image
-    text = text_to_print
-    font_path = '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf'
-    font = ImageFont.truetype( font_path, font_size, encoding='unic' )
-
-    # Read exif data since ImageDraw does not save this metadata
-    if not (sys.version_info > (3, 0)):
-        metadata = pyexiv2.ImageMetadata(image_filename)
-        metadata.read()
-    img = Image.open( image_filename )
-    draw = ImageDraw.Draw( img )
-    # draw.text((x, y),"Sample Text",(r,g,b))
-    draw.text( ( x, y ), text, FOREGROUND, font=font )
-    img.save( image_filename )
-    if not (sys.version_info > (3, 0)):
-        metadata.write()    # Write previously saved exif data to image file
-    logging.info("  Image Saved - %s", text_to_print )
+        logging.info("Create New Data Log File %s", log_file_path )
+    filecontents = data_to_append + "\n"
+    f = open( log_file_path, 'a+' )
+    f.write( filecontents )
+    f.close()
     return
 
 #----------------------------------------------------------------------------------------------
@@ -701,7 +668,7 @@ def speed_camera():
                     logging.info("New Track    - Motion at cx,cy(%i,%i)", cx, cy )
                 else:
                     if ( abs( cx - end_pos_x ) > x_diff_min and abs( cx - end_pos_x ) < x_diff_max ):
-                    # movement is within acceptable distance range of last event
+                        # movement is within acceptable distance range of last event
                         end_pos_x = cx
                         tot_track_dist = abs( end_pos_x - start_pos_x )
                         tot_track_time = abs( time.time() - track_start_time )
@@ -734,37 +701,48 @@ def speed_camera():
                                 if image_max_files > 0:    # Manage a maximum number of files and delete oldest if required.
                                     deleteOldFiles(image_max_files, speed_path, image_prefix)
 
-                                    # Add motion rectangle to image
-                                    if image_show_motion_area:
-                                        if SHOW_CIRCLE:
-                                            cv2.circle(prev_image,( cx + x_left ,cy + y_upper ),
-                                                                 CIRCLE_SIZE,cvRed, LINE_THICKNESS)
-                                        cv2.line( prev_image ,( x_left, y_upper ),( x_right, y_upper ),cvRed,1 )
-                                        cv2.line( prev_image ,( x_left, y_lower ),( x_right, y_lower ),cvRed,1 )
-                                        cv2.line( prev_image ,( x_left, y_upper ),( x_left , y_lower ),cvRed,1 )
-                                        cv2.line( prev_image ,( x_right, y_upper ),( x_right, y_lower ),cvRed,1 )
+                                # Add motion rectangle to image
+                                if image_show_motion_area:
+                                    if SHOW_CIRCLE:
+                                        cv2.circle(prev_image,( cx + x_left ,cy + y_upper ),
+                                                             CIRCLE_SIZE,cvRed, LINE_THICKNESS )
+                                    cv2.line( prev_image ,( x_left, y_upper ),( x_right, y_upper ),cvRed,1 )
+                                    cv2.line( prev_image ,( x_left, y_lower ),( x_right, y_lower ),cvRed,1 )
+                                    cv2.line( prev_image ,( x_left, y_upper ),( x_left , y_lower ),cvRed,1 )
+                                    cv2.line( prev_image ,( x_right, y_upper ),( x_right, y_lower ),cvRed,1 )
+
                                 big_image = cv2.resize(prev_image,(image_width, image_height))
+                                if image_text_on:
+                                    # Write text on image before saving
+                                    image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
+                                    font = cv2.FONT_HERSHEY_SIMPLEX
+                                    x =  int(( image_width / 2) - (len( image_text ) * image_font_size / 4) )
+                                    if image_text_bottom:
+                                        y = ( image_height - 50 )  # show text at bottom of image
+                                    else:
+                                        y = 10  # show text at top of image
+                                    logging.info("Add Text: %s  ", image_text)
+                                    cv2.putText( big_image,image_text,(x,y), font,FONT_SCALE,(cvWhite),2)
+                                logging.info("Save Speed Image to %s", filename)
                                 cv2.imwrite(filename, big_image)
                                 logging.info(" Event Add   - cx,cy(%i,%i) %3.2f %s %s px=%i/%i C=%i A=%i sqpx",
                                                             cx, cy, ave_speed, speed_units, travel_direction,
                                                             abs( start_pos_x - end_pos_x), track_len_trig,
                                                             total_contours, biggest_area)
 
-                                # Format and Save Data to CSV Log File
-                                log_time = datetime.datetime.now()
-                                log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" %
-                                              ( quote, log_time.year, log_time.month,
-                                                log_time.day, quote, quote, log_time.hour,
-                                                quote, quote, log_time.minute, quote))
-                                # Add Text to image
-                                if image_text_on:
-                                    image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )
-                                    image_write( filename, image_text )
-                                log_csv_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%i,%i,%s%s%s" %
-                                            ( log_csv_time, ave_speed, quote, speed_units,
-                                              quote, quote, filename, quote, cx, cy, mw, mh, mw * mh,
-                                              quote, travel_direction, quote ))
-                                log_to_csv_file( log_csv_text )
+                                if log_data_to_CSV:    # Format and Save Data to CSV Log File
+                                    log_time = datetime.datetime.now()
+                                    log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" %
+                                                  ( quote, log_time.year, log_time.month,
+                                                    log_time.day, quote, quote, log_time.hour,
+                                                    quote, quote, log_time.minute, quote))
+
+                                    log_csv_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%i,%i,%s%s%s" %
+                                                ( log_csv_time, ave_speed, quote, speed_units,
+                                                  quote, quote, filename, quote, cx, cy, mw, mh, mw * mh,
+                                                  quote, travel_direction, quote ))
+                                    log_to_csv_file( log_csv_text )
+
                                 logging.info("End Track    - Tracked %i px in %.3f sec", tot_track_dist, tot_track_time )
                             else:
                                 logging.info("End Track    - Skip Photo SPEED %.1f %s max_speed_over=%i  %i px in %.3f sec  C=%i A=%i sqpx ",
@@ -789,24 +767,20 @@ def speed_camera():
             if gui_window_on:
                 # show small circle at motion location
                 if SHOW_CIRCLE:
-                    cv2.circle(image2,( cx + x_left * WINDOW_BIGGER ,cy + y_upper * WINDOW_BIGGER ),CIRCLE_SIZE,cvGreen, LINE_THICKNESS)
+                    cv2.circle(image2,( cx + x_left * WINDOW_BIGGER ,cy + y_upper * WINDOW_BIGGER ),CIRCLE_SIZE, cvRed, LINE_THICKNESS)
                 else:
                     cv2.rectangle(image2,( int( cx + x_left - mw/2) , int( cy + y_upper - mh/2)),
-                                        (( int( cx + x_left + mw/2)), int( cy + y_upper + mh/2 )),cvGreen, LINE_THICKNESS)
-
-                if ave_speed > 0:
-                    speed_text = str('%3.1f %s'  % ( ave_speed, speed_units ))
-                    cv2.putText( image2, speed_text, (cx + x_left + 8, cy + y_upper), cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE , cvWhite, 1)
-            event_timer = time.time()  # Reset event_timer since valid motion was found
+                                        (( int( cx + x_left + mw/2)), int( cy + y_upper + mh/2 )),cvRed, LINE_THICKNESS)
+                event_timer = time.time()  # Reset event_timer since valid motion was found
 
         if gui_window_on:
             # cv2.imshow('Difference Image',difference image)
-            cv2.line( image2,( x_left, y_upper ),( x_right, y_upper ),cvBlue,1 )
-            cv2.line( image2,( x_left, y_lower ),( x_right, y_lower ),cvBlue,1 )
-            cv2.line( image2,( x_left, y_upper ),( x_left , y_lower ),cvBlue,1 )
-            cv2.line( image2,( x_right, y_upper ),( x_right, y_lower ),cvBlue,1 )
-            image2 = cv2.resize( image2,( image_width, image_height ))
-            cv2.imshow('Movement (q Quits)', image2)
+            cv2.line( image2,( x_left, y_upper ),( x_right, y_upper ),cvRed,1 )
+            cv2.line( image2,( x_left, y_lower ),( x_right, y_lower ),cvRed,1 )
+            cv2.line( image2,( x_left, y_upper ),( x_left , y_lower ),cvRed,1 )
+            cv2.line( image2,( x_right, y_upper ),( x_right, y_lower ),cvRed,1 )
+            image_view = cv2.resize( image2,( image_width, image_height ))
+            cv2.imshow('Movement (q Quits)', image_view)
             if show_thresh_on:
                 cv2.imshow('Threshold', thresholdimage)
             if show_crop_on:

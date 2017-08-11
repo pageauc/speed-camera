@@ -89,7 +89,7 @@ echo "Done upgrade"
 echo "------------------------------------------------"
 echo "5 - Installing speed-cam.py Dependencies"
 echo ""
-sudo apt-get install -y python-opencv dos2unix python-picamera python-imaging python-pyexiv2 libgl1-mesa-dri
+sudo apt-get install -y python-opencv dos2unix python-picamera python-imaging libgl1-mesa-dri
 sudo apt-get install -y fonts-freefont-ttf # Required for Jessie Lite Only
 echo "Done Dependencies"
 dos2unix *sh

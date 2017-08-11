@@ -1,21 +1,11 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 6.00 speed-cam.py 240p Stream Variable Configuration Settings
+#         Ver 6.50 speed-cam.py 240p Stream Variable Configuration Settings
 
 #######################################
 #
 #    speed-cam.py variable settings
 #
 #######################################
-
-# Note - Set verbose to False if script is run in background or from /etc/rc.local
-# Display and Log settings
-# ------------------------
-verbose = True              # Display basic status information on console
-display_fps = False         # True = Show average frame count every 1000 loops
-log_data_to_file = True     # True = Save log data as CSV comma separated values (default=True)
-show_out_range = False      # Show Out of Range Events (default=False)
-loggingToFile = False       # True = Send logging to file
-logFilePath = 'speed-track.log'  # Location of log file when logDataToFile=True
 
 # Calibration Settings
 # --------------------
@@ -30,12 +20,21 @@ x_right = 295          # Exclude event if x greater than this px position Defaul
 y_upper = 75           # Exclude event if y less that this value default=100
 y_lower = 185          # Exclude event if y greater than this value default=175
 
-# Display opencv windows on rpi desktop
+# Display opencv windows on gui desktop
 # gui_window_on suppresses All Windows if False
 # ----------------------------------------------
-gui_window_on = False       # True = Turn On All desktop GUI openCV windows. False=Don't Show (req'd for SSH) .
-show_thresh_on = True       # Display desktop GUI openCV cropped threshold window. True=Show, False=Don't Show
-show_crop_on = False        # Same as show_thresh_on but in color. True=Show, False=Don't Show (default)
+gui_window_on = False      # True = Turn On All desktop GUI openCV windows. False=Don't Show (req'd for SSH) .
+show_thresh_on = False     # Display desktop GUI openCV cropped threshold window. True=Show, False=Don't Show
+show_crop_on = False       # Same as show_thresh_on but in color. True=Show, False=Don't Show (default)
+
+# Display and Log settings
+# ------------------------
+verbose = True              # Display basic status information on console
+display_fps = False         # True = Show average frame count every 1000 loops
+log_data_to_CSV = True      # True = Save log data as CSV comma separated values (default=True)
+show_out_range = False      # Show Out of Range Events (default=False)
+loggingToFile = False       # True = Send logging to file
+logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
 
 # Motion Event Settings
 # ---------------------
@@ -52,7 +51,7 @@ WEBCAM = False        # default = False False=PiCamera True=USB WebCamera
 WEBCAM_SRC = 0        # default = 0   USB opencv connection number
 WEBCAM_WIDTH = 320    # default = 320 USB Webcam Image width
 WEBCAM_HEIGHT = 240   # default = 240 USB Webcam Image height
-WEBCAM_HFLIP = False  # default = False USB Webcam flip image horizontally
+WEBCAM_HFLIP = True   # default = False USB Webcam flip image horizontally
 WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
 
 # Pi Camera Settings
@@ -69,12 +68,12 @@ CAMERA_HFLIP = False   # Flip the camera image horizontally if required
 image_path = "media/images"   # folder name to store images
 image_prefix = "speed-"       # image name prefix
 image_format = ".jpg"         # default = ".jpg"  image Formats .jpeg .png .gif .bmp
-image_show_motion_area = True # True= Display motion detection rectangle area on saved images
+image_show_motion_area = False # True= Display motion detection rectangle area on saved images
 image_filename_speed = False  # True= Prefix filename with speed value
 image_text_on = True          # True= Show Text on speed images   False= No Text on images
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
 image_font_size = 15          # Default = 15 Font text height in px for text on images
-image_bigger = 3              # Default = 2 multiply saved speed image by value
+image_bigger = 3              # Default = 2 Resize saved speed image by value
 image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldest are deleted  default=0 (off)
 
 # Optional Manage SubDir Creation by time, number of files or both

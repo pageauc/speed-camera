@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#           Ver 6.00 speed-cam.py 720p Stream Variable Configuration Settings
+#           Ver 6.50 speed-cam.py 720p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -24,12 +24,12 @@ y_lower = 460          # Exclude event if y greater than this value default=175
 # ========================
 verbose = True              # Display basic status information on console
 display_fps = False         # True = Show average frame count every 1000 loops
-log_data_to_file = True     # True = Save log data as CSV comma separated values (default=True)
+log_data_to_CSV = True      # True = Save log data as CSV comma separated values (default=True)
 show_out_range = False      # Show Out of Range Events (default=False)
 loggingToFile = False       # True = Send logging to file
-logFilePath = 'speed-track.log'  # Location of log file when logDataToFile=True
+logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
 
-# Display opencv windows on rpi desktop
+# Display opencv windows on gui desktop
 # gui_window_on suppresses All Windows if False
 # =============================================
 gui_window_on = False       # True = Turn On All desktop GUI openCV windows. False=Don't Show (req'd for SSH) .
@@ -68,7 +68,7 @@ CAMERA_HFLIP = False   # default = False True= Flip the camera image horizontall
 # =====================
 image_path = "media/images"   # folder name to store images
 image_prefix = "speed-"       # image name prefix
-image_show_motion_area = True # True= Display motion detection rectangle area on saved images
+image_show_motion_area = False # True= Display motion detection rectangle area on saved images
 image_filename_speed = False  # True= Prefix filename with speed value
 image_text_on = True          # True= Show Text on speed images   False= No Text on images
 image_text_bottom = True      # True= Show image text at bottom otherwise at top

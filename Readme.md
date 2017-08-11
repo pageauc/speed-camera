@@ -1,7 +1,10 @@
-# speed-cam.py - RPI Speed Camera Object Motion Tracker
-### A Raspberry Pi Speed Camera using python, openCV, pi-camera, USB Cam, Video Stream
+# speed-cam.py - Speed Camera Object Motion Tracker 
+### RPI, Unix and Windows Speed Camera Using python, openCV, pi-camera or USB Cam
 
 ### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/rpi-speed-camera/wiki)
+
+* 6.50  Rewrote code to simplify image text and make compatible with Non RPI
+        Unix or Windows platforms using a Web Cam.  Tested and Works OK.
 
 * 6.00  Added Optional SubDir creation by number of files or by SubDir Age
         Also Added Disk Space Management that deletes oldest file in specified Dir Tree
