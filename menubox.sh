@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="5.72"
+ver="5.73"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -451,7 +451,7 @@ function do_main_menu ()
       g\ *) clear
             do_upgrade ;;
       h\ *) do_about ;;
-      q\ *) rm -f filename_conf filename_temp
+      q\ *) rm -f $filename_conf $filename_temp
             exit 0 ;;
          *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running menu item $SELECTION" 20 60 1
