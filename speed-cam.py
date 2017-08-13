@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.53"
+version = "version 6.6"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -260,7 +260,6 @@ def get_fps( start_time, frame_count ):
 def show_settings():
     cwd = os.getcwd()
     html_path = "media/html"
-    sym_name = "images"
     if not os.path.isdir(image_path):
         logging.info("Creating Image Storage Folder %s", image_path )
         os.makedirs(image_path)
@@ -273,16 +272,6 @@ def show_settings():
     if not os.path.isdir(html_path):
         logging.info("Creating html Folder %s", html_path)
         os.makedirs(html_path)
-    os.chdir(html_path)
-    html_dir = os.getcwd()
-    sym_path = html_dir + "/" + sym_name
-    try:
-        if not os.path.isdir(sym_path):
-            os.chdir(html_dir)
-            logging.info("Creating html Folder images symlink %s", sym_path)
-            os.symlink(img_dir, sym_name)
-    except:
-        pass
     os.chdir(cwd)
     if verbose:
         print("")
@@ -587,8 +576,8 @@ def speed_camera():
     if image_text_bottom:
         text_y = ( image_height - 50 )  # show text at bottom of image
     else:
-        text_y = 10  # show text at top of image               
-        
+        text_y = 10  # show text at top of image
+
     grayimage1 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
     event_timer = time.time()
     # Initialize prev_image used for taking speed image photo
@@ -689,7 +678,7 @@ def speed_camera():
                                 logging.info(" Event Add   - cx,cy(%i,%i) %3.2f %s %s px=%i/%i C=%i A=%i sqpx",
                                                             cx, cy, ave_speed, speed_units, travel_direction,
                                                             abs( start_pos_x - end_pos_x), track_len_trig,
-                                                            total_contours, biggest_area)                                    
+                                                            total_contours, biggest_area)
                                 # Resized and process prev image before saving to disk
                                 prev_image = image2
                                 if calibrate:       # Create a calibration image
@@ -721,7 +710,7 @@ def speed_camera():
                                     cv2.line( prev_image ,( x_left, y_upper ),( x_left , y_lower ),cvRed,1 )
                                     cv2.line( prev_image ,( x_right, y_upper ),( x_right, y_lower ),cvRed,1 )
 
-                                big_image = cv2.resize(prev_image,(image_width, image_height))                        
+                                big_image = cv2.resize(prev_image,(image_width, image_height))
                                 if image_text_on:
                                     # Write text on image before saving
                                     image_text = "SPEED %.1f %s - %s" % ( ave_speed, speed_units, filename )

@@ -4,7 +4,7 @@
 # Create html pages from csv log file entries
 # for viewing speed images and data on a web server
 
-progVer = "5.20"
+progVer = "6.60"
 
 import glob, os
 import csv
@@ -14,19 +14,23 @@ import shutil
 
 # Change to Folder that this script is run from
 progName = os.path.abspath(__file__)  # Find the full path of this python script
-baseDir = os.path.dirname(progName)  # get the path location only (excluding script name)
+baseDir = os.path.dirname(progName)   # get the path location only (excluding script name)
 os.chdir(baseDir)
 
 verbose = True
 
-source_csv = "speed-cam.csv"
-web_root_dir = "media/html"   # location of html files relative to web root
-web_image_dir = "images"      # location of image link off html folder
 image_ext = ".jpg"
+source_csv = "speed-cam.csv"
+
+web_html_dir = "media/html"
+if not os.path.isdir(web_html_dir):
+    logging.info("Creating html Folder %s", web_html_dir)
+    os.makedirs(web_html_dir)
+web_image_dir = "media/images/"   # location of image link off html folder
 
 # contour width to height ratio
 guess_person = .55
-guess_cart = 1.1 
+guess_cart = 1.1
 
 #-----------------------------------------------------------------------------------------------
 
@@ -37,9 +41,13 @@ def make_web_page(up_html, row_data, dn_html):
     Speed=row_data[3]
     Unit=row_data[4]
     img_path=row_data[5]
-    img_html_path = os.path.join(web_image_dir, os.path.basename(row_data[5]))
+    img_filename=os.path.basename(img_path)
+    img_html_path = os.path.join(os.path.relpath(
+                    os.path.abspath(os.path.dirname(img_path)),
+                    os.path.abspath(web_html_dir)),
+                    img_filename)
     X=row_data[6]
-    Y=row_data[7]    
+    Y=row_data[7]
     W=row_data[8]
     H=row_data[9]
     aspect_ratio = float(W)/int(H)
@@ -50,7 +58,7 @@ def make_web_page(up_html, row_data, dn_html):
     else:
         Guess = "Vehicle"
     Area=row_data[10]
-    
+
     pageTemplate = ('''<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
     <html>
     <head>
@@ -66,7 +74,7 @@ def make_web_page(up_html, row_data, dn_html):
           <a href="%s" target="_blank" ><img src="%s" width="640" height="480"  hspace="20" ALIGN="left" alt="Speed Image"/></a>
           </span>
           <span style="float: right">
-          <div>          
+          <div>
             <h4><center>Object Motion Speed Tracker</center></h4>
             <h2><center>Speed Camera Data</center></h2>
             <hr>
@@ -83,19 +91,19 @@ def make_web_page(up_html, row_data, dn_html):
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <a href="%s" style="text-decoration:none";>DOWN</a>
               </h1>
-            </center>          
+            </center>
           </div>
           </span>
         </td>
     </tr>
     </table>
     </body>
-    </html>''' % ( img_html_path, img_html_path, YYYYMMDD, HH, MM, Speed, Unit, 
-                  W, H, Area, aspect_ratio, Guess, img_html_path, img_html_path, dn_html, up_html))
+    </html>''' % ( img_html_path, img_html_path, YYYYMMDD, HH, MM, Speed, Unit,
+                  W, H, Area, aspect_ratio, Guess, img_html_path, img_filename, dn_html, up_html))
 
     # Write the html file
     base_filename = os.path.splitext(os.path.basename(img_path))[0]
-    web_html_path = os.path.join(web_root_dir, base_filename + '.html')
+    web_html_path = os.path.join(web_html_dir, base_filename + '.html')
 
     if os.path.isfile(img_path):
         f = open(web_html_path, "w")
@@ -138,50 +146,50 @@ def read_from_csv(filename):
     workCount = 0
     try:
         reader = csv.reader(f)
-        for row in reader: 
+        for row in reader:
             workCount += 1
-            if not next_row:                     
+            if not next_row:
                 jpg_exists, next_link = check_row(row)
                 if jpg_exists:
                     next_row = row
                     first_row = row
-                    first_link = next_link                        
+                    first_link = next_link
             elif not cur_row:
                 jpg_exists, cur_link = check_row(row)
                 if jpg_exists:
-                    cur_row = row 
-                    second_row = row 
-                    second_link = cur_link                                        
-            else:               
+                    cur_row = row
+                    second_row = row
+                    second_link = cur_link
+            else:
                 jpg_exists, new_link = check_row(row)
-                if jpg_exists: 
-                    temp_link = new_link 
+                if jpg_exists:
+                    temp_link = new_link
                     prev_row = cur_row
                     prev_link = cur_link
                     cur_row = next_row
-                    cur_link = next_link  
+                    cur_link = next_link
                     next_row = row
                     save_next_link = next_link
-                    next_link = new_link                                         
-                    if this_is_first_row: 
-                        make_web_page(first_link, first_row, second_link)                    
+                    next_link = new_link
+                    if this_is_first_row:
+                        make_web_page(first_link, first_row, second_link)
                         make_web_page(first_link, second_row, temp_link)
                         this_is_first_row = False
-                    else:                     
+                    else:
                         if this_is_third_row:
                             make_web_page(second_link, cur_row, next_link)
                             this_is_third_row = False
                         else:
-                            make_web_page(prev_link, cur_row, next_link)               
+                            make_web_page(prev_link, cur_row, next_link)
         make_web_page(cur_link, next_row, next_link)
-  
-    finally:    
+
+    finally:
         f.close()
         workEnd = time.time()
-        outDir = os.path.abspath(web_root_dir)
+        outDir = os.path.abspath(web_html_dir)
         print("-----------------")
         print("%s ver %s - written by Claude Pageau" % (progName, progVer))
-        print("Processed %i web pages in %i seconds in Folder %s" % (workCount, workEnd - workStart, outDir))
+        print("Processed %i web pages in %i seconds into Folder %s" % (workCount, workEnd - workStart, outDir))
         print("Done ...")
 
 
