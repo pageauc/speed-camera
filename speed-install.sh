@@ -1,6 +1,6 @@
 #!/bin/bash
 # Convenient speed-install.sh script written by Claude Pageau 1-Jul-2016
-ver="6.00"
+ver="6.10"
 SPEED_DIR='speed-camera'  # Default folder install location
 
 cd ~
@@ -34,37 +34,37 @@ if [ -e config.py ]; then
   echo "Backup config.py to config.py.prev"
   cp config.py config.py.prev
 else
-  wget -O config.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/source/config.py
+  wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/config.py
 fi
-
-wget -O speed-install.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
+wget -O media/webserver.txt https://raw.github.com/pageauc/speed-camera/master/webserver.txt
+wget -O speed-install.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
 if [ $? -ne 0 ] ;  then
-  wget -O speed-install.sh https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
-  wget -O speed-cam.py https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.py
-  wget -O speed-cam.sh https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.sh
-  wget -O search-speed.py https://raw.github.com/pageauc/rpi-speed-camera/master/search-speed.py
-  wget -O search_config.py https://raw.github.com/pageauc/rpi-speed-camera/master/search_config.py  
-  wget -O Readme.md https://raw.github.com/pageauc/rpi-speed-camera/master/Readme.md
-  wget -O makehtml.py https://raw.github.com/pageauc/rpi-speed-camera/master/makehtml.py
-  wget -O menubox.sh https://raw.github.com/pageauc/rpi-speed-camera/master/menubox.sh
-  wget -O webserver.py https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.py
-  wget -O webserver.sh https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.sh
-  wget -O config.py https://raw.github.com/pageauc/rpi-speed-camera/master/config.py
-  wget -O config.py.240 https://raw.github.com/pageauc/rpi-speed-camera/master/config.py.240
-  wget -O config.py.720 https://raw.github.com/pageauc/rpi-speed-camera/master/config.py.720
+  wget -O speed-install.sh https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
+  wget -O speed-cam.py https://raw.github.com/pageauc/speed-camera/master/speed-cam.py
+  wget -O speed-cam.sh https://raw.github.com/pageauc/speed-camera/master/speed-cam.sh
+  wget -O search-speed.py https://raw.github.com/pageauc/speed-camera/master/search-speed.py
+  wget -O search_config.py https://raw.github.com/pageauc/speed-camera/master/search_config.py
+  wget -O Readme.md https://raw.github.com/pageauc/speed-camera/master/Readme.md
+  wget -O makehtml.py https://raw.github.com/pageauc/speed-camera/master/makehtml.py
+  wget -O menubox.sh https://raw.github.com/pageauc/speed-camera/master/menubox.sh
+  wget -O webserver.py https://raw.github.com/pageauc/speed-camera/master/webserver.py
+  wget -O webserver.sh https://raw.github.com/pageauc/speed-camera/master/webserver.sh
+  wget -O config.py https://raw.github.com/pageauc/speed-camera/master/config.py
+  wget -O config.py.240 https://raw.github.com/pageauc/speed-camera/master/config.py.240
+  wget -O config.py.720 https://raw.github.com/pageauc/speed-camera/master/config.py.720
 else
-  wget -O speed-cam.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.py
-  wget -O speed-cam.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/speed-cam.sh
-  wget -O search-speed.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/search-speed.py
-  wget -O search_config.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/search_config.py
-  wget -O Readme.md -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/Readme.md
-  wget -O makehtml.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/makehtml.py
-  wget -O menubox.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/menubox.sh
-  wget -O webserver.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.py
-  wget -O webserver.sh -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/webserver.sh
-  wget -O config.py -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/config.py
-  wget -O config.py.240 -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/config.py.240
-  wget -O config.py.720 -q --show-progress https://raw.github.com/pageauc/rpi-speed-camera/master/config.py.720
+  wget -O speed-cam.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/speed-cam.py
+  wget -O speed-cam.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/speed-cam.sh
+  wget -O search-speed.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/search-speed.py
+  wget -O search_config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/search_config.py
+  wget -O Readme.md -q --show-progress https://raw.github.com/pageauc/speed-camera/master/Readme.md
+  wget -O makehtml.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/makehtml.py
+  wget -O menubox.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/menubox.sh
+  wget -O webserver.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.py
+  wget -O webserver.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.sh
+  wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
+  wget -O config.py.240 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.240
+  wget -O config.py.720 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.720
 fi
 echo "Done Download"
 echo "------------------------------------------------"
