@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.7"
+version = "version 6.8"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -461,7 +461,7 @@ def freeSpaceUpTo(spaceFreeMB, mediaDir, extension=image_format):
     # Use with Caution
     mediaDirPath = os.path.abspath(mediaDir)
     if os.path.isdir(mediaDirPath):
-        MB2Bytes = 1000000  # Conversion from MB to Bytes
+        MB2Bytes = 1048576  # Conversion from MB to Bytes
         targetFreeBytes = spaceFreeMB * MB2Bytes
         fileList = filesToDelete(mediaDir, extension)
         totFiles = len(fileList)
