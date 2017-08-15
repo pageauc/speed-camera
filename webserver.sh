@@ -4,10 +4,10 @@
 # Add the following command to the /etc/rc.local
 # /home/pi/pi-timolo/webserver.sh start
 
-progpath="/home/pi/rpi-speed-camera"
+progpath="/home/pi/speed-camera"
 progname="webserver.py"
 
-echo "$0 ver 3.00 written by Claude Pageau"
+echo "$0 ver 6.00 written by Claude Pageau"
 echo "-----------------------------------------------"
 cd $progpath
 
