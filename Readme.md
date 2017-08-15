@@ -1,7 +1,7 @@
 # speed-cam.py - Speed Camera Object Motion Tracker 
 ### RPI, Unix and Windows Speed Camera Using python, openCV, USB Cam or RPI camera module
 
-### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/rpi-speed-camera/wiki)
+### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/speed-camera/wiki)
 
 * 6.50  Rewrote code to simplify image text and make compatible with Non RPI
         Unix or Windows platforms using a Web Cam.  Tested and Works OK.
@@ -34,7 +34,7 @@ Use menubox.sh to change settings or nano config.py
 ### Quick Install   
 Easy Install of speed-cam onto a Raspberry Pi Computer with latest Raspbian. 
 
-    curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash
+    curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
 
 From a computer logged into the RPI via ssh(Putty) session use mouse to highlight command above, right click, copy.  
 Then select ssh(Putty) window, mouse right click, paste.  The command should 
@@ -46,7 +46,7 @@ so it may take some time if these are not up-to-date
 #### or Manual Install   
 From logged in RPI SSH session or console terminal perform the following.
 
-    wget https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
+    wget https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
     chmod +x speed-install.sh
     ./speed-install.sh
     cd speed-camera
@@ -58,7 +58,7 @@ or menubox.sh
     ./menubox.sh
 
 Admin speed-cam Easier using menubox.sh   
-![menubox main menu](https://github.com/pageauc/rpi-speed-camera/blob/master/menubox.png)  
+![menubox main menu](https://github.com/pageauc/speed-camera/blob/master/menubox.png)  
     
 ### Links  
 
@@ -67,7 +67,7 @@ Admin speed-cam Easier using menubox.sh
 * Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
 * YouTube motion-track video https://youtu.be/09JS7twPBsQ
 * YouTube Channel https://www.youtube.com/user/pageaucp 
-* Speed Camera GitHub Repo https://github.com/pageauc/rpi-speed-camera     
+* Speed Camera GitHub Repo https://github.com/pageauc/speed-camera     
     
 ### Requirements
 Requires a Raspberry Pi computer with a RPI camera module or a USB Web Camera installed, configured
@@ -140,9 +140,9 @@ From 9 Advanced Options select AA GL Driver then enable driver and reboot
 You can also use git clone to copy the files to your RPI.
 
     cd ~
-    git clone https://github.com/pageauc/rpi-speed-camera.git
+    git clone https://github.com/pageauc/speed-camera.git
  
-The speed-cam files will be in the /home/pi/rpi-speed-camera folder. You can
+The speed-cam files will be in the /home/pi/speed-camera folder. You can
 then move them to another location if you wish.
  
 Note A default images folder will be created to store jpg speed photos. There is an
