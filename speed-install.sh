@@ -11,6 +11,7 @@ else
   echo "speed camera Install"
   STATUS="New Install"
   mkdir -p $SPEED_DIR
+  mkdir -p $SPEED_DIR/media
   echo "$SPEED_DIR Folder Created"
 fi
 
@@ -36,6 +37,9 @@ if [ -e config.py ]; then
 else
   wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/config.py
 fi
+
+
+
 wget -O media/webserver.txt https://raw.github.com/pageauc/speed-camera/master/webserver.txt
 wget -O speed-install.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
 if [ $? -ne 0 ] ;  then
