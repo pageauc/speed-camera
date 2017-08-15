@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.6"
+version = "version 6.7"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -398,7 +398,6 @@ def subDirCheckMaxFiles(directory, filesMax):  # Count number of files in a fold
     count = len(fileList)
     if count > filesMax:
         makeNewDir = True
-        dotCount = showDots(motionDotsMax + 2)
         logging.info('Total Files in %s Exceeds %i ' % ( directory, filesMax ))
     else:
         makeNewDir = False
@@ -416,7 +415,6 @@ def subDirCheckMaxHrs(directory, hrsMax, prefix):   # Note to self need to add e
     dirAgeHours = days * 24 + seconds // 3600  # convert to hours
     if dirAgeHours > hrsMax:   # See if hours are exceeded
         makeNewDir = True
-        dotCount = showDots(motionDotsMax + 2)
         logging.info('MaxHrs %i Exceeds %i for %s' % ( dirAgeHours, hrsMax, directory ))
     else:
         makeNewDir = False
