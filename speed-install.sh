@@ -11,12 +11,12 @@ else
   echo "speed camera Install"
   STATUS="New Install"
   mkdir -p $SPEED_DIR
-  mkdir -p $SPEED_DIR/media
   echo "$SPEED_DIR Folder Created"
 fi
 
 cd $SPEED_DIR
 INSTALL_PATH=$( pwd )
+mkdir -p $SPEED_DIR/media
 
 # Remember where this script was launched from
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
