@@ -6,6 +6,13 @@ This is a stand alone web server.
 Please Note
 You will need at least two entries in a folder
 before the web server will display content.
+IMPORTANT: Use browser refresh to update files list
+then select a list hyperlink since 
+config.py default web server settings are 
+
+web_page_refresh_on = False
+and
+web_page_blank = True
 
 This web server can display other types of content
 but html files will be displayed full screen.
