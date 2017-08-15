@@ -1,14 +1,14 @@
 #!/bin/bash
 # Convenient speed-install.sh script written by Claude Pageau 1-Jul-2016
-ver="5.00"
-SPEED_DIR='rpi-speed-camera'  # Default folder install location
+ver="6.00"
+SPEED_DIR='speed-camera'  # Default folder install location
 
 cd ~
 if [ -d "$SPEED_DIR" ] ; then
   STATUS="Upgrade"
-  echo "Upgrade rpi-speed-camera files"
+  echo "Upgrade speed camera files"
 else
-  echo "New rpi-speed-camera Install"
+  echo "speed camera Install"
   STATUS="New Install"
   mkdir -p $SPEED_DIR
   echo "$SPEED_DIR Folder Created"
@@ -21,7 +21,7 @@ INSTALL_PATH=$( pwd )
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 echo "-----------------------------------------------"
-echo "  rpi-speed-camera speed-install.sh script ver $ver"
+echo "  speed-camera speed-install.sh script ver $ver"
 echo "  $STATUS speed-cam.py Object speed tracking"
 echo "-----------------------------------------------"
 echo "1 - Downloading github repo files"
@@ -111,9 +111,9 @@ echo "2. Raspberry pi optionally needs a monitor/TV attached to display openCV w
 echo "3. Run speed-cam.py in SSH Terminal (default) or optional GUI Desktop"
 echo "   Review and modify the config.py settings as required using nano editor"
 echo "4. To start speed-cam open SSH or a GUI desktop Terminal session"
-echo "   and change to rpi-speed-camera folder and launch per commands below"
+echo "   and change to speed-camera folder and launch per commands below"
 echo ""
-echo "   cd ~/rpi-speed-camera"
+echo "   cd ~/speed-camera"
 echo "   ./speed-cam.py"
 echo ""
 echo "  or run admin menu"

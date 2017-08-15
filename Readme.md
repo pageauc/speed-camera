@@ -26,7 +26,7 @@
        (Note: search-speed.py is still under development)
           
 * IMPORTANT: speed-cam.py release 5.x or above requires a full install.
-It is advised that you rename/delete previous rpi-speed-camera folder
+It is advised that you rename/delete previous speed-camera folder
 and rerun GitHub Quick Install or Manual Install.  The default config.py is based on the
 config.py.240 file and works with single core RPI's. The config.py.720 is designed for quad core RPI's.
 Use menubox.sh to change settings or nano config.py
@@ -38,7 +38,7 @@ Easy Install of speed-cam onto a Raspberry Pi Computer with latest Raspbian.
 
 From a computer logged into the RPI via ssh(Putty) session use mouse to highlight command above, right click, copy.  
 Then select ssh(Putty) window, mouse right click, paste.  The command should 
-download and execute the github speed-install.sh script for rpi-speed-camera object(vehicle) speed tracker.  
+download and execute the github speed-install.sh script for speed camera object(vehicle) speed tracker.  
 This install can also be done directly on an Internet connected Raspberry Pi via a console or desktop terminal session and web browser.      
 Note - a raspbian apt-get update and upgrade will be performed as part of install 
 so it may take some time if these are not up-to-date
@@ -49,12 +49,12 @@ From logged in RPI SSH session or console terminal perform the following.
     wget https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
     chmod +x speed-install.sh
     ./speed-install.sh
-    cd rpi-speed-camera
+    cd speed-camera
     ./speed-cam.py
     
 or menubox.sh
 
-    cd ~/rpi-speed-camera
+    cd ~/speed-camera
     ./menubox.sh
 
 Admin speed-cam Easier using menubox.sh   
@@ -104,7 +104,7 @@ CSV (Comma Separated Values) format. This can be imported into a spreadsheet.
 ### How to Run    
 To run speed-cam.py as a background task or on boot from /etc/rc.local then
 
-    cd ~/rpi-speed-camera
+    cd ~/speed-camera
     ./speed-cam.sh start
     
 or to run on boot edit /etc/rc.local file using nano editor per command below
@@ -113,7 +113,7 @@ or to run on boot edit /etc/rc.local file using nano editor per command below
 
 Then add line below before the exit line then ctrl-x y to save and reboot to test
 
-    /home/pi/rpi-speed-camera/speed-cam.sh start
+    /home/pi/speed-camera/speed-cam.sh start
     exit 0    
     
 Edit the speed-cam.sh script to suit your needs per comments.  
@@ -159,7 +159,7 @@ speed-cam.py needs to be calibrated in order to display a correct speed.
 To Calibrate cal_obj_px and cal_obj_mm variables perform the following
 
 * Setup the RPI camera to point to the view to be monitored.
-* Login to RPI using SSH or desktop terminal session and cd to rpi-speed-camera folder
+* Login to RPI using SSH or desktop terminal session and cd to speed-camera folder
 * Use nano to edit config.py. 
 * Edit variable calibrate=True
 * If required Adjust the y_upper and y_lower variables to cover the road area.  Note
