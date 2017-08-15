@@ -79,13 +79,13 @@ image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldes
 # Optional Manage SubDir Creation by time, number of files or both
 # ----------------------------------------------------------------
 imageSubDirMaxHours = 0       # 0=off or specify MaxHours - Creates New dated sub-folder if MaxHours exceeded
-imageSubDirMaxFiles = 0       # 0=off or specify MaxFiles - Creates New dated sub-folder if MaxFiles exceeded
+imageSubDirMaxFiles = 1000    # 0=off or specify MaxFiles - Creates New dated sub-folder if MaxFiles exceeded
 
 # Optional Manage Free Disk Space Settings
 # ----------------------------------------
-spaceTimerHrs = 0           # default= 0  0=off or specify hours frequency to perform free disk space check
+spaceTimerHrs = 24          # default= 0  0=off or specify hours frequency to perform free disk space check
 spaceFreeMB = 500           # default= 500  Target Free space in MB Required.
-spaceMediaDir = '/home/pi/rpi-speed-camera/media'  # default= '/home/pi/rpi-speed-camera/media'  Starting point for directory walk
+spaceMediaDir = '/home/pi/speed-camera/media'  # default= '/home/pi/speed-camera/media'  Starting point for directory walk
 spaceFileExt  = 'jpg'       # default= 'jpg' File extension to Delete Oldest Files
 
 # Motion Event Exclusion Settings
