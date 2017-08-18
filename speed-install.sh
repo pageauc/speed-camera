@@ -14,12 +14,12 @@ else
   echo "$SPEED_DIR Folder Created"
 fi
 
+# Remember where this script was launched from
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 cd $SPEED_DIR
 INSTALL_PATH=$( pwd )
 mkdir -p media
-
-# Remember where this script was launched from
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 echo "-----------------------------------------------"
 echo "  speed-camera speed-install.sh script ver $ver"
@@ -37,8 +37,6 @@ if [ -e config.py ]; then
 else
   wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/config.py
 fi
-
-
 
 wget -O media/webserver.txt https://raw.github.com/pageauc/speed-camera/master/webserver.txt
 wget -O speed-install.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/speed-install.sh

@@ -1,8 +1,8 @@
 #!/bin/bash
-# This script will run the webserver.py as a background task
+# This script will run the speed-cam.py as a background task
 # You will then be able close the terminal session.  To auto start
 # Add the following command to the /etc/rc.local
-# /home/pi/pi-timolo/webserver.sh start
+# /home/pi/speed-camera/speed-cam.sh start
 
 progpath="/home/pi/speed-camera"
 progname="speed-cam.py"
