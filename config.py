@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 6.53 speed-cam.py 240p Stream Variable Configuration Settings
+#         Ver 6.6 speed-cam.py 240p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -85,7 +85,7 @@ imageSubDirMaxFiles = 1000    # 0=off or specify MaxFiles - Creates New dated su
 # ----------------------------------------
 spaceTimerHrs = 24          # default= 0  0=off or specify hours frequency to perform free disk space check
 spaceFreeMB = 500           # default= 500  Target Free space in MB Required.
-spaceMediaDir = '/home/pi/speed-camera/media'  # default= '/home/pi/speed-camera/media'  Starting point for directory walk
+spaceMediaDir = 'media/images'  # default= 'media/images'  Starting point for directory walk
 spaceFileExt  = 'jpg'       # default= 'jpg' File extension to Delete Oldest Files
 
 # Motion Event Exclusion Settings
