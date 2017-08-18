@@ -59,7 +59,7 @@ WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
 # ------------------
 CAMERA_WIDTH = 1280    # default = 1280 Image stream width for opencv motion scanning (quad core)
 CAMERA_HEIGHT = 720    # default = 720 Image stream height for opencv motion scanning (quad core)
-CAMERA_FRAMERATE = 15  # default = 15 framerate for video stream max for V2 can be higher
+CAMERA_FRAMERATE = 25  # default = 25 framerate for video stream max for V2 can be higher
 CAMERA_ROTATION = 0    # default = 0 Rotate camera image valid values are 0, 90, 180, 270
 CAMERA_VFLIP = False   # default = False True= Flip the camera image vertically if required
 CAMERA_HFLIP = False   # default = False True= Flip the camera image horizontally if required
