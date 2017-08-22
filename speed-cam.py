@@ -136,6 +136,23 @@ else:
                     format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
+
+# System Settings
+image_width  = int(CAMERA_WIDTH * image_bigger)        # Set width of trigger point image to save
+image_height = int(CAMERA_HEIGHT * image_bigger)       # Set height of trigger point image to save
+
+# Calculate conversion from camera pixel width to actual speed.
+px_to_kph = float(cal_obj_mm/cal_obj_px * 0.0036)
+
+if SPEED_MPH:
+    speed_units = "mph"
+    speed_conv  = 0.621371 * px_to_kph
+else:
+    speed_units = "kph"
+    speed_conv  = px_to_kph
+
+quote = '"'  # Used for creating quote delimited log file of speed data
+
 #-----------------------------------------------------------------------------------------------
 class PiVideoStream:
     def __init__(self, resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=CAMERA_FRAMERATE, rotation=0, hflip=False, vflip=False):
@@ -225,23 +242,6 @@ class WebcamVideoStream:
     def stop(self):
         # indicate that the thread should be stopped
         self.stopped = True
-
-
-# System Settings
-image_width  = int(CAMERA_WIDTH * image_bigger)        # Set width of trigger point image to save
-image_height = int(CAMERA_HEIGHT * image_bigger)       # Set height of trigger point image to save
-
-# Calculate conversion from camera pixel width to actual speed.
-px_to_kph = float(cal_obj_mm/cal_obj_px * 0.0036)
-
-if SPEED_MPH:
-    speed_units = "mph"
-    speed_conv  = 0.621371 * px_to_kph
-else:
-    speed_units = "kph"
-    speed_conv  = px_to_kph
-
-quote = '"'  # Used for creating quote delimited log file of speed data
 
 #----------------------------------------------------------------------------------------------
 def get_fps( start_time, frame_count ):

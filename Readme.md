@@ -1,37 +1,17 @@
 # speed-cam.py - Speed Camera Object Motion Tracker 
 ### RPI, Unix and Windows Speed Camera Using python, openCV, USB Cam or RPI camera module
-
 ### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/speed-camera/wiki)
+    
+## Links
+ 
+* YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
+* YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
+* YouTube motion-track video https://youtu.be/09JS7twPBsQ
+* Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
+* YouTube Channel https://www.youtube.com/user/pageaucp 
+* Speed Camera GitHub Repo https://github.com/pageauc/speed-camera     
 
-* 6.50  Rewrote code to simplify image text and make compatible with Non RPI
-        Unix or Windows platforms using a Web Cam.  Tested and Works OK.
-        If running on Windows download latest python that includes numpy and opencv
-        here https://www.python.org/downloads/
-
-* 6.00  Added Optional SubDir creation by number of files or by SubDir Age
-        Also Added Disk Space Management that deletes oldest files in specified Dir Tree
-        to maintain a specified amount of Free disk space (default 500 MB)
-        Also added try, except, pass for loading of pi-camera libraries
-        This allows speed-cam.py to work on Non RPI platforms with Web Cam eg Ubuntu or MS Windows       
-
-* 5.00 Added search-speed.py that uses opencv template matching to find similar images.  Use menubox.sh 
-       menu system or command line to copy one or more search image(s) to the
-       default media/search folder and run ./search-speed.py  
-       if the config.py variable copy_results_on=True then image match files including original search file 
-       are copied to a sub folder with the same name as the search image file name but without the file extension. 
-       If you set config.py gui_window_on=True a Searching and Target window will displayed images on the
-       RPI desktop during search.  When a match is found it will be displayed in the Searching window for 4 seconds.
-       Results can also be reviewed from a web browser by running ./webserver.py and accessing link for 
-       media/search/subfolder after search is complete.
-       (Note: search-speed.py is still under development)
-          
-* IMPORTANT: speed-cam.py release 5.x or above requires a full install.
-It is advised that you rename/delete previous speed-camera folder
-and rerun GitHub Quick Install or Manual Install.  The default config.py is based on the
-config.py.240 file and works with single core RPI's. The config.py.720 is designed for quad core RPI's.
-Use menubox.sh to change settings or nano config.py
-
-### Quick Install   
+## Quick Install   
 Easy Install of speed-cam onto a Raspberry Pi Computer with latest Raspbian. 
 
     curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
@@ -43,7 +23,7 @@ This install can also be done directly on an Internet connected Raspberry Pi via
 Note - a raspbian apt-get update and upgrade will be performed as part of install 
 so it may take some time if these are not up-to-date
 
-#### or Manual Install   
+## Manual Install   
 From logged in RPI SSH session or console terminal perform the following.
 
     wget https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
@@ -59,17 +39,8 @@ or menubox.sh
 
 Admin speed-cam Easier using menubox.sh   
 ![menubox main menu](https://github.com/pageauc/speed-camera/blob/master/menubox.png)  
-    
-### Links  
 
-* YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
-* YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
-* Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
-* YouTube motion-track video https://youtu.be/09JS7twPBsQ
-* YouTube Channel https://www.youtube.com/user/pageaucp 
-* Speed Camera GitHub Repo https://github.com/pageauc/speed-camera     
-    
-### Requirements
+## Requirements
 Requires a Raspberry Pi computer with a RPI camera module or a USB Web Camera installed, configured
 and tested to verify it is working. I used a RPI model B2 but a B+ , 3 or 
 earlier will work OK. A quad core processor will greatly improve performance
@@ -82,7 +53,7 @@ See video and this Readme.md below for more details.
     
 See How to Run speed-cam.py section below
 
-### Program Description   
+## Program Description   
 This is a raspberry pi computer openCV2 object speed camera demo program.
 It is written in python and uses openCV2 to detect and track object motion.
 This can be vehicles or any other moving objects.  It tracks the speed of
@@ -101,7 +72,7 @@ taken and saved in an images folder. If log_data_to_file=True then a
 speed2.csv file will be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet.
 
-### How to Run    
+## How to Run    
 To run speed-cam.py as a background task or on boot from /etc/rc.local then
 
     cd ~/speed-camera
@@ -187,7 +158,7 @@ To Calibrate cal_obj_px and cal_obj_mm variables perform the following
 Please note that if road is too close and/or vehicles are moving too quickly then
 the camera may not capture motion and/or record vehicle in speed photo.
     
-### Configuration Settings  
+## Configuration Settings  
 Variable values are stored in the config.py file and are imported
 when speed-cam.py is run.  Use the nano editor to modify these settings
 per the comments.  Most settings should be OK and should not need to be
@@ -197,7 +168,7 @@ likely won't need to be changed unless you are familiar with them.
 Note if log_data_to_file is set it will save tracking data to a .csv file
 in the same folder as speed-cam.py  eg speed-cam.csv 
 
-### Project Improvements
+## Project Improvements
 These are some of the improvements I have been thinking about.  Not sure
 when I will actually implement as this is just a personal project challenge done for fun.
 
@@ -215,6 +186,36 @@ could be used to query for vehicles that are the same or very similar.
 * Using image match feature above, implement ability to track only specific objects (colour, shape, contour size, contour h/w ratio Etc.
 * Implement gnuplot interface to allow plotting by time of day or other parameters
 * Implement creation of profiles for vehicles, pedestrians, bicycles, Birds, Animals, Etc. Tracking
+
+## Revision Notes
+
+* 6.50  Rewrote code to simplify image text and make compatible with Non RPI
+        Unix or Windows platforms using a Web Cam.  Tested and Works OK.
+        If running on Windows download latest python that includes numpy and opencv
+        here https://www.python.org/downloads/
+
+* 6.00  Added Optional SubDir creation by number of files or by SubDir Age
+        Also Added Disk Space Management that deletes oldest files in specified Dir Tree
+        to maintain a specified amount of Free disk space (default 500 MB)
+        Also added try, except, pass for loading of pi-camera libraries
+        This allows speed-cam.py to work on Non RPI platforms with Web Cam eg Ubuntu or MS Windows       
+
+* 5.00 Added search-speed.py that uses opencv template matching to find similar images.  Use menubox.sh 
+       menu system or command line to copy one or more search image(s) to the
+       default media/search folder and run ./search-speed.py  
+       if the config.py variable copy_results_on=True then image match files including original search file 
+       are copied to a sub folder with the same name as the search image file name but without the file extension. 
+       If you set config.py gui_window_on=True a Searching and Target window will displayed images on the
+       RPI desktop during search.  When a match is found it will be displayed in the Searching window for 4 seconds.
+       Results can also be reviewed from a web browser by running ./webserver.py and accessing link for 
+       media/search/subfolder after search is complete.
+       (Note: search-speed.py is still under development)
+          
+* IMPORTANT: speed-cam.py release 5.x or above requires a full install.
+It is advised that you rename/delete previous speed-camera folder
+and rerun GitHub Quick Install or Manual Install.  The default config.py is based on the
+config.py.240 file and works with single core RPI's. The config.py.720 is designed for quad core RPI's.
+Use menubox.sh to change settings or nano config.py
 
 ### Credits  
 Some of this code is based on a YouTube tutorial by
