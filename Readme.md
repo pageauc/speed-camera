@@ -38,15 +38,29 @@ or menubox.sh
     ./menubox.sh
 
 Admin speed-cam Easier using menubox.sh   
-![menubox main menu](https://github.com/pageauc/speed-camera/blob/master/menubox.png)  
+![menubox main menu](https://github.com/pageauc/speed-camera/blob/master/menubox.png)     
+    
+## Windows or Non RPI Unix Installs
+For Windows or Unix computer platforms (non RPI or Debian) ensure you have the most
+up-to-date python version.  For Downloads visit https://www.python.org/downloads    
 
+The latest python versions include numpy and recent opencv that is required to run this code. 
+You will also need a USB web cam installed and working. 
+To install this program access the GitHub project page at   
+https://raw.github.com/pageauc/cam-track   
+and select the green Clone or download zip option. the files will be cloned or zipped
+to a cam-track folder. You can run the code from console, gui desktop or 
+from python IDLE application.    
+    
 ## Requirements
-Requires a Raspberry Pi computer with a RPI camera module or a USB Web Camera installed, configured
+Requires a Windows or Unix Distro computer with a USB Web Camera or a Raspberry Pi computer
+with a RPI camera module or USB Web Camera installed, configured
 and tested to verify it is working. I used a RPI model B2 but a B+ , 3 or 
 earlier will work OK. A quad core processor will greatly improve performance
 due to threading. A recent version of Raspbian operating system is recommended.
     
-IMPORTANT - Review settings in config.py file and edit variables with nano as required.
+### IMPORTANT
+Review settings in config.py file and edit variables with nano as required.
 You will need to perform a calibration to set the correct value for cal_obj_px and cal_obj_mm 
 variable based on the distance from camera to objects being measured for speed.  
 See video and this Readme.md below for more details.     
