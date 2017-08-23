@@ -186,17 +186,17 @@ in the same folder as speed-cam.py  eg speed-cam.csv
 These are some of the improvements I have been thinking about.  Not sure
 when I will actually implement as this is just a personal project challenge done for fun.
 
-* Move project documentation into GitHub wiki for easier maintenance.
-* Extract and store vehicle colour from image countour data
+* Move project documentation into GitHub wiki for easier maintenance.  DONE
+* Extract and store vehicle colour from image contour data
 * Add ability to set camera time of day schedule. Eg no night or specific time of day
 * Implement gdrive feature to sync data and/or images to users google or dropbox cloud storage 
 * Adjust Calibration for vehicles travelling in opposite lanes due to different distances from camera
 * Auto Calibrate by looking for smaller vehicles.  Small vehicles will usually be very similar in length so that
 the distance from camera to road can be calculated and used for any moving objects at a similar distance.
-* Modify CSV file to show filename separate from file path and simplify image naming to eliminate speed.
+* Modify CSV file to show file name separate from file path and simplify image naming to eliminate speed.
 * Create a sql database and/or web interface to store image and tracking data
 * Use image match per cam-track app to find similar vehicles in dataset and degree of accuracy. This
-could be used to query for vehicles that are the same or very similar. 
+could be used to query for vehicles that are the same or very similar. DONE
 * Using image match feature above, implement ability to track only specific objects (colour, shape, contour size, contour h/w ratio Etc.
 * Implement gnuplot interface to allow plotting by time of day or other parameters
 * Implement creation of profiles for vehicles, pedestrians, bicycles, Birds, Animals, Etc. Tracking
@@ -225,13 +225,14 @@ could be used to query for vehicles that are the same or very similar.
        media/search/subfolder after search is complete.
        (Note: search-speed.py is still under development)
           
-* IMPORTANT: speed-cam.py release 5.x or above requires a full install.
+### IMPORTANT
+speed-cam.py release 5.x or above requires a full install.
 It is advised that you rename/delete previous speed-camera folder
 and rerun GitHub Quick Install or Manual Install.  The default config.py is based on the
 config.py.240 file and works with single core RPI's. The config.py.720 is designed for quad core RPI's.
 Use menubox.sh to change settings or nano config.py
 
-### Credits  
+## Credits  
 Some of this code is based on a YouTube tutorial by
 Kyle Hounslow using C here https://www.youtube.com/watch?v=X6rPdRZzgjg
 
