@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.8"
+version = "version 6.9"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -99,6 +99,7 @@ import datetime
 import io
 import glob
 import sys
+import shutil
 
 try:   # Check to see if opencv is installed
     import cv2
@@ -136,7 +137,6 @@ else:
                     format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
-
 # System Settings
 image_width  = int(CAMERA_WIDTH * image_bigger)        # Set width of trigger point image to save
 image_height = int(CAMERA_HEIGHT * image_bigger)       # Set height of trigger point image to save
@@ -155,7 +155,8 @@ quote = '"'  # Used for creating quote delimited log file of speed data
 
 #-----------------------------------------------------------------------------------------------
 class PiVideoStream:
-    def __init__(self, resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=CAMERA_FRAMERATE, rotation=0, hflip=False, vflip=False):
+    def __init__(self, resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=CAMERA_FRAMERATE, rotation=0,
+                                                   hflip=CAMERA_HFLIP, vflip=CAMERA_VFLIP):
         # initialize the camera and stream
         self.camera = PiCamera()
         self.camera.resolution = resolution
@@ -266,6 +267,13 @@ def show_settings():
     os.chdir(image_path)
     img_dir = os.getcwd()
     os.chdir(cwd)
+    if imageRecentMax > 0:
+        if not os.path.isdir(imageRecentDir):
+            logging.info("Create Recent Folder %s", imageRecentDir)
+            try:
+                os.makedirs(imageRecentDir)
+            except OSError as err:
+                logging.error('Failed to Create Folder %s - %s', imageRecentDir, err)
     if not os.path.isdir(search_dest_path):
         logging.info("Creating Search Folder %s", search_dest_path)
         os.makedirs(search_dest_path)
@@ -304,6 +312,8 @@ def show_settings():
         print("                  CAMERA_FRAMERATE=%i fps video stream speed" % ( CAMERA_FRAMERATE ))
         print("Sub-Directories . imageSubDirMaxHours=%i (0=off)  imageSubDirMaxFiles=%i (0=off)" %
                                          ( imageSubDirMaxHours, imageSubDirMaxFiles ))
+        print("                  imageRecentDir=%s imageRecentMax=%i (0=off)" %
+                                         ( imageRecentDir, imageRecentMax ))
         if spaceTimerHrs > 0:   # Check if disk mgmnt is enabled
             print("Disk Space  ..... Enabled - Manage Target Free Disk Space. Delete Oldest %s Files if Needed" % (spaceFileExt))
             print("                  Check Every spaceTimerHrs=%i hr(s) (0=off)  Target spaceFreeMB=%i MB  min is 100 MB)" %
@@ -361,7 +371,7 @@ def subDirLatest(directory): # Scan for directories and return most recent
 def subDirCreate(directory, prefix):
     now = datetime.datetime.now()
     # Specify folder naming
-    subDirName = ('%s%d-%02d-%02d-%02d%02d' % (prefix, now.year, now.month, now.day, now.hour, now.minute))
+    subDirName = ('%s%d%02d%02d-%02d%02d' % (prefix, now.year, now.month, now.day, now.hour, now.minute))
     subDirPath = os.path.join(directory, subDirName)
     if not os.path.exists(subDirPath):
         try:
@@ -454,6 +464,15 @@ def filesToDelete(mediaDirPath, extension=image_format):
         for filename in filenames
         if filename.endswith(extension)),
         key=lambda fn: os.stat(fn).st_mtime, reverse=True)
+
+#-----------------------------------------------------------------------------------------------
+def saveRecent(recentMax, recentDir, filename, prefix):
+    # save specified most recent files (timelapse and/or motion) in recent subfolder
+    deleteOldFiles(recentMax, recentDir, prefix)
+    try:    # Copy image file to recent folder
+        shutil.copy(filename, recentDir)
+    except OSError as err:
+        logging.error('Copy from %s to %s - %s', filename, oldestFile, err)
 
 #-----------------------------------------------------------------------------------------------
 def freeSpaceUpTo(spaceFreeMB, mediaDir, extension=image_format):
@@ -719,7 +738,10 @@ def speed_camera():
                                     cv2.putText( big_image,image_text,(text_x,text_y), font,FONT_SCALE,(cvWhite),2)
                                 logging.info(" Save: %s", filename)
                                 cv2.imwrite(filename, big_image)
-
+                                    
+                                if imageRecentMax > 0 and not calibrate:  # Optional save most recent files to a recent folder
+                                    saveRecent(imageRecentMax, imageRecentDir, filename, image_prefix)
+                                        
                                 if log_data_to_CSV:    # Format and Save Data to CSV Log File
                                     log_time = datetime.datetime.now()
                                     log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" %

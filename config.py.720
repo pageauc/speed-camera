@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 6.6 speed-cam.py 720p Stream Variable Configuration Settings
+#         Ver 6.9 speed-cam.py 720p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -81,6 +81,11 @@ image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldes
 # ----------------------------------------------------------------
 imageSubDirMaxHours = 0       # 0=off or specify MaxHours - Creates New dated sub-folder if MaxHours exceeded
 imageSubDirMaxFiles = 1000    # 0=off or specify MaxFiles - Creates New dated sub-folder if MaxFiles exceeded
+
+# Optional Save Most Recent files in recent folder
+# ------------------------------------------------
+imageRecentMax = 100        # 0=off  Maintain specified number of most recent files in motionRecentDir
+imageRecentDir = "media/recent"  # default= "media/recent"  save recent files directory path
 
 # Optional Manage Free Disk Space Settings
 # ----------------------------------------
