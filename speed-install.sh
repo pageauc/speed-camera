@@ -53,6 +53,7 @@ if [ $? -ne 0 ] ;  then
   wget -O webserver.sh https://raw.github.com/pageauc/speed-camera/master/webserver.sh
   wget -O config.py https://raw.github.com/pageauc/speed-camera/master/config.py
   wget -O config.py.240 https://raw.github.com/pageauc/speed-camera/master/config.py.240
+  wget -O config.py.480 https://raw.github.com/pageauc/speed-camera/master/config.py.280  
   wget -O config.py.720 https://raw.github.com/pageauc/speed-camera/master/config.py.720
 else
   wget -O speed-cam.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/speed-cam.py
@@ -66,6 +67,7 @@ else
   wget -O webserver.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.sh
   wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
   wget -O config.py.240 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.240
+  wget -O config.py.480 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.480  
   wget -O config.py.720 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.720
 fi
 echo "Done Download"
