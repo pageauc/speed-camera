@@ -58,7 +58,7 @@ WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
 # ------------------
 CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning default=320
 CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  default=240
-CAMERA_FRAMERATE = 25  # Default = 25 Frame rate for video stream V2 picam can be higher
+CAMERA_FRAMERATE = 30  # Default = 25 Frame rate for video stream V2 picam can be higher
 CAMERA_ROTATION = 0    # Rotate camera image valid values are 0, 90, 180, 270
 CAMERA_VFLIP = False   # Flip the camera image vertically if required
 CAMERA_HFLIP = False   # Flip the camera image horizontally if required
