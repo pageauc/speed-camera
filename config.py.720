@@ -50,8 +50,8 @@ WEBCAM = False        # default = False False=PiCamera True=USB WebCamera
 # Web Camera Settings
 # -------------------
 WEBCAM_SRC = 0        # default = 0   USB opencv connection number
-WEBCAM_WIDTH = 1280   # default = 640 USB Webcam Image width
-WEBCAM_HEIGHT = 720   # default = 480 USB Webcam Image height
+WEBCAM_WIDTH = 1280   # default = 1280 USB Webcam Image width
+WEBCAM_HEIGHT = 720   # default = 720 USB Webcam Image height
 WEBCAM_HFLIP = False  # default = False USB Webcam flip image horizontally
 WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
 
