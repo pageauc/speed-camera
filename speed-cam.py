@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.9"
+version = "version 6.91"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -389,7 +389,7 @@ def subDirCreate(directory, prefix):
 def deleteOldFiles(maxFiles, dirPath, prefix):
     # Delete Oldest files gt or eq to maxfiles that match filename prefix
     try:
-        fileList = sorted(glob.glob(os.path.join(dirPath, prefix + '*')))
+        fileList = sorted(glob.glob(os.path.join(dirPath, prefix + '*')), key=os.path.getmtime)
     except OSError as err:
         logging.error('Problem Reading Directory %s - %s', dirPath, err)
     else:
