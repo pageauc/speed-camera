@@ -15,8 +15,8 @@ cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 
 # Crop Area for motion detection Tracking
 # =======================================
-x_left  = 760          # Exclude event if x less than this px position Default=25
-x_right = 1160         # Exclude event if x greater than this px position Default=295
+x_left  = 660          # Exclude event if x less than this px position Default=25
+x_right = 1260         # Exclude event if x greater than this px position Default=295
 y_upper = 340          # Exclude event if y less that this value default=100
 y_lower = 740          # Exclude event if y greater than this value default=175
 
@@ -57,9 +57,9 @@ WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
 
 # Pi Camera Settings
 # ------------------
-CAMERA_WIDTH = 1920    # default = 1280 Image stream width for opencv motion scanning (quad core)
-CAMERA_HEIGHT = 1088   # default = 720 Image stream height for opencv motion scanning (quad core)
-CAMERA_FRAMERATE = 30  # default = 25 framerate for video stream max for V2 can be higher
+CAMERA_WIDTH = 1920    # default = 1920 Image stream width for opencv motion scanning (quad core)
+CAMERA_HEIGHT = 1088   # default = 1088 Image stream height for opencv motion scanning (quad core)
+CAMERA_FRAMERATE = 15  # default = 15 framerate for video stream max for V2 can be higher
 CAMERA_ROTATION = 0    # default = 0 Rotate camera image valid values are 0, 90, 180, 270
 CAMERA_VFLIP = False   # default = False True= Flip the camera image vertically if required
 CAMERA_HFLIP = False   # default = False True= Flip the camera image horizontally if required
