@@ -73,7 +73,7 @@ image_filename_speed = False  # True= Prefix filename with speed value
 image_text_on = True          # True= Show Text on speed images   False= No Text on images
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
 image_font_size = 15          # Default = 15 Font text height in px for text on images
-image_bigger = 1.5              # Default = 2 Resize saved speed image by value
+image_bigger = 1.5            # Default = 1.5 Resize saved speed image by value
 image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldest are deleted  default=0 (off)
 
 # Optional Manage SubDir Creation by time, number of files or both
