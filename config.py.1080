@@ -17,7 +17,7 @@ cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 # =======================================
 x_left  = 760          # Exclude event if x less than this px position Default=25
 x_right = 1160         # Exclude event if x greater than this px position Default=295
-y_upper = 440          # Exclude event if y less that this value default=100
+y_upper = 340          # Exclude event if y less that this value default=100
 y_lower = 740          # Exclude event if y greater than this value default=175
 
 # Display opencv windows on gui desktop
