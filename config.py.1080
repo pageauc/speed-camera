@@ -4,7 +4,7 @@
 #######################################
 #
 #    speed-cam.py variable settings
-#
+#          EXPERIMENTAL
 #######################################
 
 # Calibration Settings
@@ -39,7 +39,7 @@ logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
-track_len_trig = 50    # Default=75 Length of track to trigger speed photo
+track_len_trig = 100   # Default=100 Length of track to trigger speed photo
 track_timeout = 1      # Number of seconds to wait after track End (prevents dual tracking)
 event_timeout = 2      # Number of seconds to wait for next motion event before starting new track
 
@@ -50,8 +50,8 @@ WEBCAM = False        # default = False False=PiCamera True=USB WebCamera
 # Web Camera Settings
 # -------------------
 WEBCAM_SRC = 0        # default = 0   USB opencv connection number
-WEBCAM_WIDTH = 1920   # default = 640 USB Webcam Image width
-WEBCAM_HEIGHT = 1080  # default = 480 USB Webcam Image height
+WEBCAM_WIDTH = 1920   # default = 1920 USB Webcam Image width
+WEBCAM_HEIGHT = 1080  # default = 1080 USB Webcam Image height
 WEBCAM_HFLIP = False  # default = False USB Webcam flip image horizontally
 WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
 

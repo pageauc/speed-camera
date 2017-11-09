@@ -1,6 +1,6 @@
 #!/bin/bash
 # Convenient speed-install.sh script written by Claude Pageau 1-Jul-2016
-ver="6.10"
+ver="6.20"
 SPEED_DIR='speed-camera'  # Default folder install location
 
 cd ~
@@ -55,6 +55,7 @@ if [ $? -ne 0 ] ;  then
   wget -O config.py.240 https://raw.github.com/pageauc/speed-camera/master/config.py.240
   wget -O config.py.480 https://raw.github.com/pageauc/speed-camera/master/config.py.280  
   wget -O config.py.720 https://raw.github.com/pageauc/speed-camera/master/config.py.720
+  wget -O config.py.1080 https://raw.github.com/pageauc/speed-camera/master/config.py.1080  
 else
   wget -O speed-cam.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/speed-cam.py
   wget -O speed-cam.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/speed-cam.sh
@@ -69,6 +70,7 @@ else
   wget -O config.py.240 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.240
   wget -O config.py.480 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.480  
   wget -O config.py.720 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.720
+  wget -O config.py.1080 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.1080  
 fi
 echo "Done Download"
 echo "------------------------------------------------"
