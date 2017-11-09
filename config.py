@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 6.9 speed-cam.py 240p Stream Variable Configuration Settings
+#         Ver 6.9 speed-cam.py 480p Stream Variable Configuration Settings
 
 #######################################
 #
@@ -10,15 +10,15 @@
 # Calibration Settings
 # --------------------
 calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
-cal_obj_px = 90        # Length of a calibration object in pixels
+cal_obj_px = 180       # Length of a calibration object in pixels
 cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 
 # Crop Area for motion detection Tracking
 # ---------------------------------------
-x_left  = 25           # Exclude event if x less than this px position Default=25
-x_right = 295          # Exclude event if x greater than this px position Default=295
-y_upper = 75           # Exclude event if y less that this value default=100
-y_lower = 185          # Exclude event if y greater than this value default=175
+x_left  = 150          # Exclude event if x less than this px position Default=25
+x_right = 490          # Exclude event if x greater than this px position Default=295
+y_upper = 140          # Exclude event if y less that this value default=100
+y_lower = 340          # Exclude event if y greater than this value default=175
 
 # Display opencv windows on gui desktop
 # gui_window_on suppresses All Windows if False
@@ -49,16 +49,16 @@ WEBCAM = False        # default = False False=PiCamera True=USB WebCamera
 
 # Web Camera Settings
 WEBCAM_SRC = 0        # default = 0   USB opencv connection number
-WEBCAM_WIDTH = 320    # default = 320 USB Webcam Image width
-WEBCAM_HEIGHT = 240   # default = 240 USB Webcam Image height
+WEBCAM_WIDTH = 640    # default = 320 USB Webcam Image width
+WEBCAM_HEIGHT = 480   # default = 240 USB Webcam Image height
 WEBCAM_HFLIP = True   # default = False USB Webcam flip image horizontally
 WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
 
 # Pi Camera Settings
 # ------------------
-CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning default=320
-CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  default=240
-CAMERA_FRAMERATE = 30  # Default = 25 Frame rate for video stream V2 picam can be higher
+CAMERA_WIDTH = 640     # Image stream width for opencv motion scanning default=320
+CAMERA_HEIGHT = 480    # Image stream height for opencv motion scanning  default=240
+CAMERA_FRAMERATE = 25  # Default = 25 Frame rate for video stream V2 picam can be higher
 CAMERA_ROTATION = 0    # Rotate camera image valid values are 0, 90, 180, 270
 CAMERA_VFLIP = False   # Flip the camera image vertically if required
 CAMERA_HFLIP = False   # Flip the camera image horizontally if required
@@ -68,12 +68,12 @@ CAMERA_HFLIP = False   # Flip the camera image horizontally if required
 image_path = "media/images"   # folder name to store images
 image_prefix = "speed-"       # image name prefix
 image_format = ".jpg"         # default = ".jpg"  image Formats .jpeg .png .gif .bmp
-image_show_motion_area = False # True= Display motion detection rectangle area on saved images
+image_show_motion_area = True # True= Display motion detection rectangle area on saved images
 image_filename_speed = False  # True= Prefix filename with speed value
 image_text_on = True          # True= Show Text on speed images   False= No Text on images
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
 image_font_size = 15          # Default = 15 Font text height in px for text on images
-image_bigger = 3              # Default = 2 Resize saved speed image by value
+image_bigger = 1.5              # Default = 2 Resize saved speed image by value
 image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldest are deleted  default=0 (off)
 
 # Optional Manage SubDir Creation by time, number of files or both
@@ -83,8 +83,8 @@ imageSubDirMaxFiles = 1000    # 0=off or specify MaxFiles - Creates New dated su
 
 # Optional Save Most Recent files in recent folder
 # ------------------------------------------------
-imageRecentMax = 100            # 0=off  Maintain specified number of most recent files in motionRecentDir
-imageRecentDir = "media/recent" # default= "media/recent"  save recent files directory path
+imageRecentMax = 100        # 0=off  Maintain specified number of most recent files in motionRecentDir
+imageRecentDir = "media/recent"  # default= "media/recent"  save recent files directory path
 
 # Optional Manage Free Disk Space Settings
 # ----------------------------------------
