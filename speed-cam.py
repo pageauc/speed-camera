@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.91"
+version = "version 6.92"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -37,7 +37,7 @@ chmod +x speed-install.sh
 """
 print("Loading Please Wait ....")
 print("-------------------------------------------------------------------------------------------------")
-print("speed-cam.py %s using python2 and OpenCV2    written by Claude Pageau" % ( version ))
+print("speed-cam.py %s   written by Claude Pageau" % ( version ))
 
 import os
 mypath=os.path.abspath(__file__)       # Find the full path of this python script
@@ -58,15 +58,15 @@ if not os.path.exists(configFilePath):
     print("ERROR - Missing config.py file - Could not find Configuration file %s" % (configFilePath))
     import urllib2
     config_url = "https://raw.github.com/pageauc/rpi-speed-camera/master/config.py"
-    print("   Attempting to Download config.py file from %s" % ( config_url ))
+    print("INFO  - Attempting to Download config.py file from %s" % ( config_url ))
     try:
         wgetfile = urllib2.urlopen(config_url)
     except:
         print("ERROR - Download of config.py Failed")
-        print("   Try Rerunning the speed-install.sh Again.")
-        print("   or")
-        print("   Perform GitHub curl install per Readme.md")
-        print("   and Try Again")
+        print("        Try Rerunning the speed-install.sh Again.")
+        print("        or")
+        print("        Perform GitHub curl install per Readme.md")
+        print("        and Try Again")
         print("Exiting %s" % ( progName ))
         quit()
     f = open('config.py','wb')
@@ -91,6 +91,21 @@ except:
     WEBCAM = True
     pass
 
+import subprocess
+if not WEBCAM:
+    # Check for that pi camaera module is installed and enabled
+    camResult = subprocess.check_output("vcgencmd get_camera", shell=True)
+    camResult = camResult.decode("utf-8")
+    camResult = camResult.replace("\n", "")
+    if (camResult.find("0")) >= 0:   # -1 is not string not found
+        print("ERROR - Pi Camera Module Not Found %s" % camResult)
+        print("        Verify that Pi Camera module is Installed Correctly")
+        print("        and is Enabled using command sudo raspi-config")
+        print("INFO  - Exiting %s" % progName)
+        quit()
+    else:
+        print("INFO  - Pi Camera Module Found and Enabled %s" % camResult )    
+    
 import numpy as np
 from threading import Thread
 import logging
@@ -104,19 +119,16 @@ import shutil
 try:   # Check to see if opencv is installed
     import cv2
 except:
-    print("------------------------------------")
-    print("Error - Could not import cv2 library")
+    print("ERROR - Could not import cv2 library")
     print("")
     if (sys.version_info > (2, 9)):
-        print("python3 failed to import cv2")
-        print("Try installing opencv for python3")
-        print("For RPI See https://github.com/pageauc/opencv3-setup")
+        print("        python3 failed to import cv2")
+        print("        Try installing opencv for python3")
+        print("        For RPI See https://github.com/pageauc/opencv3-setup")
     else:
-        print("python2 failed to import cv2")
-        print("Try RPI Install per command")
-        print("sudo apt-get install python-opencv")
-    print("")
-    print("Exiting speed2.py Due to Error")
+        print("        python2 failed to import cv2")
+        print("        Try RPI Install per command")
+    print("INFO  - Exiting %s" % progName)
     quit()
 
 # Now that variables are imported from config.py Setup Logging
@@ -158,7 +170,12 @@ class PiVideoStream:
     def __init__(self, resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=CAMERA_FRAMERATE, rotation=0,
                                                    hflip=CAMERA_HFLIP, vflip=CAMERA_VFLIP):
         # initialize the camera and stream
-        self.camera = PiCamera()
+        try:
+           self.camera = PiCamera()
+        except:
+           print("ERROR - PiCamera Already in Use by Another Process")
+           print("INFO  - Exit %s" % progName)
+           quit()
         self.camera.resolution = resolution
         self.camera.rotation = rotation
         self.camera.framerate = framerate
@@ -552,17 +569,6 @@ def log_to_csv_file(data_to_append):
 #----------------------------------------------------------------------------------------------
 def speed_camera():
     ave_speed = 0.0
-    if verbose:
-        if loggingToFile:
-            print("Sending Logging Data to %s  (Console Messages Disabled)" %( logFilePath ))
-        if calibrate:
-            print("In Calibration Mode ....")
-        if gui_window_on:
-            print("Press lower case q on OpenCV GUI Window to Quit program")
-            print("or ctrl-c in this terminal session to Quit")
-        else:
-            print("Press ctrl-c in this terminal session to Quit")
-
     # initialize variables
     frame_count = 0
     fps_time = time.time()
@@ -573,7 +579,6 @@ def speed_camera():
     # setup buffer area to ensure contour is fully contained in crop area
     x_buf = int((x_right - x_left) / 10 )
     y_buf = int((y_lower - y_upper) / 8 )
-    print("Start Speed Motion Tracking Ready ....")
     travel_direction = ""
 
     # initialize a cropped grayimage1 image
@@ -584,10 +589,28 @@ def speed_camera():
         image_crop = image2[y_upper:y_lower,x_left:x_right]
     except:
         vs.stop()
-        print("Problem Connecting To Camera Stream.")
-        print("Restarting Camera.  One Moment Please .....")
+        print("ERROR - Problem Connecting To Camera Stream.")
+        print("        Restarting Camera.  One Moment Please .....")
         time.sleep(4)
         return
+        
+    if verbose:
+        if gui_window_on:
+            print("INFO  - Press lower case q on OpenCV GUI Window to Quit program")
+            print("        or ctrl-c in this terminal session to Quit")
+        else:
+            print("INFO  - Press ctrl-c in this terminal session to Quit")
+            
+        if loggingToFile:
+            print("INFO  - Sending Logging Data to %s (Console Messages Disabled)" %( logFilePath ))
+        else:
+            print("INFO  - Start Logging Speed Camera Activity")           
+    else:            
+        print("INFO  - Note Logging Messages Disabled per verbose=%s" % verbose)
+        
+    if calibrate:
+        print("INFO  - Camera Is In Calibration Mode ....")
+        
     # Calculate position of text on the images
     font = cv2.FONT_HERSHEY_SIMPLEX
     if image_text_bottom:
@@ -734,9 +757,9 @@ def speed_camera():
                                     text_x =  int(( image_width / 2) - (len( image_text ) * image_font_size / 3) )
                                     if text_x < 2:
                                         text_x = 2
-                                    logging.info(" Text: %s  ", image_text)
+                                    logging.info(" Average Speed is %.1f %s  ", ave_speed, speed_units)
                                     cv2.putText( big_image,image_text,(text_x,text_y), font,FONT_SCALE,(cvWhite),2)
-                                logging.info(" Save: %s", filename)
+                                logging.info(" Saved %s", filename)
                                 cv2.imwrite(filename, big_image)
                                     
                                 if imageRecentMax > 0 and not calibrate:  # Optional save most recent files to a recent folder
@@ -809,18 +832,25 @@ if __name__ == '__main__':
 
     show_settings()
     try:
+        WEBCAM_TRIES = 0
         while True:
             # Save images to an in-program stream
             # Setup video stream on a processor Thread for faster speed
             if WEBCAM:   #  Start Web Cam stream (Note USB webcam must be plugged in)
-                print("Initializing USB Web Camera ....")
+                WEBCAM_TRIES += 1     
+                print("INFO  - Initializing USB Web Camera Try .. %i" % WEBCAM_TRIES)
                 vs = WebcamVideoStream().start()
                 vs.CAM_SRC = WEBCAM_SRC
                 vs.CAM_WIDTH = WEBCAM_WIDTH
                 vs.CAM_HEIGHT = WEBCAM_HEIGHT
-                time.sleep(4.0)  # Allow WebCam to initialize
+                if WEBCAM_TRIES > 4:
+                    print("ERROR - Could not Connect to Web Cam")
+                    print("        Please check USB Camera is connected and working.")
+                    print("INFO  - Exiting %s" % progName)
+                    quit()
+                time.sleep(4.0)  # Allow WebCam to initialize                    
             else:
-                print("Initializing Pi Camera ....")
+                print("INFO  - Initializing Pi Camera ....")
                 vs = PiVideoStream().start()
                 vs.camera.rotation = CAMERA_ROTATION
                 vs.camera.hflip = CAMERA_HFLIP
