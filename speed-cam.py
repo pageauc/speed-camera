@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.94"
+version = "version 6.95"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -24,6 +24,9 @@ program using a Raspberry Pi B2 https://youtu.be/09JS7twPBsQ
 and a fun speed lapse video https://youtu.be/-xdB_x_CbC8
 Installation
 Requires a Raspberry Pi with a RPI camera module or Web Cam installed and working
+or Windows, Unix Distro computer with a USB Web Cam.  See github wiki for
+more detail https://github.com/pageauc/speed-camera/wiki
+
 Install from a logged in SSH session per commands below.
 Code should run on a non RPI platform using a Web Cam
 
@@ -839,9 +842,10 @@ if __name__ == '__main__':
                 vs.CAM_SRC = WEBCAM_SRC
                 vs.CAM_WIDTH = WEBCAM_WIDTH
                 vs.CAM_HEIGHT = WEBCAM_HEIGHT
-                if WEBCAM_TRIES > 4:
-                    print("ERROR - Could not Connect to Web Cam")
-                    print("        Please check USB Camera is connected and working.")
+                if WEBCAM_TRIES > 3:
+                    print("ERROR - USB Web Cam Not Connecting to WEBCAM_SRC %i" % WEBCAM_SRC)
+                    print("        Check Camera is Plugged In and Working on Specified SRC")
+                    print("        and Not Used(busy) by Another Process.")
                     print("INFO  - Exiting %s" % progName)
                     quit()
                 time.sleep(4.0)  # Allow WebCam to initialize
