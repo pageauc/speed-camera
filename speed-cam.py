@@ -97,7 +97,7 @@ if not WEBCAM:
     camResult = subprocess.check_output("vcgencmd get_camera", shell=True)
     camResult = camResult.decode("utf-8")
     camResult = camResult.replace("\n", "")
-    if (camResult.find("0")) >= 0:   # -1 is not string not found
+    if (camResult.find("0")) >= 0:   # -1 is zero not found. Cam OK
         print("ERROR - Pi Camera Module Not Found %s" % camResult)
         print("        if supported=0 Enable Camera using command sudo raspi-config")
         print("        if detected=0 Check Pi Camera Module is Installed Correctly")
