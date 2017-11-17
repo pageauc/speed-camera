@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.93"
+version = "version 6.94"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
