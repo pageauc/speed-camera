@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-version = "version 6.92"
+version = "version 6.93"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -99,13 +99,13 @@ if not WEBCAM:
     camResult = camResult.replace("\n", "")
     if (camResult.find("0")) >= 0:   # -1 is not string not found
         print("ERROR - Pi Camera Module Not Found %s" % camResult)
-        print("        Verify that Pi Camera module is Installed Correctly")
-        print("        and is Enabled using command sudo raspi-config")
+        print("        if supported=0 Enable Camera using command sudo raspi-config")
+        print("        if detected=0 Check Pi Camera Module is Installed Correctly")
         print("INFO  - Exiting %s" % progName)
         quit()
     else:
-        print("INFO  - Pi Camera Module Found and Enabled %s" % camResult )    
-    
+        print("INFO  - Pi Camera Module is Enabled and Connected %s" % camResult )
+
 import numpy as np
 from threading import Thread
 import logging
@@ -593,24 +593,24 @@ def speed_camera():
         print("        Restarting Camera.  One Moment Please .....")
         time.sleep(4)
         return
-        
+
     if verbose:
         if gui_window_on:
             print("INFO  - Press lower case q on OpenCV GUI Window to Quit program")
             print("        or ctrl-c in this terminal session to Quit")
         else:
             print("INFO  - Press ctrl-c in this terminal session to Quit")
-            
+
         if loggingToFile:
             print("INFO  - Sending Logging Data to %s (Console Messages Disabled)" %( logFilePath ))
         else:
-            print("INFO  - Start Logging Speed Camera Activity")           
-    else:            
+            print("INFO  - Start Logging Speed Camera Activity")
+    else:
         print("INFO  - Note Logging Messages Disabled per verbose=%s" % verbose)
-        
+
     if calibrate:
         print("INFO  - Camera Is In Calibration Mode ....")
-        
+
     # Calculate position of text on the images
     font = cv2.FONT_HERSHEY_SIMPLEX
     if image_text_bottom:
@@ -626,7 +626,6 @@ def speed_camera():
     lastSpaceCheck = datetime.datetime.now()
     speed_path = image_path
     while still_scanning:    # process camera thread images and calculate speed
-
         image2 = vs.read()    # Get image from PiVideoSteam thread instance
         if WEBCAM:
             if ( WEBCAM_HFLIP and WEBCAM_VFLIP ):
@@ -637,7 +636,7 @@ def speed_camera():
                 image2 = cv2.flip( image2, 0 )
 
         # crop image to motion tracking area only
-        image_crop = image2[y_upper:y_lower,x_left:x_right]
+        image_crop = image2[ y_upper:y_lower, x_left:x_right ]
 
         if time.time() - event_timer > event_timeout:  # Check if event timed out
             # event_timer exceeded so reset for new track
@@ -653,7 +652,6 @@ def speed_camera():
         motion_found = False
         biggest_area = MIN_AREA
         cx, cy = 0, 0   # Center of contour used for tracking
-        mx, my = 0, 0   # x,y of top right position contour
         mw, mh = 0, 0   # w,h width, height of contour
 
         # Convert to gray scale, which is easier
@@ -688,8 +686,6 @@ def speed_camera():
                         biggest_area = found_area
                         cx = int(x + w/2)   # put circle in middle of width
                         cy = int(y + h/2)   # put circle in middle of height
-                        mx = x
-                        my = y
                         mw = w
                         mh = h
 
@@ -761,10 +757,10 @@ def speed_camera():
                                     cv2.putText( big_image,image_text,(text_x,text_y), font,FONT_SCALE,(cvWhite),2)
                                 logging.info(" Saved %s", filename)
                                 cv2.imwrite(filename, big_image)
-                                    
+
                                 if imageRecentMax > 0 and not calibrate:  # Optional save most recent files to a recent folder
                                     saveRecent(imageRecentMax, imageRecentDir, filename, image_prefix)
-                                        
+
                                 if log_data_to_CSV:    # Format and Save Data to CSV Log File
                                     log_time = datetime.datetime.now()
                                     log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s" %
@@ -837,7 +833,7 @@ if __name__ == '__main__':
             # Save images to an in-program stream
             # Setup video stream on a processor Thread for faster speed
             if WEBCAM:   #  Start Web Cam stream (Note USB webcam must be plugged in)
-                WEBCAM_TRIES += 1     
+                WEBCAM_TRIES += 1
                 print("INFO  - Initializing USB Web Camera Try .. %i" % WEBCAM_TRIES)
                 vs = WebcamVideoStream().start()
                 vs.CAM_SRC = WEBCAM_SRC
@@ -848,7 +844,7 @@ if __name__ == '__main__':
                     print("        Please check USB Camera is connected and working.")
                     print("INFO  - Exiting %s" % progName)
                     quit()
-                time.sleep(4.0)  # Allow WebCam to initialize                    
+                time.sleep(4.0)  # Allow WebCam to initialize
             else:
                 print("INFO  - Initializing Pi Camera ....")
                 vs = PiVideoStream().start()
