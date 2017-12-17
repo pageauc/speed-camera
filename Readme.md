@@ -12,16 +12,15 @@
 * Speed Camera GitHub Repo https://github.com/pageauc/speed-camera     
 
 ## Quick Install   
-Easy Install of speed-cam onto a Raspberry Pi Computer with latest Raspbian. 
+**IMPORTANT** - A raspbian apt-get update and upgrade will be performed as part of install
+so it may take some time if these are not up-to-date.      
+
+Step 1 Highlight curl command in code box below using mouse left button. Right click mouse in highlighted area and Copy.     
+Step 2 On RPI putty SSH or terminal session right click, select paste then Enter to download and run script. 
 
     curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
 
-From a computer logged into the RPI via ssh(Putty) session use mouse to highlight command above, right click, copy.  
-Then select ssh(Putty) window, mouse right click, paste.  The command should 
-download and execute the github speed-install.sh script for speed camera object(vehicle) speed tracker.  
-This install can also be done directly on an Internet connected Raspberry Pi via a console or desktop terminal session and web browser.      
-Note - a raspbian apt-get update and upgrade will be performed as part of install 
-so it may take some time if these are not up-to-date
+This will download and run the speed-install.sh script.
 
 ## Manual Install   
 From logged in RPI SSH session or console terminal perform the following.
