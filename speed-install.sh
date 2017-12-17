@@ -1,12 +1,12 @@
 #!/bin/bash
 # Convenient speed-install.sh script written by Claude Pageau 1-Jul-2016
-ver="6.20"
+ver="6.30"
 SPEED_DIR='speed-camera'  # Default folder install location
 
 cd ~
 if [ -d "$SPEED_DIR" ] ; then
   STATUS="Upgrade"
-  echo "Upgrade speed camera files"
+  echo "Upgrade"
 else
   echo "speed camera Install"
   STATUS="New Install"
@@ -38,40 +38,23 @@ else
   wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/config.py
 fi
 
+speedFiles=("config.py" "menubox.sh" "speed-install.sh" "speed-cam.py" \
+"speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" \
+"webserver.py" "webserver.sh" "config.py.240" "config.py.480" "config.py.720" "config.py.1080")
+
+for fname in "${speedFiles[@]}" ; do
+    wget_output=$(wget -O $fname -q --show-progress https://raw.github.com/pageauc/speed-camera/master/$fname)
+    if [ $? -ne 0 ]; then
+        if [ $? -ne 0 ]; then
+            echo "ERROR - $fname wget Download Failed. Possible Cause Internet Problem."
+        else
+            wget -O $fname https://raw.github.com/pageauc/speed-camera/master/$fname
+        fi
+    fi
+done
+
 wget -O media/webserver.txt https://raw.github.com/pageauc/speed-camera/master/webserver.txt
-wget -O speed-install.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
-if [ $? -ne 0 ] ;  then
-  wget -O speed-install.sh https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
-  wget -O speed-cam.py https://raw.github.com/pageauc/speed-camera/master/speed-cam.py
-  wget -O speed-cam.sh https://raw.github.com/pageauc/speed-camera/master/speed-cam.sh
-  wget -O search-speed.py https://raw.github.com/pageauc/speed-camera/master/search-speed.py
-  wget -O search_config.py https://raw.github.com/pageauc/speed-camera/master/search_config.py
-  wget -O Readme.md https://raw.github.com/pageauc/speed-camera/master/Readme.md
-  wget -O makehtml.py https://raw.github.com/pageauc/speed-camera/master/makehtml.py
-  wget -O menubox.sh https://raw.github.com/pageauc/speed-camera/master/menubox.sh
-  wget -O webserver.py https://raw.github.com/pageauc/speed-camera/master/webserver.py
-  wget -O webserver.sh https://raw.github.com/pageauc/speed-camera/master/webserver.sh
-  wget -O config.py https://raw.github.com/pageauc/speed-camera/master/config.py
-  wget -O config.py.240 https://raw.github.com/pageauc/speed-camera/master/config.py.240
-  wget -O config.py.480 https://raw.github.com/pageauc/speed-camera/master/config.py.280  
-  wget -O config.py.720 https://raw.github.com/pageauc/speed-camera/master/config.py.720
-  wget -O config.py.1080 https://raw.github.com/pageauc/speed-camera/master/config.py.1080  
-else
-  wget -O speed-cam.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/speed-cam.py
-  wget -O speed-cam.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/speed-cam.sh
-  wget -O search-speed.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/search-speed.py
-  wget -O search_config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/search_config.py
-  wget -O Readme.md -q --show-progress https://raw.github.com/pageauc/speed-camera/master/Readme.md
-  wget -O makehtml.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/makehtml.py
-  wget -O menubox.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/menubox.sh
-  wget -O webserver.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.py
-  wget -O webserver.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.sh
-  wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
-  wget -O config.py.240 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.240
-  wget -O config.py.480 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.480  
-  wget -O config.py.720 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.720
-  wget -O config.py.1080 -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py.1080  
-fi
+
 echo "Done Download"
 echo "------------------------------------------------"
 echo "2 - Make required Files Executable"
@@ -127,7 +110,7 @@ echo ""
 echo "   ./menubox.sh"
 echo ""
 echo "-----------------------------------------------"
-echo "See Readme.md for Further Details"
+echo "For Detailed Instructions See https://github.com/pageauc/speed-camera/wiki"
 echo ""
 echo $SPEED_DIR "Good Luck Claude ..."
 echo "Bye"
