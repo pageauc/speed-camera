@@ -11,16 +11,17 @@
 * YouTube Channel https://www.youtube.com/user/pageaucp 
 * Speed Camera GitHub Repo https://github.com/pageauc/speed-camera     
 
-## Quick Install   
+## RPI Quick Install   
 **IMPORTANT** - A raspbian apt-get update and upgrade will be performed as part of install
-so it may take some time if these are not up-to-date.      
+so it may take some time if these are not up-to-date.     
 
 Step 1 Highlight curl command in code box below using mouse left button. Right click mouse in highlighted area and Copy.     
 Step 2 On RPI putty SSH or terminal session right click, select paste then Enter to download and run script. 
 
     curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
 
-This will download and run the speed-install.sh script.
+This will download and run the speed-install.sh script. If running under python3 you will need opencv3 installed.
+See my Github opencv [compile opencv3 from source project](https://github.com/pageauc/opencv3-setup)
 
 ## Manual Install   
 From logged in RPI SSH session or console terminal perform the following.
@@ -31,7 +32,7 @@ From logged in RPI SSH session or console terminal perform the following.
     cd speed-camera
     ./speed-cam.py
     
-or menubox.sh
+## Run and Manage using menubox.sh
 
     cd ~/speed-camera
     ./menubox.sh
