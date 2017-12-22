@@ -420,6 +420,7 @@ function do_about()
 function do_main_menu ()
 {
   init_status
+  temp="$(/opt/vc/bin/vcgencmd measure_temp)"
   cd $DIR
   SELECTION=$(whiptail --title "Speed Cam Main Menu" \
                        --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
@@ -432,7 +433,8 @@ function do_main_menu ()
   "e VIEW" "View speed-cam.csv File" \
   "f SEARCH" "Images Search Menu (openCV Template Match)" \
   "g UPGRADE" "Program Files from GitHub.com" \
-  "h ABOUT" "Information about this program" \
+  "h STATUS" "CPU $temp   Select to Refresh" \
+  "i ABOUT" "Information about this program" \
   "q QUIT" "Exit This Program"  3>&1 1>&2 2>&3)
 
   RET=$?
@@ -450,7 +452,8 @@ function do_main_menu ()
       f\ *) do_speed_search_menu ;;
       g\ *) clear
             do_upgrade ;;
-      h\ *) do_about ;;
+      h\ *) do_main_menu ;;
+      i\ *) do_about ;;
       q\ *) rm -f $filename_conf $filename_temp
             exit 0 ;;
          *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
