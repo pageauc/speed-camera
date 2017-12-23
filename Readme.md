@@ -46,11 +46,10 @@ up-to-date python version.  For Downloads visit https://www.python.org/downloads
 
 The latest python versions include numpy and recent opencv that is required to run this code. 
 You will also need a USB web cam installed and working. 
-To install this program access the GitHub project page at   
-https://raw.github.com/pageauc/cam-track   
-and select the green Clone or download zip option. the files will be cloned or zipped
-to a cam-track folder. You can run the code from console, gui desktop or 
-from python IDLE application.    
+To install this program access the GitHub project page at https://github.com/pageauc/speed-camera   
+Select the green Clone or download zip option. The files will be cloned or zipped
+to a speed-camera folder. You can run the code from console, gui desktop or 
+from python IDLE application (recommended).    
     
 ## Requirements
 Requires a Windows or Unix Distro computer with a USB Web Camera or a Raspberry Pi computer
