@@ -20,7 +20,7 @@ cd $SPEED_DIR
 INSTALL_PATH=$( pwd )
 mkdir -p media
 echo "-----------------------------------------------"
-echo "  $STATUS speed-camera speed-install.sh ver $ver"
+echo "$STATUS speed-camera speed-install.sh ver $ver"
 echo "-----------------------------------------------"
 echo "$STATUS Download GitHub Files"
 speedFiles=("menubox.sh" "speed-install.sh" "speed-cam.py" \
