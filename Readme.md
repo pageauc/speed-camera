@@ -46,9 +46,9 @@ up-to-date python version.  For Downloads visit https://www.python.org/downloads
 
 The latest python versions include numpy and recent opencv that is required to run this code. 
 You will also need a USB web cam installed and working. 
-To install this program access the GitHub project page at https://github.com/pageauc/speed-camera   
+To install this program access the GitHub project page at https://github.com/pageauc/speed-camera
 Select the green Clone or download zip option. The files will be cloned or zipped
-to a speed-camera folder. You can run the code from console, gui desktop or 
+to a speed-camera folder. You can run the code from console, gui desktop or
 from python IDLE application (recommended).    
     
 ## Requirements
@@ -60,11 +60,11 @@ due to threading. A recent version of Raspbian operating system is recommended.
     
 ### IMPORTANT
 Review settings in config.py file and edit variables with nano as required.
-You will need to perform a calibration to set the correct value for cal_obj_px and cal_obj_mm 
-variable based on the distance from camera to objects being measured for speed.  
-See video and this Readme.md below for more details.     
+You will need to perform a calibration to set the correct value for ***cal_obj_px*** and ***cal_obj_mm*** 
+variables based on the distance from camera to objects being measured for speed.  
+See [Calibration Procedure](https://github.com/pageauc/speed-camera#calibration-procedure) below for more details.     
     
-See How to Run speed-cam.py section below
+See [How to Run](https://github.com/pageauc/speed-camera#how-to-run) speed-cam.py section below
 
 ## Program Description   
 This is a raspberry pi computer openCV2 object speed camera demo program.
