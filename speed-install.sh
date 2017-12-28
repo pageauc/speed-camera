@@ -5,8 +5,10 @@ ver="6.50"
 SPEED_DIR='speed-camera'  # Default folder install location
 
 cd ~
+is_upgrade=false
 if [ -d "$SPEED_DIR" ] ; then
   STATUS="Upgrade"
+  is_upgrade=true
 else
   STATUS="New Install"
   mkdir -p $SPEED_DIR
@@ -23,9 +25,16 @@ echo "-----------------------------------------------"
 echo "$STATUS speed-camera speed-install.sh ver $ver"
 echo "-----------------------------------------------"
 echo "$STATUS Download GitHub Files"
-speedFiles=("menubox.sh" "speed-install.sh" "speed-cam.py" \
+if $is_upgrade ; then
+    echo "Note: config.py will not be overwritten. Updated settings are in config.py.new"
+    speedFiles=("menubox.sh" "speed-install.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" \
 "webserver.py" "webserver.sh" "config.py.240" "config.py.480" "config.py.720" "config.py.1080")
+else
+    speedFiles=("config.py" "menubox.sh" "speed-install.sh" "speed-cam.py" \
+"speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" \
+"webserver.py" "webserver.sh" "config.py.240" "config.py.480" "config.py.720" "config.py.1080")
+fi
 
 for fname in "${speedFiles[@]}" ; do
     wget_output=$(wget -O $fname -q --show-progress https://raw.github.com/pageauc/speed-camera/master/$fname)
@@ -39,13 +48,6 @@ for fname in "${speedFiles[@]}" ; do
 done
 wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.txt
 wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
-
-if [ -e config.py ]; then
-  echo "Backup config.py to config.py.prev"
-  cp config.py config.py.prev
-else
-  wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
-fi
 
 echo "$STATUS Make required Files Executable"
 chmod +x *.py
