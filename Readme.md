@@ -129,16 +129,16 @@ You can also use git clone to copy the files to your RPI.
 The speed-cam files will be in the /home/pi/speed-camera folder. You can
 then move them to another location if you wish.
  
-Note A default images folder will be created to store jpg speed photos. There is an
-image_path variable in the config.py file.  Use nano editor to change path and/or
-other variables as desired.
+Note A default media/images datetime subfolder will be created to store jpg speed photos. 
+default is to create a new subfolder after 1000 images then a new datetime subfolder
+will be created. These settings can be change by editing the config.py file
+Use nano editor to change path and/or other variables as desired.
 
+## Calibration Procedure
+Default is calibrate on. speed-cam.py needs to be calibrated in order to
+display a correct speed.   
 Use the calibrate option and follow instructions below to calculate an accurate
 value for IMAGE_VIEW_FT variable in the speed_settings.py
- 
-
-## Calibration Procedure   
-speed-cam.py needs to be calibrated in order to display a correct speed.
 
 To Calibrate cal_obj_px and cal_obj_mm variables perform the following
 
