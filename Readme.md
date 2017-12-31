@@ -1,15 +1,17 @@
 # speed-cam.py - Speed Camera Object Motion Tracker 
 ### RPI, Unix and Windows Speed Camera Using python, openCV, USB Cam or RPI camera module
 ### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/speed-camera/wiki)
-    
-## Links
- * YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
-* YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
-* YouTube motion-track video https://youtu.be/09JS7twPBsQ
-* Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
-* YouTube Channel https://www.youtube.com/user/pageaucp 
-* Speed Camera GitHub Repo https://github.com/pageauc/speed-camera     
+See [Speed Camera YouTube Video's and other Links](https://github.com/pageauc/speed-camera#links) 
 
+## Requirements
+Requires a ***Raspberry Pi computer*** with and [RPI camera module installed](https://www.raspberrypi.org/documentation/usage/camera/) or USB Web Camera plugged in
+make sure hardware is tested to verify it is working OK. I used a RPI model B2 but a B+ , 3 or 
+earlier will work OK. A quad core processor will greatly improve performance
+due to threading. A recent version of Raspbian operating system is recommended.
+or  
+A ***Windows or Unix*** Distro computer with a USB Web Camera plugged and a
+[recent version of python installed](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs)
+ 
 ## RPI Quick Install or Upgrade   
 ***IMPORTANT*** - A raspbian ***sudo apt-get update*** and ***sudo apt-get upgrade*** will be performed as part of install
 so it may take some time if these are not up-to-date.     
@@ -39,6 +41,14 @@ From logged in RPI SSH session or console terminal perform the following. Allows
 
 Admin speed-cam Easier using menubox.sh   
 ![menubox main menu](https://github.com/pageauc/speed-camera/blob/master/menubox.png)     
+
+## Links
+ * YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
+* YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
+* YouTube motion-track video https://youtu.be/09JS7twPBsQ
+* Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
+* YouTube Channel https://www.youtube.com/user/pageaucp 
+* Speed Camera GitHub Repo https://github.com/pageauc/speed-camera     
     
 ## Windows or Non RPI Unix Installs
 For Windows or Unix computer platforms (non RPI or Debian) ensure you have the most
@@ -49,14 +59,7 @@ You will also need a USB web cam installed and working.
 To install this program access the GitHub project page at https://github.com/pageauc/speed-camera
 Select the ***green Clone or download*** button. The files will be cloned or zipped
 to a speed-camera folder. You can run the code from from ***python IDLE application (recommended)***, GUI desktop
-or command prompt terminal window.    
-    
-## Requirements
-Requires a ***Windows or Unix*** Distro computer with a USB Web Camera plugged in   
-or a ***Raspberry Pi computer*** with and RPI camera module or USB Web Camera installed
-make sure hardware is working and tested to verify it is working. I used a RPI model B2 but a B+ , 3 or 
-earlier will work OK. A quad core processor will greatly improve performance
-due to threading. A recent version of Raspbian operating system is recommended.
+or command prompt terminal window.        
     
 ### IMPORTANT
 Speed Camera will start in ***Calibration Mode***    
