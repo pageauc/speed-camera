@@ -10,8 +10,8 @@
 * YouTube Channel https://www.youtube.com/user/pageaucp 
 * Speed Camera GitHub Repo https://github.com/pageauc/speed-camera     
 
-## RPI Quick Install   
-***IMPORTANT*** - A raspbian ***sudo apt-get update*** and upgrade will be performed as part of install
+## RPI Quick Install or Upgrade   
+***IMPORTANT*** - A raspbian ***sudo apt-get update*** and ***sudo apt-get upgrade*** will be performed as part of install
 so it may take some time if these are not up-to-date.     
 
 ***Step 1*** With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and Copy.     
@@ -19,10 +19,10 @@ so it may take some time if these are not up-to-date.
 
     curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
 
-This will download and run the speed-install.sh script. If running under python3 you will need opencv3 installed.
+This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed.
 See my Github opencv [compile opencv3 from source project](https://github.com/pageauc/opencv3-setup)
 
-## Manual Install   
+## Manual Install or Upgrade   
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
 
     wget https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
@@ -47,18 +47,19 @@ up-to-date python version.  For Downloads visit https://www.python.org/downloads
 The latest python versions include numpy and recent opencv that is required to run this code. 
 You will also need a USB web cam installed and working. 
 To install this program access the GitHub project page at https://github.com/pageauc/speed-camera
-Select the green Clone or download zip option. The files will be cloned or zipped
-to a speed-camera folder. You can run the code from console, gui desktop or
-from python IDLE application (recommended).    
+Select the ***green Clone or download*** button. The files will be cloned or zipped
+to a speed-camera folder. You can run the code from from ***python IDLE application (recommended)***, GUI desktop
+or command prompt terminal window.    
     
 ## Requirements
-Requires a Windows or Unix Distro computer with a USB Web Camera or a Raspberry Pi computer
-with a RPI camera module or USB Web Camera installed, configured
-and tested to verify it is working. I used a RPI model B2 but a B+ , 3 or 
+Requires a ***Windows or Unix*** Distro computer with a USB Web Camera plugged in   
+or a ***Raspberry Pi computer*** with and RPI camera module or USB Web Camera installed
+make sure hardware is working and tested to verify it is working. I used a RPI model B2 but a B+ , 3 or 
 earlier will work OK. A quad core processor will greatly improve performance
 due to threading. A recent version of Raspbian operating system is recommended.
     
 ### IMPORTANT
+Speed Camera will start in ***Calibration Mode***    
 Review settings in config.py file and edit variables with nano as required.
 You will need to perform a calibration to set the correct value for ***cal_obj_px*** and ***cal_obj_mm*** 
 variables based on the distance from camera to objects being measured for speed.  
