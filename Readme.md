@@ -3,8 +3,7 @@
 ### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/speed-camera/wiki)
     
 ## Links
- 
-* YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
+ * YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
 * YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
 * YouTube motion-track video https://youtu.be/09JS7twPBsQ
 * Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
@@ -12,11 +11,11 @@
 * Speed Camera GitHub Repo https://github.com/pageauc/speed-camera     
 
 ## RPI Quick Install   
-**IMPORTANT** - A raspbian apt-get update and upgrade will be performed as part of install
+***IMPORTANT*** - A raspbian ***sudo apt-get update*** and upgrade will be performed as part of install
 so it may take some time if these are not up-to-date.     
 
-Step 1 Highlight curl command in code box below using mouse left button. Right click mouse in highlighted area and Copy.     
-Step 2 On RPI putty SSH or terminal session right click, select paste then Enter to download and run script. 
+***Step 1*** With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and Copy.     
+***Step 2*** On RPI putty SSH or terminal session right click, select paste then Enter to download and run script.  
 
     curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
 
@@ -24,9 +23,10 @@ This will download and run the speed-install.sh script. If running under python3
 See my Github opencv [compile opencv3 from source project](https://github.com/pageauc/opencv3-setup)
 
 ## Manual Install   
-From logged in RPI SSH session or console terminal perform the following.
+From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
 
     wget https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
+    # You can review code if you wish using command ***more speed-install.sh***
     chmod +x speed-install.sh
     ./speed-install.sh
     cd speed-camera
