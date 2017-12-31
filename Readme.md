@@ -8,7 +8,7 @@ or USB Camera plugged in. Make sure hardware is tested and works. Most [RPI mode
 A quad core RPI will greatly improve performance due to threading. A recent version of 
 [Raspbian operating system](https://www.raspberrypi.org/downloads/raspbian/) is Recommended.   
 or  
-A ***MS Windows or Unix distro*** computer with a USB Web Camera plugged and a
+A ***MS Windows or Unix distro*** computer with a USB Web Camera plugged in and a
 [recent version of python installed](https://www.python.org/downloads/)
 Also See [Wiki](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs)
  
