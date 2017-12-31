@@ -26,7 +26,7 @@ See my Github opencv [compile opencv3 from source project](https://github.com/pa
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
 
     wget https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
-    # You can review code if you wish using command ***more speed-install.sh***
+    more speed-install.sh       # You can review code if you wish
     chmod +x speed-install.sh
     ./speed-install.sh
     cd speed-camera
