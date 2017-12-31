@@ -6,7 +6,7 @@
 Requires a [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
 or USB Camera plugged in. Make sure hardware is tested and works. Most [RPI models](https://www.raspberrypi.org/products/) will work OK. 
 A quad core RPI will greatly improve performance due to threading. A recent version of 
-[Raspbian operating system](https://www.raspberrypi.org/downloads/raspbian/) is Recommended.
+[Raspbian operating system](https://www.raspberrypi.org/downloads/raspbian/) is Recommended.   
 or  
 A ***MS Windows or Unix distro*** computer with a USB Web Camera plugged and a
 [recent version of python installed](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs)
