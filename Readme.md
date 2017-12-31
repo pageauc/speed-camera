@@ -1,6 +1,6 @@
 # speed-cam.py - Speed Camera Object Motion Tracker 
 ### RPI, Unix and Windows Speed Camera Using python, openCV, USB Cam or RPI camera module
-### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/speed-camera/wiki) or [YouTube Video's](https://github.com/pageauc/speed-camera#links) 
+### For Details See [Speed Camera GitHub Wiki](https://github.com/pageauc/speed-camera/wiki) or [YouTube Video's](https://github.com/pageauc/speed-camera#links) [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#features)
 
 ## Requirements
 Requires a [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
