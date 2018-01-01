@@ -10,7 +10,7 @@ A quad core RPI will greatly improve performance due to threading. A recent vers
 or  
 A ***MS Windows or Unix distro*** computer with a USB Web Camera plugged in and a
 [recent version of python installed](https://www.python.org/downloads/)
-Also See [Wiki](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs)
+Also Details See [Wiki](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs)
  
 ## RPI Quick Install or Upgrade   
 ***IMPORTANT*** - A raspbian ***sudo apt-get update*** and ***sudo apt-get upgrade*** will be performed as part of install
