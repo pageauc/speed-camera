@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="5.73"
+ver="7.0"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -215,10 +215,10 @@ function do_settings_menu ()
 #------------------------------------------------------------------------------
 function Filebrowser()
 {
-# written by Claude Pageau
 # first parameter is Menu Title
 # second parameter is optional dir path to starting folder
 # otherwise current folder is selected
+
     if [ -z $2 ] ; then
         dir_list=$(ls -lhp  | awk -F ' ' ' { print $9 " " $5 } ')
     else
@@ -246,7 +246,7 @@ function Filebrowser()
        if [[ -d "$selection" ]]; then  # Check if Directory Selected
           Filebrowser "$1" "$selection"
        elif [[ -f "$selection" ]]; then  # Check if File Selected
-          if [[ $selection == *.jpg ]]; then   # Check if selected File has .jpg extension
+          if [[ $selection == *$filext ]]; then   # Check if selected File has .jpg extension
             if (whiptail --title "Confirm Selection" --yesno "DirPath : $curdir\nFileName: $selection" 0 0 \
                          --yes-button "Confirm" \
                          --no-button "Retry"); then
@@ -270,9 +270,59 @@ function Filebrowser()
 }
 
 #------------------------------------------------------------------------------
+function do_plugins_edit ()
+{
+    menutitle="Select File to Edit"
+    startdir="plugins"
+    filext='py'
+
+    Filebrowser "$menutitle" "$startdir"
+
+    exitstatus=$?
+    if [ $exitstatus -eq 0 ]; then
+        if [ "$selection" == "" ]; then
+            echo "User Pressed Esc with No File Selection"
+        else
+            nano $filepath/$filename
+        fi
+    else
+        echo "User Pressed Cancel. with No File Selected"
+    fi
+}
+#------------------------------------------------------------------------------
+function do_plugins_menu ()
+{
+  SET_SEL=$( whiptail --title "Edit Plugins Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --ok-button Select --cancel-button Back \
+  "a config" "nano config.py - plugin vars override" \
+  "b SELECT" "plugin File to nano Edit" \
+  "q BACK" "to Main Menu" 3>&1 1>&2 2>&3 )
+
+  RET=$?
+  if [ $RET -eq 1 ]; then
+    do_main_menu
+  elif [ $RET -eq 0 ]; then
+    case "$SET_SEL" in
+      a\ *) rm -f $filename_temp
+            rm -f $filename_conf
+            do_nano_main
+            do_plugins_menu ;;
+      b\ *) do_plugins_edit
+            do_plugins_menu ;;
+      q\ *) clear
+            do_main_menu ;;
+      *) whiptail --msgbox "Programmer error: unrecognised option" 20 60 1 ;;
+    esac || whiptail --msgbox "There was an error running selection $SELECTION" 20 60 1
+  fi
+}
+
+#------------------------------------------------------------------------------
 function do_search_file_select ()
 {
-    Filebrowser "Search Target File Selection Menu" media/images
+    menutitle="Select Target Image for Template Search"
+    startdir="media/images"
+    filext='jpg'
+
+    Filebrowser "$menutitle" "$startdir"
 
     exitstatus=$?
     if [ $exitstatus -eq 0 ]; then
@@ -423,19 +473,20 @@ function do_main_menu ()
   init_status
   temp="$(/opt/vc/bin/vcgencmd measure_temp)"
   cd $DIR
-  SELECTION=$(whiptail --title "Speed Cam Main Menu" \
+  SELECTION=$(whiptail --title "Speed Camera Main Menu" \
                        --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
                        --cancel-button Quit \
                        --ok-button Select \
   "a $SPEED_1" "$SPEED_2" \
   "b $WEB_1" "$WEB_2" \
   "c SETTINGS" "Change speed_cam and webserver settings" \
-  "d HTML" "Make html pages from speed-cam.csv & jpgs" \
-  "e VIEW" "View speed-cam.csv File" \
-  "f SEARCH" "Images Search Menu (openCV Template Match)" \
-  "g UPGRADE" "Program Files from GitHub.com" \
-  "h STATUS" "CPU $temp   Select to Refresh" \
-  "i ABOUT" "Information about this program" \
+  "d PLUGINS" "Change plugins Settings" \
+  "e HTML" "Make html pages from speed-cam.csv & jpgs" \
+  "f VIEW" "View speed-cam.csv File" \
+  "g SEARCH" "Images Search Menu (openCV Template Match)" \
+  "h UPGRADE" "Program Files from GitHub.com" \
+  "i STATUS" "CPU $temp   Select to Refresh" \
+  "j ABOUT" "Information about this program" \
   "q QUIT" "Exit This Program"  3>&1 1>&2 2>&3)
 
   RET=$?
@@ -446,18 +497,20 @@ function do_main_menu ()
       a\ *) do_speed_cam ;;
       b\ *) do_webserver ;;
       c\ *) do_settings_menu ;;
-      d\ *) do_makehtml_menu ;;
-      e\ *) clear
+      d\ *) do_plugins_menu ;;
+      e\ *) do_makehtml_menu ;;
+      f\ *) clear
             more ./speed-cam.csv
             do_anykey ;;
-      f\ *) do_speed_search_menu ;;
-      g\ *) clear
+      g\ *) do_speed_search_menu ;;
+      h\ *) clear
             do_upgrade ;;
-      h\ *) do_main_menu ;;
-      i\ *) do_about ;;
+      i\ *) clear
+            do_main_menu ;;
+      j\ *) do_about ;;
       q\ *) rm -f $filename_conf $filename_temp
             exit 0 ;;
-         *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
+         *) whiptail --msgbox "Programmer error: unrecognised option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running menu item $SELECTION" 20 60 1
   fi
 }

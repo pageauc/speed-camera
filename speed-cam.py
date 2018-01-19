@@ -3,7 +3,7 @@ version = "version 6.95"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
-Raspberry (Pi) - python opencv2 Speed tracking using picamera module or Web Cam
+Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking using picamera module or Web Cam
 GitHub Repo here https://github.com/pageauc/rpi-speed-camera/tree/master/
 
 This is a python openCV object speed tracking demonstration program.
@@ -43,6 +43,10 @@ print("-------------------------------------------------------------------------
 print("speed-cam.py %s   written by Claude Pageau" % ( version ))
 
 import os
+import glob
+import shutil
+import sys
+
 mypath=os.path.abspath(__file__)       # Find the full path of this python script
 baseDir=mypath[0:mypath.rfind("/")+1]  # get the path location only (excluding script name)
 baseFileName=mypath[mypath.rfind("/")+1:mypath.rfind(".")]
@@ -58,18 +62,18 @@ cvRed = (0,0,255)
 # Check for variable file to import and error out if not found.
 configFilePath = baseDir + "config.py"
 if not os.path.exists(configFilePath):
-    print("ERROR - Missing config.py file - Could not find Configuration file %s" % (configFilePath))
+    print("ERROR : Missing config.py file - Could not find Configuration file %s" % (configFilePath))
     import urllib2
-    config_url = "https://raw.github.com/pageauc/rpi-speed-camera/master/config.py"
-    print("INFO  - Attempting to Download config.py file from %s" % ( config_url ))
+    config_url = "https://raw.github.com/pageauc/speed-camera/master/config.py"
+    print("INFO  : Attempting to Download config.py file from %s" % ( config_url ))
     try:
         wgetfile = urllib2.urlopen(config_url)
     except:
-        print("ERROR - Download of config.py Failed")
+        print("ERROR : Download of config.py Failed")
         print("        Try Rerunning the speed-install.sh Again.")
         print("        or")
         print("        Perform GitHub curl install per Readme.md")
-        print("        and Try Again")
+        print("        and Try Again.")
         print("Exiting %s" % ( progName ))
         quit()
     f = open('config.py','wb')
@@ -78,6 +82,62 @@ if not os.path.exists(configFilePath):
 # Read Configuration variables from config.py file
 from config import *
 from search_config import search_dest_path
+
+if pluginEnable:     # Check and verify plugin and load variable overlay
+    pluginDir = os.path.join(baseDir,"plugins")
+    if pluginName.endswith('.py'):      # Check if there is a .py at the end of pluginName variable
+        pluginName = pluginName[:-3]    # Remove .py extensiion
+    pluginPath = os.path.join(pluginDir, pluginName + '.py')
+    print("INFO  : pluginEnabled - loading pluginName %s" % pluginPath)
+    if not os.path.isdir(pluginDir):
+        print("ERROR : plugin Directory Not Found at %s" % pluginDir )
+        print("        Suggest you Rerun github curl install script to install plugins")
+        print("        https://github.com/pageauc/pi-timolo/wiki/How-to-Install-or-Upgrade#quick-install")
+        print("INFO  : Exiting %s Due to Error" % progName)
+        quit()
+
+    elif not os.path.exists(pluginPath):
+        print("ERROR : File Not Found pluginName %s" % pluginPath )
+        print("        Check Spelling of pluginName Value in %s" % configFilePath)
+        print("        ------- Valid Names -------")
+        validPlugin = glob.glob(pluginDir + "/*py")
+        validPlugin.sort()
+        for entry in validPlugin:
+            pluginFile = os.path.basename(entry)
+            plugin = pluginFile.rsplit('.', 1)[0]
+            if not ((plugin == "__init__") or (plugin == "current")):
+                print("        %s"  % plugin)
+        print("        ------- End of List -------")
+        print("        Note: pluginName Should Not have .py Ending.")
+        print("INFO  : or Rerun github curl install command.  See github wiki")
+        print("        https://github.com/pageauc/speed-camera/wiki/How-to-Install-or-Upgrade#quick-install")
+        print("INFO  : Exiting %s Due to Error" % progName)
+        quit()
+    else:
+        pluginCurrent = os.path.join(pluginDir, "current.py")
+        try:    # Copy image file to recent folder
+            print("INFO  : Copy %s to %s" %( pluginPath, pluginCurrent ))
+            shutil.copy(pluginPath, pluginCurrent)
+        except OSError as err:
+            print('ERROR : Copy Failed from %s to %s - %s' % ( pluginPath, pluginCurrent, err))
+            Pring("        Check permissions, disk space, Etc.")
+            print("INFO  : Exiting %s Due to Error" % progName)
+            quit()
+        print("INFO  : Import Plugin %s" % pluginPath)
+        sys.path.insert(0,pluginDir)    # add plugin directory to program PATH
+        from plugins.current import *
+        try:
+            if os.path.exists(pluginCurrent):
+                os.remove(pluginCurrent)
+            pluginCurrentpyc = os.path.join(pluginDir, "current.pyc")
+            if os.path.exists(pluginCurrentpyc):
+                os.remove(pluginCurrentpyc)
+        except OSError as err:
+            print("ERROR : Failed Removal of %s - %s" % ( pluginCurrentpyc, err ))
+            print("INFO  : Exiting %s Due to Error" % progName)
+
+else:
+    print("INFO  : No Plugins Enabled per pluginEnable=%s" % pluginEnable)
 
 # fix possible invalid values
 if WINDOW_BIGGER < 1:
@@ -101,13 +161,13 @@ if not WEBCAM:
     camResult = camResult.decode("utf-8")
     camResult = camResult.replace("\n", "")
     if (camResult.find("0")) >= 0:   # -1 is zero not found. Cam OK
-        print("ERROR - Pi Camera Module Not Found %s" % camResult)
+        print("ERROR : Pi Camera Module Not Found %s" % camResult)
         print("        if supported=0 Enable Camera using command sudo raspi-config")
         print("        if detected=0 Check Pi Camera Module is Installed Correctly")
-        print("INFO  - Exiting %s" % progName)
+        print("INFO  : Exiting %s" % progName)
         quit()
     else:
-        print("INFO  - Pi Camera Module is Enabled and Connected %s" % camResult )
+        print("INFO  : Pi Camera Module is Enabled and Connected %s" % camResult )
 
 import numpy as np
 from threading import Thread
@@ -115,14 +175,11 @@ import logging
 import time
 import datetime
 import io
-import glob
-import sys
-import shutil
 
 try:   # Check to see if opencv is installed
     import cv2
 except:
-    print("ERROR - Could not import cv2 library")
+    print("ERROR : Could not import cv2 library")
     print("")
     if (sys.version_info > (2, 9)):
         print("        python3 failed to import cv2")
@@ -131,7 +188,7 @@ except:
     else:
         print("        python2 failed to import cv2")
         print("        Try RPI Install per command")
-    print("INFO  - Exiting %s" % progName)
+    print("INFO  : Exiting %s" % progName)
     quit()
 
 # Now that variables are imported from config.py Setup Logging
@@ -176,8 +233,8 @@ class PiVideoStream:
         try:
            self.camera = PiCamera()
         except:
-           print("ERROR - PiCamera Already in Use by Another Process")
-           print("INFO  - Exit %s" % progName)
+           print("ERROR : PiCamera Already in Use by Another Process")
+           print("INFO  : Exit %s" % progName)
            quit()
         self.camera.resolution = resolution
         self.camera.rotation = rotation
@@ -592,27 +649,30 @@ def speed_camera():
         image_crop = image2[y_upper:y_lower,x_left:x_right]
     except:
         vs.stop()
-        print("ERROR - Problem Connecting To Camera Stream.")
+        print("ERROR : Problem Connecting To Camera Stream.")
         print("        Restarting Camera.  One Moment Please .....")
         time.sleep(4)
         return
 
     if verbose:
         if gui_window_on:
-            print("INFO  - Press lower case q on OpenCV GUI Window to Quit program")
+            print("INFO  : Press lower case q on OpenCV GUI Window to Quit program")
             print("        or ctrl-c in this terminal session to Quit")
         else:
-            print("INFO  - Press ctrl-c in this terminal session to Quit")
+            print("INFO  : Press ctrl-c in this terminal session to Quit")
 
         if loggingToFile:
-            print("INFO  - Sending Logging Data to %s (Console Messages Disabled)" %( logFilePath ))
+            print("INFO  : Sending Logging Data to %s (Console Messages Disabled)" %( logFilePath ))
         else:
-            print("INFO  - Start Logging Speed Camera Activity")
+            print("INFO  : Start Logging Speed Camera Activity")
     else:
-        print("INFO  - Note Logging Messages Disabled per verbose=%s" % verbose)
+        print("INFO  : Note Logging Messages Disabled per verbose=%s" % verbose)
+
+    if pluginEnable:
+        print("INFO  : Plugin %s is Enabled." % pluginName)
 
     if calibrate:
-        print("INFO  - Camera Is In Calibration Mode ....")
+        print("INFO  : Camera Is In Calibration Mode ....")
 
     # Calculate position of text on the images
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -837,20 +897,20 @@ if __name__ == '__main__':
             # Setup video stream on a processor Thread for faster speed
             if WEBCAM:   #  Start Web Cam stream (Note USB webcam must be plugged in)
                 WEBCAM_TRIES += 1
-                print("INFO  - Initializing USB Web Camera Try .. %i" % WEBCAM_TRIES)
+                print("INFO  : Initializing USB Web Camera Try .. %i" % WEBCAM_TRIES)
                 vs = WebcamVideoStream().start()
                 vs.CAM_SRC = WEBCAM_SRC
                 vs.CAM_WIDTH = WEBCAM_WIDTH
                 vs.CAM_HEIGHT = WEBCAM_HEIGHT
                 if WEBCAM_TRIES > 3:
-                    print("ERROR - USB Web Cam Not Connecting to WEBCAM_SRC %i" % WEBCAM_SRC)
+                    print("ERROR : USB Web Cam Not Connecting to WEBCAM_SRC %i" % WEBCAM_SRC)
                     print("        Check Camera is Plugged In and Working on Specified SRC")
                     print("        and Not Used(busy) by Another Process.")
-                    print("INFO  - Exiting %s" % progName)
+                    print("INFO  : Exiting %s" % progName)
                     quit()
                 time.sleep(4.0)  # Allow WebCam to initialize
             else:
-                print("INFO  - Initializing Pi Camera ....")
+                print("INFO  : Initializing Pi Camera ....")
                 vs = PiVideoStream().start()
                 vs.camera.rotation = CAMERA_ROTATION
                 vs.camera.hflip = CAMERA_HFLIP

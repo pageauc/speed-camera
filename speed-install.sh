@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="6.50"
+ver="7.0"
 SPEED_DIR='speed-camera'  # Default folder install location
 
 cd ~
@@ -29,11 +29,11 @@ if $is_upgrade ; then
     echo "Note: config.py will not be overwritten. Updated settings are in config.py.new"
     speedFiles=("menubox.sh" "speed-install.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" \
-"webserver.py" "webserver.sh" "config.py.240" "config.py.480" "config.py.720" "config.py.1080")
+"webserver.py" "webserver.sh")
 else
     speedFiles=("config.py" "menubox.sh" "speed-install.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" \
-"webserver.py" "webserver.sh" "config.py.240" "config.py.480" "config.py.720" "config.py.1080")
+"webserver.py" "webserver.sh")
 fi
 
 for fname in "${speedFiles[@]}" ; do
@@ -48,6 +48,32 @@ for fname in "${speedFiles[@]}" ; do
 done
 wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.txt
 wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
+
+# Install plugins if not already installed.  You must delete a plugin file to force reinstall.
+echo "INFO  : $STATUS Check/Install pi-timolo/plugins    Wait ..."
+PLUGINS_DIR='plugins'  # Default folder install location
+# List of plugin Files to Check
+pluginFiles=("__init__.py" "picam240.py" "picam480.py" "picam720.py" "picam1080.py" \
+"webcam480.py" "webcam720")
+
+mkdir -p $PLUGINS_DIR
+cd $PLUGINS_DIR
+for fname in "${pluginFiles[@]}" ; do
+  if [ -f $fname ]; then     # check if local file exists.
+    echo "INFO  : $fname plugin Found.  Skip Download ..."
+  else
+    wget_output=$(wget -O $fname -q --show-progress https://raw.github.com/pageauc/speed-camera/master/plugins/$fname)
+    if [ $? -ne 0 ]; then
+        wget_output=$(wget -O $fname -q https://raw.github.com/pageauc/speed-camera/master/plugins/$fname)
+        if [ $? -ne 0 ]; then
+            echo "ERROR : $fname wget Download Failed. Possible Cause Internet Problem."
+        else
+            wget -O $fname "https://raw.github.com/pageauc/speed-camera/master/plugins/$fname"
+        fi
+    fi
+  fi
+done
+cd ..
 
 echo "$STATUS Make required Files Executable"
 chmod +x *.py
@@ -91,10 +117,16 @@ or Run from Admin menu
 
    ./menubox.sh
 
+IMPORTANT: speed-cam.py ver 7.x Requires the Updated config.py File for plugins feature
+
+    cd ~/speed-camera
+    cp config.py config.py.bak
+    cp config.py.new config.py
+
 -----------------------------------------------
 For Detailed Instructions See https://github.com/pageauc/speed-camera/wiki
-
-$SPEED_DIR Good Luck Claude ...
+$SPEED_DIR version $ver
+Good Luck Claude ...
 Bye"
 
 

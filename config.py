@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 6.9 speed-cam.py 480p Stream Variable Configuration Settings
+#         Ver 7.0 speed-cam.py Stream Variable Configuration Settings (480p resolution)
 
 #######################################
 #
@@ -12,6 +12,12 @@
 calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
 cal_obj_px = 180       # Length of a calibration object in pixels
 cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
+
+# Plugins overlay the config.py variable settings
+# -----------------------------------------------
+pluginEnable = True
+pluginName = "picam480"   # Specify filename in plugins subfolder without .py extension per below
+                          # picam240, picam480, picam720, picam1080, webcam480, webcam720
 
 # Crop Area for motion detection Tracking
 # ---------------------------------------
@@ -48,20 +54,20 @@ event_timeout = 2      # Number of seconds to wait for next motion event before 
 WEBCAM = False        # default = False False=PiCamera True=USB WebCamera
 
 # Web Camera Settings
-WEBCAM_SRC = 0        # default = 0   USB opencv connection number
-WEBCAM_WIDTH = 640    # default = 640 USB Webcam Image width
-WEBCAM_HEIGHT = 480   # default = 480 USB Webcam Image height
-WEBCAM_HFLIP = True   # default = False USB Webcam flip image horizontally
-WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
+WEBCAM_SRC = 0        # default= 0   USB opencv connection number
+WEBCAM_WIDTH = 640    # default= 640 USB Webcam Image width
+WEBCAM_HEIGHT = 480   # default= 480 USB Webcam Image height
+WEBCAM_HFLIP = True   # default= False USB Webcam flip image horizontally
+WEBCAM_VFLIP = False  # default= False USB Webcam flip image vertically
 
 # Pi Camera Settings
 # ------------------
 CAMERA_WIDTH = 640     # Image stream width for opencv motion scanning default=320
 CAMERA_HEIGHT = 480    # Image stream height for opencv motion scanning  default=240
-CAMERA_FRAMERATE = 25  # Default = 25 Frame rate for video stream V2 picam can be higher
+CAMERA_FRAMERATE = 25  # Default= 25 Frame rate for video stream V2 picam can be higher
 CAMERA_ROTATION = 0    # Rotate camera image valid values are 0, 90, 180, 270
-CAMERA_VFLIP = False   # Flip the camera image vertically if required
-CAMERA_HFLIP = False   # Flip the camera image horizontally if required
+CAMERA_VFLIP = True    # Flip the camera image vertically if required
+CAMERA_HFLIP = True    # Flip the camera image horizontally if required
 
 # Camera Image Settings
 # ---------------------
@@ -72,8 +78,8 @@ image_show_motion_area = True # True= Display motion detection rectangle area on
 image_filename_speed = False  # True= Prefix filename with speed value
 image_text_on = True          # True= Show Text on speed images   False= No Text on images
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
-image_font_size = 15          # Default = 15 Font text height in px for text on images
-image_bigger = 1.5            # Default = 1.5 Resize saved speed image by value
+image_font_size = 15          # Default= 15 Font text height in px for text on images
+image_bigger = 1.5            # Default= 1.5 Resize saved speed image by value
 image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldest are deleted  default=0 (off)
 
 # Optional Manage SubDir Creation by time, number of files or both
