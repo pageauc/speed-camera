@@ -177,9 +177,10 @@ the camera may not capture motion and/or record vehicle in speed photo.
     
 ## Configuration Settings  
 Variable values are stored in the config.py file and are imported
-when speed-cam.py is run.  Use a text editor to modify these settings
-per the comments.  Most settings should be OK and should not need to be
-changed. Others may need to be fine tuned.  The openCV settings most
+when speed-cam.py is run.  If plugins are enabled the plugin file will
+overlay the specified config.py settings. Use menubox.sh or a text editor
+to modify these settings per the comments. Most settings should be OK and should
+not need to be changed. Others may need to be fine tuned.  The openCV settings most
 likely won't need to be changed unless you are familiar with them.
 
 Note if log_data_to_file is set it will save tracking data to a .csv file
@@ -192,7 +193,7 @@ when I will actually implement as this is just a personal project challenge done
 * Move project documentation into GitHub wiki for easier maintenance.  DONE
 * Extract and store vehicle colour from image contour data
 * Add ability to set camera time of day schedule. Eg no night or specific time of day
-* Implement gdrive feature to sync data and/or images to users google or dropbox cloud storage 
+* Implement rclone feature to sync data and/or images to users google or dropbox cloud storage 
 * Adjust Calibration for vehicles travelling in opposite lanes due to different distances from camera
 * Auto Calibrate by looking for smaller vehicles.  Small vehicles will usually be very similar in length so that
 the distance from camera to road can be calculated and used for any moving objects at a similar distance.
@@ -205,7 +206,8 @@ could be used to query for vehicles that are the same or very similar. DONE
 * Implement creation of profiles for vehicles, pedestrians, bicycles, Birds, Animals, Etc. Tracking
 
 ## Revision Notes
-
+* 7.00  Added plugin feature to eliminate custom config files.  These files overlay
+        settings of config.py and can be enabled or disabled
 * 6.50  Rewrote code to simplify image text and make compatible with Non RPI
         Unix or Windows platforms using a Web Cam.  Tested and Works OK.
         If running on Windows download latest python that includes numpy and opencv
