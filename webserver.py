@@ -1,31 +1,30 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 import cgi, os, socket, SocketServer, sys, time, urllib
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from StringIO import StringIO
 
-version = "ver 3.10 written by Claude Pageau"
+version = "ver 10.1 written by Claude Pageau"
 
 # SimpleHTTPServer python program to allow selection of images from right panel and display in an iframe left panel
 # Use for local network use only since this is not guaranteed to be a secure web server.
 # based on original code by zeekay and modified by Claude Pageau Nov-2015 for use with pi-timolo.py on a Raspberry Pi
 # from http://stackoverflow.com/questions/8044873/python-how-to-override-simplehttpserver-to-show-timestamp-in-directory-listing
 
-# 1 - Use nano editor to change webserver.py web_server_root and other variables to suit
-#   nano webserver.py
+# 1 - Use nano editor to change webserver.py web_server_root and other variables to suit at bottom of config.py
+#     nano config.py         # Webserver settings are near the end of the file
 #     ctrl-x y to save changes
 #
 # 2 - On Terminal session execute command below.  This will display file access information
-#   ./webserver.py
-#     ctrl-c to stop web server.  Note if you close terminal session webserver.py will stop.
+#     ./webserver.py    # ctrl-c to stop web server.  Note if you close terminal session webserver.py will stop.
 #
 # 3 - To Run this script as a background daemon execute the command below.
-#     Once running you can close the console and webserver will continue to run.
-#   ./webserver.sh start
-#     To check status of webserver type command below with no parameter   
-#   ./webserver.sh
+#     Once running you can close the terminal session and webserver will continue to run.
+#     ./webserver.sh start
+#     To check status of webserver type command below with no parameter
+#     ./webserver.sh
 #
-# 4 - On a LAN computer web browser url bar, input this RPI ip address and port number per example below.
-#   http://192.168.1.110:8080
+# 4 - On a LAN computer web browser url bar, input this RPI ip address and port number per below
+#     example    http://192.168.1.110:8080
 
 mypath = os.path.abspath(__file__)     # Find the full path of this python script
 base_dir = os.path.dirname(mypath)      # Get the path location only (excluding script name)
@@ -38,7 +37,7 @@ if not os.path.exists(configFilePath):
     quit()
 else:
     # Read Configuration variables from config.py file
-    print("Importing Configuration Variables from File %s" % ( configFilePath ))    
+    print("Importing Configuration Variables from File %s" % ( configFilePath ))
     from config import *
 
 os.chdir(web_server_root)
@@ -46,24 +45,24 @@ web_root = os.getcwd()
 os.chdir(base_dir)
 
 try:
-    myip = ([ l for l in ( [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], 
-           [[( s.connect(('8.8.8.8', 53)), 
-           s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, 
+    myip = ([ l for l in ( [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1],
+           [[( s.connect(('8.8.8.8', 53)),
+           s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET,
            socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
 except:
     print("Can't Find a Network IP Address on this Raspberry Pi")
     print("Configure Network and Try Again")
-    quit()    
-    
+    quit()
+
 if web_list_by_datetime:
-    dir_sort = 'sort: Date Time'
+    dir_sort = 'DateTime'
 else:
-    dir_sort = 'sort: File Name'
+    dir_sort = 'FileName'
 
 if web_list_sort_descending:
-    dir_order = ' Descend'
+    dir_order = 'Descend'
 else:
-    dir_order = ' Ascend'
+    dir_order = 'Ascend'
 
 list_title = "%s %s" % ( dir_sort, dir_order )
 
@@ -94,21 +93,21 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         if web_page_refresh_on:
             f.write('<meta http-equiv="refresh" content="%s" />' % ( web_page_refresh_sec ))
         f.write('</head>')
-        
+
         tpath, cur_folder = os.path.split(self.path)
         f.write("<html><title>%s %s</title>" % ( web_page_title, self.path ))
         f.write("<body>")
         # Start Left iframe Image Panel
-        f.write('<iframe width="%s" height="%s" align="left"' 
+        f.write('<iframe width="%s" height="%s" align="left"'
                         % (web_iframe_width_usage, web_image_height))
         if web_page_blank:
-            f.write('src="%s" name="imgbox" id="imgbox" alt="%s">' 
-                          % ("about:blank", web_page_title)) 
-                          # display second entry in right list since list[0] may still be in progress                        
+            f.write('src="%s" name="imgbox" id="imgbox" alt="%s">'
+                          % ("about:blank", web_page_title))
+                          # display second entry in right list since list[0] may still be in progress
         else:
-            f.write('src="%s" name="imgbox" id="imgbox" alt="%s">' 
-                          % (list[0], web_page_title)) 
-                          # display second entry in right list since list[0] may still be in progress                               
+            f.write('src="%s" name="imgbox" id="imgbox" alt="%s">'
+                          % (list[0], web_page_title))
+                          # display second entry in right list since list[0] may still be in progress
 
         f.write('<p>iframes are not supported by your browser.</p></iframe>')
         # Start Right File selection List Panel
@@ -116,13 +115,16 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         f.write(list_style)
         # f.write('<center><b>%s</b></center>' % (self.path))
         f.write('<center><b>%s</b></center>' % (list_title))
-        f.write('<ul name="menu" id="menu" style="list-style-type:none; padding-left: 4px">')        
+        f.write('<ul name="menu" id="menu" style="list-style-type:none; padding-left: 4px">')
         # Create the formatted list of right panel hyperlinks to files in the specified directory
-        
+
+        if not self.path is "/":   # Display folder Back arrow navigation if not in web root
+            f.write('<li><a href="%s" >%s</a></li>\n'
+                      % ( urllib.quote(".."), cgi.escape("< BACK")))
         display_entries = 0
         for name in list:
             display_entries += 1
-            if web_max_list_entries > 0:
+            if web_max_list_entries > 1:
                 if display_entries >= web_max_list_entries:
                     break
             fullname = os.path.join(path, name)
@@ -136,19 +138,19 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
                 # Note this will open a new tab to display the selected folder.
                 displayname = name + "/"
                 linkname = os.path.join(displaypath, displayname)
-                f.write('<li><a href="%s" target="_blank">%s</a></li>\n'
+                f.write('<li><a href="%s" >%s</a></li>\n'
                           % ( urllib.quote(linkname), cgi.escape(displayname)))
             else:
                 f.write('<li><a href="%s" target="imgbox">%s</a> - %s</li>\n'
                           % ( urllib.quote(linkname), cgi.escape(displayname), date_modified))
         f.write('</ul></div><p><b>')
-        f.write('<div style="float: left; padding-left: 40px;">Web Root is [ %s ]</div>' % ( web_server_root )) 
+        f.write('<div style="float: left; padding-left: 40px;">Web Root is [ %s ]</div>' % ( web_server_root ))
         f.write('<div style="text-align: center;">%s</div>' % ( web_page_title ))
 
         if web_page_refresh_on:
-             f.write('<div style="float: left; padding-left: 40px;">Auto Refresh [ %s sec ]</div>' % ( web_page_refresh_sec ))                         
+             f.write('<div style="float: left; padding-left: 40px;">Auto Refresh [ %s sec ]</div>' % ( web_page_refresh_sec ))
 
-        if web_max_list_entries > 1: 
+        if web_max_list_entries > 1:
             f.write('<div style="text-align: right; padding-right: 40px;">Listing Only %i of %i Files in [ %s ]</div>'
                                       % ( display_entries, all_entries, self.path ))
         else:
@@ -165,7 +167,7 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         return f
 
-# Start Web Server Processing        
+# Start Web Server Processing
 os.chdir(web_server_root)
 SocketServer.TCPServer.allow_reuse_address = True
 httpd = SocketServer.TCPServer(("", web_server_port), DirectoryHandler)
@@ -198,7 +200,7 @@ except KeyboardInterrupt:
     print("")
     print("User Stopped webserver.py  Bye.")
     httpd.shutdown()
-    httpd.socket.close()   
+    httpd.socket.close()
 except IOError as e:
     print("I/O error({0}): {1}".format(e.errno, e.strerror))
 

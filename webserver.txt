@@ -14,23 +14,22 @@ web_page_refresh_on = False
 and
 web_page_blank = True
 
+If a folder is selected on the right pane listing
+the folder contents will appear in existing browser tab.
+Select the < BACK link on Right panel listing to
+navigate back to previous folder. < BACK will not
+be displayed when in web server root folder.	 
+Use browser refresh to update web page and display most
+recent data.
+
 This web server can display other types of content
 but html files will be displayed full screen.
 Web pages with javascript, css Etc will run.
 If a folder has an index.html it will take over
 the browser tab.
-
-If a folder is selected on the right pane listing
-the folder contents will appear in a new browser tab.
-You cannot navigate back to the previous folder from
-this new tab so when you are done with the folder
-tab just close it.  You can navigate through a
-folder structure but remember each folder will
-open a new tab.
-
 This browser can only access local raspberry pi
 files. It cannot access internet web pages.
 
-see speed camera github wiki for more details
+See speed camera github wiki for more details
 
 https://github.com/pageauc/speed-camera/wiki
