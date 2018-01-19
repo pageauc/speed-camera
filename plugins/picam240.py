@@ -32,7 +32,7 @@ WEBCAM = False        # default = False False=PiCamera True=USB WebCamera
 # ------------------
 CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning default=320
 CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  default=240
-CAMERA_FRAMERATE = 40  # Default = 40 Frame rate for video stream V2 picam can be higher
+CAMERA_FRAMERATE = 30  # Default = 30 Frame rate for video stream V2 picam can be higher
 
 # Camera Image Settings
 # ---------------------

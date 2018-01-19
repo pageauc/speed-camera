@@ -1,10 +1,8 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 7.0 speed-cam.py Stream Variable Configuration Settings (480p resolution)
+#         Ver 7.0 speed-cam.py Variable Configuration Settings (using picam480 plugin)
 
 #######################################
-#
-#    speed-cam.py variable settings
-#
+#    speed-cam.py Variable Settings
 #######################################
 
 # Calibration Settings

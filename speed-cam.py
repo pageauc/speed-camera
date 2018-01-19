@@ -364,6 +364,7 @@ def show_settings():
         print("      Set log_data_to_file=True to Send speed_Data to CSV File %s.log" % baseFileName)
         print("-------------------------------------- Settings -------------------------------------------------")
         print("")
+        print("Plugins ......... pluginEnable=%s  pluginName=%s" % ( pluginEnable, pluginName ))
         print("Message Display . verbose=%s  display_fps=%s calibrate=%s" % ( verbose, display_fps, calibrate ))
         print("                  show_out_range=%s" % ( show_out_range ))
         print("Logging ......... Log_data_to_CSV=%s  log_filename=%s.csv (CSV format)"  % ( log_data_to_CSV, baseFileName ))
@@ -672,8 +673,8 @@ def speed_camera():
         print("INFO  : Plugin %s is Enabled." % pluginName)
 
     if calibrate:
-        print("INFO  : Camera Is In Calibration Mode ....")
-
+        print("INFO  : IMPORTANT: Camera Is In Calibration Mode ....")
+    logging.info("Start Motion Tracking .....")
     # Calculate position of text on the images
     font = cv2.FONT_HERSHEY_SIMPLEX
     if image_text_bottom:
