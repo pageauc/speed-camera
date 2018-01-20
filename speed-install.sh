@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="7.0"
+ver="7.2"
 SPEED_DIR='speed-camera'  # Default folder install location
 
 cd ~
@@ -33,7 +33,7 @@ if $is_upgrade ; then
 else
     speedFiles=("config.py" "menubox.sh" "speed-install.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" \
-"webserver.py" "webserver.sh")
+"webserver.py" "webserver.sh" "rclone-security-sync-recent.sh"))
 fi
 
 for fname in "${speedFiles[@]}" ; do
@@ -54,7 +54,7 @@ echo "INFO  : $STATUS Check/Install pi-timolo/plugins    Wait ..."
 PLUGINS_DIR='plugins'  # Default folder install location
 # List of plugin Files to Check
 pluginFiles=("__init__.py" "picam240.py" "picam480.py" "picam720.py" "picam1080.py" \
-"webcam480.py" "webcam720.py")
+"webcam480.py" "webcam720.py" "secpicam480.py" "secwebcam480.py")
 
 mkdir -p $PLUGINS_DIR
 cd $PLUGINS_DIR
@@ -75,16 +75,62 @@ for fname in "${pluginFiles[@]}" ; do
 done
 cd ..
 
+# Install rclone samples
+echo "INFO  : $STATUS Check/Install speed-camera/rclone-samples    Wait ..."
+RCLONE_DIR='rclone-samples'  # Default folder install location
+# List of plugin Files to Check
+rcloneFiles=("rclone-security-copy.sh" "rclone-security-sync.sh" "rclone-security-sync-recent.sh" "rclone-cleanup.sh")
+
+mkdir -p $RCLONE_DIR
+cd $RCLONE_DIR
+for fname in "${rcloneFiles[@]}" ; do
+    wget_output=$(wget -O $fname -q --show-progress https://raw.github.com/pageauc/speed-camera/master/rclone-samples/$fname)
+    if [ $? -ne 0 ]; then
+        wget_output=$(wget -O $fname -q https://raw.github.com/pageauc/speed-camera/master/rclone-samples/$fname)
+        if [ $? -ne 0 ]; then
+            echo "ERROR : $fname wget Download Failed. Possible Cause Internet Problem."
+        else
+            wget -O $fname "https://raw.github.com/pageauc/speed-camera/master/rclone-samples/$fname"
+        fi
+    fi
+done
+cd ..
+
+rclone_install=true
+if [ -f /usr/bin/rclone ]; then
+    /usr/bin/rclone version
+    rclone_ins_ver=$( /usr/bin/rclone version | grep rclone )
+    if [ "$rclone_ins_ver" == "$rclone_cur_ver" ]; then
+        rclone_install=false
+    fi
+fi
+
+if "$rclone_install" = true ; then
+    # Install rclone with latest version
+    echo "INFO  : Install Latest Rclone from https://downloads.rclone.org/rclone-current-linux-arm.zip"
+    wget -O rclone.zip -q --show-progress https://downloads.rclone.org/rclone-current-linux-arm.zip
+    echo "INFO  : unzip rclone.zip to folder rclone-tmp"
+    unzip -o -j -d rclone-tmp rclone.zip
+    echo "INFO  : Install files and man pages"
+    cd rclone-tmp
+    sudo cp rclone /usr/bin/
+    sudo chown root:root /usr/bin/rclone
+    sudo chmod 755 /usr/bin/rclone
+    sudo mkdir -p /usr/local/share/man/man1
+    sudo cp rclone.1 /usr/local/share/man/man1/
+    sudo mandb
+    cd ..
+    echo "INFO  : Deleting rclone.zip and Folder rclone-tmp"
+    rm rclone.zip
+    rm -r rclone-tmp
+    echo "INFO  : /usr/bin/rclone Install Complete"
+fi
+
 echo "$STATUS Make required Files Executable"
 chmod +x *.py
 chmod +x *.sh
 chmod -x config*
-echo "Performing Raspbian System Update"
-echo "    This Will Take Some Time ...."
-sudo apt-get -y update
-echo "Performing Raspbian System Upgrade"
-echo "    This Will Take Some Time ...."
-sudo apt-get -y upgrade
+
 echo "$STATUS Installing speed-cam.py Dependencies"
 sudo apt-get install -y python-opencv dos2unix python-picamera python-imaging libgl1-mesa-dri
 sudo apt-get install -y fonts-freefont-ttf # Required for Jessie Lite Only

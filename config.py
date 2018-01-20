@@ -16,6 +16,7 @@ cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 pluginEnable = True
 pluginName = "picam480"   # Specify filename in plugins subfolder without .py extension per below
                           # picam240, picam480, picam720, picam1080, webcam480, webcam720
+                          # secpicam480, secwebcam480
 
 # Crop Area for motion detection Tracking
 # ---------------------------------------
