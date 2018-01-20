@@ -3,6 +3,8 @@
 
 ver="7.3"
 SPEED_DIR='speed-camera'  # Default folder install location
+# Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
+rclone_cur_ver="rclone v1.39"
 
 cd ~
 is_upgrade=false
