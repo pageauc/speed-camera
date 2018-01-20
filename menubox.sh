@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="7.0"
+ver="7.1"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -316,6 +316,126 @@ function do_plugins_menu ()
 }
 
 #------------------------------------------------------------------------------
+function do_nano_edit ()
+{
+    menutitle="Select File to Edit"
+    startdir="/home/pi/speed-camera"
+    filext='sh'
+
+    Filebrowser "$menutitle" "$startdir"
+
+    exitstatus=$?
+    if [ $exitstatus -eq 0 ]; then
+        if [ "$selection" == "" ]; then
+            echo "User Pressed Esc with No File Selection"
+        else
+            nano $filepath/$filename
+        fi
+    else
+        echo "User Pressed Cancel. with No File Selected"
+    fi
+}
+
+#------------------------------------------------------------------------------
+function do_sync_run ()
+{
+    menutitle="Select rclone sync Script to Run"
+    startdir="/home/pi/speed-camera"
+    filext='sh'
+
+    Filebrowser "$menutitle" "$startdir"
+
+    exitstatus=$?
+    if [ $exitstatus -eq 0 ]; then
+        if [ "$selection" == "" ]; then
+            echo "User Pressed Esc with No File Selection"
+        else
+            if [ ! -x "$filepath/$filename" ]; then
+                chmod +x $filepath/$filename
+            fi
+            $filepath/$filename
+            do_anykey
+            clear
+        fi
+    else
+        echo "User Pressed Cancel. with No File Selected"
+    fi
+}
+
+#------------------------------------------------------------------------------
+function do_sync_menu ()
+{
+  SET_SEL=$( whiptail --title "Rclone Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --ok-button Select --cancel-button Back \
+  "a EDIT" "Select rclone- sh File to Edit with nano" \
+  "b RUN" "Run Selected Rclone sh Script" \
+  "c CONFIG" "Run rclone config See GitHub Wiki for Details" \
+  "d LIST" "Names of Configured Remote Storage Services" \
+  "e HELP" "Rclone Man Pages" \
+  "f ABOUT" "Rclone Remote Storage Sync" \
+  "q BACK" "to Main Menu" 3>&1 1>&2 2>&3 )
+
+  RET=$?
+  if [ $RET -eq 1 ]; then
+    do_main_menu
+  elif [ $RET -eq 0 ]; then
+    case "$SET_SEL" in
+      a\ *) do_nano_edit
+            do_sync_menu ;;
+      b\ *) do_sync_run
+            do_sync_menu ;;
+      c\ *) clear
+            rclone config
+            do_anykey
+            clear
+            do_sync_menu ;;
+      d\ *) clear
+            echo "Avail Remote Names"
+            echo ""
+            /usr/bin/rclone -v listremotes
+            do_anykey
+            clear
+            do_sync_menu ;;
+      e\ *) man rclone
+            do_sync_menu ;;
+      f\ *) do_sync_about
+            do_sync_menu ;;
+      q\ *) clear
+            do_main_menu ;;
+      *) whiptail --msgbox "Programmer error: unrecognised option" 20 60 1 ;;
+    esac || whiptail --msgbox "There was an error running selection $SELECTION" 20 60 1
+  fi
+}
+
+function do_sync_about
+{
+  whiptail --title "About Sync" --msgbox "\
+Rclone is the default speed-camera remote storage sync utility.
+You Must Configure a Remote Storage Service before using.
+
+For More Details See Wiki per link below
+https://github.com/pageauc/speed-camera/wiki
+
+Select RCLONE, EDIT menu to change rclone- bash script variables.
+ctrl-x y to save changes and exit nano otherwise respond n.
+
+Select CONFIG menu to run rclone config menu.
+You will need details about your remote Storage Service.
+
+Select RCLONE, RUN menu to Test rclone- bash script changes.
+or manually Run an rclone- bash script from a console session.
+
+    ./rclone-script-name.sh
+
+If you want to Run Rclone install separately for another project.
+See my GitHub Project https://github.com/pageauc/rclone4pi
+
+                           -----
+\
+" 0 0 0
+
+}
+
+#------------------------------------------------------------------------------
 function do_search_file_select ()
 {
     menutitle="Select Target Image for Template Search"
@@ -481,12 +601,13 @@ function do_main_menu ()
   "b $WEB_1" "$WEB_2" \
   "c SETTINGS" "Change speed_cam and webserver settings" \
   "d PLUGINS" "Change plugins Settings" \
-  "e HTML" "Make html pages from speed-cam.csv & jpgs" \
-  "f VIEW" "View speed-cam.csv File" \
-  "g SEARCH" "Images Search Menu (openCV Template Match)" \
-  "h UPGRADE" "Program Files from GitHub.com" \
-  "i STATUS" "CPU $temp   Select to Refresh" \
-  "j ABOUT" "Information about this program" \
+  "e RCLONE" "Manage File Transfers to Remote Storage" \
+  "f HTML" "Make html pages from speed-cam.csv & jpgs" \
+  "g VIEW" "View speed-cam.csv File" \
+  "h SEARCH" "Images Search Menu (openCV Template Match)" \
+  "i UPGRADE" "Program Files from GitHub.com" \
+  "j STATUS" "CPU $temp   Select to Refresh" \
+  "k ABOUT" "Information about this program" \
   "q QUIT" "Exit This Program"  3>&1 1>&2 2>&3)
 
   RET=$?
@@ -498,17 +619,20 @@ function do_main_menu ()
       b\ *) do_webserver ;;
       c\ *) do_settings_menu ;;
       d\ *) do_plugins_menu ;;
-      e\ *) do_makehtml_menu ;;
-      f\ *) clear
+      e\ *) do_sync_menu
+            do_main_menu ;;
+      f\ *) do_makehtml_menu ;;
+      g\ *) clear
             more ./speed-cam.csv
             do_anykey ;;
-      g\ *) do_speed_search_menu ;;
-      h\ *) clear
-            do_upgrade ;;
+      h\ *) do_speed_search_menu ;;
       i\ *) clear
+            do_upgrade ;;
+      j\ *) clear
             do_main_menu ;;
-      j\ *) do_about ;;
+      k\ *) do_about ;;
       q\ *) rm -f $filename_conf $filename_temp
+            clear
             exit 0 ;;
          *) whiptail --msgbox "Programmer error: unrecognised option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running menu item $SELECTION" 20 60 1
