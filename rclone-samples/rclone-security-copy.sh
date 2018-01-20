@@ -4,11 +4,11 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"  # get cur dir of this s
 progName=$(basename -- "$0")
 cd $DIR
 echo "$progName $ver  written by Claude Pageau"
-: '
- If lockCheckFile=True then script checks pi-timolo.sync file exists
- Otherwise no sync is attempted.  This can be useful for
- Low Bandwidth connections with low frequency of motion tracking events
-'
+
+# If lockCheckFile=True then script checks pi-timolo.sync file exists
+# Otherwise no sync is attempted.  This can be useful for
+# Low Bandwidth connections with low frequency of motion tracking events
+
 
 #  Customize rclone sync variables Below
 # ---------------------------------------

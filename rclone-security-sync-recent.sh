@@ -1,14 +1,13 @@
 #!/bin/bash
-ver="10.00"
+ver="7.0"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"  # get cur dir of this script
 progName=$(basename -- "$0")
 cd $DIR
 echo "$progName $ver  written by Claude Pageau"
-: '
- If lockCheckFile=True then script checks pi-timolo.sync file exists
- Otherwise no sync is attempted.  This can be useful for
- Low Bandwidth connections with low frequency of motion tracking events
-'
+
+# If lockCheckFile=True then script checks pi-timolo.sync file exists
+# Otherwise no sync is attempted.  This can be useful for
+# Low Bandwidth connections with low frequency of motion tracking events
 
 #  Customize rclone sync variables Below
 # ---------------------------------------
@@ -16,7 +15,7 @@ echo "$progName $ver  written by Claude Pageau"
 lockFileCheck=false      # true= Checks for pi-timolo.sync file. false = No Check (case sensitive)
 rcloneName="gdmedia"     # Name of Remote Storage Service
 syncRoot="/home/pi/speed-camera"   # Root Folder to Start
-localDir="media/recent/security"         # Source Folder on Local
+localDir="media/recent/security"   # Source Folder on Local
 remoteDir="scam/recent"  # Destination Folder on Remote
 rcloneParam="sync"       # rclone option to perform  Eg  sync, copy, move
                          # IMPORTANT: sync will make remoteDir identical to localDir
