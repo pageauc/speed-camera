@@ -33,7 +33,7 @@ if $is_upgrade ; then
 else
     speedFiles=("config.py" "menubox.sh" "speed-install.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" \
-"webserver.py" "webserver.sh" "rclone-security-sync-recent.sh"))
+"webserver.py" "webserver.sh" "rclone-security-sync-recent.sh")
 fi
 
 for fname in "${speedFiles[@]}" ; do
