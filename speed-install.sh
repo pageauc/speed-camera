@@ -51,6 +51,18 @@ done
 wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.txt
 wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
 
+if [ ! -f remote-run.sh ] ; then
+    wget -O watch-app.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/watch-app.sh
+fi
+
+if [ ! -f remote-run.sh ] ; then
+    wget -O remote-run.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/remote-run.sh
+fi
+
+if [ ! -f rclone-security-sync-recent.sh ] ; then
+    wget -O rclone-security-sync-recent.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/rclone-security-sync-recent.sh
+fi
+
 # Install plugins if not already installed.  You must delete a plugin file to force reinstall.
 echo "INFO  : $STATUS Check/Install pi-timolo/plugins    Wait ..."
 PLUGINS_DIR='plugins'  # Default folder install location
