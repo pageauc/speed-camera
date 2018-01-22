@@ -4,27 +4,30 @@ from SimpleHTTPServer import SimpleHTTPRequestHandler
 from StringIO import StringIO
 
 version = "ver 7.2 written by Claude Pageau"
+'''
+ SimpleHTTPServer python program to allow selection of images from right panel and display in an iframe left panel
+ Use for local network use only since this is not guaranteed to be a secure web server.
+ based on original code by zeekay and modified by Claude Pageau Nov-2015 for use with pi-timolo.py on a Raspberry Pi
+ from http://stackoverflow.com/questions/8044873/python-how-to-override-simplehttpserver-to-show-timestamp-in-directory-listing
 
-# SimpleHTTPServer python program to allow selection of images from right panel and display in an iframe left panel
-# Use for local network use only since this is not guaranteed to be a secure web server.
-# based on original code by zeekay and modified by Claude Pageau Nov-2015 for use with pi-timolo.py on a Raspberry Pi
-# from http://stackoverflow.com/questions/8044873/python-how-to-override-simplehttpserver-to-show-timestamp-in-directory-listing
+ 1 - Use nano editor to change webserver.py web_server_root and other variables to suit at bottom of config.py
+     nano config.py         # Webserver settings are near the end of the file
+     ctrl-x y to save changes
 
-# 1 - Use nano editor to change webserver.py web_server_root and other variables to suit at bottom of config.py
-#     nano config.py         # Webserver settings are near the end of the file
-#     ctrl-x y to save changes
-#
-# 2 - On Terminal session execute command below.  This will display file access information
-#     ./webserver.py    # ctrl-c to stop web server.  Note if you close terminal session webserver.py will stop.
-#
-# 3 - To Run this script as a background daemon execute the command below.
-#     Once running you can close the terminal session and webserver will continue to run.
-#     ./webserver.sh start
-#     To check status of webserver type command below with no parameter
-#     ./webserver.sh
-#
-# 4 - On a LAN computer web browser url bar, input this RPI ip address and port number per below
-#     example    http://192.168.1.110:8080
+ 2 - On Terminal session execute command below.  This will display file access information
+     ./webserver.py    # ctrl-c to stop web server.  Note if you close terminal session webserver.py will stop.
+
+ 3 - To Run this script as a background daemon execute the command below.
+     Once running you can close the terminal session and webserver will continue to run.
+     ./webserver.sh start
+     To check status of webserver type command below with no parameter
+     ./webserver.sh
+
+ 4 - On a LAN computer web browser url bar, input this RPI ip address and port number per below
+     example    http://192.168.1.110:8080
+
+ Variable Settings are imported from config.py
+'''
 
 mypath = os.path.abspath(__file__)     # Find the full path of this python script
 base_dir = os.path.dirname(mypath)      # Get the path location only (excluding script name)
@@ -144,7 +147,7 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
                 f.write('<li><a href="%s" target="imgbox">%s</a> - %s</li>\n'
                           % ( urllib.quote(linkname), cgi.escape(displayname), date_modified))
         if (not self.path is "/") and display_entries > 35:   # Display folder Back arrow navigation if not in web root
-            f.write('<li><a href="%s" >%s</a></li>\n' % ( urllib.quote(".."), cgi.escape("< BACK")))                          
+            f.write('<li><a href="%s" >%s</a></li>\n' % ( urllib.quote(".."), cgi.escape("< BACK")))
         f.write('</ul></div><p><b>')
         f.write('<div style="float: left; padding-left: 40px;">Web Root is [ %s ]</div>' % ( web_server_root ))
         f.write('<div style="text-align: center;">%s</div>' % ( web_page_title ))
