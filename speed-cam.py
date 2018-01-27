@@ -134,8 +134,8 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
             if os.path.exists(pluginCurrentpyc):
                 os.remove(pluginCurrentpyc)
         except OSError as err:
-            print("ERROR : Failed Removal of %s - %s" % ( pluginCurrentpyc, err ))
-            print("INFO  : Exiting %s Due to Error" % progName)
+            print("WARN  : Failed To Remove File %s - %s" % ( pluginCurrentpyc, err ))
+            print("        Exiting %s Due to Error" % progName)
 
 else:
     print("INFO  : No Plugins Enabled per pluginEnable=%s" % pluginEnable)
