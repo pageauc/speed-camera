@@ -921,7 +921,7 @@ if __name__ == '__main__':
         vs.stop()
         logging.info("")
         logging.info("User Pressed Keyboard ctrl-c")
-        logging.info("%s %s - Exiting" % (progName, version))
+        logging.info("Exiting %s %s" % (progName, version))
         sys.exit()
 
 
