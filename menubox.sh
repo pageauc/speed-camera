@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="7.1"
+ver="7.2"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -293,8 +293,8 @@ function do_plugins_edit ()
 function do_plugins_menu ()
 {
   SET_SEL=$( whiptail --title "Edit Plugins Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --ok-button Select --cancel-button Back \
-  "a config" "nano config.py - plugin vars override" \
-  "b SELECT" "plugin File to nano Edit" \
+  "a CONFIG" "Edit config.py NOTE:plugin vars override" \
+  "b PLUGIN" "Select and Edit plugin File to Edit" \
   "q BACK" "to Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
