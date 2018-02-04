@@ -656,7 +656,7 @@ def speed_camera():
 
     if verbose:
         if gui_window_on:
-            loggine.info("Press lower case q on OpenCV GUI Window to Quit program")
+            logging.info("Press lower case q on OpenCV GUI Window to Quit program")
             logging.info("        or ctrl-c in this terminal session to Quit")
         else:
             logging.info("Press ctrl-c in this terminal session to Quit")
