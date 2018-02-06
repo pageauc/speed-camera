@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="7.4"
+ver="7.5"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
 rclone_cur_ver="rclone v1.39"
@@ -149,8 +149,8 @@ chmod -x config*
 echo "$STATUS Installing speed-cam.py Dependencies"
 sudo apt-get install -y python-opencv dos2unix python-picamera python-imaging libgl1-mesa-dri
 sudo apt-get install -y fonts-freefont-ttf # Required for Jessie Lite Only
-dos2unix *sh
-dos2unix *py
+dos2unix -q *
+
 cd $DIR
 # Check if speed-install.sh was launched from speed-cam folder
 if [ "$DIR" != "$INSTALL_PATH" ]; then
