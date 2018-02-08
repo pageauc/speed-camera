@@ -169,7 +169,6 @@ try:  #Add this check in case running on non RPI platform using web cam
     from picamera import PiCamera
 except:
     WEBCAM = True
-    pass
 
 import subprocess
 if not WEBCAM:
@@ -549,7 +548,7 @@ def saveRecent(recentMax, recentDir, filename, prefix):
     try:    # Copy image file to recent folder
         shutil.copy(filename, recentDir)
     except OSError as err:
-        logging.error('Copy from %s to %s - %s', filename, oldestFile, err)
+        logging.error('Copy from %s to %s - %s', filename, recentDir, err)
 
 #-----------------------------------------------------------------------------------------------
 def freeSpaceUpTo(spaceFreeMB, mediaDir, extension=image_format):
