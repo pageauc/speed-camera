@@ -1,5 +1,5 @@
 #!/usr/bin/python
-version = "version 7.41"
+version = "version 7.5"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -47,11 +47,9 @@ import glob
 import shutil
 import sys
 import logging
-import numpy as np
 from threading import Thread
 import time
 import datetime
-import io
 
 mypath = os.path.abspath(__file__)   # Find the full path of this python script
 baseDir = mypath[0:mypath.rfind("/")+1]  # get the path location only (excluding script name)
@@ -122,7 +120,7 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
             print("INFO  : Copy %s to %s" % (pluginPath, pluginCurrent))
             shutil.copy(pluginPath, pluginCurrent)
         except OSError as err:
-            print('ERROR : Copy Failed from %s to %s - %s' 
+            print('ERROR : Copy Failed from %s to %s - %s'
                   % (pluginPath, pluginCurrent, err))
             print("        Check permissions, disk space, Etc.")
             print("        Exiting %s Due to Error" % progName)
@@ -137,7 +135,7 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
             if os.path.exists(pluginCurrentpyc):
                 os.remove(pluginCurrentpyc)
         except OSError as err:
-            print("WARN  : Failed To Remove File %s - %s" 
+            print("WARN  : Failed To Remove File %s - %s"
                   % (pluginCurrentpyc, err))
             print("        Exiting %s Due to Error" % progName)
 else:
@@ -322,13 +320,13 @@ def get_fps(start_time, frame_count):
 
 #-----------------------------------------------------------------------------------------------
 def show_settings():
+    """Initialize and Display program variable settings from config.py"""
     cwd = os.getcwd()
     html_path = "media/html"
     if not os.path.isdir(image_path):
         logging.info("Creating Image Storage Folder %s", image_path)
         os.makedirs(image_path)
     os.chdir(image_path)
-    img_dir = os.getcwd()
     os.chdir(cwd)
     if imageRecentMax > 0:
         if not os.path.isdir(imageRecentDir):
@@ -433,7 +431,7 @@ def take_calibration_image(filename, cal_image):
     cv2.line(cal_image, (x_left, y_upper), (x_left, y_lower), cvBlue, 1)
     cv2.line(cal_image, (x_right, y_upper), (x_right, y_lower), cvBlue, 1)
     print("")
-    print("----------------------------- Create Calibration Image -------------------------------")
+    print("----------------------------- Create Calibration Image -----------------------------")
     print("")
     print("    Instructions for using %s image for camera calibration" % filename)
     print("")
@@ -445,7 +443,7 @@ def take_calibration_image(filename, cal_image):
     print("")
     print("    Calibration Image Saved To %s%s" % (baseDir, filename))
     print("")
-    print("---------------------- Press cntl-c to Quit Calibration Mode -------------------------")
+    print("---------------------- Press cntl-c to Quit Calibration Mode -----------------------")
     print("")
     return cal_image
 
@@ -470,7 +468,8 @@ def subDirCreate(directory, prefix):
         try:
             os.makedirs(subDirPath)
         except OSError as err:
-            logging.error('Cannot Create Directory %s - %s, using default location.', subDirPath, err)
+            logging.error('Cannot Create Directory %s - %s, using default location.',
+                          subDirPath, err)
             subDirPath = directory
         else:
             logging.info('Created %s', subDirPath)
@@ -482,7 +481,8 @@ def subDirCreate(directory, prefix):
 def deleteOldFiles(maxFiles, dirPath, prefix):
     # Delete Oldest files gt or eq to maxfiles that match filename prefix
     try:
-        fileList = sorted(glob.glob(os.path.join(dirPath, prefix + '*')), key=os.path.getmtime)
+        fileList = sorted(glob.glob(os.path.join(dirPath, prefix + '*')),
+                          key=os.path.getmtime)
     except OSError as err:
         logging.error('Problem Reading Directory %s - %s', dirPath, err)
     else:
