@@ -172,7 +172,7 @@ except:
 
 import subprocess
 if not WEBCAM:
-    # Check for that pi camaera module is installed and enabled
+    # Check that pi camera module is installed and enabled
     camResult = subprocess.check_output("vcgencmd get_camera", shell=True)
     camResult = camResult.decode("utf-8")
     camResult = camResult.replace("\n", "")
@@ -241,7 +241,6 @@ class PiVideoStream:
         self.stream = self.camera.capture_continuous(self.rawCapture,
                                                      format="bgr",
                                                      use_video_port=True)
-
         # initialize the frame and the variable used to indicate
         # if the thread should be stopped
         self.frame = None
@@ -288,7 +287,6 @@ class WebcamVideoStream:
         self.stream.set(3, CAM_WIDTH)
         self.stream.set(4, CAM_HEIGHT)
         (self.grabbed, self.frame) = self.stream.read()
-
         # initialize the variable used to indicate if the thread should
         # be stopped
         self.stopped = False
@@ -306,7 +304,6 @@ class WebcamVideoStream:
             # if the thread indicator variable is set, stop the thread
             if self.stopped:
                 return
-
             # otherwise, read the next frame from the stream
             (self.grabbed, self.frame) = self.stream.read()
 
@@ -406,8 +403,10 @@ def show_settings():
 
 #-----------------------------------------------------------------------------------------------
 def take_calibration_image(filename, cal_image):
-    # Create a calibration image for determining value of IMG_VIEW_FT variable
-    # Create calibation hash marks
+    """
+    Create a calibration image for determining value of IMG_VIEW_FT variable
+    Create calibration hash marks
+    """
     for i in range(10, CAMERA_WIDTH - 9, 10):
         cv2.line(cal_image, (i, y_upper - 5), (i, y_upper + 30), cvRed, 1)
     # This is motion window
@@ -640,7 +639,6 @@ def speed_camera():
     x_buf = int((x_right - x_left) / 10)
     y_buf = int((y_lower - y_upper) / 8)
     travel_direction = ""
-
     # initialize a cropped grayimage1 image
     # Only needs to be done once
     image2 = vs.read()    # Get image from PiVideoSteam thread instance
@@ -650,8 +648,8 @@ def speed_camera():
     except:
         vs.stop()
         logging.warn("Problem Connecting To Camera Stream.")
-        logging.warn("Restarting Camera.  One Moment Please .....")
-        time.sleep(4)
+        logging.warn("Restarting Camera.  One Moment Please ...")
+        time.sleep(4) 
         return
 
     if verbose:
@@ -931,7 +929,7 @@ if __name__ == '__main__':
             speed_camera()
     except KeyboardInterrupt:
         vs.stop()
-        logging.info("")
+        print("")
         logging.info("User Pressed Keyboard ctrl-c")
         logging.info("Exiting %s %s", progName, version)
         sys.exit()
