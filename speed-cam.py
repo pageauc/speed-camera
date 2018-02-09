@@ -1,5 +1,5 @@
 #!/usr/bin/python
-version = "version 7.5"
+version = "version 8.0"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -861,7 +861,7 @@ def speed_camera():
                                     log_to_csv_file(log_csv_text)
                                 logging.info("End Track    - Tracked %i px in %.3f sec",
                                              tot_track_dist, tot_track_time)
-                                time.sleep(track_timeout)                                             
+                                time.sleep(track_timeout)   # Optional Wait to avoid dual tracking.                                          
                             else:
                                 logging.info("End Track    - Skip Photo SPEED %.1f %s"
                                              " max_speed_over=%i  %i px in %.3f sec"
@@ -869,7 +869,7 @@ def speed_camera():
                                              ave_speed, speed_units,
                                              max_speed_over, tot_track_dist,
                                              tot_track_time, total_contours, biggest_area)
-                                time.sleep(track_timeout)             
+                                time.sleep(track_timeout)   # Optional Wait to avoid dual tracking          
                             # Track Ended so Reset Variables for next cycle through loop
                             start_pos_x = 0
                             end_pos_x = 0
