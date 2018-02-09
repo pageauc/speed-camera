@@ -2,6 +2,20 @@
 ### RPI, Unix and Windows Speed Camera Using python, openCV, USB Cam or RPI camera module
 ## For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features) and [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#links)
 
+***IMPORTANT*** speed-camera.py ver 8.x Requires Updated config.py and plugins
+
+    cd ~/speed-camera
+    cp config.py config.py.bak
+    cp config.py.new config.py
+    
+To replace plugins rename (or delete) plugins folder per below
+
+    cd ~/speed-camera
+    mv plugins pluginsold   # renames plugins folder
+    rm -r plugins           # deletes plugins folder
+
+Then run menubox.sh UPGRADE menu pick.
+
 ## Requirements
 Requires a [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
 or USB Camera plugged in. Make sure hardware is tested and works. Most [RPI models](https://www.raspberrypi.org/products/) will work OK. 

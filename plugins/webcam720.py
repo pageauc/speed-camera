@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 7.0 speed-cam.py webcam720 Stream Variable Configuration Settings
+#         Ver 8.0 speed-cam.py webcam720 Stream Variable Configuration Settings
 
 #######################################
 #    speed-cam.py plugin settings
@@ -20,8 +20,8 @@ y_lower = 460          # Exclude event if y greater than this value default=175
 # Motion Event Settings
 # ---------------------
 track_len_trig = 75    # Default=75 Length of track to trigger speed photo
-track_timeout = 1      # Number of seconds to wait after track End (prevents dual tracking)
-event_timeout = 2      # Number of seconds to wait for next motion event before starting new track
+track_timeout = 0.0    # Default=0.0 Optional seconds to wait after track End (Avoid dual tracking)
+event_timeout = 0.3    # Default=0.3 seconds to wait for next motion event before starting new track
 
 # Camera Settings
 # ---------------

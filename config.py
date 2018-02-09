@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 7.0 speed-cam.py Variable Configuration Settings (using picam480 plugin)
+#         Ver 8.0 speed-cam.py Variable Configuration Settings (using picam480 plugin)
 
 #######################################
 #    speed-cam.py Variable Settings
@@ -13,12 +13,13 @@ cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 
 # Plugins overlay the config.py variable settings
 # -----------------------------------------------
-pluginEnable = True
+pluginEnable = False
 pluginName = "picam480"   # Specify filename in plugins subfolder without .py extension per below
                           # picam240, picam480, picam720, picam1080, webcam480, webcam720
                           # secpicam480, secwebcam480
 
-# Crop Area for motion detection Tracking
+# 480 Crop Area for motion detection Tracking
+# Use plugins to override this configuration
 # ---------------------------------------
 x_left  = 150          # Exclude event if x less than this px position Default=25
 x_right = 490          # Exclude event if x greater than this px position Default=295
@@ -28,25 +29,25 @@ y_lower = 340          # Exclude event if y greater than this value default=175
 # Display opencv windows on gui desktop
 # gui_window_on suppresses All Windows if False
 # ----------------------------------------------
-gui_window_on = False      # True = Turn On All desktop GUI openCV windows. False=Don't Show (req'd for SSH) .
+gui_window_on = False      # True= Turn On All desktop GUI openCV windows. False=Don't Show (req'd for SSH) .
 show_thresh_on = False     # Display desktop GUI openCV cropped threshold window. True=Show, False=Don't Show
 show_crop_on = False       # Same as show_thresh_on but in color. True=Show, False=Don't Show (default)
 
 # Display and Log settings
 # ------------------------
 verbose = True              # Display basic status information on console
-display_fps = False         # True = Show average frame count every 1000 loops
-log_data_to_CSV = True      # True = Save log data as CSV comma separated values (default=True)
-show_out_range = False      # Show Out of Range Events (default=False)
+display_fps = False         # True= Show average frame count every 1000 loops
+log_data_to_CSV = True      # True= Save log data as CSV comma separated values (default=True)
+show_out_range = False      # Default=False Show Out of Range Events
 loggingToFile = False       # True = Send logging to file
 logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
 
 # Motion Event Settings
 # ---------------------
-SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
+SPEED_MPH = False      # Set Speed Units   kph=False  mph=True
 track_len_trig = 75    # Default=75 Length of track to trigger speed photo
-track_timeout = 1      # Number of seconds to wait after track End (prevents dual tracking)
-event_timeout = 2      # Number of seconds to wait for next motion event before starting new track
+track_timeout = 0.0    # Default=0.0 Optional seconds to wait after track End (Avoid dual tracking)
+event_timeout = 0.3    # Default=0.3 seconds to wait for next motion event before starting new track
 
 # Camera Settings
 # ---------------

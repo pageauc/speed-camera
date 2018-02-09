@@ -163,7 +163,6 @@ echo "
 -----------------------------------------------
 $STATUS Complete
 -----------------------------------------------
-
 1. Reboot RPI if there are significant Raspbian system updates
 2. Raspberry pi optionally needs a monitor/TV attached to display openCV window
 3. Run speed-cam.py in SSH Terminal (default) or optional GUI Desktop
@@ -174,15 +173,24 @@ $STATUS Complete
    cd ~/speed-camera
    ./speed-cam.py
 
-or Run from Admin menu
+Calibrate speed camera per wiki instructions
+
+Run from Admin menu per 
 
    ./menubox.sh
 
-IMPORTANT: speed-cam.py ver 7.x Requires the Updated config.py File for plugins feature
+IMPORTANT: speed-cam.py ver 8.x Requires Updated config.py and plugins
 
     cd ~/speed-camera
     cp config.py config.py.bak
     cp config.py.new config.py
+    
+To replace plugins rename plugins folder per below
+
+    cd ~/speed-camera
+    mv plugins pluginsold
+    
+Then run menubox.sh UPGRADE menu pick.    
 
 -----------------------------------------------
 For Detailed Instructions See https://github.com/pageauc/speed-camera/wiki
