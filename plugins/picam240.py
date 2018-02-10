@@ -20,7 +20,7 @@ y_lower = 185          # Exclude event if y greater than this value default=175
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
-track_len_trig = 75    # Default=75 Length of track to trigger speed photo
+track_len_trig = 50    # Default=75 Length of track to trigger speed photo
 track_timeout = 0.0    # Default=0.0 Optional seconds to wait after track End (Avoid dual tracking)
 event_timeout = 0.3    # Default=0.3 seconds to wait for next motion event before starting new track
 
