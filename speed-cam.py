@@ -1,5 +1,5 @@
 #!/usr/bin/python
-version = "version 8.0"
+version = "version 8.1"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -163,7 +163,7 @@ else:
 try:  #Add this check in case running on non RPI platform using web cam
     from picamera.array import PiRGBArray
     from picamera import PiCamera
-except:
+except ImportError:
     WEBCAM = True
 
 import subprocess
@@ -182,7 +182,7 @@ if not WEBCAM:
         logging.info("Camera Module is Enabled and Connected %s", camResult)
 try:   # Check to see if opencv is installed
     import cv2
-except:
+except ImportError:
     logging.error("Could not import cv2 library")
     if sys.version_info > (2, 9):
         logging.error("python3 failed to import cv2")
@@ -739,8 +739,9 @@ def speed_camera():
             thresholdimage, contours, hierarchy = cv2.findContours(thresholdimage,
                                                                    cv2.RETR_EXTERNAL,
                                                                    cv2.CHAIN_APPROX_SIMPLE)
-        except:
-            contours, hierarchy = cv2.findContours(thresholdimage, cv2.RETR_EXTERNAL,
+        except ValueError:
+            contours, hierarchy = cv2.findContours(thresholdimage,
+                                                   cv2.RETR_EXTERNAL,
                                                    cv2.CHAIN_APPROX_SIMPLE)
         total_contours = len(contours)
         # Update grayimage1 to grayimage2 ready for next image2
