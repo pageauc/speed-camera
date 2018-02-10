@@ -736,13 +736,15 @@ def speed_camera():
         retval, thresholdimage = cv2.threshold(differenceimage, THRESHOLD_SENSITIVITY,
                                                255, cv2.THRESH_BINARY)
         try:
-            thresholdimage, contours, hierarchy = cv2.findContours(thresholdimage,
-                                                                   cv2.RETR_EXTERNAL,
-                                                                   cv2.CHAIN_APPROX_SIMPLE)
-        except ValueError:
+            # opencv 2 syntax default
             contours, hierarchy = cv2.findContours(thresholdimage,
                                                    cv2.RETR_EXTERNAL,
                                                    cv2.CHAIN_APPROX_SIMPLE)
+        except ValueError:
+            # opencv 3 syntax
+            thresholdimage, contours, hierarchy = cv2.findContours(thresholdimage,
+                                                                   cv2.RETR_EXTERNAL,
+                                                                   cv2.CHAIN_APPROX_SIMPLE)
         total_contours = len(contours)
         # Update grayimage1 to grayimage2 ready for next image2
         grayimage1 = grayimage2
@@ -862,7 +864,7 @@ def speed_camera():
                                     log_to_csv_file(log_csv_text)
                                 logging.info("End Track    - Tracked %i px in %.3f sec",
                                              tot_track_dist, tot_track_time)
-                                time.sleep(track_timeout)   # Optional Wait to avoid dual tracking.                                          
+                                time.sleep(track_timeout)   # Optional Wait to avoid dual tracking.
                             else:
                                 logging.info("End Track    - Skip Photo SPEED %.1f %s"
                                              " max_speed_over=%i  %i px in %.3f sec"
@@ -870,7 +872,7 @@ def speed_camera():
                                              ave_speed, speed_units,
                                              max_speed_over, tot_track_dist,
                                              tot_track_time, total_contours, biggest_area)
-                                time.sleep(track_timeout)   # Optional Wait to avoid dual tracking          
+                                time.sleep(track_timeout)   # Optional Wait to avoid dual tracking
                             # Track Ended so Reset Variables for next cycle through loop
                             start_pos_x = 0
                             end_pos_x = 0
@@ -883,7 +885,7 @@ def speed_camera():
                                          abs(start_pos_x - end_pos_x),
                                          track_len_trig, total_contours, biggest_area)
                             end_pos_x = cx
-                            event_timer = time.time()  # Reset event_timer since valid motion was found                            
+                            event_timer = time.time()  # Reset event_timer since valid motion was found
                     else:
                         if show_out_range:
                             logging.info(" Out Range   - cx,cy(%i,%i) Dist=%i is <%i or >%i px"
