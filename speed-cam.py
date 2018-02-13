@@ -1,5 +1,5 @@
 #!/usr/bin/python
-version = "version 8.1"
+version = "version 8.2"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -773,7 +773,7 @@ def speed_camera():
                     start_pos_x = cx
                     end_pos_x = cx
                     track_start_time = time.time()
-                    logging.info("New Track    - Motion at cx,cy(%i,%i)", cx, cy)
+                    logging.info("New  - Motion at cxy(%i,%i)", cx, cy)
                 else:
                     if (abs(cx - end_pos_x) > x_diff_min and abs(cx - end_pos_x) < x_diff_max):
                         # movement is within acceptable distance range of last event
@@ -788,11 +788,11 @@ def speed_camera():
                                 travel_direction = "R2L"
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
-                                logging.info(" Event Add   - cx,cy(%i,%i) %3.2f %s %s px=%i/%i"
-                                             " C=%i A=%i sqpx",
-                                             cx, cy, ave_speed, speed_units, travel_direction,
+                                logging.info(" Add - cxy(%i,%i) %3.2f %s px=%i/%i"
+                                             " C=%i A=%i sqpx %s",
+                                             cx, cy, ave_speed, speed_units,
                                              abs(start_pos_x - end_pos_x), track_len_trig,
-                                             total_contours, biggest_area)
+                                             total_contours, biggest_area, travel_direction)
                                 # Resized and process prev image before saving to disk
                                 prev_image = image2
                                 if calibrate:       # Create a calibration image
@@ -836,8 +836,8 @@ def speed_camera():
                                                  (len(image_text) * image_font_size / 3))
                                     if text_x < 2:
                                         text_x = 2
-                                    logging.info(" Average Speed is %.1f %s  ",
-                                                 ave_speed, speed_units)
+                                    logging.info(" Ave Speed is %.1f %s %s ",
+                                                 ave_speed, speed_units, travel_direction)
                                     cv2.putText(big_image, image_text, (text_x, text_y),
                                                 font, FONT_SCALE, (cvWhite), 2)
                                 logging.info(" Saved %s", filename)
@@ -862,11 +862,11 @@ def speed_camera():
                                                        quote, cx, cy, mw, mh, mw * mh,
                                                        quote, travel_direction, quote))
                                     log_to_csv_file(log_csv_text)
-                                logging.info("End Track    - Tracked %i px in %.3f sec",
+                                logging.info("End  - Tracked %i px in %.3f sec",
                                              tot_track_dist, tot_track_time)
                                 time.sleep(track_timeout)   # Optional Wait to avoid dual tracking.
                             else:
-                                logging.info("End Track    - Skip Photo SPEED %.1f %s"
+                                logging.info("End  - Skip Photo SPEED %.1f %s"
                                              " max_speed_over=%i  %i px in %.3f sec"
                                              "  C=%i A=%i sqpx",
                                              ave_speed, speed_units,
@@ -877,9 +877,8 @@ def speed_camera():
                             start_pos_x = 0
                             end_pos_x = 0
                             first_event = True
-                            # Pause so object is not immediately tracked again
                         else:
-                            logging.info(" Event Add   - cx,cy(%i,%i) %3.1f %s"
+                            logging.info(" Add - cxy(%i,%i) %3.1f %s"
                                          " px=%i/%i C=%i A=%i sqpx",
                                          cx, cy, ave_speed, speed_units,
                                          abs(start_pos_x - end_pos_x),
@@ -888,7 +887,7 @@ def speed_camera():
                             event_timer = time.time()  # Reset event_timer since valid motion was found
                     else:
                         if show_out_range:
-                            logging.info(" Out Range   - cx,cy(%i,%i) Dist=%i is <%i or >%i px"
+                            logging.info(" Out - cxy(%i,%i) Dist=%i is %i<= or >=%i px"
                                          "  C=%2i A=%i sqpx",
                                          cx, cy, abs(cx - end_pos_x), x_diff_min, x_diff_max,
                                          total_contours, biggest_area)
