@@ -884,13 +884,14 @@ def speed_camera():
                                          abs(start_pos_x - end_pos_x),
                                          track_len_trig, total_contours, biggest_area)
                             end_pos_x = cx
-                            event_timer = time.time()  # Reset event_timer since valid motion was found
+                        event_timer = time.time()  # Reset event_timer since valid motion was found
                     else:
                         if show_out_range:
                             logging.info(" Out - cxy(%i,%i) Dist=%i is %i<= or >=%i px"
                                          "  C=%2i A=%i sqpx",
                                          cx, cy, abs(cx - end_pos_x), x_diff_min, x_diff_max,
                                          total_contours, biggest_area)
+                        event_timer = time.time()  # Reset event_timer since valid motion was found
                 if gui_window_on:
                     # show small circle at motion location
                     if SHOW_CIRCLE:
