@@ -39,4 +39,11 @@ CAMERA_FRAMERATE = 30  # Default = 30 Frame rate for video stream V2 picam can b
 image_bigger = 1.5            # Default = 1.5 Resize saved speed image by value
 image_font_size = 18          # Default = 18 Font text height in px for text on images
 
+# Motion Event Exclusion Settings
+# -------------------------------
+MIN_AREA = 200         # Exclude all contours less than or equal to this sq-px Area
+x_diff_min = 1         # Exclude if min px away exceeds last event x pos
+x_diff_max = 25        # Exclude if max px away for last motion event x pos
+max_speed_over = 0     # Exclude track if Speed less than or equal to value specified 0=All
+
 # ---------------------------------------------- End of User Variables -----------------------------------------------------

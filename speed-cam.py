@@ -1,5 +1,5 @@
 #!/usr/bin/python
-version = "version 8.2"
+version = "version 8.3"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -688,7 +688,7 @@ def speed_camera():
         logging.info("Plugin %s is Enabled." % pluginName)
     if calibrate:
         logging.info("IMPORTANT: Camera Is In Calibration Mode ....")
-    logging.info("Start Motion Tracking .....")
+    logging.info("Begin Motion Tracking .....")
     # Calculate position of text on the images
     font = cv2.FONT_HERSHEY_SIMPLEX
     if image_text_bottom:
@@ -773,8 +773,12 @@ def speed_camera():
                     start_pos_x = cx
                     end_pos_x = cx
                     track_start_time = time.time()
-                    logging.info("New  - Motion at cxy(%i,%i)", cx, cy)
+                    logging.info("New  - cxy(%i,%i) Start New Track", cx, cy)
                 else:
+                    if end_pos_x - start_pos_x > 0:
+                        travel_direction = "L2R"
+                    else:
+                        travel_direction = "R2L"
                     if (abs(cx - end_pos_x) > x_diff_min and abs(cx - end_pos_x) < x_diff_max):
                         # movement is within acceptable distance range of last event
                         end_pos_x = cx
@@ -782,17 +786,13 @@ def speed_camera():
                         tot_track_time = abs(time.time() - track_start_time)
                         ave_speed = float((abs(tot_track_dist / tot_track_time)) * speed_conv)
                         if abs(end_pos_x - start_pos_x) > track_len_trig:
-                            if end_pos_x - start_pos_x > 0:
-                                travel_direction = "L2R"
-                            else:
-                                travel_direction = "R2L"
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
                                 logging.info(" Add - cxy(%i,%i) %3.2f %s px=%i/%i"
-                                             " C=%i A=%i sqpx %s",
+                                             " C=%i %ix%i=%i sqpx %s",
                                              cx, cy, ave_speed, speed_units,
                                              abs(start_pos_x - end_pos_x), track_len_trig,
-                                             total_contours, biggest_area, travel_direction)
+                                             total_contours, mw, mh, biggest_area, travel_direction)
                                 # Resized and process prev image before saving to disk
                                 prev_image = image2
                                 if calibrate:       # Create a calibration image
@@ -868,7 +868,7 @@ def speed_camera():
                             else:
                                 logging.info("End  - Skip Photo SPEED %.1f %s"
                                              " max_speed_over=%i  %i px in %.3f sec"
-                                             "  C=%i A=%i sqpx",
+                                             " C=%i A=%i sqpx",
                                              ave_speed, speed_units,
                                              max_speed_over, tot_track_dist,
                                              tot_track_time, total_contours, biggest_area)
@@ -879,19 +879,27 @@ def speed_camera():
                             first_event = True
                         else:
                             logging.info(" Add - cxy(%i,%i) %3.1f %s"
-                                         " px=%i/%i C=%i A=%i sqpx",
+                                         " px=%i/%i C=%i %ix%i=%i sqpx %s",
                                          cx, cy, ave_speed, speed_units,
                                          abs(start_pos_x - end_pos_x),
-                                         track_len_trig, total_contours, biggest_area)
+                                         track_len_trig, total_contours,
+                                         mw, mh, biggest_area, travel_direction)
                             end_pos_x = cx
                         event_timer = time.time()  # Reset event_timer since valid motion was found
                     else:
                         if show_out_range:
-                            logging.info(" Out - cxy(%i,%i) Dist=%i is %i<= or >=%i px"
-                                         "  C=%2i A=%i sqpx",
-                                         cx, cy, abs(cx - end_pos_x), x_diff_min, x_diff_max,
-                                         total_contours, biggest_area)
-                        event_timer = time.time()  # Reset event_timer since valid motion was found
+                            if abs(cx - end_pos_x) >= x_diff_max:
+                                first_event = True
+                                logging.info(" Out - cxy(%i,%i) Dist=%i is >=%i px"
+                                             " C=%i %ix%i=%i sqpx %s",
+                                             cx, cy, abs(cx - end_pos_x), x_diff_max,
+                                             total_contours, mw, mh, biggest_area, travel_direction)
+                            else:
+                                logging.info(" Out - cxy(%i,%i) Dist=%i is <=%i px"
+                                             " C=%i %ix%i=%i sqpx %s",
+                                             cx, cy, abs(cx - end_pos_x), x_diff_min,
+                                             total_contours, mw, mh, biggest_area, travel_direction)
+                                event_timer = time.time()  # Reset event_timer since valid motion was found
                 if gui_window_on:
                     # show small circle at motion location
                     if SHOW_CIRCLE:

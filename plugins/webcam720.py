@@ -42,6 +42,6 @@ image_bigger = 1              # Default = 1 Resize saved speed image by value
 # -------------------------------
 MIN_AREA = 170         # Exclude all contours less than or equal to this sq-px Area
 x_diff_min = 1         # Exclude if min px away exceeds last event x pos
-x_diff_max = 50        # Exclude if max px away for last motion event x pos
+x_diff_max = 25        # Exclude if max px away for last motion event x pos
 
 # ---------------------------------------------- End of User Variables -----------------------------------------------------
