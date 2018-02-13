@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 8.0 speed-cam.py picam240 Stream Variable Configuration Settings
+#         Ver 8.4 speed-cam.py picam240 Stream Variable Configuration Settings
 
 #######################################
 #    speed-cam.py plugin settings
@@ -12,37 +12,34 @@ cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 
 # Crop Area for motion detection Tracking
 # ---------------------------------------
-x_left  = 25           # Exclude event if x less than this px position Default=25
-x_right = 295          # Exclude event if x greater than this px position Default=295
-y_upper = 75           # Exclude event if y less that this value default=100
-y_lower = 185          # Exclude event if y greater than this value default=175
+x_left  = 25           # Default= 25 Exclude event if x less than this px position
+x_right = 295          # Default= 295 Exclude event if x greater than this px position
+y_upper = 75           # Default= 75 Exclude event if y less that this value
+y_lower = 185          # Default= 185 Exclude event if y greater than this value
 
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
-track_len_trig = 50    # Default=75 Length of track to trigger speed photo
-track_timeout = 0.0    # Default=0.0 Optional seconds to wait after track End (Avoid dual tracking)
-event_timeout = 0.3    # Default=0.3 seconds to wait for next motion event before starting new track
+MIN_AREA = 170         # Default= 170 Exclude all contours less than or equal to this sq-px Area
+track_len_trig = 50    # Default= 50 Length of track to trigger speed photo
+x_diff_max = 12        # Default= 12 Exclude if max px away >= last motion event x pos
+x_diff_min = 1         # Default= 1  Exclude if min px away <= last event x pos
+track_timeout = 0.0    # Default= 0.0 Optional seconds to wait after track End (Avoid dual tracking)
+event_timeout = 0.3    # Default= 0.3 seconds to wait for next motion event before starting new track
 
 # Camera Settings
 # ---------------
-WEBCAM = False        # default = False False=PiCamera True=USB WebCamera
+WEBCAM = False        # Default = False False=PiCamera True=USB WebCamera
 
 # Pi Camera Settings
 # ------------------
-CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning default=320
-CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  default=240
-CAMERA_FRAMERATE = 30  # Default = 30 Frame rate for video stream V2 picam can be higher
+CAMERA_WIDTH = 320     # Default= 320 Image stream width for opencv motion scanning default=320
+CAMERA_HEIGHT = 240    # Default= 240 Image stream height for opencv motion scanning  default=240
+CAMERA_FRAMERATE = 30  # Default= 30 Frame rate for video stream V2 picam can be higher
 
 # Camera Image Settings
 # ---------------------
-image_font_size = 15          # Default = 15 Font text height in px for text on images
-image_bigger = 3              # Default = 3 Resize saved speed image by value
-
-# Motion Event Exclusion Settings
-# -------------------------------
-MIN_AREA = 170         # Exclude all contours less than or equal to this sq-px Area
-x_diff_min = 1         # Exclude if min px away exceeds last event x pos
-x_diff_max = 50        # Exclude if max px away for last motion event x pos
+image_font_size = 15   # Default= 15 Font text height in px for text on images
+image_bigger = 3       # Default= 3 Resize saved speed image by value
 
 # ---------------------------------------------- End of User Variables -----------------------------------------------------

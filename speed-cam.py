@@ -1,5 +1,5 @@
 #!/usr/bin/python
-version = "version 8.3"
+version = "version 8.4"
 
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
@@ -889,7 +889,7 @@ def speed_camera():
                     else:
                         if show_out_range:
                             if abs(cx - end_pos_x) >= x_diff_max:
-                                first_event = True
+                                # Ignore movements that exceed Max px movement allowed
                                 logging.info(" Out - cxy(%i,%i) Dist=%i is >=%i px"
                                              " C=%i %ix%i=%i sqpx %s",
                                              cx, cy, abs(cx - end_pos_x), x_diff_max,
