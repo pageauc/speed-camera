@@ -785,7 +785,7 @@ def speed_camera():
                         tot_track_dist = abs(end_pos_x - start_pos_x)
                         tot_track_time = abs(time.time() - track_start_time)
                         ave_speed = float((abs(tot_track_dist / tot_track_time)) * speed_conv)
-                        if abs(end_pos_x - start_pos_x) > track_len_trig:
+                        if abs(end_pos_x - start_pos_x) >= track_len_trig:
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
                                 logging.info(" Add - cxy(%i,%i) %3.2f %s px=%i/%i"
