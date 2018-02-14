@@ -905,13 +905,13 @@ def speed_camera():
                     if SHOW_CIRCLE:
                         cv2.circle(image2, (cx + x_left * WINDOW_BIGGER,
                                             cy + y_upper * WINDOW_BIGGER),
-                                   CIRCLE_SIZE, cvRed, LINE_THICKNESS)
+                                   CIRCLE_SIZE, cvGreen, LINE_THICKNESS)
                     else:
                         cv2.rectangle(image2, (int(cx + x_left - mw/2),
                                                int(cy + y_upper - mh/2)),
                                       (int(cx + x_left + mw/2),
                                        int(cy + y_upper + mh/2)),
-                                      cvRed, LINE_THICKNESS)
+                                      cvGreen, LINE_THICKNESS)
         if gui_window_on:
             # cv2.imshow('Difference Image',difference image)
             cv2.line(image2, (x_left, y_upper), (x_right, y_upper), cvRed, 1)
