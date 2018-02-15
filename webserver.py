@@ -168,7 +168,7 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
                     % (display_entries, all_entries, self.path))
         else:
             f.write('<div style="text-align: right; padding-right: 50px;">Listing All %i Files in [ %s ]</div>'
-                    % all_entries, self.path)
+                    % (all_entries, self.path))
         # Display web refresh info only if setting is turned on
         f.write('</b></p>')
         length = f.tell()
