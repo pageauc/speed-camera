@@ -147,8 +147,14 @@ chmod +x *.sh
 chmod -x config*
 
 echo "$STATUS Installing speed-cam.py Dependencies"
-sudo apt-get install -y python-opencv dos2unix python-picamera python-imaging libgl1-mesa-dri
-sudo apt-get install -y fonts-freefont-ttf # Required for Jessie Lite Only
+sudo apt-get install -yq python-opencv
+sudo apt-get install -yq dos2unix
+sudo apt-get install -yq python-picamera
+sudo apt-get install -yq python3-picamera
+sudo apt-get install -yq python-imaging
+sudo apt-get install -yq libgl1-mesa-dri
+sudo apt-get install -yq fonts-freefont-ttf # Required for Jessie Lite Only
+sudo apt-get install -yq pandoc  # convert markdown to plain text for Readme.md
 dos2unix -q *
 
 cd $DIR
@@ -175,7 +181,7 @@ $STATUS Complete
 
 Calibrate speed camera per wiki instructions
 
-Run from Admin menu per 
+Run from Admin menu per
 
    ./menubox.sh
 
@@ -184,13 +190,13 @@ IMPORTANT: speed-cam.py ver 8.x Requires Updated config.py and plugins
     cd ~/speed-camera
     cp config.py config.py.bak
     cp config.py.new config.py
-    
+
 To replace plugins rename plugins folder per below
 
     cd ~/speed-camera
     mv plugins pluginsold
-    
-Then run menubox.sh UPGRADE menu pick.    
+
+Then run menubox.sh UPGRADE menu pick.
 
 -----------------------------------------------
 For Detailed Instructions See https://github.com/pageauc/speed-camera/wiki

@@ -607,7 +607,8 @@ function do_main_menu ()
   "h SEARCH" "Images Search Menu (openCV Template Match)" \
   "i UPGRADE" "Program Files from GitHub.com" \
   "j STATUS" "CPU $temp   Select to Refresh" \
-  "k ABOUT" "Information about this program" \
+  "k HELP" "View Readme.md" \
+  "l ABOUT" "Information about this program" \
   "q QUIT" "Exit This Program"  3>&1 1>&2 2>&3)
 
   RET=$?
@@ -630,7 +631,10 @@ function do_main_menu ()
             do_upgrade ;;
       j\ *) clear
             do_main_menu ;;
-      k\ *) do_about ;;
+      k\ *) pandoc -f markdown -t plain  Readme.md | more
+            do_anykey
+            do_main_menu ;;
+      l\ *) do_about ;;
       q\ *) rm -f $filename_conf $filename_temp
             clear
             exit 0 ;;
