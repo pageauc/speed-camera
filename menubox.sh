@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="7.2"
+ver="7.3"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -288,6 +288,7 @@ function do_plugins_edit ()
     else
         echo "User Pressed Cancel. with No File Selected"
     fi
+    cd $DIR    
 }
 #------------------------------------------------------------------------------
 function do_plugins_menu ()
@@ -507,6 +508,7 @@ whiptail --title "About Search" --msgbox " \
 #------------------------------------------------------------------------------
 function do_speed_search_menu ()
 {
+  cd $DIR
   config_file=$searchconfig
   SET_SEL=$( whiptail --title "Search Images Menu" \
                       --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
@@ -590,6 +592,7 @@ function do_about()
 #------------------------------------------------------------------------------
 function do_main_menu ()
 {
+  cd $DIR
   init_status
   temp="$(/opt/vc/bin/vcgencmd measure_temp)"
   cd $DIR
