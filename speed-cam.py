@@ -226,7 +226,7 @@ class PiVideoStream:
     def __init__(self, resolution=(CAMERA_WIDTH, CAMERA_HEIGHT),
                  framerate=CAMERA_FRAMERATE, rotation=0,
                  hflip=CAMERA_HFLIP, vflip=CAMERA_VFLIP):
-        # initialize the camera and stream
+        """ initialize the camera and stream """
         try:
             self.camera = PiCamera()
         except:
@@ -242,20 +242,22 @@ class PiVideoStream:
         self.stream = self.camera.capture_continuous(self.rawCapture,
                                                      format="bgr",
                                                      use_video_port=True)
-        # initialize the frame and the variable used to indicate
-        # if the thread should be stopped
+        """
+        initialize the frame and the variable used to indicate
+        if the thread should be stopped
+        """
         self.frame = None
         self.stopped = False
 
     def start(self):
-        # start the thread to read frames from the video stream
+        """ start the thread to read frames from the video stream """
         t = Thread(target=self.update, args=())
         t.daemon = True
         t.start()
         return self
 
     def update(self):
-        # keep looping infinitely until the thread is stopped
+        """ keep looping infinitely until the thread is stopped """
         for f in self.stream:
             # grab the frame from the stream and clear the stream in
             # preparation for the next frame
@@ -271,19 +273,21 @@ class PiVideoStream:
                 return
 
     def read(self):
-        # return the frame most recently read
+        """ return the frame most recently read """
         return self.frame
 
     def stop(self):
-        # indicate that the thread should be stopped
+        """ indicate that the thread should be stopped """
         self.stopped = True
 
 #------------------------------------------------------------------------------
 class WebcamVideoStream:
     def __init__(self, CAM_SRC=WEBCAM_SRC, CAM_WIDTH=WEBCAM_WIDTH,
                  CAM_HEIGHT=WEBCAM_HEIGHT):
-        # initialize the video camera stream and read the first frame
-        # from the stream
+        """
+        initialize the video camera stream and read the first frame
+        from the stream
+        """
         self.stream = CAM_SRC
         self.stream = cv2.VideoCapture(CAM_SRC)
         self.stream.set(3, CAM_WIDTH)
@@ -294,14 +298,14 @@ class WebcamVideoStream:
         self.stopped = False
 
     def start(self):
-        # start the thread to read frames from the video stream
+        """ start the thread to read frames from the video stream """
         t = Thread(target=self.update, args=())
         t.daemon = True
         t.start()
         return self
 
     def update(self):
-        # keep looping infinitely until the thread is stopped
+        """ keep looping infinitely until the thread is stopped """
         while True:
             # if the thread indicator variable is set, stop the thread
             if self.stopped:
@@ -310,11 +314,11 @@ class WebcamVideoStream:
             (self.grabbed, self.frame) = self.stream.read()
 
     def read(self):
-        # return the frame most recently read
+        """ return the frame most recently read """
         return self.frame
 
     def stop(self):
-        # indicate that the thread should be stopped
+        """ indicate that the thread should be stopped """
         self.stopped = True
 
 #------------------------------------------------------------------------------
@@ -501,7 +505,7 @@ def subDirCreate(directory, prefix):
 def deleteOldFiles(maxFiles, dirPath, prefix):
     """
     Delete Oldest files gt or
-    eq to maxfiles that match filename prefix
+    equal to maxfiles that match filename prefix
     """
     try:
         fileList = sorted(glob.glob(os.path.join(dirPath, prefix + '*')),
@@ -579,6 +583,7 @@ def subDirChecks(maxHours, maxFiles, directory, prefix):
 
 #------------------------------------------------------------------------------
 def filesToDelete(mediaDirPath, extension=image_format):
+    """ Return a list of files to be deleted """
     return sorted(
         (os.path.join(dirname, filename)
          for dirname, dirnames, filenames in os.walk(mediaDirPath)
@@ -600,8 +605,10 @@ def saveRecent(recentMax, recentDir, filename, prefix):
 
 #------------------------------------------------------------------------------
 def freeSpaceUpTo(freeMB, mediaDir, extension=image_format):
-    """ Walks mediaDir and deletes oldest files until spaceFreeMB is achieved
-    Use with Caution """
+    """
+    Walks mediaDir and deletes oldest files
+    until spaceFreeMB is achieved Use with Caution
+    """
     mediaDirPath = os.path.abspath(mediaDir)
     if os.path.isdir(mediaDirPath):
         MB2Bytes = 1048576  # Conversion from MB to Bytes
@@ -640,6 +647,7 @@ def freeSpaceUpTo(freeMB, mediaDir, extension=image_format):
 
 #------------------------------------------------------------------------------
 def freeDiskSpaceCheck(lastSpaceCheck):
+    """ Free disk space by deleting some older files """
     if spaceTimerHrs > 0:   # Check if disk free space timer hours is enabled
         # See if it is time to do disk clean-up check
         if (datetime.datetime.now() - lastSpaceCheck).total_seconds() > spaceTimerHrs * 3600:
@@ -942,7 +950,9 @@ def speed_camera():
                                                        quote,
                                                        filename,
                                                        quote,
-                                                       cx, cy, mw, mh, mw * mh,
+                                                       cx, cy,
+                                                       mw, mh,
+                                                       mw * mh,
                                                        quote,
                                                        travel_direction,
                                                        quote))
@@ -981,20 +991,21 @@ def speed_camera():
                             if abs(cx - end_pos_x) >= x_diff_max:
                                 # Ignore movements that exceed
                                 # Max px movement allowed
-                                logging.info(" Out - cxy(%i,%i) Dist=%i is >=%i px"
-                                             " C=%i %ix%i=%i sqpx %s",
+                                logging.info(" Out - cxy(%i,%i) Dist=%i is "
+                                             ">=%i px C=%i %ix%i=%i sqpx %s",
                                              cx, cy, abs(cx - end_pos_x),
                                              x_diff_max, total_contours,
                                              mw, mh, biggest_area,
                                              travel_direction)
                             else:
-                                logging.info(" Out - cxy(%i,%i) Dist=%i is <=%i px"
-                                             " C=%i %ix%i=%i sqpx %s",
+                                logging.info(" Out - cxy(%i,%i) Dist=%i is "
+                                             "<=%i px C=%i %ix%i=%i sqpx %s",
                                              cx, cy, abs(cx - end_pos_x),
                                              x_diff_min, total_contours,
                                              mw, mh, biggest_area,
                                              travel_direction)
-                                # Reset event_timer since valid motion was found
+                                # Reset event_timer since
+                                # valid motion was found
                                 event_timer = time.time()
                 if gui_window_on:
                     # show small circle at motion location
