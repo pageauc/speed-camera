@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.5"
+progVer = "8.6"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -699,7 +699,7 @@ def speed_camera():
     travel_direction = ""
     # initialize a cropped grayimage1 image
     # Only needs to be done once
-    image2 = vs.read()    # Get image from PiVideoSteam thread instance
+    image2 = vs.read()  # Get image from PiVideoSteam thread instance
     try:
         # crop image to motion tracking area only
         image_crop = image2[y_upper:y_lower, x_left:x_right]
@@ -900,12 +900,12 @@ def speed_camera():
                                 cv2.imwrite(filename, big_image)
 
                                 if spaceTimerHrs > 0:
-                                # if required check free disk space
-                                # and delete older files (jpg)
+                                    # if required check free disk space
+                                    # and delete older files (jpg)
                                     lastSpaceCheck = freeDiskSpaceCheck(lastSpaceCheck)
                                 if image_max_files > 0:
-                                # Manage a maximum number of files
-                                # and delete oldest if required.
+                                    # Manage a maximum number of files
+                                    # and delete oldest if required.
                                     deleteOldFiles(image_max_files,
                                                    speed_path,
                                                    image_prefix)
@@ -919,21 +919,33 @@ def speed_camera():
                                 # Format and Save Data to CSV Log File
                                 if log_data_to_CSV:
                                     log_time = datetime.datetime.now()
-                                    log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s"
+                                    log_csv_time = ("%s%04d%02d%02d%s,"
+                                                    "%s%02d%s,%s%02d%s"
                                                     % (quote,
                                                        log_time.year,
                                                        log_time.month,
                                                        log_time.day,
                                                        quote,
-                                                       quote, log_time.hour, quote,
-                                                       quote, log_time.minute, quote))
-                                    log_csv_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%i,%i,%s%s%s"
+                                                       quote,
+                                                       log_time.hour,
+                                                       quote,
+                                                       quote,
+                                                       log_time.minute,
+                                                       quote))
+                                    log_csv_text = ("%s,%.2f,%s%s%s,%s%s%s,"
+                                                    "%i,%i,%i,%i,%i,%s%s%s"
                                                     % (log_csv_time,
                                                        ave_speed,
-                                                       quote, speed_units, quote,
-                                                       quote, filename, quote,
+                                                       quote,
+                                                       speed_units,
+                                                       quote,
+                                                       quote,
+                                                       filename,
+                                                       quote,
                                                        cx, cy, mw, mh, mw * mh,
-                                                       quote, travel_direction, quote))
+                                                       quote,
+                                                       travel_direction,
+                                                       quote))
                                     log_to_csv_file(log_csv_text)
                                 logging.info("End  - Tracked %i px in %.3f sec",
                                              tot_track_dist, tot_track_time)
@@ -967,7 +979,8 @@ def speed_camera():
                     else:
                         if show_out_range:
                             if abs(cx - end_pos_x) >= x_diff_max:
-                                # Ignore movements that exceed Max px movement allowed
+                                # Ignore movements that exceed
+                                # Max px movement allowed
                                 logging.info(" Out - cxy(%i,%i) Dist=%i is >=%i px"
                                              " C=%i %ix%i=%i sqpx %s",
                                              cx, cy, abs(cx - end_pos_x),
