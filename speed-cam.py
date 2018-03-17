@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.4"
+progVer = "8.5"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -86,14 +86,34 @@ if not os.path.exists(configFilePath):
     f.close()
 # Read Configuration variables from config.py file
 from config import *
+
+# Now that variables are imported from config.py Setup Logging
+if loggingToFile:
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        filename=logFilePath,
+                        filemode='w')
+elif verbose:
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+    logging.info("Logging to Console per Variable verbose=True")
+else:
+    logging.basicConfig(level=logging.CRITICAL,
+                        format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+if not verbose:
+    logging.info("Logging Disabled per Variable verbose=False")
 from search_config import search_dest_path
+# Setup appropriate plugin if enabled
 if pluginEnable:     # Check and verify plugin and load variable overlay
     pluginDir = os.path.join(baseDir, "plugins")
     # Check if there is a .py at the end of pluginName variable
     if pluginName.endswith('.py'):
         pluginName = pluginName[:-3]    # Remove .py extensiion
     pluginPath = os.path.join(pluginDir, pluginName + '.py')
-    print("INFO  : pluginEnabled - loading pluginName %s" % pluginPath)
+    logging.info("pluginEnabled - loading pluginName %s", pluginPath)
     if not os.path.isdir(pluginDir):
         print("ERROR : plugin Directory Not Found at %s" % pluginDir)
         print("        Rerun github curl install script to install plugins")
@@ -147,25 +167,7 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
             print("        %s %s Exiting Due to Error"
                   % (progName, progVer))
 else:
-    print("INFO  : No Plugins Enabled per pluginEnable=%s" % pluginEnable)
-
-# Now that variables are imported from config.py Setup Logging
-if loggingToFile:
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S',
-                        filename=logFilePath,
-                        filemode='w')
-elif verbose:
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S')
-    logging.info("Logging to Console per Variable verbose=True")
-else:
-    logging.basicConfig(level=logging.CRITICAL,
-                        format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S')
-    logging.info("Logging Disabled per Variable verbose=False")
+    logging.info("No Plugins Enabled per pluginEnable=%s", pluginEnable)
 # import the necessary packages
 # -----------------------------
 try:  #Add this check in case running on non RPI platform using web cam
@@ -663,6 +665,7 @@ def get_image_name(path, prefix):
 
 #------------------------------------------------------------------------------
 def log_to_csv_file(data_to_append):
+    """ Store date to a comma separated value file """
     log_file_path = baseDir + baseFileName + ".csv"
     if not os.path.exists(log_file_path):
         open(log_file_path, 'w').close()
@@ -681,6 +684,7 @@ def log_to_csv_file(data_to_append):
 
 #------------------------------------------------------------------------------
 def speed_camera():
+    """ Main speed camera processing function """
     ave_speed = 0.0
     # initialize variables
     frame_count = 0
@@ -854,6 +858,47 @@ def speed_camera():
                                         speed_prefix = image_prefix
                                     filename = get_image_name(speed_path,
                                                               speed_prefix)
+                                # Add motion rectangle to image
+                                if image_show_motion_area:
+                                    cv2.line(prev_image, (x_left, y_upper),
+                                             (x_right, y_upper), cvRed, 1)
+                                    cv2.line(prev_image, (x_left, y_lower),
+                                             (x_right, y_lower), cvRed, 1)
+                                    cv2.line(prev_image, (x_left, y_upper),
+                                             (x_left, y_lower), cvRed, 1)
+                                    cv2.line(prev_image, (x_right, y_upper),
+                                             (x_right, y_lower), cvRed, 1)
+                                    if SHOW_CIRCLE:
+                                        cv2.circle(prev_image,
+                                                   (cx + x_left, cy + y_upper),
+                                                   CIRCLE_SIZE,
+                                                   cvRed, LINE_THICKNESS)
+                                big_image = cv2.resize(prev_image,
+                                                       (image_width,
+                                                       image_height))
+                                if image_text_on:
+                                    # Write text on image before saving
+                                    image_text = ("SPEED %.1f %s - %s"
+                                                  % (ave_speed,
+                                                     speed_units,
+                                                     filename))
+                                    text_x = int((image_width / 2) -
+                                                 (len(image_text) * image_font_size / 3))
+                                    if text_x < 2:
+                                        text_x = 2
+                                    logging.info(" Ave Speed is %.1f %s %s ",
+                                                 ave_speed,
+                                                 speed_units,
+                                                 travel_direction)
+                                    cv2.putText(big_image,
+                                                image_text,
+                                                (text_x, text_y),
+                                                font,
+                                                FONT_SCALE,
+                                                (cvWhite), 2)
+                                logging.info(" Saved %s", filename)
+                                cv2.imwrite(filename, big_image)
+
                                 if spaceTimerHrs > 0:
                                 # if required check free disk space
                                 # and delete older files (jpg)
@@ -864,56 +909,30 @@ def speed_camera():
                                     deleteOldFiles(image_max_files,
                                                    speed_path,
                                                    image_prefix)
-                                # Add motion rectangle to image
-                                if image_show_motion_area:
-                                    if SHOW_CIRCLE:
-                                        cv2.circle(prev_image,
-                                                   (cx + x_left, cy + y_upper),
-                                                   CIRCLE_SIZE, cvRed,
-                                                   LINE_THICKNESS)
-                                    cv2.line(prev_image, (x_left, y_upper),
-                                             (x_right, y_upper), cvRed, 1)
-                                    cv2.line(prev_image, (x_left, y_lower),
-                                             (x_right, y_lower), cvRed, 1)
-                                    cv2.line(prev_image, (x_left, y_upper),
-                                             (x_left, y_lower), cvRed, 1)
-                                    cv2.line(prev_image, (x_right, y_upper),
-                                             (x_right, y_lower), cvRed, 1)
-                                big_image = cv2.resize(prev_image,
-                                                       (image_width, image_height))
-                                if image_text_on:
-                                    # Write text on image before saving
-                                    image_text = ("SPEED %.1f %s - %s"
-                                                  % (ave_speed, speed_units, filename))
-                                    text_x = int((image_width / 2) -
-                                                 (len(image_text) * image_font_size / 3))
-                                    if text_x < 2:
-                                        text_x = 2
-                                    logging.info(" Ave Speed is %.1f %s %s ",
-                                                 ave_speed, speed_units, travel_direction)
-                                    cv2.putText(big_image, image_text, (text_x, text_y),
-                                                font, FONT_SCALE, (cvWhite), 2)
-                                logging.info(" Saved %s", filename)
-                                cv2.imwrite(filename, big_image)
                                 if imageRecentMax > 0 and not calibrate:
-                                    # Optional save most recent files to a recent folder
-                                    saveRecent(imageRecentMax, imageRecentDir, filename,
+                                    # Optional save most recent files
+                                    # to a recent folder
+                                    saveRecent(imageRecentMax,
+                                               imageRecentDir,
+                                               filename,
                                                image_prefix)
                                 # Format and Save Data to CSV Log File
                                 if log_data_to_CSV:
                                     log_time = datetime.datetime.now()
                                     log_csv_time = ("%s%04d%02d%02d%s,%s%02d%s,%s%02d%s"
                                                     % (quote,
-                                                       log_time.year, log_time.month,
+                                                       log_time.year,
+                                                       log_time.month,
                                                        log_time.day,
                                                        quote,
                                                        quote, log_time.hour, quote,
                                                        quote, log_time.minute, quote))
                                     log_csv_text = ("%s,%.2f,%s%s%s,%s%s%s,%i,%i,%i,%i,%i,%s%s%s"
-                                                    % (log_csv_time, ave_speed,
-                                                       quote, speed_units,
-                                                       quote, quote, filename,
-                                                       quote, cx, cy, mw, mh, mw * mh,
+                                                    % (log_csv_time,
+                                                       ave_speed,
+                                                       quote, speed_units, quote,
+                                                       quote, filename, quote,
+                                                       cx, cy, mw, mh, mw * mh,
                                                        quote, travel_direction, quote))
                                     log_to_csv_file(log_csv_text)
                                 logging.info("End  - Tracked %i px in %.3f sec",
