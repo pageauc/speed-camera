@@ -751,7 +751,7 @@ def speed_camera():
     lastSpaceCheck = datetime.datetime.now()
     speed_path = image_path
     while still_scanning:  # process camera thread images and calculate speed
-        image2 = vs.read() # Get image from PiVideoSteam thread instance
+        image2 = vs.read() # Read image data from video steam thread instance
         if WEBCAM:
             if (WEBCAM_HFLIP and WEBCAM_VFLIP):
                 image2 = cv2.flip(image2, -1)
@@ -799,10 +799,10 @@ def speed_camera():
         total_contours = len(contours)
         # Update grayimage1 to grayimage2 ready for next image2
         grayimage1 = grayimage2
-        # find contour with biggest area
+        # if contours found, find the one with biggest area
         if contours:
             for c in contours:
-                # get area of next contour
+                # get area of contour
                 found_area = cv2.contourArea(c)
                 if found_area > biggest_area:
                     (x, y, w, h) = cv2.boundingRect(c)
@@ -813,13 +813,13 @@ def speed_camera():
                             y + h < y_lower - y_upper - y_buf):
                         motion_found = True
                         biggest_area = found_area
-                        cx = int(x + w/2) # put circle in middle of width
-                        cy = int(y + h/2) # put circle in middle of height
+                        cx = int(x + w/2) # middle of contour width
+                        cy = int(y + h/2) # middle of contour height
                         mw = w
                         mh = h
             if motion_found:
                 # Process motion event and track data
-                if first_event:   # This is a first valide motion event
+                if first_event:   # This is a first valid motion event
                     first_event = False
                     start_pos_x = cx
                     end_pos_x = cx
@@ -830,9 +830,10 @@ def speed_camera():
                         travel_direction = "L2R"
                     else:
                         travel_direction = "R2L"
+                    # check if movement is within acceptable distance
+                    # range of last event
                     if (abs(cx - end_pos_x) > x_diff_min and
                             abs(cx - end_pos_x) < x_diff_max):
-                        # movement is within acceptable distance range of last event
                         end_pos_x = cx
                         tot_track_dist = abs(end_pos_x - start_pos_x)
                         tot_track_time = abs(time.time() - track_start_time)
@@ -847,10 +848,12 @@ def speed_camera():
                                              track_len_trig, total_contours,
                                              mw, mh, biggest_area,
                                              travel_direction)
-                                # Resized and process prev image
+                                # Resize and process previous image
                                 # before saving to disk
                                 prev_image = image2
-                                if calibrate:  # Create a calibration image
+                                # Create a calibration image file name
+                                # There are no subdirectories to deal with
+                                if calibrate:
                                     filename = get_image_name(speed_path, "calib-")
                                     prev_image = take_calibration_image(filename,
                                                                         prev_image)
@@ -860,13 +863,16 @@ def speed_camera():
                                     speed_path = subDirChecks(imageSubDirMaxHours,
                                                               imageSubDirMaxFiles,
                                                               image_path, image_prefix)
+                                    # Create image file name prefix
                                     if image_filename_speed:
                                         speed_prefix = str(int(round(ave_speed))) + "-" + image_prefix
                                     else:
                                         speed_prefix = image_prefix
+                                    # create image file name path
                                     filename = get_image_name(speed_path,
                                                               speed_prefix)
                                 # Add motion rectangle to image
+                                # if required
                                 if image_show_motion_area:
                                     cv2.line(prev_image, (x_left, y_upper),
                                              (x_right, y_upper), cvRed, 1)
@@ -876,6 +882,7 @@ def speed_camera():
                                              (x_left, y_lower), cvRed, 1)
                                     cv2.line(prev_image, (x_right, y_upper),
                                              (x_right, y_lower), cvRed, 1)
+                                    # show centre of motion if required
                                     if SHOW_CIRCLE:
                                         cv2.circle(prev_image,
                                                    (cx + x_left, cy + y_upper),
@@ -884,8 +891,9 @@ def speed_camera():
                                 big_image = cv2.resize(prev_image,
                                                        (image_width,
                                                        image_height))
+                                # Write text on image before saving
+                                # if required.
                                 if image_text_on:
-                                    # Write text on image before saving
                                     image_text = ("SPEED %.1f %s - %s"
                                                   % (ave_speed,
                                                      speed_units,
@@ -905,21 +913,21 @@ def speed_camera():
                                                 FONT_SCALE,
                                                 (cvWhite), 2)
                                 logging.info(" Saved %s", filename)
+                                # Save resized image
                                 cv2.imwrite(filename, big_image)
-
+                                # if required check free disk space
+                                # and delete older files (jpg)
                                 if spaceTimerHrs > 0:
-                                    # if required check free disk space
-                                    # and delete older files (jpg)
                                     lastSpaceCheck = freeDiskSpaceCheck(lastSpaceCheck)
+                                # Manage a maximum number of files
+                                # and delete oldest if required.
                                 if image_max_files > 0:
-                                    # Manage a maximum number of files
-                                    # and delete oldest if required.
                                     deleteOldFiles(image_max_files,
                                                    speed_path,
                                                    image_prefix)
+                                # Save most recent files
+                                # to a recent folder if required
                                 if imageRecentMax > 0 and not calibrate:
-                                    # Optional save most recent files
-                                    # to a recent folder
                                     saveRecent(imageRecentMax,
                                                imageRecentDir,
                                                filename,
@@ -959,7 +967,7 @@ def speed_camera():
                                     log_to_csv_file(log_csv_text)
                                 logging.info("End  - Tracked %i px in %.3f sec",
                                              tot_track_dist, tot_track_time)
-                                # Optional Wait to avoid dual tracking.
+                                # Wait to avoid dual tracking same object.
                                 time.sleep(track_timeout)
                             else:
                                 logging.info("End  - Skip Photo SPEED %.1f %s"
@@ -988,9 +996,9 @@ def speed_camera():
                         event_timer = time.time()
                     else:
                         if show_out_range:
+                            # Ignore movements that exceed
+                            # Max px movement allowed
                             if abs(cx - end_pos_x) >= x_diff_max:
-                                # Ignore movements that exceed
-                                # Max px movement allowed
                                 logging.info(" Out - cxy(%i,%i) Dist=%i is "
                                              ">=%i px C=%i %ix%i=%i sqpx %s",
                                              cx, cy, abs(cx - end_pos_x),
@@ -1008,7 +1016,8 @@ def speed_camera():
                                 # valid motion was found
                                 event_timer = time.time()
                 if gui_window_on:
-                    # show small circle at motion location
+                    # show small circle at contour centre if required
+                    # otherwise a rectangle around most recent contour
                     if SHOW_CIRCLE:
                         cv2.circle(image2, (cx + x_left * WINDOW_BIGGER,
                                             cy + y_upper * WINDOW_BIGGER),
@@ -1040,17 +1049,16 @@ def speed_camera():
 
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
-    show_settings()
+    show_settings()  # Show variable settings
     try:
         WEBCAM_TRIES = 0
         while True:
-            # Save images to an in-program stream
-            # Setup video stream on a processor Thread for faster speed
-            #  Start Web Cam stream (Note USB webcam must be plugged in)
+            # Start Web Cam stream (Note USB webcam must be plugged in)
             if WEBCAM:
                 WEBCAM_TRIES += 1
                 logging.info("Initializing USB Web Camera Try .. %i",
                              WEBCAM_TRIES)
+                # Start video stream on a processor Thread for faster speed
                 vs = WebcamVideoStream().start()
                 vs.CAM_SRC = WEBCAM_SRC
                 vs.CAM_WIDTH = WEBCAM_WIDTH
@@ -1067,12 +1075,13 @@ if __name__ == '__main__':
                 time.sleep(4.0)  # Allow WebCam to initialize
             else:
                 logging.info("Initializing Pi Camera ....")
+                # Start a pi-camera video stream thread
                 vs = PiVideoStream().start()
                 vs.camera.rotation = CAMERA_ROTATION
                 vs.camera.hflip = CAMERA_HFLIP
                 vs.camera.vflip = CAMERA_VFLIP
                 time.sleep(2.0)  # Allow PiCamera to initialize
-            speed_camera()
+            speed_camera() # run main speed camera processing loop
     except KeyboardInterrupt:
         vs.stop()
         print("")
