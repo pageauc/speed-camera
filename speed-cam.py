@@ -762,7 +762,7 @@ def speed_camera():
         # crop image to motion tracking area only
         try:
             image_crop = image2[y_upper:y_lower, x_left:x_right]
-        except:
+        except ValueError:
             logging.error("image2 Stream Image is Not Complete. Cannot Crop.")
             continue
         # Check if event timed out
