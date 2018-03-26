@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.61"
+progVer = "8.7"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -760,7 +760,11 @@ def speed_camera():
             elif WEBCAM_VFLIP:
                 image2 = cv2.flip(image2, 0)
         # crop image to motion tracking area only
-        image_crop = image2[y_upper:y_lower, x_left:x_right]
+        try:
+            image_crop = image2[y_upper:y_lower, x_left:x_right]
+        except:
+            logging.error("image2 Stream Image is Not Complete. Cannot Crop.")
+            continue
         # Check if event timed out
         if time.time() - event_timer > event_timeout:
             # event_timer exceeded so reset for new track
