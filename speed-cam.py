@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.6"
+progVer = "8.61"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -1071,6 +1071,7 @@ if __name__ == '__main__':
                     logging.error("and Not Used(busy) by Another Process.")
                     logging.error("%s %s Exiting Due to Error",
                                   progName, progVer)
+                    vs.stop()
                     sys.exit(1)
                 time.sleep(4.0)  # Allow WebCam to initialize
             else:
