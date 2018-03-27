@@ -4,36 +4,38 @@
 # Create html pages from csv log file entries
 # for viewing speed images and data on a web server
 
-progVer = "6.60"
+progVer = "6.70"
 
-import glob, os
+import glob
+import os
 import csv
 import time
 import datetime
 import shutil
 
+# Find the full path of this python script
+progName = os.path.abspath(__file__)
+# get the path location only (excluding script name)
+baseDir = os.path.dirname(progName)
 # Change to Folder that this script is run from
-progName = os.path.abspath(__file__)  # Find the full path of this python script
-baseDir = os.path.dirname(progName)   # get the path location only (excluding script name)
 os.chdir(baseDir)
 
+# User Variable Settings for this script
 verbose = True
-
 image_ext = ".jpg"
 source_csv = "speed-cam.csv"
-
-web_html_dir = "media/html"
-if not os.path.isdir(web_html_dir):
-    logging.info("Creating html Folder %s", web_html_dir)
-    os.makedirs(web_html_dir)
-web_image_dir = "media/images/"   # location of image link off html folder
-
+web_html_dir = "media/html"  # Dir path to html files
+web_image_dir = "media/images/"   # Dir path of images
 # contour width to height ratio
-guess_person = .55
+guess_person = .73
 guess_cart = 1.1
+# End of Variable Settings
 
-#-----------------------------------------------------------------------------------------------
+if not os.path.isdir(web_html_dir):
+    print("Creating html Folder %s" web_html_dir)
+    os.makedirs(web_html_dir)
 
+#------------------------------------------------------------------------------
 def make_web_page(up_html, row_data, dn_html):
     YYYYMMDD=row_data[0]
     HH=row_data[1]
@@ -51,10 +53,10 @@ def make_web_page(up_html, row_data, dn_html):
     W=row_data[8]
     H=row_data[9]
     aspect_ratio = float(W)/int(H)
-    if (aspect_ratio < .73) :
+    if aspect_ratio < guess_person:
         Guess = "Person Walking"
-    elif ( aspect_ratio < 1.1 ) :
-        Guess = "Person on Bike, Golf Cart"
+    elif aspect_ratio < guess_cart:
+        Guess = "Person on Bike or Golf Cart"
     else:
         Guess = "Vehicle"
     Area=row_data[10]
@@ -98,9 +100,11 @@ def make_web_page(up_html, row_data, dn_html):
     </tr>
     </table>
     </body>
-    </html>''' % ( img_html_path, img_html_path, YYYYMMDD, HH, MM, Speed, Unit,
-                  W, H, Area, aspect_ratio, Guess, img_html_path, img_filename, dn_html, up_html))
-
+    </html>''' % (img_html_path, img_html_path,
+                  YYYYMMDD, HH, MM, Speed, Unit,
+                  W, H, Area, aspect_ratio,
+                  Guess, img_html_path,
+                  img_filename, dn_html, up_html))
     # Write the html file
     base_filename = os.path.splitext(os.path.basename(img_path))[0]
     web_html_path = os.path.join(web_html_dir, base_filename + '.html')
@@ -112,13 +116,14 @@ def make_web_page(up_html, row_data, dn_html):
         # Sync file stat dates of html with jpg file
         shutil.copystat(img_path, web_html_path)
         if verbose:
-            print("Saved  %s<- %s ->%s" % ( dn_html, web_html_path , up_html ))
+            print("Saved  %s<- %s ->%s" % ( dn_html, web_html_path , up_html))
     else:
         if os.path.isfile(web_html_path):
             if verbose:
                 print("Remove File %s" % web_html_path)
             os.remove(web_html_path)
 
+#------------------------------------------------------------------------------
 def check_row(row_data):
     found = False
     web_html_path = ""
@@ -129,6 +134,7 @@ def check_row(row_data):
         found = True
     return found, web_html_path
 
+#------------------------------------------------------------------------------
 def read_from_csv(filename):
     this_is_first_row = True
     this_is_third_row = True
@@ -189,9 +195,7 @@ def read_from_csv(filename):
         outDir = os.path.abspath(web_html_dir)
         print("-----------------")
         print("%s ver %s - written by Claude Pageau" % (progName, progVer))
-        print("Processed %i web pages in %i seconds into Folder %s" % (workCount, workEnd - workStart, outDir))
+        print("Processed %i web pages in %i seconds into Folder %s" %
+              (workCount, workEnd - workStart, outDir))
         print("Done ...")
-
-
 read_from_csv(source_csv)
-
