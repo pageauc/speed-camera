@@ -32,7 +32,7 @@ guess_cart = 1.1
 # End of Variable Settings
 
 if not os.path.isdir(web_html_dir):
-    print("Creating html Folder %s" web_html_dir)
+    print("Creating html Folder %s" % web_html_dir)
     os.makedirs(web_html_dir)
 
 #------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ def make_web_page(up_html, row_data, dn_html):
         # Sync file stat dates of html with jpg file
         shutil.copystat(img_path, web_html_path)
         if verbose:
-            print("Saved  %s<- %s ->%s" % ( dn_html, web_html_path , up_html))
+            print("Saved %s<- %s ->%s" % (dn_html, web_html_path , up_html))
     else:
         if os.path.isfile(web_html_path):
             if verbose:
