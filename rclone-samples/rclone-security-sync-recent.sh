@@ -18,7 +18,7 @@ rcloneName="gdmedia"     # Name of Remote Storage Service
 syncRoot="/home/pi/speed-camera"   # Root Folder to Start
 localDir="media/recent/security"         # Source Folder on Local
 remoteDir="scam/recent"  # Destination Folder on Remote
-rcloneParam="sync"       # rclone option to perform  Eg  sync, copy, move
+rcloneParam="sync -L"    # rclone option to perform  Eg  sync, copy, move
                          # IMPORTANT: sync will make remoteDir identical to localDir
                          # so remoteDir Files that do not exist on localDir will be Deleted.
 # ---------------------------------------
