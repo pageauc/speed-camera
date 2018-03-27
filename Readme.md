@@ -36,7 +36,7 @@ so it may take some time if these are not up-to-date.
     curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
 
 This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed.
-See my Github opencv [compile opencv3 from source project](https://github.com/pageauc/opencv3-setup)
+See my Github [menu driven compile opencv3 from source project](https://github.com/pageauc/opencv3-setup)
 
 ## Manual Install or Upgrade   
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
