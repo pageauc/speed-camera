@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.7"
+progVer = "8.8"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -594,14 +594,18 @@ def filesToDelete(mediaDirPath, extension=image_format):
 #------------------------------------------------------------------------------
 def saveRecent(recentMax, recentDir, filename, prefix):
     """
-    save specified most recent files
-    (timelapse and/or motion) in recent subfolder
+    Create a symlink file in recent folder (timelapse or motion subfolder)
+    Delete Oldest symlink file if recentMax exceeded.
     """
-    deleteOldFiles(recentMax, recentDir, prefix)
-    try:    # Copy image file to recent folder
-        shutil.copy(filename, recentDir)
+    src = os.path.abspath(filename)  # original file path
+    dest = os.path.abspath(os.path.join(recentDir,
+                                        os.path.basename(filename)))
+    deleteOldFiles(recentMax, os.path.abspath(recentDir), prefix)
+    try:    # Create symlink in recent folder
+        logging.info('symlink %s', dest)
+        os.symlink(src, dest)  # Create a symlink to actual file
     except OSError as err:
-        logging.error('Copy from %s to %s - %s', filename, recentDir, err)
+        logging.error('symlink %s to %s  err: %s', dest, src, err)
 
 #------------------------------------------------------------------------------
 def freeSpaceUpTo(freeMB, mediaDir, extension=image_format):
