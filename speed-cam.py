@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.8"
+progVer = "8.81"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -602,10 +602,14 @@ def saveRecent(recentMax, recentDir, filename, prefix):
                                         os.path.basename(filename)))
     deleteOldFiles(recentMax, os.path.abspath(recentDir), prefix)
     try:    # Create symlink in recent folder
-        logging.info('symlink %s', dest)
+        logging.info('symlink to %s', dest)
         os.symlink(src, dest)  # Create a symlink to actual file
     except OSError as err:
-        logging.error('symlink %s to %s  err: %s', dest, src, err)
+        logging.error('symlink Failed: %s', err)
+        try:  # Copy image file to recent folder (if no support for symlinks)
+            shutil.copy(filename, recentDir)
+        except OSError as err:
+            logging.error('Copy from %s to %s - %s', filename, recentDir, err)
 
 #------------------------------------------------------------------------------
 def freeSpaceUpTo(freeMB, mediaDir, extension=image_format):
