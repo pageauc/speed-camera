@@ -1,5 +1,5 @@
 #!/bin/bash
-ver="7.0"
+ver="7.1"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"  # get cur dir of this script
 progName=$(basename -- "$0")
 cd $DIR
