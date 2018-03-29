@@ -6,8 +6,8 @@
 I am looking at revamping logic for using speed camera as a security camera. Currently the
 plugins ***secpicam480.py*** and ***secwebcam480.py*** do not work very well since only horizontal x
 changes are tracked.  I will add xy triangulation tracking with no speed as well as support
-for IP cameras. SECURITY_CAM_MODE will not support makehtml.py or csv logging. These changes
- will take some time so be patient.   
+for IP cameras. ***SECURITY_CAM_MODE*** will not support ***makehtml.py*** or csv logging. These changes
+ will take some time so be patient.  Claude 
 
 ## Program Description   
 This is a raspberry pi computer openCV2 object speed camera demo program.
