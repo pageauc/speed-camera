@@ -2,7 +2,8 @@
 ### RPI, Unix and Windows Speed Camera Using python, openCV, USB Cam or RPI camera module
 ## For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features) and [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#links)
     
-***Note*** I am looking at revamping logic for using speed camera as a security camera. Currently the
+# Note
+I am looking at revamping logic for using speed camera as a security camera. Currently the
 plugins secpicam480.py and secwebcam480.py do not work very well since only horizontal x
 changes are tracked.  I will add xy triangulation tracking with no speed as well as support
 for IP cameras. SECURITY_CAM_MODE will not support makehtml.py or csv logging. These changes
