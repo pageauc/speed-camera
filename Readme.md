@@ -16,7 +16,7 @@ This can be vehicles or any other moving objects.  It tracks the speed of
 the largest moving object in the camera view above a minimum pixel area.
 The results are recorded on speed photos and in a CSV data file that can be
 imported to a spreadsheet or other program for additional processing.  You
-can also run makehtml.py to generate html files that combine csv and image
+can also run ***makehtml.py*** to generate html files that combine csv and image
 data. (does not work with ***secpicam480.py*** and ***secwebcam480.py*** plugins.
 
 The program will detect motion in the field of view and use opencv to calculate
