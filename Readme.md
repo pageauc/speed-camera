@@ -10,8 +10,8 @@ for IP cameras. ***SECURITY_CAM_MODE*** will not support ***makehtml.py*** or cs
  will take some time so be patient.  Claude 
 
 ## Program Description   
-This is a raspberry pi computer openCV2 object speed camera demo program.
-It is written in python and uses openCV2 to detect and track object motion.
+This is a raspberry pi, Windows, Unix Distro computer openCV object speed camera demo program.
+It is written in python and uses openCV to detect and track object motion.
 This can be vehicles or any other moving objects.  It tracks the speed of
 the largest moving object in the camera view above a minimum pixel area.
 The results are recorded on speed photos and in a CSV data file that can be
@@ -67,10 +67,10 @@ See my Github [menu driven compile opencv3 from source project](https://github.c
 ## Manual Install or Upgrade   
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
 
+    cd ~
     wget https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
     more speed-install.sh       # You can review code if you wish
     chmod +x speed-install.sh
-    cd speed-camera
     ./speed-install.sh  # runs install script.
     
 ## Run to view verbose logging 
