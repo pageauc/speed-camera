@@ -3,8 +3,9 @@
 ## For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features) and [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#links)
 
 ## RPI Quick Install or Upgrade   
-***IMPORTANT*** - A raspbian ***sudo apt-get update*** and ***sudo apt-get upgrade*** will
-***NOT*** be performed as part of ***speed-install.sh*** so it is recommended you run these prior to install
+***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will
+**NOT** be performed as part of   
+**speed-install.sh** so it is recommended you run these prior to install
 to ensure your system is up-to-date.     
 
 ***Step 1*** With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and Copy.     
@@ -23,7 +24,7 @@ the largest moving object in the camera view above a minimum pixel area.
 The results are recorded on speed photos and in a CSV data file that can be
 imported to a spreadsheet or other program for additional processing. You
 can also run ***makehtml.py*** to generate html files that combine csv and image
-data. (does not work with ***secpicam480.py*** and ***secwebcam480.py*** plugins.
+data. (Does not work with ***secpicam480.py*** and ***secwebcam480.py*** plugins.
 
 The program will detect motion in the field of view and use opencv to calculate
 the largest contour and return its x,y coordinate. User variables are stored in the ***config.py** file.
