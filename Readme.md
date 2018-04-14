@@ -53,7 +53,7 @@ A quad core RPI will greatly improve performance due to threading. A recent vers
 or  
 ***MS Windows or Unix distro*** computer with a USB Web Camera plugged in and a
 [recent version of python installed](https://www.python.org/downloads/)
-For Details See [Wiki](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs).
+For Details See [***Wiki details***](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs).
 
 ## Windows or Non RPI Unix Installs
 For Windows or Unix computer platforms (non RPI or Debian) ensure you have the most
@@ -94,13 +94,13 @@ From logged in RPI SSH session or console terminal perform the following. Allows
     cd ~/speed-camera    
     ./speed-cam.py
     
-See [How to Run](https://github.com/pageauc/speed-camera/wiki/How-to-Run) speed-cam.py section
+See [***How to Run***](https://github.com/pageauc/speed-camera/wiki/How-to-Run) speed-cam.py wiki section
 
 ***IMPORTANT*** Speed Camera will start in ***calibrate*** = ***True*** Mode.    
 Review settings in ***config.py*** file and edit variables with nano as required.
 You will need to perform a calibration to set the correct value for config.py ***cal_obj_px*** and ***cal_obj_mm*** 
 variables based on the distance from camera to objects being measured for speed.  
-See [Calibration Procedure](https://github.com/pageauc/speed-camera/wiki/Calibrate-Camera-for-Distance)for more details.     
+See [***Calibration Procedure***](https://github.com/pageauc/speed-camera/wiki/Calibrate-Camera-for-Distance) for more details.     
     
 ## Run menubox.sh 
 
