@@ -78,7 +78,7 @@ To replace plugins rename (or delete) plugins folder per below
     mv plugins pluginsold   # renames plugins folder
     rm -r plugins           # deletes plugins folder
 
-Then run menubox.sh UPGRADE menu pick.
+Then run ***menubox.sh*** UPGRADE menu pick.
  
 ## Manual Install or Upgrade   
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
@@ -99,7 +99,7 @@ See [***How to Run***](https://github.com/pageauc/speed-camera/wiki/How-to-Run) 
 ***IMPORTANT*** Speed Camera will start in ***calibrate*** = ***True*** Mode.    
 Review settings in ***config.py*** file and edit variables with nano as required.
 You will need to perform a calibration to set the correct value for config.py ***cal_obj_px*** and ***cal_obj_mm*** 
-variables based on the distance from camera to objects being measured for speed.  
+variables based on the distance from camera to objects being measured for speed.
 See [***Calibration Procedure***](https://github.com/pageauc/speed-camera/wiki/Calibrate-Camera-for-Distance) for more details.     
     
 ## Run menubox.sh 
