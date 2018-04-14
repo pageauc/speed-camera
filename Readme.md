@@ -54,7 +54,7 @@ The latest python versions include numpy and recent opencv that is required to r
 You will also need a USB web cam installed and working. 
 To install this program access the GitHub project page at https://github.com/pageauc/speed-camera
 Select the ***green Clone or download*** button. The files will be cloned or zipped
-to a speed-camera folder. You can run the code from from python IDLE application (recommended), GUI desktop
+to a speed-camera folder. You can run the code from python IDLE application (recommended), GUI desktop
 or command prompt terminal window.       
 
 ***IMPORTANT*** speed-cam.py ver 8.x or greater Requires Updated config.py and plugins.
