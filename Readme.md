@@ -28,9 +28,6 @@ taken and saved in ***media/images*** dated subfolders per variable ***imageSubD
 (see config.py). If ***log_data_to_CSV*** = ***True*** then a
 ***speed-cam.csv*** file will optionally be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc program for further processin
-This can be vehicles or any other moving objects. It tracks the speed of
-You can also run ***makehtml.py*** to generate html files that combine csv and image
-data for viewing from a web browser. (Does not work with ***secpicam480.py*** and ***secwebcam480.py*** plugins.
 
 Also included are 
   
@@ -42,6 +39,9 @@ for optional remote file sync to a remote storage service.
 for administration of settings from a remote storage service. Plus application monitoring.
 * [***speed-search.py***](https://github.com/pageauc/rpi-speed-camera/wiki/How-to-Run-speed-search.py)
 allows searching for similar objects using opencv template matching. 
+* [***makehtml.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#view-combined-imagedata-html-pages-on-a-web-browser)
+to generate html files that combine csv and image data for viewing from a web browser.
+(Does not work with ***secpicam480.py*** and ***secwebcam480.py*** plugins.
 * [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
 allows viewing images and/or data from a web browser.
 
