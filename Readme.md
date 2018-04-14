@@ -34,14 +34,14 @@ Also included are
 * [***menubox.sh***](https://github.com/pageauc/speed-camera/wiki/Admin-and-Settings#manage-settings-using-menuboxsh)
 script is a whiptail menu system to allow easier operation of program. 
 * [***rclone***](https://github.com/pageauc/speed-camera/wiki/Manage-rclone-Remote-Storage-File-Transfer)
-for optional remote file sync to a remote storage service. 
+for optional remote file sync to a remote storage service like google drive, DropBox and many others. 
 * [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)
 for administration of settings from a remote storage service. Plus application monitoring.
 * [***speed-search.py***](https://github.com/pageauc/rpi-speed-camera/wiki/How-to-Run-speed-search.py)
-allows searching for similar objects using opencv template matching. 
+allows searching for similar objects images using opencv template matching. 
 * [***makehtml.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#view-combined-imagedata-html-pages-on-a-web-browser)
-to generate html files that combine csv and image data for viewing from a web browser.
-(Does not work with ***secpicam480.py*** and ***secwebcam480.py*** plugins.
+creates html files that combine csv and image data for easier viewing from a web browser.
+(Does not work with ***secpicam480.py*** or ***secwebcam480.py*** plugins enabled.
 * [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
 allows viewing images and/or data from a web browser.
 
