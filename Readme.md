@@ -14,35 +14,44 @@ to ensure your system is up-to-date.
     curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
 
 This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed.
-See my Github [menu driven compile opencv3 from source project](https://github.com/pageauc/opencv3-setup)
+See my Github [menu driven compile opencv3 from source](https://github.com/pageauc/opencv3-setup) project
 
 ## Program Description   
 This is a raspberry pi, Windows, Unix Distro computer openCV object speed camera demo program.
-It is written in python and uses openCV to detect and track object motion.
-This can be vehicles or any other moving objects.  It tracks the speed of
-the largest moving object in the camera view above a minimum pixel area.
-The results are recorded on speed photos and in a CSV data file that can be
-imported to a spreadsheet or other program for additional processing. You
-can also run ***makehtml.py*** to generate html files that combine csv and image
-data. (Does not work with ***secpicam480.py*** and ***secwebcam480.py*** plugins.
-
-The program will detect motion in the field of view and use opencv to calculate
-the largest contour and return its x,y coordinate. User variables are stored in the ***config.py** file.
-Motion detection is restricted between ***y_upper*** and ***y_lower*** variables (road or area of interest).
+It is written in python and uses openCV to detect and track the x,y coordinates of the 
+largest moving object in the camera view above a minimum pixel area.
+User variables are stored in the [***config.py***](https://github.com/pageauc/speed-camera/blob/master/config.py) file.
+Motion detection is restricted between ***y_upper***, ***y_lower***, ***x_left***, ***x_right*** variables  (road or area of interest).
 If a track is longer than ***track_len_trig*** variable then average speed will be 
 calculated (based on ***cal_obj_px*** and ***cal_obj_mm*** variables) and a speed photo will be
 taken and saved in ***media/images*** dated subfolders per variable ***imageSubDirMaxFiles*** = ***1000*** 
 (see config.py). If ***log_data_to_CSV*** = ***True*** then a
-***speed-cam.csv*** file will be created/updated with event data stored in
-CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc for further processing.
+***speed-cam.csv*** file will optionally be created/updated with event data stored in
+CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc program for further processin
+This can be vehicles or any other moving objects. It tracks the speed of
+You can also run ***makehtml.py*** to generate html files that combine csv and image
+data for viewing from a web browser. (Does not work with ***secpicam480.py*** and ***secwebcam480.py*** plugins.
+
+Also included are 
   
+* [***menubox.sh***](https://github.com/pageauc/speed-camera/wiki/Admin-and-Settings#manage-settings-using-menuboxsh)
+script is a whiptail menu system to allow easier operation of program. 
+* [***rclone***](https://github.com/pageauc/speed-camera/wiki/Manage-rclone-Remote-Storage-File-Transfer)
+for optional remote file sync to a remote storage service. 
+* [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)
+for administration of settings from a remote storage service. Plus application monitoring.
+* [***speed-search.py***](https://github.com/pageauc/rpi-speed-camera/wiki/How-to-Run-speed-search.py)
+allows searching for similar objects using opencv template matching. 
+* [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
+allows viewing images and/or data from a web browser.
+
 ## Requirements
-Requires a [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
+[***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
 or USB Camera plugged in. Make sure hardware is tested and works. Most [RPI models](https://www.raspberrypi.org/products/) will work OK. 
 A quad core RPI will greatly improve performance due to threading. A recent version of 
 [Raspbian operating system](https://www.raspberrypi.org/downloads/raspbian/) is Recommended.   
 or  
-A ***MS Windows or Unix distro*** computer with a USB Web Camera plugged in and a
+***MS Windows or Unix distro*** computer with a USB Web Camera plugged in and a
 [recent version of python installed](https://www.python.org/downloads/)
 For Details See [Wiki](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs).
 
