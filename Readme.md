@@ -4,7 +4,7 @@
 
 ## RPI Quick Install or Upgrade   
 ***IMPORTANT*** - A raspbian ***sudo apt-get update*** and ***sudo apt-get upgrade*** will
-***NOT** be performed as part of speed-install.sh so it is recommended you run these prior to install
+***NOT*** be performed as part of speed-install.sh so it is recommended you run these prior to install
 to ensure your system is up-to-date.     
 
 ***Step 1*** With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and Copy.     
