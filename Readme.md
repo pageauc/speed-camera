@@ -20,13 +20,14 @@ can also run ***makehtml.py*** to generate html files that combine csv and image
 data. (does not work with ***secpicam480.py*** and ***secwebcam480.py*** plugins.
 
 The program will detect motion in the field of view and use opencv to calculate
-the largest contour and return its x,y coordinate. Motion detection is
-restricted between ***y_upper*** and ***y_lower*** variables (road or area of interest).
+the largest contour and return its x,y coordinate. User variables are stored in the ***config.py** file.
+Motion detection is restricted between ***y_upper*** and ***y_lower*** variables (road or area of interest).
 If a track is longer than track_len_trig variable then average speed will be 
 calculated (based on ***cal_obj_px*** and ***cal_obj_mm*** variables) and a speed photo will be
-taken and saved in dated subfolders in ***media/images*** folder. If ***log_data_to_file*** = ***True*** then a
-speed2.csv file will be created/updated with event data stored in
-CSV (Comma Separated Values) format. This can be imported into a spreadsheet.
+taken and saved in ***media/images*** dated subfolders per variable ***imageSubDirMaxFiles*** = ***1000*** 
+(see config.py). If ***log_data_to_CSV*** = ***True*** then a
+***speed-cam.csv*** file will be created/updated with event data stored in
+CSV (Comma Separated Values) format. This can be imported into a spreadsheet or database for further processing.
   
 ## Requirements
 Requires a [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
