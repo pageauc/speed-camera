@@ -46,12 +46,16 @@ A ***MS Windows or Unix distro*** computer with a USB Web Camera plugged in and 
 [recent version of python installed](https://www.python.org/downloads/)
 For Details See [Wiki](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs).
 
-# Note
-I am looking at revamping logic for using speed camera as a security camera. Currently the
-plugins ***secpicam480.py*** and ***secwebcam480.py*** do not work very well since only horizontal x
-changes are tracked.  I will add xy triangulation tracking with no speed as well as support
-for IP cameras. ***SECURITY_CAM_MODE*** will not support ***makehtml.py*** or csv logging. These changes
- will take some time so be patient.  Claude 
+## Windows or Non RPI Unix Installs
+For Windows or Unix computer platforms (non RPI or Debian) ensure you have the most
+up-to-date python version.  For Downloads visit https://www.python.org/downloads    
+
+The latest python versions include numpy and recent opencv that is required to run this code. 
+You will also need a USB web cam installed and working. 
+To install this program access the GitHub project page at https://github.com/pageauc/speed-camera
+Select the ***green Clone or download*** button. The files will be cloned or zipped
+to a speed-camera folder. You can run the code from from ***python IDLE application (recommended)***, GUI desktop
+or command prompt terminal window.       
 
 ***IMPORTANT*** speed-cam.py ver 8.x Requires Updated config.py and plugins.
 
@@ -81,6 +85,14 @@ From logged in RPI SSH session or console terminal perform the following. Allows
     cd ~/speed-camera    
     ./speed-cam.py
     
+See [How to Run](https://github.com/pageauc/speed-camera/wiki/How-to-Run) speed-cam.py section
+
+***IMPORTANT*** Speed Camera will start in ***calibrate*** = ***True*** Mode.    
+Review settings in ***config.py*** file and edit variables with nano as required.
+You will need to perform a calibration to set the correct value for config.py ***cal_obj_px*** and ***cal_obj_mm*** 
+variables based on the distance from camera to objects being measured for speed.  
+See [Calibration Procedure](https://github.com/pageauc/speed-camera/wiki/Calibrate-Camera-for-Distance)for more details.     
+    
 ## Run menubox.sh 
 
     cd ~/speed-camera
@@ -89,33 +101,19 @@ From logged in RPI SSH session or console terminal perform the following. Allows
 Admin speed-cam Easier using menubox.sh (Once calibrated and/or testing complete)  
 ![menubox main menu](https://github.com/pageauc/speed-camera/blob/master/menubox.png)     
 
+***Note*** I am looking at revamping logic for using speed camera as a security camera. Currently the
+plugins ***secpicam480.py*** and ***secwebcam480.py*** do not work very well since only horizontal x
+changes are tracked.  I will add xy triangulation tracking with no speed as well as support
+for IP cameras. ***SECURITY_CAM_MODE*** will not support ***makehtml.py*** or csv logging. These changes
+will take some time so be patient.  Claude 
+
 ## Links
 * YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
 * YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
 * YouTube motion-track video https://youtu.be/09JS7twPBsQ
 * Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
 * YouTube Channel https://www.youtube.com/user/pageaucp 
-* Speed Camera GitHub Repo https://github.com/pageauc/speed-camera     
-    
-## Windows or Non RPI Unix Installs
-For Windows or Unix computer platforms (non RPI or Debian) ensure you have the most
-up-to-date python version.  For Downloads visit https://www.python.org/downloads    
-
-The latest python versions include numpy and recent opencv that is required to run this code. 
-You will also need a USB web cam installed and working. 
-To install this program access the GitHub project page at https://github.com/pageauc/speed-camera
-Select the ***green Clone or download*** button. The files will be cloned or zipped
-to a speed-camera folder. You can run the code from from ***python IDLE application (recommended)***, GUI desktop
-or command prompt terminal window.        
-    
-### IMPORTANT
-Speed Camera will start in ***Calibration Mode***    
-Review settings in config.py file and edit variables with nano as required.
-You will need to perform a calibration to set the correct value for ***cal_obj_px*** and ***cal_obj_mm*** 
-variables based on the distance from camera to objects being measured for speed.  
-See [Calibration Procedure](https://github.com/pageauc/speed-camera#calibration-procedure) below for more details.     
-    
-See [How to Run](https://github.com/pageauc/speed-camera#how-to-run) speed-cam.py section below
+* Speed Camera GitHub Repo https://github.com/pageauc/speed-camera      
 
 ## Credits  
 Some of this code is based on a YouTube tutorial by
