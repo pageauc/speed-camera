@@ -23,22 +23,22 @@ largest moving object in the camera view above a minimum pixel area.
 User variables are stored in the [***config.py***](https://github.com/pageauc/speed-camera/blob/master/config.py) file.
 Motion detection is restricted between ***y_upper***, ***y_lower***, ***x_left***, ***x_right*** variables  (road or area of interest).
 If a track is longer than ***track_len_trig*** variable then average speed will be 
-calculated (based on ***cal_obj_px*** and ***cal_obj_mm*** variables) and a speed photo will be
+calculated based on ***cal_obj_px*** and ***cal_obj_mm*** variables and a speed photo will be
 taken and saved in ***media/images*** dated subfolders per variable ***imageSubDirMaxFiles*** = ***1000*** 
 (see config.py). If ***log_data_to_CSV*** = ***True*** then a
-***speed-cam.csv*** file will optionally be created/updated with event data stored in
-CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc program for further processin
+***speed-cam.csv*** file will be created/updated with event data stored in
+CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc program for further processing
 
 Also included are 
   
 * [***menubox.sh***](https://github.com/pageauc/speed-camera/wiki/Admin-and-Settings#manage-settings-using-menuboxsh)
-script is a whiptail menu system to allow easier operation of program. 
+script is a whiptail menu system to allow easier management of program settings and operation. 
 * [***rclone***](https://github.com/pageauc/speed-camera/wiki/Manage-rclone-Remote-Storage-File-Transfer)
 for optional remote file sync to a remote storage service like google drive, DropBox and many others. 
 * [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)
 for administration of settings from a remote storage service. Plus application monitoring.
 * [***speed-search.py***](https://github.com/pageauc/rpi-speed-camera/wiki/How-to-Run-speed-search.py)
-allows searching for similar objects images using opencv template matching. 
+allows searching for similar target object images using opencv template matching. 
 * [***makehtml.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#view-combined-imagedata-html-pages-on-a-web-browser)
 creates html files that combine csv and image data for easier viewing from a web browser.
 (Does not work with ***secpicam480.py*** or ***secwebcam480.py*** plugins enabled.
