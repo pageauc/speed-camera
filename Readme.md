@@ -1,13 +1,19 @@
 # SPEED CAMERA - Object Motion Tracker [![Mentioned in Awesome <INSERT LIST NAME>](https://awesome.re/mentioned-badge.svg)](https://github.com/thibmaek/awesome-raspberry-pi)
 ### RPI, Unix and Windows Speed Camera Using python, openCV, USB Cam or RPI camera module
 ## For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features) and [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#links)
-    
-# Note
-I am looking at revamping logic for using speed camera as a security camera. Currently the
-plugins ***secpicam480.py*** and ***secwebcam480.py*** do not work very well since only horizontal x
-changes are tracked.  I will add xy triangulation tracking with no speed as well as support
-for IP cameras. ***SECURITY_CAM_MODE*** will not support ***makehtml.py*** or csv logging. These changes
- will take some time so be patient.  Claude 
+
+## RPI Quick Install or Upgrade   
+***IMPORTANT*** - A raspbian ***sudo apt-get update*** and ***sudo apt-get upgrade*** will
+***NOT** be performed as part of speed-install.sh so it is recommended you run these prior to install
+to ensure your system is up-to-date.     
+
+***Step 1*** With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and Copy.     
+***Step 2*** On RPI putty SSH or terminal session right click, select paste then Enter to download and run script.  
+
+    curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
+
+This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed.
+See my Github [menu driven compile opencv3 from source project](https://github.com/pageauc/opencv3-setup)
 
 ## Program Description   
 This is a raspberry pi, Windows, Unix Distro computer openCV object speed camera demo program.
@@ -22,12 +28,12 @@ data. (does not work with ***secpicam480.py*** and ***secwebcam480.py*** plugins
 The program will detect motion in the field of view and use opencv to calculate
 the largest contour and return its x,y coordinate. User variables are stored in the ***config.py** file.
 Motion detection is restricted between ***y_upper*** and ***y_lower*** variables (road or area of interest).
-If a track is longer than track_len_trig variable then average speed will be 
+If a track is longer than ***track_len_trig*** variable then average speed will be 
 calculated (based on ***cal_obj_px*** and ***cal_obj_mm*** variables) and a speed photo will be
 taken and saved in ***media/images*** dated subfolders per variable ***imageSubDirMaxFiles*** = ***1000*** 
 (see config.py). If ***log_data_to_CSV*** = ***True*** then a
 ***speed-cam.csv*** file will be created/updated with event data stored in
-CSV (Comma Separated Values) format. This can be imported into a spreadsheet or database for further processing.
+CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc for further processing.
   
 ## Requirements
 Requires a [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
@@ -38,6 +44,13 @@ or
 A ***MS Windows or Unix distro*** computer with a USB Web Camera plugged in and a
 [recent version of python installed](https://www.python.org/downloads/)
 For Details See [Wiki](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs).
+
+# Note
+I am looking at revamping logic for using speed camera as a security camera. Currently the
+plugins ***secpicam480.py*** and ***secwebcam480.py*** do not work very well since only horizontal x
+changes are tracked.  I will add xy triangulation tracking with no speed as well as support
+for IP cameras. ***SECURITY_CAM_MODE*** will not support ***makehtml.py*** or csv logging. These changes
+ will take some time so be patient.  Claude 
 
 ***IMPORTANT*** speed-cam.py ver 8.x Requires Updated config.py and plugins.
 
@@ -53,18 +66,6 @@ To replace plugins rename (or delete) plugins folder per below
 
 Then run menubox.sh UPGRADE menu pick.
  
-## RPI Quick Install or Upgrade   
-***IMPORTANT*** - A raspbian ***sudo apt-get update*** and ***sudo apt-get upgrade*** will ***NOT** be performed as part of install
-so it is recommended you run these prior to install to ensure your system is up-to-date.     
-
-***Step 1*** With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and Copy.     
-***Step 2*** On RPI putty SSH or terminal session right click, select paste then Enter to download and run script.  
-
-    curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
-
-This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed.
-See my Github [menu driven compile opencv3 from source project](https://github.com/pageauc/opencv3-setup)
-
 ## Manual Install or Upgrade   
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
 
