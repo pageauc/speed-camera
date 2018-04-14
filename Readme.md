@@ -15,16 +15,16 @@ It is written in python and uses openCV to detect and track object motion.
 This can be vehicles or any other moving objects.  It tracks the speed of
 the largest moving object in the camera view above a minimum pixel area.
 The results are recorded on speed photos and in a CSV data file that can be
-imported to a spreadsheet or other program for additional processing.  You
+imported to a spreadsheet or other program for additional processing. You
 can also run ***makehtml.py*** to generate html files that combine csv and image
 data. (does not work with ***secpicam480.py*** and ***secwebcam480.py*** plugins.
 
 The program will detect motion in the field of view and use opencv to calculate
 the largest contour and return its x,y coordinate. Motion detection is
-restricted between y_upper and y_lower variables (road or area of interest).
+restricted between ***y_upper*** and ***y_lower*** variables (road or area of interest).
 If a track is longer than track_len_trig variable then average speed will be 
-calculated (based on cal_obj_px and cal_obj_mm variables) and a speed photo will be
-taken and saved in an images folder. If log_data_to_file=True then a
+calculated (based on ***cal_obj_px*** and ***cal_obj_mm*** variables) and a speed photo will be
+taken and saved in dated subfolders in ***media/images*** folder. If ***log_data_to_file*** = ***True*** then a
 speed2.csv file will be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet.
   
@@ -38,7 +38,7 @@ A ***MS Windows or Unix distro*** computer with a USB Web Camera plugged in and 
 [recent version of python installed](https://www.python.org/downloads/)
 For Details See [Wiki](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs).
 
-***IMPORTANT*** speed-camera.py ver 8.x Requires Updated config.py and plugins.
+***IMPORTANT*** speed-cam.py ver 8.x Requires Updated config.py and plugins.
 
     cd ~/speed-camera
     cp config.py config.py.bak
@@ -53,8 +53,8 @@ To replace plugins rename (or delete) plugins folder per below
 Then run menubox.sh UPGRADE menu pick.
  
 ## RPI Quick Install or Upgrade   
-***IMPORTANT*** - A raspbian ***sudo apt-get update*** and ***sudo apt-get upgrade*** will be performed as part of install
-so it may take some time if these are not up-to-date.     
+***IMPORTANT*** - A raspbian ***sudo apt-get update*** and ***sudo apt-get upgrade*** will ***NOT** be performed as part of install
+so it is recommended you run these prior to install to ensure your system is up-to-date.     
 
 ***Step 1*** With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and Copy.     
 ***Step 2*** On RPI putty SSH or terminal session right click, select paste then Enter to download and run script.  
