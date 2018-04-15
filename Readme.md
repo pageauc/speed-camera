@@ -43,7 +43,7 @@ allows searching for similar target object images using opencv template matching
 creates html files that combine csv and image data for easier viewing from a web browser.
 (Does not work with ***secpicam480.py*** or ***secwebcam480.py*** plugins enabled.
 * [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
-allows viewing images and/or data from a web browser.
+Allows viewing images and/or data from a web browser (see config.py for webserver settings)
 
 ## Requirements
 [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
