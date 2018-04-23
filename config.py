@@ -110,9 +110,9 @@ spaceFileExt  = 'jpg'         # Default= 'jpg' File extension to Delete Oldest F
 
 # OpenCV Motion Settings
 # ----------------------
-SHOW_CIRCLE = True            # True=circle in center of motion, False=rectangle
-CIRCLE_SIZE = 3               # Default= 3 Diameter circle in px if SHOW_CIRCLE = True
-LINE_THICKNESS = 1            # Default= 3 Size of lines for circle or Rectangle
+SHOW_CIRCLE = False           # True=circle in center of motion, False=rectangle
+CIRCLE_SIZE = 5               # Default= 5 Diameter circle in px if SHOW_CIRCLE = True
+LINE_THICKNESS = 1            # Default= 1 Size of lines for circle or Rectangle
 FONT_SCALE = 0.5              # Default= 0.5 OpenCV window text font size scaling factor Default=.5 (lower is smaller)
 WINDOW_BIGGER = 1.0           # Default= 1.0 Resize multiplier for opencv window if gui_window_on=True
 BLUR_SIZE = 10                # Default= 10 OpenCV setting for Gaussian difference image blur

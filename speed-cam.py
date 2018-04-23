@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.82"
+progVer = "8.83"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -902,7 +902,14 @@ def speed_camera():
                                         cv2.circle(prev_image,
                                                    (cx + x_left, cy + y_upper),
                                                    CIRCLE_SIZE,
-                                                   cvRed, LINE_THICKNESS)
+                                                   cvGreen, LINE_THICKNESS)
+                                    else:                
+                                        cv2.rectangle(prev_image, 
+                                                      (int(cx + x_left - mw/2),
+                                                       int(cy + y_upper - mh/2)),
+                                                      (int(cx + x_left + mw/2),
+                                                       int(cy + y_upper + mh/2)),
+                                                      cvGreen, LINE_THICKNESS)
                                 big_image = cv2.resize(prev_image,
                                                        (image_width,
                                                        image_height))
@@ -1030,18 +1037,18 @@ def speed_camera():
                                              x_diff_min, total_contours,
                                              mw, mh, biggest_area,
                                              travel_direction)
-
-
                 if gui_window_on:
                     # show small circle at contour centre if required
                     # otherwise a rectangle around most recent contour
                     if SHOW_CIRCLE:
-                        cv2.circle(image2, (cx + x_left * WINDOW_BIGGER,
-                                            cy + y_upper * WINDOW_BIGGER),
+                        cv2.circle(image2,
+                                   (cx + x_left * WINDOW_BIGGER,
+                                    cy + y_upper * WINDOW_BIGGER),
                                    CIRCLE_SIZE, cvGreen, LINE_THICKNESS)
                     else:
-                        cv2.rectangle(image2, (int(cx + x_left - mw/2),
-                                               int(cy + y_upper - mh/2)),
+                        cv2.rectangle(image2, 
+                                      (int(cx + x_left - mw/2),
+                                       int(cy + y_upper - mh/2)),
                                       (int(cx + x_left + mw/2),
                                        int(cy + y_upper + mh/2)),
                                       cvGreen, LINE_THICKNESS)
