@@ -1,56 +1,61 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 8.4 speed-cam.py Variable Configuration Settings (using picam480 plugin)
+#         Ver 8.5 speed-cam.py Variable Configuration Settings (using picam480 plugin)
 
 #######################################
-#    speed-cam.py Variable Settings
+#  speed-cam.py Variable Settings
+#  Default is 320x240 image stream size
+#  if using RPI3 you can try picam480 
+#  or larger stream image plugin.
 #######################################
 
 # Calibration Settings
 # --------------------
 calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
-cal_obj_px = 180       # Length of a calibration object in pixels
+cal_obj_px = 90        # Length of a calibration object in pixels
 cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 
 # Plugins overlay the config.py variable settings
 # -----------------------------------------------
 pluginEnable = False
-pluginName = "picam480"   # Specify filename in plugins subfolder without .py extension per below
-                          # picam240, picam480, picam720, picam1080, webcam480, webcam720
-                          # secpicam480, secwebcam480
+pluginName = "picam480" # Specify filename in plugins subfolder without .py extension per below
+                        # picam240, webcam240 (Recommended for RPI2 or greater) 
+                        # picam480, webcam480, picam720, webcam720  (Recommended for RPI3)
+                        # picam1080   (Experimental Not Recommended)
+                        # secpicam480, secwebcam480 (Experimental no csv entries)
 
 # 480 Crop Area for motion detection Tracking
 # Use plugins to override this configuration
 # ---------------------------------------
-x_left  = 150          # Default= 150 Exclude event if x less than this px position Default=25
-x_right = 490          # Default= 490 Exclude event if x greater than this px position Default=295
-y_upper = 140          # Default= 140 Exclude event if y less that this value Default=100
-y_lower = 340          # Default= 340 Exclude event if y greater than this value Default=175
+x_left  = 25           # Default= 25 Exclude event if x less than this px position Default=25
+x_right = 295          # Default= 295 Exclude event if x greater than this px position Default=295
+y_upper = 75           # Default= 75 Exclude event if y less that this value Default=100
+y_lower = 185          # Default= 185 Exclude event if y greater than this value Default=175
 
 # Display opencv windows on gui desktop
 # gui_window_on suppresses All Windows if False
 # ----------------------------------------------
-gui_window_on = False      # True= Turn On All desktop GUI openCV windows. False=Don't Show (req'd for SSH) .
-show_thresh_on = False     # Display desktop GUI openCV cropped threshold window. True=Show, False=Don't Show
-show_crop_on = False       # Same as show_thresh_on but in color. True=Show, False=Don't Show (Default)
+gui_window_on = False  # True= Turn On All desktop GUI openCV windows. False=Don't Show (req'd for SSH) .
+show_thresh_on = False # Display desktop GUI openCV cropped threshold window. True=Show, False=Don't Show
+show_crop_on = False   # Same as show_thresh_on but in color. True=Show, False=Don't Show (Default)
 
 # Display and Log settings
 # ------------------------
-verbose = True              # True= Display basic status information on console False= Off
-display_fps = False         # True= Show average frame count every 1000 loops False= Off
-log_data_to_CSV = True      # True= Save log data as CSV comma separated values  False= Off
-loggingToFile = False       # True= Send logging to file False= No Logging to File
+verbose = True         # True= Display basic status information on console False= Off
+display_fps = False    # True= Show average frame count every 1000 loops False= Off
+log_data_to_CSV = True # True= Save log data as CSV comma separated values  False= Off
+loggingToFile = False  # True= Send logging to file False= No Logging to File
 logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
 
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set Speed Units   kph=False  mph=True
 MIN_AREA = 200         # Default= 200 Exclude all contours less than or equal to this sq-px Area
-track_len_trig = 75    # Default= 75 Length of track to trigger speed photo
+track_len_trig = 60    # Default= 60 Length of track to trigger speed photo
 show_out_range = True  # Default= True Show Out of Range Events per x_diff settings below False= Off
-x_diff_max = 15        # Default= 15 Exclude if max px away >= last motion event x position
+x_diff_max = 30        # Default= 30 Exclude if max px away >= last motion event x position
 x_diff_min = 1         # Default= 1 Exclude if min px away <= last event x position
-track_timeout = 0.0    # Default= 0.0 Optional seconds to wait after track End (Avoid dual tracking)
-event_timeout = 0.3    # Default= 0.3 seconds to wait for next motion event before starting new track
+track_timeout = 0.0    # Default= 0.0 Optional seconds to wait after track End (Avoids dual tracking)
+event_timeout = 0.7    # Default= 0.7 seconds to wait for next motion event before starting new track
 max_speed_over = 0     # Exclude track if Speed less than or equal to value specified 0=All
 
 # Camera Settings
@@ -59,15 +64,15 @@ WEBCAM = False         # Default = False False=PiCamera True=USB WebCamera
 
 # Web Camera Settings
 WEBCAM_SRC = 0         # Default= 0   USB opencv connection number
-WEBCAM_WIDTH = 640     # Default= 640 USB Webcam Image width
-WEBCAM_HEIGHT = 480    # Default= 480 USB Webcam Image height
+WEBCAM_WIDTH = 320     # Default= 320 USB Webcam Image width
+WEBCAM_HEIGHT = 240    # Default= 240 USB Webcam Image height
 WEBCAM_HFLIP = True    # Default= False USB Webcam flip image horizontally
 WEBCAM_VFLIP = False   # Default= False USB Webcam flip image vertically
 
 # Pi Camera Settings
 # ------------------
-CAMERA_WIDTH = 640     # Image stream width for opencv motion scanning Default=320
-CAMERA_HEIGHT = 480    # Image stream height for opencv motion scanning  Default=240
+CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning Default=320
+CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  Default=240
 CAMERA_FRAMERATE = 25  # Default= 25 Frame rate for video stream V2 picam can be higher
 CAMERA_ROTATION = 0    # Rotate camera image valid values are 0, 90, 180, 270
 CAMERA_VFLIP = True    # Flip the camera image vertically if required
@@ -82,14 +87,14 @@ image_show_motion_area = True # True= Display motion detection rectangle area on
 image_filename_speed = False  # True= Prefix filename with speed value
 image_text_on = True          # True= Show Text on speed images   False= No Text on images
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
-image_font_size = 15          # Default= 15 Font text height in px for text on images
-image_bigger = 1.5            # Default= 1.5 Resize saved speed image by value
+image_font_size = 12          # Default= 12 Font text height in px for text on images
+image_bigger = 3.0            # Default= 3.0 Resize saved speed image by specified multiplier value
 image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldest are deleted  Default=0 (off)
 
-# Optional Manage SubDir Creation by time, number of files or both
+# Optional Manage SubDir Creation by time, number of files or both (not recommended)
 # ----------------------------------------------------------------
-imageSubDirMaxHours = 0       # 0=off or specify MaxHours - Creates New dated sub-folder if MaxHours exceeded
 imageSubDirMaxFiles = 1000    # 0=off or specify MaxFiles - Creates New dated sub-folder if MaxFiles exceeded
+imageSubDirMaxHours = 0       # 0=off or specify MaxHours - Creates New dated sub-folder if MaxHours exceeded
 
 # Optional Save Most Recent files in recent folder
 # ------------------------------------------------
@@ -98,7 +103,7 @@ imageRecentDir = "media/recent"  # Default= "media/recent"  save recent files di
 
 # Optional Manage Free Disk Space Settings
 # ----------------------------------------
-spaceTimerHrs = 24            # Default= 0  0=off or specify hours frequency to perform free disk space check
+spaceTimerHrs = 0             # Default= 0  0=off or specify hours frequency to perform free disk space check
 spaceFreeMB = 500             # Default= 500  Target Free space in MB Required.
 spaceMediaDir = 'media/images'  # Default= 'media/images'  Starting point for directory walk
 spaceFileExt  = 'jpg'         # Default= 'jpg' File extension to Delete Oldest Files
@@ -106,10 +111,10 @@ spaceFileExt  = 'jpg'         # Default= 'jpg' File extension to Delete Oldest F
 # OpenCV Motion Settings
 # ----------------------
 SHOW_CIRCLE = True            # True=circle in center of motion, False=rectangle
-CIRCLE_SIZE = 4               # Default= 4 Diameter circle in px if SHOW_CIRCLE = True
-LINE_THICKNESS = 2            # Default= 2 Size of lines for circle or Rectangle
+CIRCLE_SIZE = 3               # Default= 3 Diameter circle in px if SHOW_CIRCLE = True
+LINE_THICKNESS = 1            # Default= 3 Size of lines for circle or Rectangle
 FONT_SCALE = 0.5              # Default= 0.5 OpenCV window text font size scaling factor Default=.5 (lower is smaller)
-WINDOW_BIGGER = 1             # Default=1 Resize multiplier for opencv window if gui_window_on=True
+WINDOW_BIGGER = 1.0           # Default= 1.0 Resize multiplier for opencv window if gui_window_on=True
 BLUR_SIZE = 10                # Default= 10 OpenCV setting for Gaussian difference image blur
 THRESHOLD_SENSITIVITY = 20    # Default= 20 OpenCV setting for difference image threshold
 

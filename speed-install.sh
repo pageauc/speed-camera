@@ -67,8 +67,8 @@ fi
 echo "INFO  : $STATUS Check/Install pi-timolo/plugins    Wait ..."
 PLUGINS_DIR='plugins'  # Default folder install location
 # List of plugin Files to Check
-pluginFiles=("__init__.py" "picam240.py" "picam480.py" "picam720.py" "picam1080.py" \
-"webcam480.py" "webcam720.py" "secpicam480.py" "secwebcam480.py")
+pluginFiles=("__init__.py" "picam240.py" "webcam240.py" "picam480.py" "webcam480.py" \
+"picam720.py" "webcam720.py" "picam1080.py" "secpicam480.py" "secwebcam480.py")
 
 mkdir -p $PLUGINS_DIR
 cd $PLUGINS_DIR

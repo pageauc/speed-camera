@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.81"
+progVer = "8.82"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -206,6 +206,9 @@ if WINDOW_BIGGER < 1:
     WINDOW_BIGGER = 1
 if image_bigger < 1:
     image_bigger = 1
+# fix event_timeout if too low
+if event_timeout < 0.5:
+    event_timeout = 0.5
 # System Settings
 # Set width of trigger point image to save
 image_width = int(CAMERA_WIDTH * image_bigger)
@@ -387,9 +390,9 @@ def show_settings():
               % (x_left, x_right))
         print("                  If  max_speed_over < %i %s"
               % (max_speed_over, speed_units))
-        print("                  If  event_timeout > %i seconds Start New Track"
+        print("                  If  event_timeout > %.2f seconds Start New Track"
               % (event_timeout))
-        print("                  track_timeout=%i sec wait after Track Ends"
+        print("                  track_timeout=%.2f sec wait after Track Ends"
               " (avoid retrack of same object)"
               % (track_timeout))
         print("Speed Photo ..... Size=%ix%i px  image_bigger=%i"
@@ -707,8 +710,8 @@ def speed_camera():
     fps_time = time.time()
     first_event = True   # Start a New Motion Track
     event_timer = time.time()
-    start_pos_x = 0
-    end_pos_x = 0
+    start_pos_x = None
+    end_pos_x = None
     # setup buffer area to ensure contour is fully contained in crop area
     x_buf = int((x_right - x_left) / 10)
     y_buf = int((y_lower - y_upper) / 8)
@@ -773,15 +776,6 @@ def speed_camera():
         except ValueError:
             logging.error("image2 Stream Image is Not Complete. Cannot Crop.")
             continue
-        # Check if event timed out
-        if time.time() - event_timer > event_timeout:
-            # event_timer exceeded so reset for new track
-            event_timer = time.time()
-            first_event = True
-            start_pos_x = 0
-            end_pos_x = 0
-        if display_fps:   # Optionally show motion image processing loop fps
-            fps_time, frame_count = get_fps(fps_time, frame_count)
         # initialize variables
         motion_found = False
         biggest_area = MIN_AREA
@@ -830,6 +824,15 @@ def speed_camera():
                         mw = w
                         mh = h
             if motion_found:
+                # Check if last motion event timed out
+                if time.time() - event_timer > event_timeout:
+                    # event_timer exceeded so reset for new track
+                    event_timer = time.time()
+                    first_event = True
+                    start_pos_x = None
+                    end_pos_x = None
+                    logging.info("Reset- event_timer %.2f sec Exceeded",
+                                 event_timeout)
                 # Process motion event and track data
                 if first_event:   # This is a first valid motion event
                     first_event = False
@@ -993,8 +996,8 @@ def speed_camera():
                                 time.sleep(track_timeout)
                             # Track Ended so Reset Variables for
                             # next cycle through loop
-                            start_pos_x = 0
-                            end_pos_x = 0
+                            start_pos_x = None
+                            end_pos_x = None
                             first_event = True
                         else:
                             logging.info(" Add - cxy(%i,%i) %3.1f %s"
@@ -1005,7 +1008,8 @@ def speed_camera():
                                          mw, mh, biggest_area,
                                          travel_direction)
                             end_pos_x = cx
-                        event_timer = time.time()
+                            # valid motion found so update event_timer
+                            event_timer = time.time()
                     else:
                         if show_out_range:
                             # Ignore movements that exceed
@@ -1018,15 +1022,16 @@ def speed_camera():
                                              mw, mh, biggest_area,
                                              travel_direction)
                             else:
+                                # did not move so update event_timer
+                                event_timer = time.time()
                                 logging.info(" Out - cxy(%i,%i) Dist=%i is "
                                              "<=%i px C=%i %ix%i=%i sqpx %s",
                                              cx, cy, abs(cx - end_pos_x),
                                              x_diff_min, total_contours,
                                              mw, mh, biggest_area,
                                              travel_direction)
-                                # Reset event_timer since
-                                # valid motion was found
-                                event_timer = time.time()
+
+
                 if gui_window_on:
                     # show small circle at contour centre if required
                     # otherwise a rectangle around most recent contour
@@ -1058,6 +1063,8 @@ def speed_camera():
                 logging.info("End Motion Tracking ......")
                 vs.stop()
                 still_scanning = False
+        if display_fps:   # Optionally show motion image processing loop fps
+            fps_time, frame_count = get_fps(fps_time, frame_count)
 
 #------------------------------------------------------------------------------
 if __name__ == '__main__':

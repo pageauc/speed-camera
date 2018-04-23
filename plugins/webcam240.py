@@ -30,7 +30,7 @@ log_data_to_CSV = True # Default= True True= Save log data as CSV comma separate
 
 # Camera Settings
 # ---------------
-WEBCAM = False        # Default = False False=PiCamera True=USB WebCamera
+WEBCAM = True          # Default = False False=PiCamera True=USB WebCamera
 
 # Pi Camera Settings
 # ------------------
