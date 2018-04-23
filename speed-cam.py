@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.83"
+progVer = "8.84"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -812,7 +812,7 @@ def speed_camera():
                 found_area = cv2.contourArea(c)
                 if found_area > biggest_area:
                     (x, y, w, h) = cv2.boundingRect(c)
-                    # check if complete contour is completely within crop area
+                    # check if object contour is completely within crop area
                     if (x > x_buf and
                             x + w < x_right - x_left - x_buf and
                             y > y_buf and
@@ -821,8 +821,8 @@ def speed_camera():
                         biggest_area = found_area
                         cx = int(x + w/2) # middle of contour width
                         cy = int(y + h/2) # middle of contour height
-                        mw = w
-                        mh = h
+                        mw = w  # movement width of object contour
+                        mh = h  # movement height of object contour
             if motion_found:
                 # Check if last motion event timed out
                 if time.time() - event_timer > event_timeout:
@@ -1005,7 +1005,7 @@ def speed_camera():
                             # next cycle through loop
                             start_pos_x = None
                             end_pos_x = None
-                            first_event = True
+                            first_event = True # Reset Track
                         else:
                             logging.info(" Add - cxy(%i,%i) %3.1f %s"
                                          " px=%i/%i C=%i %ix%i=%i sqpx %s",
@@ -1029,7 +1029,7 @@ def speed_camera():
                                              mw, mh, biggest_area,
                                              travel_direction)
                             else:
-                                # did not move so update event_timer
+                                # Did not move so update event_timer
                                 event_timer = time.time()
                                 logging.info(" Out - cxy(%i,%i) Dist=%i is "
                                              "<=%i px C=%i %ix%i=%i sqpx %s",
