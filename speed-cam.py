@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.84"
+progVer = "8.85"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -776,11 +776,6 @@ def speed_camera():
         except ValueError:
             logging.error("image2 Stream Image is Not Complete. Cannot Crop.")
             continue
-        # initialize variables
-        motion_found = False
-        biggest_area = MIN_AREA
-        cx, cy = 0, 0   # Center of contour used for tracking
-        mw, mh = 0, 0   # w,h width, height of contour
         # Convert to gray scale, which is easier
         grayimage2 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
         # Get differences between the two greyed images
@@ -805,6 +800,9 @@ def speed_camera():
         total_contours = len(contours)
         # Update grayimage1 to grayimage2 ready for next image2
         grayimage1 = grayimage2
+        # initialize variables
+        motion_found = False
+        biggest_area = MIN_AREA
         # if contours found, find the one with biggest area
         if contours:
             for c in contours:
@@ -819,6 +817,10 @@ def speed_camera():
                             y + h < y_lower - y_upper - y_buf):
                         motion_found = True
                         biggest_area = found_area
+                        # track contour center points since it seems to be
+                        # more stable than x contour position although
+                        # lighting and other factors can cause unexpected
+                        # jumps in position.
                         cx = int(x + w/2) # middle of contour width
                         cy = int(y + h/2) # middle of contour height
                         mw = w  # movement width of object contour
@@ -833,12 +835,14 @@ def speed_camera():
                     end_pos_x = None
                     logging.info("Reset- event_timer %.2f sec Exceeded",
                                  event_timeout)
-                # Process motion event and track data
+                # Process motion events and track object movement
                 if first_event:   # This is a first valid motion event
-                    first_event = False
+                    first_event = False  # Only one first track event
+                    track_start_time = time.time() # Record track start time
+                    event_timer = time.time() # Reset event timeout
+                    # set start and end of track to the start center point
                     start_pos_x = cx
                     end_pos_x = cx
-                    track_start_time = time.time()
                     logging.info("New  - cxy(%i,%i) Start New Track", cx, cy)
                 else:
                     if end_pos_x - start_pos_x > 0:
@@ -849,7 +853,7 @@ def speed_camera():
                     # range of last event
                     if (abs(cx - end_pos_x) > x_diff_min and
                             abs(cx - end_pos_x) < x_diff_max):
-                        end_pos_x = cx
+                        end_pos_x = cx # new position of track end point
                         tot_track_dist = abs(end_pos_x - start_pos_x)
                         tot_track_time = abs(time.time() - track_start_time)
                         ave_speed = float((abs(tot_track_dist / tot_track_time)) * speed_conv)
@@ -880,7 +884,8 @@ def speed_camera():
                                                               image_path, image_prefix)
                                     # Create image file name prefix
                                     if image_filename_speed:
-                                        speed_prefix = str(int(round(ave_speed))) + "-" + image_prefix
+                                        speed_prefix = (str(int(round(ave_speed)))
+                                                        + "-" + image_prefix)
                                     else:
                                         speed_prefix = image_prefix
                                     # create image file name path
@@ -903,8 +908,8 @@ def speed_camera():
                                                    (cx + x_left, cy + y_upper),
                                                    CIRCLE_SIZE,
                                                    cvGreen, LINE_THICKNESS)
-                                    else:                
-                                        cv2.rectangle(prev_image, 
+                                    else:
+                                        cv2.rectangle(prev_image,
                                                       (int(cx + x_left - mw/2),
                                                        int(cy + y_upper - mh/2)),
                                                       (int(cx + x_left + mw/2),
@@ -921,7 +926,8 @@ def speed_camera():
                                                      speed_units,
                                                      filename))
                                     text_x = int((image_width / 2) -
-                                                 (len(image_text) * image_font_size / 3))
+                                                 (len(image_text) *
+                                                  image_font_size / 3))
                                     if text_x < 2:
                                         text_x = 2
                                     logging.info(" Ave Speed is %.1f %s %s ",
@@ -1017,6 +1023,7 @@ def speed_camera():
                             end_pos_x = cx
                             # valid motion found so update event_timer
                             event_timer = time.time()
+                    # Movement was now within range parameters
                     else:
                         if show_out_range:
                             # Ignore movements that exceed
@@ -1029,7 +1036,8 @@ def speed_camera():
                                              mw, mh, biggest_area,
                                              travel_direction)
                             else:
-                                # Did not move so update event_timer
+                                # Did not move much so update event_timer
+                                # and wait for next valid movement.
                                 event_timer = time.time()
                                 logging.info(" Out - cxy(%i,%i) Dist=%i is "
                                              "<=%i px C=%i %ix%i=%i sqpx %s",
@@ -1046,7 +1054,7 @@ def speed_camera():
                                     cy + y_upper * WINDOW_BIGGER),
                                    CIRCLE_SIZE, cvGreen, LINE_THICKNESS)
                     else:
-                        cv2.rectangle(image2, 
+                        cv2.rectangle(image2,
                                       (int(cx + x_left - mw/2),
                                        int(cy + y_upper - mh/2)),
                                       (int(cx + x_left + mw/2),
