@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.85"
+progVer = "8.86"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -202,18 +202,24 @@ except ImportError:
         logging.error("%s %s Exiting Due to Error", progName, progVer)
     sys.exit(1)
 # fix possible invalid values
-if WINDOW_BIGGER < 1:
-    WINDOW_BIGGER = 1
-if image_bigger < 1:
-    image_bigger = 1
+if WINDOW_BIGGER < 1.0:
+    WINDOW_BIGGER = 1.0
+if image_bigger < 1.0:
+    image_bigger = 1.0
 # fix event_timeout if too low
 if event_timeout < 0.5:
     event_timeout = 0.5
 # System Settings
-# Set width of trigger point image to save
-image_width = int(CAMERA_WIDTH * image_bigger)
-# Set height of trigger point image to save
-image_height = int(CAMERA_HEIGHT * image_bigger)
+if WEBCAM:
+    # Set width of trigger point image to save
+    image_width = int(WEBCAM_WIDTH * image_bigger)
+    # Set height of trigger point image to save
+    image_height = int(WEBCAM_HEIGHT * image_bigger)
+else:
+    # Set width of trigger point image to save
+    image_width = int(CAMERA_WIDTH * image_bigger)
+    # Set height of trigger point image to save
+    image_height = int(CAMERA_HEIGHT * image_bigger)
 # Calculate conversion from camera pixel width to actual speed.
 px_to_kph = float(cal_obj_mm/cal_obj_px * 0.0036)
 quote = '"'  # Used for creating quote delimited log file of speed data
@@ -395,7 +401,7 @@ def show_settings():
         print("                  track_timeout=%.2f sec wait after Track Ends"
               " (avoid retrack of same object)"
               % (track_timeout))
-        print("Speed Photo ..... Size=%ix%i px  image_bigger=%i"
+        print("Speed Photo ..... Size=%ix%i px  image_bigger=%.1f"
               "  rotation=%i  VFlip=%s  HFlip=%s "
               % (image_width, image_height, image_bigger,
                  CAMERA_ROTATION, CAMERA_VFLIP, CAMERA_HFLIP))
@@ -1026,8 +1032,8 @@ def speed_camera():
                     # Movement was now within range parameters
                     else:
                         if show_out_range:
-                            # Ignore movements that exceed
-                            # Max px movement allowed
+                            # movements exceeds Max px movement
+                            # allowed so Ignore and do not update event_timer
                             if abs(cx - end_pos_x) >= x_diff_max:
                                 logging.info(" Out - cxy(%i,%i) Dist=%i is "
                                              ">=%i px C=%i %ix%i=%i sqpx %s",
@@ -1035,9 +1041,9 @@ def speed_camera():
                                              x_diff_max, total_contours,
                                              mw, mh, biggest_area,
                                              travel_direction)
+                            # Did not move much so update event_timer
+                            # and wait for next valid movement.
                             else:
-                                # Did not move much so update event_timer
-                                # and wait for next valid movement.
                                 event_timer = time.time()
                                 logging.info(" Out - cxy(%i,%i) Dist=%i is "
                                              "<=%i px C=%i %ix%i=%i sqpx %s",
