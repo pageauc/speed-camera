@@ -603,7 +603,7 @@ def filesToDelete(mediaDirPath, extension=image_format):
 #------------------------------------------------------------------------------
 def saveRecent(recentMax, recentDir, filename, prefix):
     """
-    Create a symlink file in recent folder (timelapse or motion subfolder)
+    Create a symlink file in recent folder 
     Delete Oldest symlink file if recentMax exceeded.
     """
     src = os.path.abspath(filename)  # original file path
