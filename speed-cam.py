@@ -603,16 +603,19 @@ def filesToDelete(mediaDirPath, extension=image_format):
 #------------------------------------------------------------------------------
 def saveRecent(recentMax, recentDir, filename, prefix):
     """
-    Create a symlink file in recent folder 
+    Create a symlink file in recent folder or file if non unix system
+    or symlink creation fails.
     Delete Oldest symlink file if recentMax exceeded.
     """
-    src = os.path.abspath(filename)  # original file path
+    src = os.path.abspath(filename)  # Original Source File Path
+    # Destination Recent Directory Path
     dest = os.path.abspath(os.path.join(recentDir,
                                         os.path.basename(filename)))
     deleteOldFiles(recentMax, os.path.abspath(recentDir), prefix)
     try:    # Create symlink in recent folder
         logging.info('symlink to %s', dest)
         os.symlink(src, dest)  # Create a symlink to actual file
+    # Symlink can fail on non unix systems so copy file to Recent Dir instead
     except OSError as err:
         logging.error('symlink Failed: %s', err)
         try:  # Copy image file to recent folder (if no support for symlinks)
