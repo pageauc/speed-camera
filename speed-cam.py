@@ -49,7 +49,7 @@ import logging
 from threading import Thread
 import subprocess
 
-progVer = "8.86"
+progVer = "8.87"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -449,13 +449,20 @@ def take_calibration_image(filename, cal_image):
     Create a calibration image for determining value of IMG_VIEW_FT variable
     Create calibration hash marks
     """
-    for i in range(10, CAMERA_WIDTH - 9, 10):
-        cv2.line(cal_image, (i, y_upper - 5), (i, y_upper + 30), cvRed, 1)
+    # If there is bad contrast with background you can change the hash
+    # colors to give more contrast.  You need to change values below
+    # per values cvRed, cvBlue, cvWhite, cvBlack, cvGreen
+
+    hash_color = cvRed
+    motion_win_color = cvBlue
+
+    for i in range(10, image_width - 9, 10):
+        cv2.line(cal_image, (i, y_upper - 5), (i, y_upper + 30), hash_color, 1)
     # This is motion window
-    cv2.line(cal_image, (x_left, y_upper), (x_right, y_upper), cvBlue, 1)
-    cv2.line(cal_image, (x_left, y_lower), (x_right, y_lower), cvBlue, 1)
-    cv2.line(cal_image, (x_left, y_upper), (x_left, y_lower), cvBlue, 1)
-    cv2.line(cal_image, (x_right, y_upper), (x_right, y_lower), cvBlue, 1)
+    cv2.line(cal_image, (x_left, y_upper), (x_right, y_upper), motion_win_color, 1)
+    cv2.line(cal_image, (x_left, y_lower), (x_right, y_lower), motion_win_color, 1)
+    cv2.line(cal_image, (x_left, y_upper), (x_left, y_lower), motion_win_color, 1)
+    cv2.line(cal_image, (x_right, y_upper), (x_right, y_lower), motion_win_color, 1)
     print("")
     print("----------------------------- Create Calibration Image "
           "-----------------------------")
