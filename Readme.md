@@ -28,6 +28,9 @@ taken and saved in ***media/images*** dated subfolders per variable ***imageSubD
 (see config.py). If ***log_data_to_CSV*** = ***True*** then a
 ***speed-cam.csv*** file will be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc program for further processing
+also Release 8.9 adds a **sqlite3** database to store speed data. Default is data/speed_cam.db with data in the ***speed*** table .
+there is a simple report ***sql_speed_gt.sh*** that can query for records greater than a specified speed.
+I plan on doing more but this should be a good start. Take a look at the code for details.
 
 Also included are 
   

@@ -46,10 +46,22 @@ import sys
 import glob
 import shutil
 import logging
+import sqlite3
+
+# Temporarily put these variables here to config.py does not need updating
+# These are required for sqlite3 speed data database.
+# Will work on reports and possibly a web query page for speed data.
+DB_DIR = "/home/pi/speed-camera/data"
+DB_NAME = "speed_cam.db"
+DB_TABLE = "speed"
+if not os.path.exists(DB_DIR):
+    os.makedirs(DB_DIR)
+DB_PATH = os.path.join(DB_DIR, DB_NAME)
+
 from threading import Thread
 import subprocess
 
-progVer = "8.87"
+progVer = "8.90"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -63,6 +75,7 @@ cvBlack = (0, 0, 0)
 cvBlue = (255, 0, 0)
 cvGreen = (0, 255, 0)
 cvRed = (0, 0, 255)
+
 # Check for variable file to import and error out if not found.
 configFilePath = baseDir + "config.py"
 if not os.path.exists(configFilePath):
@@ -201,6 +214,7 @@ except ImportError:
         logging.error("Try RPI Install per command")
         logging.error("%s %s Exiting Due to Error", progName, progVer)
     sys.exit(1)
+
 # fix possible invalid values
 if WINDOW_BIGGER < 1.0:
     WINDOW_BIGGER = 1.0
@@ -664,8 +678,7 @@ def freeSpaceUpTo(freeMB, mediaDir, extension=image_format):
                              delcnt, totFiles)
                 # Avoid deleting more than 1/4 of files at one time
                 if delcnt > totFiles / 4:
-                    logging.warning('Max Deletions Reached %i of %i',
-                                    delcnt, totFiles)
+                    logging.warning('Max Deletions Reached %i of %i', delcnt, totFiles)
                     logging.warning('Deletions Restricted to 1/4 of total files per session.')
                     break
         logging.info('Session Ended')
@@ -718,6 +731,86 @@ def log_to_csv_file(data_to_append):
     return
 
 #------------------------------------------------------------------------------
+def isSQLite3(filename):
+    """
+    Determine if file is in sqlite3 format
+    """
+    if os.path.isfile(filename):
+        if os.path.getsize(filename) < 100: # SQLite database file header is 100 bytes
+            size =  os.path.getsize(filename)
+            logging.error("%s %d is Less than 100 bytes", filename, size)
+            return False
+        with open(filename, 'rb') as fd:
+            header = fd.read(100)
+            if header.startswith('SQLite format 3'):
+                logging.info("Success: File is sqlite3 Format %s", filename)
+                return True
+            else:
+                logging.error("Failed: File NOT sqlite3 Header Format %s", filename)
+                return False
+    else:
+        logging.warning("File Not Found %s", filename)
+        logging.info("Create sqlite3 database File %s", filename)
+        try:
+            conn = sqlite3.connect(filename)
+        except Error as e:
+            logging.error("Failed: Create Database %s.", filename)
+            logging.error("Error Msg: %s", e)
+            return False
+        conn.commit()
+        conn.close()
+        logging.info("Success: Created sqlite3 Database %s", filename)
+        return True
+
+#------------------------------------------------------------------------------
+def db_check(db_file):
+    """
+    Check if db_file is a sqlite3 file and connect if possible
+    """
+    if isSQLite3(db_file):
+        try:
+            conn = sqlite3.connect(db_file)
+        except Error as e:
+            logging.error("%s Database Connect Failed.", db_file)
+            logging.error("Error Msg: %s", e)
+            return None
+    else:
+        logging.error("%s is Not a SQLite3 database File", db_file)
+        return None
+    logging.info("Success: Connecting to Database %s", db_file)
+    conn.commit()
+    return conn
+
+def db_open(db_file):
+    """
+    Insert speed data into database table
+    """
+    if os.path.isfile(db_file):
+        db_exists = True
+    else:
+        db_exists = False
+
+    try:
+        db_conn = sqlite3.connect(db_file)
+        cursor = db_conn.cursor()
+    except sqlite3.Error as e:
+        logging.error("Failed: Connecting to Database %s", db_file)
+        logging.error("Error Msg: %s", e)
+        return None
+    sql_cmd = '''create table if not exists {} (idx text primary key, date text, hour text,min text, speed_ave real,
+                 speed_units TEXT, image_path TEXT, cx integer, cy integer, cont_w integer,
+                 cont_h integer, cont_sqpx integer, direction text)'''.format(DB_TABLE)
+    try:
+        db_conn.execute(sql_cmd)
+    except sqlite3.Error as e:
+        logging.error("Failed: To Create Table %s on Database %s", DB_TABLE, db_file)
+        logging.error("Error Msg: %s", e)
+        return None
+    else:
+        db_conn.commit()
+    return db_conn
+
+#------------------------------------------------------------------------------
 def speed_camera():
     """ Main speed camera processing function """
     ave_speed = 0.0
@@ -765,6 +858,7 @@ def speed_camera():
         logging.info("IMPORTANT: Camera Is In Calibration Mode ....")
     logging.info("Begin Motion Tracking .....")
     # Calculate position of text on the images
+
     font = cv2.FONT_HERSHEY_SIMPLEX
     if image_text_bottom:
         text_y = (image_height - 50)  # show text at bottom of image
@@ -777,6 +871,17 @@ def speed_camera():
     still_scanning = True
     lastSpaceCheck = datetime.datetime.now()
     speed_path = image_path
+    db_conn = db_check(DB_PATH)
+    if db_conn is not None:
+        db_conn = db_open(DB_PATH)
+        if db_conn is None:
+            logging.error("Problem Connecting to %s", DB_PATH)
+            db_is_open = False
+        else:
+            logging.info("Database is Open %s", DB_PATH)
+            db_cur = db_conn.cursor()  # Set cursor position
+            db_is_open = True
+
     while still_scanning:  # process camera thread images and calculate speed
         image2 = vs.read() # Read image data from video steam thread instance
         if WEBCAM:
@@ -904,6 +1009,8 @@ def speed_camera():
                                                         + "-" + image_prefix)
                                     else:
                                         speed_prefix = image_prefix
+                                    # Record log_time for use later in csv and sqlite
+                                    log_time = datetime.datetime.now()
                                     # create image file name path
                                     filename = get_image_name(speed_path,
                                                               speed_prefix)
@@ -961,24 +1068,42 @@ def speed_camera():
                                 cv2.imwrite(filename, big_image)
                                 # if required check free disk space
                                 # and delete older files (jpg)
-                                if spaceTimerHrs > 0:
-                                    lastSpaceCheck = freeDiskSpaceCheck(lastSpaceCheck)
-                                # Manage a maximum number of files
-                                # and delete oldest if required.
-                                if image_max_files > 0:
-                                    deleteOldFiles(image_max_files,
-                                                   speed_path,
-                                                   image_prefix)
-                                # Save most recent files
-                                # to a recent folder if required
-                                if imageRecentMax > 0 and not calibrate:
-                                    saveRecent(imageRecentMax,
-                                               imageRecentDir,
-                                               filename,
-                                               image_prefix)
+                                if db_is_open:
+                                    log_idx = ("%04d%02d%02d%02d%02d%02d" %
+                                               (log_time.year,
+                                                log_time.month,
+                                                log_time.day,
+                                                log_time.hour,
+                                                log_time.minute,
+                                                log_time.second))
+                                    log_date = ("%04d%02d%02d" %
+                                                 (log_time.year,
+                                                 log_time.month,
+                                                 log_time.day))
+                                    log_hour = ("%02d" % log_time.hour)
+                                    log_minute = ("%02d" % log_time.minute)
+                                    m_area = mw*mh
+                                    ave_speed = round(ave_speed, 2)
+                                    # create the speed data list ready for db insert
+                                    speed_data = (log_idx, log_date, log_hour, log_minute,
+                                           ave_speed, speed_units, filename,
+                                           cx, cy,
+                                           mw, mh,
+                                           m_area,
+                                           travel_direction)
+
+                                    # Insert speed_data into sqlite3 database table
+                                    try:
+                                        sql_cmd = '''insert into {} values {}'''.format(DB_TABLE, speed_data)
+                                        db_conn.execute(sql_cmd)
+                                        db_conn.commit()
+                                    except sqlite3.Error as e:
+                                        logging.error("Failed: Could Not INSERT Data into TABLE %s", DB_TABLE)
+                                        logging.error("Err Msg: %s", e)
+                                    else:
+                                        logging.info(" Add - sqlite3 %s data on %s", DB_TABLE, DB_PATH)
                                 # Format and Save Data to CSV Log File
                                 if log_data_to_CSV:
-                                    log_time = datetime.datetime.now()
                                     log_csv_time = ("%s%04d%02d%02d%s,"
                                                     "%s%02d%s,%s%02d%s"
                                                     % (quote,
@@ -1009,6 +1134,23 @@ def speed_camera():
                                                        travel_direction,
                                                        quote))
                                     log_to_csv_file(log_csv_text)
+                                if spaceTimerHrs > 0:
+                                    lastSpaceCheck = freeDiskSpaceCheck(lastSpaceCheck)
+                                # Manage a maximum number of files
+                                # and delete oldest if required.
+                                if image_max_files > 0:
+                                    deleteOldFiles(image_max_files,
+                                                   speed_path,
+                                                   image_prefix)
+                                # Save most recent files
+                                # to a recent folder if required
+                                if imageRecentMax > 0 and not calibrate:
+                                    saveRecent(imageRecentMax,
+                                               imageRecentDir,
+                                               filename,
+                                               image_prefix)
+
+
                                 logging.info("End  - Tracked %i px in %.3f sec",
                                              tot_track_dist, tot_track_time)
                                 # Wait to avoid dual tracking same object.
