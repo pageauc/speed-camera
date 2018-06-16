@@ -25,11 +25,12 @@ Motion detection is restricted between ***y_upper***, ***y_lower***, ***x_left**
 If a track is longer than ***track_len_trig*** variable then average speed will be 
 calculated based on ***cal_obj_px*** and ***cal_obj_mm*** variables and a speed photo will be
 taken and saved in ***media/images*** dated subfolders per variable ***imageSubDirMaxFiles*** = ***1000*** 
-(see config.py). If ***log_data_to_CSV*** = ***True*** then a
-***speed-cam.csv*** file will be created/updated with event data stored in
-CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc program for further processing
-also Release 8.9 adds a **sqlite3** database to store speed data. Default is data/speed_cam.db with data in the ***speed*** table .
-there is a simple report ***sql_speed_gt.sh*** that can query for records greater than a specified speed.
+(see config.py). 
+
+If ***log_data_to_CSV*** = ***True*** then a ***speed-cam.csv*** file will be created/updated with event data stored in
+CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc program for further processing.
+Release 8.9 adds a **sqlite3** database to store speed data. Default is ***data/speed_cam.db*** with data in the ***speed*** table .
+there is a simple report ***sql_speed_gt.sh*** that can query for records with greater than a specified speed.
 I plan on doing more but this should be a good start. Take a look at the code for details.
 
 Also included are 
