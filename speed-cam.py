@@ -54,6 +54,7 @@ import sqlite3
 DB_DIR = "/home/pi/speed-camera/data"
 DB_NAME = "speed_cam.db"
 DB_TABLE = "speed"
+
 if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
 DB_PATH = os.path.join(DB_DIR, DB_NAME)
@@ -61,7 +62,7 @@ DB_PATH = os.path.join(DB_DIR, DB_NAME)
 from threading import Thread
 import subprocess
 
-progVer = "8.90"
+progVer = "8.91"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -797,9 +798,20 @@ def db_open(db_file):
         logging.error("Failed: Connecting to Database %s", db_file)
         logging.error("Error Msg: %s", e)
         return None
-    sql_cmd = '''create table if not exists {} (idx text primary key, date text, hour text,min text, speed_ave real,
-                 speed_units TEXT, image_path TEXT, cx integer, cy integer, cont_w integer,
-                 cont_h integer, cont_sqpx integer, direction text)'''.format(DB_TABLE)
+
+    sql_cmd = '''create table if not exists {} (idx text primary key,
+                 log_date text, log_hour text, log_minute text,
+                 camera text,
+                 ave_speed real, speed_units text, image_path text,
+                 image_w integer, image_h integer, image_bigger integer,
+                 direction text, plugin_name text,
+                 cx integer, cy integer,
+                 mw integer, mh integer, m_area integer,
+                 x_left integer, x_right integer,
+                 y_upper integer, y_lower integer,
+                 max_speed_over integer,
+                 min_area integer, track_trig_len integer,
+                 cal_obj_px integer, cal_obj_mm integer)'''.format(DB_TABLE)
     try:
         db_conn.execute(sql_cmd)
     except sqlite3.Error as e:
@@ -1084,13 +1096,28 @@ def speed_camera():
                                     log_minute = ("%02d" % log_time.minute)
                                     m_area = mw*mh
                                     ave_speed = round(ave_speed, 2)
+                                    if WEBCAM:
+                                        camera = "WebCam"
+                                    else:
+                                        camera = "PiCam"
+                                    if pluginEnable:
+                                        plugin_name = pluginName
+                                    else:
+                                        plugin_name = "none"
                                     # create the speed data list ready for db insert
-                                    speed_data = (log_idx, log_date, log_hour, log_minute,
+                                    speed_data = (log_idx,
+                                           log_date, log_hour, log_minute,
+                                           camera,
                                            ave_speed, speed_units, filename,
+                                           image_width, image_height, image_bigger,
+                                           travel_direction, plugin_name,
                                            cx, cy,
-                                           mw, mh,
-                                           m_area,
-                                           travel_direction)
+                                           mw, mh, m_area,
+                                           x_left, x_right,
+                                           y_upper, y_lower,
+                                           max_speed_over,
+                                           MIN_AREA, track_len_trig,
+                                           cal_obj_px, cal_obj_mm)
 
                                     # Insert speed_data into sqlite3 database table
                                     try:
