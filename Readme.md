@@ -48,6 +48,8 @@ creates html files that combine csv and image data for easier viewing from a web
 (Does not work with ***secpicam480.py*** or ***secwebcam480.py*** plugins enabled.
 * [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
 Allows viewing images and/or data from a web browser (see config.py for webserver settings)
+* [***sql_speed_gt.sh***](https://github.com/pageauc/speed-camera/blob/master/sql_speed_gt.sh) Prompts for a speed value and runs a simple
+sqlite3 query to show all record that exceed the specified speed.
 
 ## Requirements
 [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
