@@ -62,7 +62,7 @@ DB_PATH = os.path.join(DB_DIR, DB_NAME)
 from threading import Thread
 import subprocess
 
-progVer = "8.91"
+progVer = "8.92"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -713,7 +713,7 @@ def get_image_name(path, prefix):
     return filename
 
 #------------------------------------------------------------------------------
-def log_to_csv_file(data_to_append):
+def log_to_csv(data_to_append):
     """ Store date to a comma separated value file """
     log_file_path = baseDir + baseFileName + ".csv"
     if not os.path.exists(log_file_path):
@@ -729,6 +729,7 @@ def log_to_csv_file(data_to_append):
     f = open(log_file_path, 'a+')
     f.write(filecontents)
     f.close()
+    logging.info(" Add - Speed Data to CSV File %s", log_file_path)
     return
 
 #------------------------------------------------------------------------------
@@ -738,7 +739,7 @@ def isSQLite3(filename):
     """
     if os.path.isfile(filename):
         if os.path.getsize(filename) < 100: # SQLite database file header is 100 bytes
-            size =  os.path.getsize(filename)
+            size = os.path.getsize(filename)
             logging.error("%s %d is Less than 100 bytes", filename, size)
             return False
         with open(filename, 'rb') as fd:
@@ -754,7 +755,7 @@ def isSQLite3(filename):
         logging.info("Create sqlite3 database File %s", filename)
         try:
             conn = sqlite3.connect(filename)
-        except Error as e:
+        except sqlite3.Error as e:
             logging.error("Failed: Create Database %s.", filename)
             logging.error("Error Msg: %s", e)
             return False
@@ -771,15 +772,15 @@ def db_check(db_file):
     if isSQLite3(db_file):
         try:
             conn = sqlite3.connect(db_file)
-        except Error as e:
-            logging.error("%s Database Connect Failed.", db_file)
+        except sqlite3.Error as e:
+            logging.error("Failed: Connect to sqlite3 DB %s", db_file)
             logging.error("Error Msg: %s", e)
             return None
     else:
-        logging.error("%s is Not a SQLite3 database File", db_file)
+        logging.error("Failed: File Not sqlite3 DB Format %s", db_file)
         return None
-    logging.info("Success: Connecting to Database %s", db_file)
     conn.commit()
+    logging.info("Success: Connect to sqlite3 DB %s", db_file)
     return conn
 
 def db_open(db_file):
@@ -795,7 +796,7 @@ def db_open(db_file):
         db_conn = sqlite3.connect(db_file)
         cursor = db_conn.cursor()
     except sqlite3.Error as e:
-        logging.error("Failed: Connecting to Database %s", db_file)
+        logging.error("Failed: Connect to sqlite3 DB %s", db_file)
         logging.error("Error Msg: %s", e)
         return None
 
@@ -815,7 +816,7 @@ def db_open(db_file):
     try:
         db_conn.execute(sql_cmd)
     except sqlite3.Error as e:
-        logging.error("Failed: To Create Table %s on Database %s", DB_TABLE, db_file)
+        logging.error("Failed: To Create Table %s on sqlite3 DB %s", DB_TABLE, db_file)
         logging.error("Error Msg: %s", e)
         return None
     else:
@@ -887,10 +888,10 @@ def speed_camera():
     if db_conn is not None:
         db_conn = db_open(DB_PATH)
         if db_conn is None:
-            logging.error("Problem Connecting to %s", DB_PATH)
+            logging.error("Failed: Connect to sqlite3 DB %s", DB_PATH)
             db_is_open = False
         else:
-            logging.info("Database is Open %s", DB_PATH)
+            logging.info("sqlite3 DB is Open %s", DB_PATH)
             db_cur = db_conn.cursor()  # Set cursor position
             db_is_open = True
 
@@ -1052,7 +1053,7 @@ def speed_camera():
                                                       cvGreen, LINE_THICKNESS)
                                 big_image = cv2.resize(prev_image,
                                                        (image_width,
-                                                       image_height))
+                                                        image_height))
                                 # Write text on image before saving
                                 # if required.
                                 if image_text_on:
@@ -1089,7 +1090,7 @@ def speed_camera():
                                                 log_time.minute,
                                                 log_time.second))
                                     log_date = ("%04d%02d%02d" %
-                                                 (log_time.year,
+                                                (log_time.year,
                                                  log_time.month,
                                                  log_time.day))
                                     log_hour = ("%02d" % log_time.hour)
@@ -1106,18 +1107,18 @@ def speed_camera():
                                         plugin_name = "none"
                                     # create the speed data list ready for db insert
                                     speed_data = (log_idx,
-                                           log_date, log_hour, log_minute,
-                                           camera,
-                                           ave_speed, speed_units, filename,
-                                           image_width, image_height, image_bigger,
-                                           travel_direction, plugin_name,
-                                           cx, cy,
-                                           mw, mh, m_area,
-                                           x_left, x_right,
-                                           y_upper, y_lower,
-                                           max_speed_over,
-                                           MIN_AREA, track_len_trig,
-                                           cal_obj_px, cal_obj_mm)
+                                                  log_date, log_hour, log_minute,
+                                                  camera,
+                                                  ave_speed, speed_units, filename,
+                                                  image_width, image_height, image_bigger,
+                                                  travel_direction, plugin_name,
+                                                  cx, cy,
+                                                  mw, mh, m_area,
+                                                  x_left, x_right,
+                                                  y_upper, y_lower,
+                                                  max_speed_over,
+                                                  MIN_AREA, track_len_trig,
+                                                  cal_obj_px, cal_obj_mm)
 
                                     # Insert speed_data into sqlite3 database table
                                     try:
@@ -1125,10 +1126,11 @@ def speed_camera():
                                         db_conn.execute(sql_cmd)
                                         db_conn.commit()
                                     except sqlite3.Error as e:
-                                        logging.error("Failed: Could Not INSERT Data into TABLE %s", DB_TABLE)
+                                        logging.error("sqlite3 DB %s", DB_PATH)
+                                        logging.error("Failed: To INSERT Speed Data into TABLE %s", DB_TABLE)
                                         logging.error("Err Msg: %s", e)
                                     else:
-                                        logging.info(" Add - sqlite3 %s data on %s", DB_TABLE, DB_PATH)
+                                        logging.info(" Add - Speed Data to sqlite3 %s", DB_PATH)
                                 # Format and Save Data to CSV Log File
                                 if log_data_to_CSV:
                                     log_csv_time = ("%s%04d%02d%02d%s,"
@@ -1160,7 +1162,7 @@ def speed_camera():
                                                        quote,
                                                        travel_direction,
                                                        quote))
-                                    log_to_csv_file(log_csv_text)
+                                    log_to_csv(log_csv_text)
                                 if spaceTimerHrs > 0:
                                     lastSpaceCheck = freeDiskSpaceCheck(lastSpaceCheck)
                                 # Manage a maximum number of files
