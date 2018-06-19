@@ -128,6 +128,7 @@ function do_makehtml_menu ()
     esac || whiptail --msgbox "There was an error running selection $SET_SEL" 20 60 1
   fi
 }
+
 #--------------------------------------------------------------------
 function do_makehtml_about ()
 {
@@ -288,7 +289,7 @@ function do_plugins_edit ()
     else
         echo "User Pressed Cancel. with No File Selected"
     fi
-    cd $DIR    
+    cd $DIR
 }
 #------------------------------------------------------------------------------
 function do_plugins_menu ()
@@ -547,6 +548,57 @@ function do_speed_search_menu ()
 }
 
 #------------------------------------------------------------------------------
+function do_report_menu ()
+{
+  SET_SEL=$( whiptail --title "sqlite3 Report Menu" \
+                      --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
+                      --ok-button Select \
+                      --cancel-button Back \
+  "a SPEED" "Greater Than Specified Listing" \
+  "b HOUR" "Summary Count by Hour" \
+  "c ABOUT" "This Report Menu" \
+  "q QUIT" "Back to Main Menu" 3>&1 1>&2 2>&3 )
+
+  RET=$?
+  if [ $RET -eq 1 ]; then
+    do_main_menu
+  elif [ $RET -eq 0 ]; then
+    case "$SET_SEL" in
+      a\ *) clear
+            ./sql_speed_gt.sh
+            do_anykey
+            do_report_menu ;;
+      b\ *) clear
+            sqlite3 data/speed_cam.db -header -column \
+            "select log_date, log_hour, count(*), round(avg(ave_speed),2), speed_units from speed group by log_hour order by log_date"
+            do_anykey
+            do_report_menu ;;
+      c\ *) do_report_about
+            do_report_menu ;;
+      q\ *) clear
+            do_main_menu ;;
+      *) whiptail --msgbox "Programmer error: un recognized option" 20 60 1 ;;
+    esac || whiptail --msgbox "There was an error running selection $SET_SEL" 20 60 1
+  fi
+}
+
+#------------------------------------------------------------------------------
+function do_report_about()
+{
+  whiptail --title "About SQL Reports Menu" --msgbox " \
+       speed camera - SQL Reports Menu
+
+Reports use the sqlite3 speed camera database located at
+   /home/pi/speed-cam/data/speed_cam.db
+
+The reports runs sql queries for displaying formatted
+reports.
+
+\
+" 0 0 0
+}
+
+#------------------------------------------------------------------------------
 function do_upgrade()
 {
   if (whiptail --title "GitHub Upgrade speed-cam" \
@@ -610,8 +662,9 @@ function do_main_menu ()
   "h SEARCH" "Images Search Menu (openCV Template Match)" \
   "i UPGRADE" "Program Files from GitHub.com" \
   "j STATUS" "CPU $temp   Select to Refresh" \
-  "k HELP" "View Readme.md" \
-  "l ABOUT" "Information about this program" \
+  "k REPORTS" "Run Various sqlite3 Reports" \
+  "l HELP" "View Readme.md" \
+  "m ABOUT" "Information about this program" \
   "q QUIT" "Exit This Program"  3>&1 1>&2 2>&3)
 
   RET=$?
@@ -634,10 +687,11 @@ function do_main_menu ()
             do_upgrade ;;
       j\ *) clear
             do_main_menu ;;
-      k\ *) pandoc -f markdown -t plain  Readme.md | more
+      k\ *) do_report_menu ;;
+      l\ *) pandoc -f markdown -t plain  Readme.md | more
             do_anykey
             do_main_menu ;;
-      l\ *) do_about ;;
+      m\ *) do_about ;;
       q\ *) rm -f $filename_conf $filename_temp
             clear
             exit 0 ;;

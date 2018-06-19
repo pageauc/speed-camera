@@ -35,7 +35,7 @@ echo "Running sqlite3 Report for speed over $speed" | tee $0.rep
 echo "" | tee -a $0.rep
 sqlite3 data/speed_cam.db \
   -header -column \
-  "select idx,ave_speed,speed_units,image_path,cx,cy,direction \
+  "select idx,ave_speed,speed_units,image_path,direction \
   from speed \
   where ave_speed > $speed" | tee -a $0.rep
 echo "" | tee -a $0.rep
