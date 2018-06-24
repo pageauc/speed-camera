@@ -569,8 +569,7 @@ function do_report_menu ()
             do_anykey
             do_report_menu ;;
       b\ *) clear
-            sqlite3 data/speed_cam.db -header -column \
-            "select log_date, log_hour, count(*), round(avg(ave_speed),2), speed_units from speed group by log_hour order by log_date"
+            ./sql_hour_count.sh
             do_anykey
             do_report_menu ;;
       c\ *) do_report_about

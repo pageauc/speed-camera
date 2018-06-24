@@ -47,9 +47,11 @@ import glob
 import shutil
 import logging
 import sqlite3
+from threading import Thread
+import subprocess
 
-# Temporarily put these variables here to config.py does not need updating
-# These are required for sqlite3 speed data database.
+# Temporarily put these variables here so config.py does not need updating
+# These are required for sqlite3 speed_cam.db database.
 # Will work on reports and possibly a web query page for speed data.
 DB_DIR = "/home/pi/speed-camera/data"
 DB_NAME = "speed_cam.db"
@@ -58,9 +60,6 @@ DB_TABLE = "speed"
 if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
 DB_PATH = os.path.join(DB_DIR, DB_NAME)
-
-from threading import Thread
-import subprocess
 
 progVer = "8.92"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
@@ -78,7 +77,7 @@ cvGreen = (0, 255, 0)
 cvRed = (0, 0, 255)
 
 # Check for variable file to import and error out if not found.
-configFilePath = baseDir + "config.py"
+configFilePath = os.path.join(baseDir, "config.py")
 if not os.path.exists(configFilePath):
     print("ERROR : Missing config.py file - File Not Found %s"
           % configFilePath)
@@ -729,7 +728,7 @@ def log_to_csv(data_to_append):
     f = open(log_file_path, 'a+')
     f.write(filecontents)
     f.close()
-    logging.info("   Add - Speed Data to CSV File %s", log_file_path)
+    logging.info("   Add - CSV Speed Data to %s", log_file_path)
     return
 
 #------------------------------------------------------------------------------
@@ -773,14 +772,14 @@ def db_check(db_file):
         try:
             conn = sqlite3.connect(db_file)
         except sqlite3.Error as e:
-            logging.error("Failed: Connect to sqlite3 DB %s", db_file)
+            logging.error("Failed: sqlite3 Connect to DB %s", db_file)
             logging.error("Error Msg: %s", e)
             return None
     else:
-        logging.error("Failed: File Not sqlite3 DB Format %s", db_file)
+        logging.error("Failed: sqlite3 Not DB Format %s", db_file)
         return None
     conn.commit()
-    logging.info("Success: Connect to sqlite3 DB %s", db_file)
+    logging.info("Success: sqlite3 Connected to DB %s", db_file)
     return conn
 
 def db_open(db_file):
@@ -796,7 +795,7 @@ def db_open(db_file):
         db_conn = sqlite3.connect(db_file)
         cursor = db_conn.cursor()
     except sqlite3.Error as e:
-        logging.error("Failed: Connect to sqlite3 DB %s", db_file)
+        logging.error("Failed: sqlite3 Connect to DB %s", db_file)
         logging.error("Error Msg: %s", e)
         return None
 
@@ -1130,7 +1129,7 @@ def speed_camera():
                                         logging.error("Failed: To INSERT Speed Data into TABLE %s", DB_TABLE)
                                         logging.error("Err Msg: %s", e)
                                     else:
-                                        logging.info(" Add - Speed Data to sqlite3 %s", DB_PATH)
+                                        logging.info(" Add - sqlite3 Speed Data to %s", DB_PATH)
                                 # Format and Save Data to CSV Log File
                                 if log_data_to_CSV:
                                     log_csv_time = ("%s%04d%02d%02d%s,"
@@ -1178,7 +1177,6 @@ def speed_camera():
                                                imageRecentDir,
                                                filename,
                                                image_prefix)
-
 
                                 logging.info("End  - Tracked %i px in %.3f sec",
                                              tot_track_dist, tot_track_time)

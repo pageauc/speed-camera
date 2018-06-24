@@ -15,7 +15,7 @@ if ! [[ "$speed" =~ ^[0-9]+$ ]] ;
 fi
 echo ""
 #  Schema for speed-camera sqlite3 speed table on speed_cam.db database file
-: " 
+: "
      idx text primary key,
      log_date text, log_hour text, log_minute text,
      camera text,
@@ -31,13 +31,13 @@ echo ""
      cal_obj_px integer, cal_obj_mm integer)
 "
 
-echo "Running sqlite3 Report for speed over $speed" | tee $0.rep
-echo "" | tee -a $0.rep
+echo "Running sqlite3 Report for speed over $speed" | tee sql_speed_gt.txt
+echo "" | tee -a sql_speed_gt.txt
 sqlite3 data/speed_cam.db \
   -header -column \
   "select idx,ave_speed,speed_units,image_path,direction \
   from speed \
-  where ave_speed > $speed" | tee -a $0.rep
-echo "" | tee -a $0.rep
-echo "Report Saved to File $0.rep"
-echo "Bye ..."
+  where ave_speed > $speed" | tee -a sql_speed_gt.txt
+echo "" | tee -a sql_speed_gt.txt
+echo "Report Saved to File sql_speed_gt.txt" | tee -a sql_speed_gt.txt
+more -d sql_speed_gt.txt

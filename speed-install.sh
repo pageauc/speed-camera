@@ -31,11 +31,12 @@ if $is_upgrade ; then
     echo "Note: config.py will not be overwritten. Updated settings are in config.py.new"
     speedFiles=("menubox.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
-"webserver.sh" "sql_speed_gt.sh")
+"webserver.sh" "sql_speed_gt.sh" "sql_hour_count.sh")
 else
     speedFiles=("config.py" "menubox.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py""webserver.py" \
-"webserver.sh" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" "sql_speed_gt.sh")
+"webserver.sh" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
+"sql_speed_gt.sh" "sql_hour_count.sh")
 fi
 
 for fname in "${speedFiles[@]}" ; do
