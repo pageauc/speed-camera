@@ -40,4 +40,5 @@ sqlite3 data/speed_cam.db \
   where ave_speed > $speed" | tee -a sql_speed_gt.txt
 echo "" | tee -a sql_speed_gt.txt
 echo "Report Saved to File sql_speed_gt.txt" | tee -a sql_speed_gt.txt
+clear
 more -d sql_speed_gt.txt

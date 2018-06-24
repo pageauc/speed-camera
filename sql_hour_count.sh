@@ -12,4 +12,5 @@ sqlite3 data/speed_cam.db \
  group by log_date, log_hour \
  order by log_date;" | tee -a sql_hour_count.txt
 echo "Report Saved to File sql_hour_count.txt" | tee -a sql_hour_count.txt
+clear
 more -d sql_hour_count.txt
