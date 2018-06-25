@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="8.9"
+ver="8.91"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
 rclone_cur_ver="rclone v1.41"
@@ -31,12 +31,12 @@ if $is_upgrade ; then
     echo "Note: config.py will not be overwritten. Updated settings are in config.py.new"
     speedFiles=("menubox.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
-"webserver.sh" "sql_speed_gt.sh" "sql_hour_count.sh" "graph_hour_count.gnu" "graph_hour_count_gt17.gnu")
+"webserver.sh" "sql_speed_gt.sh")
 else
     speedFiles=("config.py" "menubox.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py""webserver.py" \
 "webserver.sh" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
-"sql_speed_gt.sh" "sql_hour_count.sh" "graph_hour_count.gnu" "graph_hour_count_gt17.gnu")
+"sql_speed_gt.sh" )
 fi
 
 for fname in "${speedFiles[@]}" ; do

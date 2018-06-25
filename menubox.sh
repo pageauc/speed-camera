@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="7.31"
+ver="7.4"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -555,8 +555,9 @@ function do_report_menu ()
                       --ok-button Select \
                       --cancel-button Back \
   "a SPEED" "Greater Than Specified Listing" \
-  "b HOUR" "Summary Count by Hour" \
-  "c ABOUT" "This Report Menu" \
+  "b HOUR" "Speed Greater Than 17 (Exclude bikes, people)" \
+  "c DELETE" "All Reports in media/reports" \
+  "d ABOUT" "This Report Menu" \
   "q BACK" "To Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
@@ -569,10 +570,29 @@ function do_report_menu ()
             do_anykey
             do_report_menu ;;
       b\ *) clear
-            ./sql_hour_count.sh
+            ./sql_speed_gt.sh 17
+            more -d media/reports/sql_speed_gt17.txt
             do_anykey
             do_report_menu ;;
-      c\ *) do_report_about
+      c\ *) clear
+            echo "Dir Listing for media/reports"
+            ls -l media/reports
+            read -p "Delete All Files? (y/n) " choice
+            case "$choice" in
+                y|Y ) read -p "Are you Sure? (y/n) " choice
+                case "$choice" in
+                    y|Y ) echo ""
+                      rm media/reports/*
+                      ls -l media/reports
+                      echo "Files Deleted"
+                      do_anykey
+                      ;;
+                    * ) do_report_menu
+                      ;;
+                esac
+            esac
+            do_report_menu ;;
+      d\ *) do_report_about
             do_report_menu ;;
       q\ *) clear
             do_main_menu ;;
