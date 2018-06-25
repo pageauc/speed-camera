@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="7.3"
+ver="7.31"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -101,7 +101,7 @@ function do_makehtml_menu ()
   "a RUN" "makehtml.py Create speed cam html files" \
   "b CLEAN" "Delete all html Files then RUN makehtml.py" \
   "c ABOUT" "How to View speed-cam html Files" \
-  "q QUIT" "Back to Main Menu" 3>&1 1>&2 2>&3 )
+  "q BACK" "To Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -195,7 +195,7 @@ function do_settings_menu ()
                       --cancel-button Back \
   "a EDIT" "nano $config_file for speed_cam & webserver" \
   "b VIEW" "config.py for speed_cam & webserver" \
-  "q QUIT" "Back to Main Menu" 3>&1 1>&2 2>&3 )
+  "q BACK" "To Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -297,7 +297,7 @@ function do_plugins_menu ()
   SET_SEL=$( whiptail --title "Edit Plugins Menu" --menu "Arrow/Enter Selects or Tab Key" 0 0 0 --ok-button Select --cancel-button Back \
   "a CONFIG" "Edit config.py NOTE:plugin vars override" \
   "b PLUGIN" "Select and Edit plugin File to Edit" \
-  "q BACK" "to Main Menu" 3>&1 1>&2 2>&3 )
+  "q BACK" "To Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -374,7 +374,7 @@ function do_sync_menu ()
   "d LIST" "Names of Configured Remote Storage Services" \
   "e HELP" "Rclone Man Pages" \
   "f ABOUT" "Rclone Remote Storage Sync" \
-  "q BACK" "to Main Menu" 3>&1 1>&2 2>&3 )
+  "q BACK" "To Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -520,7 +520,7 @@ function do_speed_search_menu ()
   "c EDIT" "nano $config_file Settings" \
   "d SEARCH" "Speed Images for Matches" \
   "e ABOUT" "Images Search" \
-  "q QUIT" "Back to Main Menu" 3>&1 1>&2 2>&3 )
+  "q BACK" "To Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -557,7 +557,7 @@ function do_report_menu ()
   "a SPEED" "Greater Than Specified Listing" \
   "b HOUR" "Summary Count by Hour" \
   "c ABOUT" "This Report Menu" \
-  "q QUIT" "Back to Main Menu" 3>&1 1>&2 2>&3 )
+  "q BACK" "To Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
   if [ $RET -eq 1 ]; then
