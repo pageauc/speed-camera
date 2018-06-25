@@ -49,7 +49,9 @@ creates html files that combine csv and image data for easier viewing from a web
 * [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
 Allows viewing images and/or data from a web browser (see config.py for webserver settings)
 * [***sql_speed_gt.sh***](https://github.com/pageauc/speed-camera/blob/master/sql_speed_gt.sh) Prompts for a speed value and runs a simple
-sqlite3 query to show all record that exceed the specified speed.
+sqlite3 query to show all record that exceed the specified speed. Output can be found in media/reports folder and is available from browser. 
+* [***sql_hour_count***](https://github.com/pageauc/speed-camera/blob/master/sql_hour_count.sh) Run report for count by hour.
+also produces a graph using gnuplot.  Query output and .png graph can be found in media/reports folder and is available from browser.
 
 ## Requirements
 [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
