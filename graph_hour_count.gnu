@@ -1,3 +1,7 @@
+# graph_hour_count.gnu   written by Claude Pageau
+# gnuplot script to generate a .png graph of
+# hourly speed count.
+
 reset
 set autoscale
 set key off

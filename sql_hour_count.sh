@@ -1,6 +1,7 @@
 #!/bin/bash
+# sql_hour_count.sh   written by Claude Pageau
 # A simple speed camera query report to display
-# hourly statistics.  written by Claude Pageau
+# hourly statistics.
 #
 
 report_filename="sql_hour_count.txt"
@@ -28,8 +29,18 @@ sqlite3 data/speed_cam.db -column \
  group by log_date, log_hour \
  order by log_date;" | tee hour_count.txt
 
-gnuplot plot_hour_count.dat
-rm hour_count.txt
+gnuplot graph_hour_count.gnu
 
+echo "Generating plot image"
+sqlite3 data/speed_cam.db -column \
+"select log_date, log_hour, count(*) \
+ from speed \
+ where ave_speed > 17 \
+ group by log_date, log_hour \
+ order by log_date;" | tee hour_count.txt
+ 
+gnuplot graph_hour_count_gt17.gnu
+
+rm hour_count.txt
 clear
 more -d $report_path
