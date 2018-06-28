@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="8.91"
+ver="8.92"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
 rclone_cur_ver="rclone v1.41"
@@ -31,12 +31,12 @@ if $is_upgrade ; then
     echo "Note: config.py will not be overwritten. Updated settings are in config.py.new"
     speedFiles=("menubox.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
-"webserver.sh" "sql_speed_gt.sh")
+"webserver.sh" "sql_speed_gt.py" )
 else
     speedFiles=("config.py" "menubox.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py""webserver.py" \
 "webserver.sh" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
-"sql_speed_gt.sh" )
+"sql_speed_gt.py" )
 fi
 
 for fname in "${speedFiles[@]}" ; do
@@ -154,6 +154,7 @@ sudo apt-get install -yq python3-picamera
 sudo apt-get install -yq python-imaging
 sudo apt-get install -yq sqlite3
 sudo apt-get install -yq Gnuplot
+sudo apt-get install -yq python-Gnuplot
 sudo apt-get install -yq libgl1-mesa-dri
 sudo apt-get install -yq fonts-freefont-ttf # Required for Jessie Lite Only
 sudo apt-get install -yq pandoc  # convert markdown to plain text for Readme.md
@@ -181,7 +182,8 @@ $STATUS Complete
    cd ~/speed-camera
    ./speed-cam.py
 
-Calibrate speed camera per wiki instructions
+Calibrate speed camera per wiki instructions.  After Calibration is complete
+set config.py variable calibrate = False
 
 Run from Admin menu per
 

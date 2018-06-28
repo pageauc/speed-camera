@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="7.4"
+ver="7.5"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -18,6 +18,9 @@ searchconfig="$DIR/$searchconfig"
 
 filename_conf="work_config.txt"
 filename_temp="work_temp.txt"
+
+myip=$(ifconfig | grep 'inet ' | grep -v 127.0.0 | cut -d " " -f 12 | cut -d ":" -f 2 )
+myport=$( grep "web_server_port" config.py | cut -d "=" -f 2 | cut -d "#" -f 1 | awk '{$1=$1};1' )
 
 #------------------------------------------------------------------------------
 function do_anykey ()
@@ -47,7 +50,7 @@ function init_status ()
   else
      webserver_pid=$( pgrep -f webserver.py )
      WEB_1="STOP"
-     WEB_2="webserver.py - PID is $webserver_pid"
+     WEB_2="webserver.py - PID is $webserver_pid http://$myip:$myport"
   fi
 }
 
@@ -566,12 +569,27 @@ function do_report_menu ()
   elif [ $RET -eq 0 ]; then
     case "$SET_SEL" in
       a\ *) clear
-            ./sql_speed_gt.sh
+            ./sql_speed_gt.py
+            echo ""
+            echo "View this report in html format"
+            echo "From Speed-Camera Web Page in media/reports folder"
+            echo "Web browser url is http://$myip:$myport"
             do_anykey
             do_report_menu ;;
       b\ *) clear
-            ./sql_speed_gt.sh 17
-            more -d media/reports/sql_speed_gt17.txt
+            sqlite3 data/speed_cam.db \
+              -header -column \
+              "select idx, log_hour, ave_speed, speed_units,image_path,direction \
+              from speed \
+              where ave_speed > 17"  | more -d
+            echo ""
+            echo "Updating Speed Camera media/reports web files  Wait..."
+            ./sql_speed_gt.py 17
+            echo ""
+            echo "This report should eliminate bikes/pedestrians and other slower objects"
+            echo "View this report in html format"
+            echo "From Speed-Camera Web Page in media/reports folder"
+            echo "Web browser url is http://$myip:$myport"
             do_anykey
             do_report_menu ;;
       c\ *) clear
@@ -666,6 +684,8 @@ function do_main_menu ()
   cd $DIR
   init_status
   temp="$(/opt/vc/bin/vcgencmd measure_temp)"
+  myip=$(ifconfig | grep 'inet ' | grep -v 127.0.0 | cut -d " " -f 12 | cut -d ":" -f 2 )
+  myport=$( grep "web_server_port" config.py | cut -d "=" -f 2 | cut -d "#" -f 1 | awk '{$1=$1};1' )
   cd $DIR
   SELECTION=$(whiptail --title "Speed Camera Main Menu" \
                        --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
@@ -707,7 +727,7 @@ function do_main_menu ()
       j\ *) clear
             do_main_menu ;;
       k\ *) do_report_menu ;;
-      l\ *) pandoc -f markdown -t plain  Readme.md | more
+      l\ *) pandoc -f markdown -t plain  Readme.md | more -d
             do_anykey
             do_main_menu ;;
       m\ *) do_about ;;
