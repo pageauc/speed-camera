@@ -118,11 +118,11 @@ See [***Calibration Procedure***](https://github.com/pageauc/speed-camera/wiki/C
 Admin speed-cam Easier using menubox.sh (Once calibrated and/or testing complete)  
 ![menubox main menu](https://github.com/pageauc/speed-camera/blob/master/menubox.png)     
 
-***Note*** I am looking at revamping logic for using speed camera as a security camera. Currently the
-plugins ***secpicam480.py*** and ***secwebcam480.py*** do not work very well since only horizontal x
-changes are tracked.  I will add xy triangulation tracking with no speed as well as support
-for IP cameras. ***SECURITY_CAM_MODE*** will not support ***makehtml.py*** or csv logging. These changes
-will take some time so be patient.  Claude 
+View speed-cam data and trends from web browser per sample screen shots
+
+![Speed Camera Web Recent View](https://github.com/pageauc/speed-camera/blob/master/speed_web_recent.png)   
+![Speed Camera Web html speed list Report](https://github.com/pageauc/speed-camera/blob/master/speed_web_sqlite.png)   
+![Speed Camera Web Recent View](https://github.com/pageauc/speed-camera/blob/master/speed_web_gnuplot.png)   
 
 ## Links
 * YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
