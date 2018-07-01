@@ -39,9 +39,9 @@ PROG_VER = "ver 7.3 written by Claude Pageau"
 SCRIPT_PATH = os.path.abspath(__file__)   # Find the full path of this python script
 BASE_DIR = os.path.dirname(SCRIPT_PATH)   # Get the path location only (excluding script name)
 PROG_NAME = os.path.basename(__file__)    # Name of this program
-
 # Check for variable file to import and error out if not found.
 CONFIG_FILE_PATH = os.path.join(BASE_DIR, "config.py")
+# Check if config file found and import variable settings.
 if not os.path.exists(CONFIG_FILE_PATH):
     print("ERROR - Cannot Import Configuration Variables.")
     print("        Missing Configuration File %s" % CONFIG_FILE_PATH)
@@ -98,7 +98,7 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         # Start HTML formatting code
         f.write('<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">')
         f.write('<head>')
-        # Setup Meta Tags
+        # Setup Meta Tags and better viewing on small screen devices
         f.write('<meta "Content-Type" content="txt/html; charset=ISO-8859-1" />')
         f.write('<meta name="viewport" content="width=device-width, initial-scale=1.0" />')
         if web_page_refresh_on:
@@ -112,13 +112,13 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         f.write('<iframe width="%s" height="%s" align="left"'
                 % (web_iframe_width_usage, web_image_height))
         if web_page_blank:
+            # display blank left iframe pane until right list item is selected
             f.write('src="%s" name="imgbox" id="imgbox" alt="%s">'
                     % ("about:blank", web_page_title))
-                    # display second entry in right list since list[0] may still be in progress
         else:
+            # display first entry in right list when iframe initially loads
             f.write('src="%s" name="imgbox" id="imgbox" alt="%s">'
                     % (list[0], web_page_title))
-                    # display second entry in right list since list[0] may still be in progress
 
         f.write('<p>iframes are not supported by your browser.</p></iframe>')
         # Start Right File selection List Panel
@@ -211,8 +211,8 @@ try:
     httpd.serve_forever()
 except KeyboardInterrupt:
     print("")
-    print("User Pressed ctrl-c")    
-    print("%s %s" % (PROG_NAME, PROG_VER))    
+    print("User Pressed ctrl-c")
+    print("%s %s" % (PROG_NAME, PROG_VER))
     print("Exiting Bye ...")
     httpd.shutdown()
     httpd.socket.close()
