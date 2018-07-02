@@ -74,7 +74,7 @@ if web_list_sort_descending:
     dir_order = 'Descend'
 else:
     dir_order = 'Ascend'
-
+    
 list_title = "%s %s" % (dir_sort, dir_order)
 
 class DirectoryHandler(SimpleHTTPRequestHandler):
@@ -127,7 +127,7 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         # f.write('<center><b>%s</b></center>' % (self.path))
         f.write('<center><b>%s</b></center>' % list_title)
         f.write('<ul name="menu" id="menu" style="list-style-type:none; padding-left: 4px">')
-        # Create the formatted list of right panel hyperlinks to files in the specified directory
+        # Create the formatted list of right panel hyper-links to files in the specified directory
 
         if not self.path is "/":   # Display folder Back arrow navigation if not in web root
             f.write('<li><a href="%s" >%s</a></li>\n'

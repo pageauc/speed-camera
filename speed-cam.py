@@ -61,7 +61,7 @@ if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
 DB_PATH = os.path.join(DB_DIR, DB_NAME)
 
-progVer = "8.92"
+progVer = "8.93"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -1006,6 +1006,7 @@ def speed_camera():
                                 # Create a calibration image file name
                                 # There are no subdirectories to deal with
                                 if calibrate:
+                                    log_time = datetime.datetime.now()
                                     filename = get_image_name(speed_path, "calib-")
                                     prev_image = take_calibration_image(filename,
                                                                         prev_image)
