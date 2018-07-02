@@ -129,7 +129,7 @@ web_server_root = "media"     # Default= "media" webserver root path to webserve
 web_page_title = "SPEED-CAMERA Media"  # web page title that browser show (not displayed on web page)
 web_page_refresh_on = False   # False=Off (never)  Refresh True=On (per seconds below)
 web_page_refresh_sec = "180"  # Default= "180" seconds to wait for web page refresh  seconds (three minutes)
-web_page_blank = True         # True Starts left image with a blank page until a right menu item is selected
+web_page_blank = False        # True Starts left image with a blank page until a right menu item is selected
                               # False displays second list[1] item since first may be in progress
 
 # Left iFrame Image Settings

@@ -10,7 +10,7 @@ import urllib
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from StringIO import StringIO
 
-PROG_VER = "ver 7.3 written by Claude Pageau"
+PROG_VER = "ver 7.4 written by Claude Pageau"
 '''
  SimpleHTTPServer python program to allow selection of images from right panel and display in an iframe left panel
  Use for local network use only since this is not guaranteed to be a secure web server.
@@ -63,18 +63,18 @@ try:
 except:
     print("ERROR - Can't Find a Network IP Address on this Raspberry Pi")
     print("        Configure Network and Try Again")
-    sys.exit(1)
+    myip = None
 
 if web_list_by_datetime:
-    dir_sort = 'DateTime'
+    dir_sort = 'Sort DateTime'
 else:
-    dir_sort = 'FileName'
+    dir_sort = 'Sort Filename'
 
 if web_list_sort_descending:
-    dir_order = 'Descend'
+    dir_order = 'Desc'
 else:
-    dir_order = 'Ascend'
-    
+    dir_order = 'Asc'
+
 list_title = "%s %s" % (dir_sort, dir_order)
 
 class DirectoryHandler(SimpleHTTPRequestHandler):
@@ -125,7 +125,14 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         list_style = '<div style="height: ' + web_list_height + 'px; overflow: auto; white-space: nowrap;">'
         f.write(list_style)
         # f.write('<center><b>%s</b></center>' % (self.path))
-        f.write('<center><b>%s</b></center>' % list_title)
+        if web_page_refresh_on:
+            sort_heading = ('&nbsp;&nbsp;Refresh %s s&nbsp;&nbsp;<b>%s</b>' %
+                            (web_page_refresh_sec, list_title))
+        else:
+            # Show a refresh button since auto refesh is turned off.
+            sort_heading = ('''<FORM>&nbsp;&nbsp;<INPUT TYPE="button" onClick="history.go(0)"
+VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
+        f.write('%s' % sort_heading)
         f.write('<ul name="menu" id="menu" style="list-style-type:none; padding-left: 4px">')
         # Create the formatted list of right panel hyper-links to files in the specified directory
 
