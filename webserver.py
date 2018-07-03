@@ -10,7 +10,7 @@ import urllib
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from StringIO import StringIO
 
-PROG_VER = "ver 7.4 written by Claude Pageau"
+PROG_VER = "ver 7.5  written by Claude Pageau"
 '''
  SimpleHTTPServer python program to allow selection of images from right panel and display in an iframe left panel
  Use for local network use only since this is not guaranteed to be a secure web server.
@@ -95,6 +95,17 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
             list.sort(key=lambda a: a.lower(), reverse=web_list_sort_descending)
         f = StringIO()
         displaypath = cgi.escape(urllib.unquote(self.path))
+        # find index of first file or hyperlink
+
+        file_found = False
+        cnt = 0        
+        for entry in list:  # See if there is a file for initializing iframe
+            fullname = os.path.join(path, entry)       
+            if os.path.islink(fullname) or os.path.isfile(fullname):
+                file_found = True
+                break
+            cnt += 1                 
+
         # Start HTML formatting code
         f.write('<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">')
         f.write('<head>')
@@ -111,14 +122,12 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         # Start Left iframe Image Panel
         f.write('<iframe width="%s" height="%s" align="left"'
                 % (web_iframe_width_usage, web_image_height))
-        if web_page_blank:
-            # display blank left iframe pane until right list item is selected
+        if file_found:  # file was display it in left pane
+            f.write('src="%s" name="imgbox" id="imgbox" alt="%s">'
+                    % (list[cnt], web_page_title))                
+        else:  # No files found so blank left pane
             f.write('src="%s" name="imgbox" id="imgbox" alt="%s">'
                     % ("about:blank", web_page_title))
-        else:
-            # display first entry in right list when iframe initially loads
-            f.write('src="%s" name="imgbox" id="imgbox" alt="%s">'
-                    % (list[0], web_page_title))
 
         f.write('<p>iframes are not supported by your browser.</p></iframe>')
         # Start Right File selection List Panel
@@ -140,6 +149,7 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
             f.write('<li><a href="%s" >%s</a></li>\n'
                     % (urllib.quote(".."), cgi.escape("< BACK")))
         display_entries = 0
+        file_found = False
         for name in list:
             display_entries += 1
             if web_max_list_entries > 1:
@@ -150,10 +160,8 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
             date_modified = time.strftime('%H:%M:%S %d-%b-%Y', time.localtime(os.path.getmtime(fullname)))
             # Append / for directories or @ for symbolic links
             if os.path.islink(fullname):
-                displayname = name + "@"
-                # Note: a link to a directory displays with @ and links with /
-            if os.path.isdir(fullname):
-                # Note this will open a new tab to display the selected folder.
+                displayname = name + "@"  # symbolic link found
+            if os.path.isdir(fullname):   # check if entry is a directory
                 displayname = name + "/"
                 linkname = os.path.join(displaypath, displayname)
                 f.write('<li><a href="%s" >%s</a></li>\n'
@@ -161,6 +169,7 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
             else:
                 f.write('<li><a href="%s" target="imgbox">%s</a> - %s</li>\n'
                         % (urllib.quote(linkname), cgi.escape(displayname), date_modified))
+
         if (not self.path is "/") and display_entries > 35:   # Display folder Back arrow navigation if not in web root
             f.write('<li><a href="%s" >%s</a></li>\n' % (urllib.quote(".."), cgi.escape("< BACK")))
         f.write('</ul></div><p><b>')
