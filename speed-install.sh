@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="8.92"
+ver="8.93"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
 rclone_cur_ver="rclone v1.41"
@@ -34,7 +34,7 @@ if $is_upgrade ; then
 "webserver.sh" "sql_speed_gt.py" )
 else
     speedFiles=("config.py" "menubox.sh" "speed-cam.py" \
-"speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py""webserver.py" \
+"speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
 "webserver.sh" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
 "sql_speed_gt.py" )
 fi
