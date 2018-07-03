@@ -61,7 +61,7 @@ if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
 DB_PATH = os.path.join(DB_DIR, DB_NAME)
 
-progVer = "8.93"
+progVer = "8.94"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -390,18 +390,26 @@ def show_settings():
               % baseFileName)
         print("--------------------------------- Settings -------------------------------------")
         print("")
-        print("Plugins ......... pluginEnable=%s  pluginName=%s"
-              % (pluginEnable, pluginName))
-        print("Message Display . verbose=%s  display_fps=%s calibrate=%s"
+        print("Debug Messages .. verbose=%s  display_fps=%s calibrate=%s"
               % (verbose, display_fps, calibrate))
         print("                  show_out_range=%s" % show_out_range)
+        print("Plugins ......... pluginEnable=%s  pluginName=%s"
+              % (pluginEnable, pluginName))
+        print("Calibration ..... cal_obj_px=%i px  cal_obj_mm=%i mm (longer is faster) speed_conv=%.5f"
+              % (cal_obj_px, cal_obj_mm, speed_conv))
+        if pluginEnable:
+            print("                  (Change Settings in %s)" % pluginPath)
+        else:
+            print("                  (Change Settings in %s)" % configFilePath)
         print("Logging ......... Log_data_to_CSV=%s  log_filename=%s.csv (CSV format)"
               % (log_data_to_CSV, baseFileName))
         print("                  loggingToFile=%s  logFilePath=%s"
               % (loggingToFile, logFilePath))
-        print("                  Log if max_speed_over > %i %s"
+        print("                  SQLITE3 DB_PATH=%s  DB_TABLE=%s"
+              % (DB_PATH, DB_TABLE))
+        print("Speed Trigger ... Log only if max_speed_over > %i %s"
               % (max_speed_over, speed_units))
-        print("Speed Trigger ... If  track_len_trig > %i px" % track_len_trig)
+        print("                  If  track_len_trig > %i px" % track_len_trig)
         print("Exclude Events .. If  x_diff_min < %i or x_diff_max > %i px"
               % (x_diff_min, x_diff_max))
         print("                  If  y_upper < %i or y_lower > %i px"
@@ -458,7 +466,7 @@ def show_settings():
     return
 
 #------------------------------------------------------------------------------
-def take_calibration_image(filename, cal_image):
+def take_calibration_image(speed, filename, cal_image):
     """
     Create a calibration image for determining value of IMG_VIEW_FT variable
     Create calibration hash marks
@@ -477,23 +485,42 @@ def take_calibration_image(filename, cal_image):
     cv2.line(cal_image, (x_left, y_lower), (x_right, y_lower), motion_win_color, 1)
     cv2.line(cal_image, (x_left, y_upper), (x_left, y_lower), motion_win_color, 1)
     cv2.line(cal_image, (x_right, y_upper), (x_right, y_lower), motion_win_color, 1)
-    print("")
+
+    if SPEED_MPH:
+        speed_units = 'mph'
+    else:
+        speed_units = 'kph'
+
     print("----------------------------- Create Calibration Image "
           "-----------------------------")
     print("")
-    print("    Instructions for using %s image for camera calibration" % filename)
+    print("  Instructions for using %s image for camera calibration" % filename)
     print("")
-    print("1 - Use a known size reference object in the image like a vehicle")
-    print("    at the required distance.")
-    print("2 - Record cal_obj_px  Value using Red y_upper hash marks at every 10 px")
-    print("3 - Record cal_obj_mm of object. This is Actual length in mm of object above")
-    print("4 - Edit config.py and enter the values for the above variables.")
+    print("  1 - Use Known Similar Size Reference Objects in Images, Like similar vehicles at the Required Distance.")
+    print("  2 - Record cal_obj_px Value Using Red y_upper Hash Marks at every 10 px  Current Setting is %i px" %
+          cal_obj_px)
+    print("  3 - Record cal_obj_mm of object. This is Actual length in mm of object above Current Setting is %i mm" %
+          cal_obj_mm)
+    print("      If Recorded Speed %.1f %s is Too Low, Increasing cal_obj_mm to Adjust or Visa-Versa" %
+          (speed, speed_units))
+    if pluginEnable:
+        print("  4 - Edit %s File and Change Values for Above Variables." %
+              pluginPath)
+    else:
+        print("  4 - Edit %s File and Change Values for the Above Variables." %
+              configFilePath)
+    print("  5 - Do a Speed Test to Confirm/Tune Settings.  You May Need to Repeat.")
+    print("  6 - When Calibration is Finished, Set config.py Variable   calibrate = False")
+    print("      Then Restart speed-cam.py and monitor activity.")
     print("")
-    print("    Calibration Image Saved To %s%s" % (baseDir, filename))
+    print("  WARNING: It is Advised to Use 320x240 Stream for Best Performance.")
+    print("           Higher Resolutions Need More OpenCV Processing")
+    print("")
+    print("  Calibration Image Saved To %s%s  " % (baseDir, filename))
+    print("  View Calibration Image in Web Browser (Ensure webserver.py is started)")
     print("")
     print("---------------------- Press cntl-c to Quit Calibration Mode "
           "-----------------------")
-    print("")
     return cal_image
 
 #------------------------------------------------------------------------------
@@ -728,7 +755,7 @@ def log_to_csv(data_to_append):
     f = open(log_file_path, 'a+')
     f.write(filecontents)
     f.close()
-    logging.info("   Add - CSV Speed Data to %s", log_file_path)
+    logging.info("   CSV - Updated Data  %s", log_file_path)
     return
 
 #------------------------------------------------------------------------------
@@ -1008,7 +1035,8 @@ def speed_camera():
                                 if calibrate:
                                     log_time = datetime.datetime.now()
                                     filename = get_image_name(speed_path, "calib-")
-                                    prev_image = take_calibration_image(filename,
+                                    prev_image = take_calibration_image(ave_speed,
+                                                                        filename,
                                                                         prev_image)
                                 else:
                                     # Check if subdirectories configured
@@ -1066,10 +1094,12 @@ def speed_camera():
                                                   image_font_size / 3))
                                     if text_x < 2:
                                         text_x = 2
-                                    logging.info(" Ave Speed is %.1f %s %s ",
+                                    logging.info(" Ave Speed is %.1f %s %s  Calib %ipx %imm",
                                                  ave_speed,
                                                  speed_units,
-                                                 travel_direction)
+                                                 travel_direction,
+                                                 cal_obj_px,
+                                                 cal_obj_mm)
                                     cv2.putText(big_image,
                                                 image_text,
                                                 (text_x, text_y),
@@ -1104,7 +1134,7 @@ def speed_camera():
                                     if pluginEnable:
                                         plugin_name = pluginName
                                     else:
-                                        plugin_name = "none"
+                                        plugin_name = "None"
                                     # create the speed data list ready for db insert
                                     speed_data = (log_idx,
                                                   log_date, log_hour, log_minute,
@@ -1130,7 +1160,7 @@ def speed_camera():
                                         logging.error("Failed: To INSERT Speed Data into TABLE %s", DB_TABLE)
                                         logging.error("Err Msg: %s", e)
                                     else:
-                                        logging.info(" Add - sqlite3 Speed Data to %s", DB_PATH)
+                                        logging.info(" SQL - Update sqlite3 Data in %s", DB_PATH)
                                 # Format and Save Data to CSV Log File
                                 if log_data_to_CSV:
                                     log_csv_time = ("%s%04d%02d%02d%s,"
@@ -1179,8 +1209,12 @@ def speed_camera():
                                                filename,
                                                image_prefix)
 
-                                logging.info("End  - Tracked %i px in %.3f sec",
-                                             tot_track_dist, tot_track_time)
+                                logging.info("End  - %.1f %s Tracked %i px in %.3f sec  Calib %ipx %imm",
+                                             ave_speed, speed_units,
+                                             tot_track_dist,
+                                             tot_track_time,
+                                             cal_obj_px,
+                                             cal_obj_mm)
                                 # Wait to avoid dual tracking same object.
                                 time.sleep(track_timeout)
                             else:

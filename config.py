@@ -12,16 +12,18 @@
 # --------------------
 calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
 cal_obj_px = 90        # Length of a calibration object in pixels
-cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
+cal_obj_mm = 4700.0    # Length of the calibration object in millimetres (longer is faster)
+# Note if tested speed is too low increase cal_obj_mm  value and redo speed test.
+# IMPORTANT - If plugins Enabled Edit Settings in specified plugin file located in plugins folder.                      
 
 # Plugins overlay the config.py variable settings
 # -----------------------------------------------
 pluginEnable = False
-pluginName = "picam480" # Specify filename in plugins subfolder without .py extension per below
+pluginName = "picam240" # Specify filename in plugins subfolder without .py extension per below
                         # picam240, webcam240 (Recommended for RPI2 or greater) 
-                        # picam480, webcam480, picam720, webcam720  (Recommended for RPI3)
+                        # picam480, webcam480, picam720, webcam720  (can use RPI3 but Test)
                         # picam1080   (Experimental Not Recommended)
-                        # secpicam480, secwebcam480 (Experimental no csv entries)
+                        # secpicam480, secwebcam480 (Experimental no CSV entries)
 
 # 480 Crop Area for motion detection Tracking
 # Use plugins to override this configuration

@@ -8,7 +8,9 @@
 # Calibration Settings
 # --------------------
 cal_obj_px = 90        # Length of a calibration object in pixels
-cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
+cal_obj_mm = 4330.0    # Length of the calibration object in millimetres (longer is faster)
+# Note if tested speed is too low increase cal_obj_mm  value and redo speed test.
+# IMPORTANT - If plugins NOT enabled in config.py then Edit config.py settings.
 
 # Crop Area for motion detection Tracking
 # ---------------------------------------
@@ -25,7 +27,7 @@ track_len_trig = 60    # Default= 60 Length of track to trigger speed photo
 x_diff_max = 30        # Default= 30 Exclude if max px away >= last motion event x pos
 x_diff_min = 1         # Default= 1  Exclude if min px away <= last event x pos
 track_timeout = 0.0    # Default= 0.0 Optional seconds to wait after track End (Avoid dual tracking)
-event_timeout = 0.7    # Default= 0.7 seconds to wait for next motion event before starting new track
+event_timeout = 0.8    # Default= 0.7 seconds to wait for next motion event before starting new track
 log_data_to_CSV = True # Default= True True= Save log data as CSV comma separated values
 
 # Camera Settings
