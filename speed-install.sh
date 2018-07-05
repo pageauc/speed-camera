@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="8.93"
+ver="8.94"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
 rclone_cur_ver="rclone v1.41"
@@ -153,8 +153,12 @@ sudo apt-get install -yq python-picamera
 sudo apt-get install -yq python3-picamera
 sudo apt-get install -yq python-imaging
 sudo apt-get install -yq sqlite3
-sudo apt-get install -yq Gnuplot
-sudo apt-get install -yq python-Gnuplot
+sudo apt-get install -yq gnuplot
+if [ $? -ne 0 ]; then
+   sudo apt-get install -yq Gnuplot
+sudo apt-get install -yq python-gnuplot
+if [ $? -ne 0 ]; then
+   sudo apt-get install -yq python-Gnuplot
 sudo apt-get install -yq libgl1-mesa-dri
 sudo apt-get install -yq fonts-freefont-ttf # Required for Jessie Lite Only
 sudo apt-get install -yq pandoc  # convert markdown to plain text for Readme.md
