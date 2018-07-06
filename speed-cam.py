@@ -61,7 +61,7 @@ if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
 DB_PATH = os.path.join(DB_DIR, DB_NAME)
 
-progVer = "8.94"
+progVer = "8.95"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -731,11 +731,11 @@ def freeDiskSpaceCheck(lastSpaceCheck):
 
 #------------------------------------------------------------------------------
 def get_image_name(path, prefix):
-    """ build image file names by number sequence or date/time """
+    """ build image file names by number sequence or date/time Added tenth of second"""
     rightNow = datetime.datetime.now()
-    filename = ("%s/%s%04d%02d%02d-%02d%02d%02d.jpg" %
+    filename = ("%s/%s%04d%02d%02d-%02d%02d%02d%d.jpg" %
                 (path, prefix, rightNow.year, rightNow.month, rightNow.day,
-                 rightNow.hour, rightNow.minute, rightNow.second))
+                 rightNow.hour, rightNow.minute, rightNow.second, rightNow.microsecond/100000))
     return filename
 
 #------------------------------------------------------------------------------
