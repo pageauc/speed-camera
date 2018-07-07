@@ -43,7 +43,7 @@ REPORTS_DIR = 'media/reports'
 REPORTS_FILENAME = "hour_count_gt"
 REPORTS_PATH = os.path.join(REPORTS_DIR, REPORTS_FILENAME + SPEED_OVER + "_list.html")
 COUNT_PATH = os.path.join(REPORTS_DIR, REPORTS_FILENAME + SPEED_OVER + "_totals.html")
-GRAPH_PATH = os.path.join(REPORTS_DIR, REPORTS_FILENAME + SPEED_OVER + "_graph.png")
+GRAPH_PATH = os.path.join(REPORTS_DIR, REPORTS_FILENAME + SPEED_OVER + "_graph.jpg")
 GRAPH_DATA_PATH = os.path.join(REPORTS_FILENAME + SPEED_OVER + ".txt")
 
 REPORT_QUERY = ('''
