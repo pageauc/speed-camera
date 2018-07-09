@@ -52,9 +52,9 @@ logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
 # ---------------------
 SPEED_MPH = False      # Set Speed Units   kph=False  mph=True
 MIN_AREA = 200         # Default= 200 Exclude all contours less than or equal to this sq-px Area
-track_len_trig = 60    # Default= 60 Length of track to trigger speed photo
+track_len_trig = 120   # Default= 120 Length of track to trigger speed photo
 show_out_range = True  # Default= True Show Out of Range Events per x_diff settings below False= Off
-x_diff_max = 30        # Default= 30 Exclude if max px away >= last motion event x position
+x_diff_max = 50        # Default= 50 Exclude if max px away >= last motion event x position
 x_diff_min = 1         # Default= 1 Exclude if min px away <= last event x position
 track_timeout = 0.0    # Default= 0.0 Optional seconds to wait after track End (Avoids dual tracking)
 event_timeout = 0.7    # Default= 0.7 seconds to wait for next motion event before starting new track
