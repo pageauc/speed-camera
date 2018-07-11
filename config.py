@@ -4,7 +4,7 @@
 #######################################
 #  speed-cam.py Variable Settings
 #  Default is 320x240 image stream size
-#  if using RPI3 you can try picam480 
+#  if using RPI3 you can try picam480
 #  or larger stream image plugin.
 #######################################
 
@@ -14,13 +14,13 @@ calibrate = True       # Create a calibration image file with calibration hash m
 cal_obj_px = 90        # Length of a calibration object in pixels
 cal_obj_mm = 4700.0    # Length of the calibration object in millimetres (longer is faster)
 # Note if tested speed is too low increase cal_obj_mm  value and redo speed test.
-# IMPORTANT - If plugins Enabled Edit Settings in specified plugin file located in plugins folder.                      
+# IMPORTANT - If plugins Enabled Edit Settings in specified plugin file located in plugins folder.
 
 # Plugins overlay the config.py variable settings
 # -----------------------------------------------
 pluginEnable = False
 pluginName = "picam240" # Specify filename in plugins subfolder without .py extension per below
-                        # picam240, webcam240 (Recommended for RPI2 or greater) 
+                        # picam240, webcam240 (Recommended for RPI2 or greater)
                         # picam480, webcam480, picam720, webcam720  (can use RPI3 but Test)
                         # picam1080   (Experimental Not Recommended)
                         # secpicam480, secwebcam480 (Experimental no CSV entries)
@@ -52,7 +52,7 @@ logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
 # ---------------------
 SPEED_MPH = False      # Set Speed Units   kph=False  mph=True
 MIN_AREA = 200         # Default= 200 Exclude all contours less than or equal to this sq-px Area
-track_len_trig = 120   # Default= 120 Length of track to trigger speed photo
+track_len_trig = 100   # Default= 100 Length of track to trigger speed photo
 show_out_range = True  # Default= True Show Out of Range Events per x_diff settings below False= Off
 x_diff_max = 50        # Default= 50 Exclude if max px away >= last motion event x position
 x_diff_min = 1         # Default= 1 Exclude if min px away <= last event x position

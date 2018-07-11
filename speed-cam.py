@@ -61,7 +61,7 @@ if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
 DB_PATH = os.path.join(DB_DIR, DB_NAME)
 
-progVer = "8.95"
+progVer = "8.96"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -999,11 +999,11 @@ def speed_camera():
                 if first_event:   # This is a first valid motion event
                     first_event = False  # Only one first track event
                     track_start_time = time.time() # Record track start time
-                    event_timer = time.time() # Reset event timeout
                     # set start and end of track to the start center point
                     start_pos_x = cx
                     end_pos_x = cx
                     logging.info("New  - cxy(%i,%i) Start New Track", cx, cy)
+                    event_timer = time.time() # Reset event timeout
                 else:
                     if end_pos_x - start_pos_x > 0:
                         travel_direction = "L2R"
@@ -1017,6 +1017,7 @@ def speed_camera():
                         tot_track_dist = abs(end_pos_x - start_pos_x)
                         tot_track_time = abs(time.time() - track_start_time)
                         ave_speed = float((abs(tot_track_dist / tot_track_time)) * speed_conv)
+                        event_timer = time.time()
                         if abs(end_pos_x - start_pos_x) >= track_len_trig:
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
@@ -1258,13 +1259,13 @@ def speed_camera():
                             # Did not move much so update event_timer
                             # and wait for next valid movement.
                             else:
-                                event_timer = time.time()
                                 logging.info(" Out - cxy(%i,%i) Dist=%i is "
                                              "<=%i px C=%i %ix%i=%i sqpx %s",
                                              cx, cy, abs(cx - end_pos_x),
                                              x_diff_min, total_contours,
                                              mw, mh, biggest_area,
                                              travel_direction)
+                                event_timer = time.time()
                 if gui_window_on:
                     # show small circle at contour centre if required
                     # otherwise a rectangle around most recent contour

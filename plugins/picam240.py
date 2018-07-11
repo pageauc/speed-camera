@@ -23,7 +23,7 @@ y_lower = 185          # Default= 185 Exclude event if y greater than this value
 # ---------------------
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
 MIN_AREA = 170         # Default= 170 Exclude all contours less than or equal to this sq-px Area
-track_len_trig = 120   # Default= 120 Length of track to trigger speed photo
+track_len_trig = 100   # Default= 100 Length of track to trigger speed photo
 x_diff_max = 50        # Default= 50 Exclude if max px away >= last motion event x pos
 x_diff_min = 1         # Default= 1  Exclude if min px away <= last event x pos
 track_timeout = 0.0    # Default= 0.0 Optional seconds to wait after track End (Avoid dual tracking)
