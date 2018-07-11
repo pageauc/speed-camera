@@ -50,6 +50,8 @@ import sqlite3
 from threading import Thread
 import subprocess
 
+progVer = "9.00"
+
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
 # Will work on reports and possibly a web query page for speed data.
@@ -61,7 +63,6 @@ if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
 DB_PATH = os.path.join(DB_DIR, DB_NAME)
 
-progVer = "8.96"
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
@@ -220,9 +221,6 @@ if WINDOW_BIGGER < 1.0:
     WINDOW_BIGGER = 1.0
 if image_bigger < 1.0:
     image_bigger = 1.0
-# fix event_timeout if too low
-if event_timeout < 0.5:
-    event_timeout = 0.5
 # System Settings
 if WEBCAM:
     # Set width of trigger point image to save
@@ -243,6 +241,24 @@ if SPEED_MPH:
 else:
     speed_units = "kph"
     speed_conv = px_to_kph
+
+crop_w = abs(x_right - x_left)  # width of cropped image
+
+try:
+    print(track_counter)
+except:
+    print("ERROR - Missing track_counter variable.")
+    print("        Update to latest config.py per commands below")
+    print("")
+    print("        cd ~/speed-camera")
+    print("        cp config.py config.py.bak")
+    print("        cp config.py.new config.py")
+    print("")
+    print("        Transfer settings from bak file to config.py")
+    print("")
+    print("NOTICE- Setting track_counter=3 To Allow Program to Continue")
+    track_counter = 3  # number of consecutive movements before reporting speed
+    time.sleep(5)
 
 #------------------------------------------------------------------------------
 class PiVideoStream:
@@ -409,7 +425,8 @@ def show_settings():
               % (DB_PATH, DB_TABLE))
         print("Speed Trigger ... Log only if max_speed_over > %i %s"
               % (max_speed_over, speed_units))
-        print("                  If  track_len_trig > %i px" % track_len_trig)
+        print("                  and track_counter >= %i consecutive motion events"
+              % track_counter)
         print("Exclude Events .. If  x_diff_min < %i or x_diff_max > %i px"
               % (x_diff_min, x_diff_max))
         print("                  If  y_upper < %i or y_lower > %i px"
@@ -837,7 +854,7 @@ def db_open(db_file):
                  x_left integer, x_right integer,
                  y_upper integer, y_lower integer,
                  max_speed_over integer,
-                 min_area integer, track_trig_len integer,
+                 min_area integer, track_counter integer,
                  cal_obj_px integer, cal_obj_mm integer)'''.format(DB_TABLE)
     try:
         db_conn.execute(sql_cmd)
@@ -860,9 +877,8 @@ def speed_camera():
     event_timer = time.time()
     start_pos_x = None
     end_pos_x = None
-    # setup buffer area to ensure contour is fully contained in crop area
+    # setup buffer area to ensure contour is mostly contained in crop area
     x_buf = int((x_right - x_left) / 10)
-    y_buf = int((y_lower - y_upper) / 8)
     travel_direction = ""
     # initialize a cropped grayimage1 image
     # Only needs to be done once
@@ -920,7 +936,8 @@ def speed_camera():
             logging.info("sqlite3 DB is Open %s", DB_PATH)
             db_cur = db_conn.cursor()  # Set cursor position
             db_is_open = True
-
+    track_right_side = True
+    track_count = 0
     while still_scanning:  # process camera thread images and calculate speed
         image2 = vs.read() # Read image data from video steam thread instance
         if WEBCAM:
@@ -933,6 +950,7 @@ def speed_camera():
         # crop image to motion tracking area only
         try:
             image_crop = image2[y_upper:y_lower, x_left:x_right]
+
         except ValueError:
             logging.error("image2 Stream Image is Not Complete. Cannot Crop.")
             continue
@@ -961,30 +979,24 @@ def speed_camera():
         # Update grayimage1 to grayimage2 ready for next image2
         grayimage1 = grayimage2
         # initialize variables
-        motion_found = False
-        biggest_area = MIN_AREA
+
         # if contours found, find the one with biggest area
         if contours:
+            motion_found = False
+            biggest_area = MIN_AREA
             for c in contours:
                 # get area of contour
                 found_area = cv2.contourArea(c)
                 if found_area > biggest_area:
                     (x, y, w, h) = cv2.boundingRect(c)
                     # check if object contour is completely within crop area
-                    if (x > x_buf and
-                            x + w < x_right - x_left - x_buf and
-                            y > y_buf and
-                            y + h < y_lower - y_upper - y_buf):
+                    if (x > x_buf and x + w < x_right - x_left - x_buf):
                         motion_found = True
                         biggest_area = found_area
-                        # track contour center points since it seems to be
-                        # more stable than x contour position although
-                        # lighting and other factors can cause unexpected
-                        # jumps in position.
-                        cx = int(x + w/2) # middle of contour width
-                        cy = int(y + h/2) # middle of contour height
-                        mw = w  # movement width of object contour
-                        mh = h  # movement height of object contour
+                        track_x = x
+                        track_y = y
+                        track_w = w  # movement width of object contour
+                        track_h = h  # movement height of object contour
             if motion_found:
                 # Check if last motion event timed out
                 if time.time() - event_timer > event_timeout:
@@ -995,38 +1007,41 @@ def speed_camera():
                     end_pos_x = None
                     logging.info("Reset- event_timer %.2f sec Exceeded",
                                  event_timeout)
+                ##############################
                 # Process motion events and track object movement
+                ##############################
                 if first_event:   # This is a first valid motion event
                     first_event = False  # Only one first track event
                     track_start_time = time.time() # Record track start time
-                    # set start and end of track to the start center point
-                    start_pos_x = cx
-                    end_pos_x = cx
-                    logging.info("New  - cxy(%i,%i) Start New Track", cx, cy)
+                    start_pos_x = track_x
+                    end_pos_x = track_x
+                    logging.info("New  - xy(%i,%i) Start New Track", track_x, track_y)
                     event_timer = time.time() # Reset event timeout
+                    track_count = 0
                 else:
-                    if end_pos_x - start_pos_x > 0:
-                        travel_direction = "L2R"
-                    else:
-                        travel_direction = "R2L"
                     # check if movement is within acceptable distance
                     # range of last event
-                    if (abs(cx - end_pos_x) > x_diff_min and
-                            abs(cx - end_pos_x) < x_diff_max):
-                        end_pos_x = cx # new position of track end point
+                    if (abs(track_x - end_pos_x) > x_diff_min and
+                            abs(track_x - end_pos_x) < x_diff_max):
+                        track_count += 1  # increment
+                        end_pos_x = track_x # new position of track end point
+                        if end_pos_x - start_pos_x > 0:
+                            travel_direction = "L2R"
+                        else:
+                            travel_direction = "R2L"
                         tot_track_dist = abs(end_pos_x - start_pos_x)
                         tot_track_time = abs(time.time() - track_start_time)
                         ave_speed = float((abs(tot_track_dist / tot_track_time)) * speed_conv)
                         event_timer = time.time()
-                        if abs(end_pos_x - start_pos_x) >= track_len_trig:
+                        if track_count >= track_counter:
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
-                                logging.info(" Add - cxy(%i,%i) %3.2f %s px=%i/%i"
+                                logging.info(" Add - xy(%i,%i) %3.2f %s cnt=%i/%i"
                                              " C=%i %ix%i=%i sqpx %s",
-                                             cx, cy, ave_speed, speed_units,
-                                             abs(start_pos_x - end_pos_x),
-                                             track_len_trig, total_contours,
-                                             mw, mh, biggest_area,
+                                             track_x, track_y, ave_speed, speed_units,
+                                             track_count,
+                                             track_counter, total_contours,
+                                             track_w, track_h, biggest_area,
                                              travel_direction)
                                 # Resize and process previous image
                                 # before saving to disk
@@ -1070,15 +1085,15 @@ def speed_camera():
                                     # show centre of motion if required
                                     if SHOW_CIRCLE:
                                         cv2.circle(prev_image,
-                                                   (cx + x_left, cy + y_upper),
+                                                   (track_x + x_left, track_y + y_upper),
                                                    CIRCLE_SIZE,
                                                    cvGreen, LINE_THICKNESS)
                                     else:
                                         cv2.rectangle(prev_image,
-                                                      (int(cx + x_left - mw/2),
-                                                       int(cy + y_upper - mh/2)),
-                                                      (int(cx + x_left + mw/2),
-                                                       int(cy + y_upper + mh/2)),
+                                                      (int(track_x + x_left),
+                                                       int(track_y + y_upper)),
+                                                      (int(track_x + x_left + track_w),
+                                                       int(track_y + y_upper + track_h)),
                                                       cvGreen, LINE_THICKNESS)
                                 big_image = cv2.resize(prev_image,
                                                        (image_width,
@@ -1095,12 +1110,6 @@ def speed_camera():
                                                   image_font_size / 3))
                                     if text_x < 2:
                                         text_x = 2
-                                    logging.info(" Ave Speed is %.1f %s %s  Calib %ipx %imm",
-                                                 ave_speed,
-                                                 speed_units,
-                                                 travel_direction,
-                                                 cal_obj_px,
-                                                 cal_obj_mm)
                                     cv2.putText(big_image,
                                                 image_text,
                                                 (text_x, text_y),
@@ -1126,7 +1135,7 @@ def speed_camera():
                                                  log_time.day))
                                     log_hour = ("%02d" % log_time.hour)
                                     log_minute = ("%02d" % log_time.minute)
-                                    m_area = mw*mh
+                                    m_area = track_w*track_h
                                     ave_speed = round(ave_speed, 2)
                                     if WEBCAM:
                                         camera = "WebCam"
@@ -1143,12 +1152,12 @@ def speed_camera():
                                                   ave_speed, speed_units, filename,
                                                   image_width, image_height, image_bigger,
                                                   travel_direction, plugin_name,
-                                                  cx, cy,
-                                                  mw, mh, m_area,
+                                                  track_x, track_y,
+                                                  track_w, track_h, m_area,
                                                   x_left, x_right,
                                                   y_upper, y_lower,
                                                   max_speed_over,
-                                                  MIN_AREA, track_len_trig,
+                                                  MIN_AREA, track_counter,
                                                   cal_obj_px, cal_obj_mm)
 
                                     # Insert speed_data into sqlite3 database table
@@ -1187,9 +1196,9 @@ def speed_camera():
                                                        quote,
                                                        filename,
                                                        quote,
-                                                       cx, cy,
-                                                       mw, mh,
-                                                       mw * mh,
+                                                       track_x, track_y,
+                                                       track_w, track_h,
+                                                       track_w * track_h,
                                                        quote,
                                                        travel_direction,
                                                        quote))
@@ -1210,13 +1219,17 @@ def speed_camera():
                                                filename,
                                                image_prefix)
 
-                                logging.info("End  - %.1f %s Tracked %i px in %.3f sec  Calib %ipx %imm",
+                                logging.info("End  - Ave Speed %.1f %s Tracked %i px in %.3f sec Calib %ipx %imm",
                                              ave_speed, speed_units,
                                              tot_track_dist,
                                              tot_track_time,
                                              cal_obj_px,
                                              cal_obj_mm)
                                 # Wait to avoid dual tracking same object.
+                                if track_timeout > 0:
+                                    logging.info("Sleep - %0.2f seconds to Clear Track"
+                                                 % track_timeout)
+                                event_timer = time.time()
                                 time.sleep(track_timeout)
                             else:
                                 logging.info("End  - Skip Photo SPEED %.1f %s"
@@ -1227,59 +1240,65 @@ def speed_camera():
                                              tot_track_time, total_contours,
                                              biggest_area)
                                 # Optional Wait to avoid dual tracking
+                                if track_timeout > 0:
+                                    logging.info("Sleep - %0.2f seconds to Clear Track"
+                                                 % track_timeout)
+                                event_timer = time.time()
                                 time.sleep(track_timeout)
-                            # Track Ended so Reset Variables for
-                            # next cycle through loop
+                            # Track Ended so Reset Variables ready for
+                            # next tracking sequence
                             start_pos_x = None
                             end_pos_x = None
                             first_event = True # Reset Track
+                            track_count = 0
+                            event_timer = time.time()
                         else:
-                            logging.info(" Add - cxy(%i,%i) %3.1f %s"
-                                         " px=%i/%i C=%i %ix%i=%i sqpx %s",
-                                         cx, cy, ave_speed, speed_units,
-                                         abs(start_pos_x - end_pos_x),
-                                         track_len_trig, total_contours,
-                                         mw, mh, biggest_area,
+                            logging.info(" Add - xy(%i,%i) %3.1f %s"
+                                         " cnt=%i/%i C=%i %ix%i=%i sqpx %s",
+                                         track_x, track_y, ave_speed, speed_units,
+                                         track_count,
+                                         track_counter, total_contours,
+                                         track_w, track_h, biggest_area,
                                          travel_direction)
-                            end_pos_x = cx
+                            end_pos_x = track_x
                             # valid motion found so update event_timer
                             event_timer = time.time()
-                    # Movement was now within range parameters
+                    # Movement was not within range parameters
                     else:
                         if show_out_range:
                             # movements exceeds Max px movement
                             # allowed so Ignore and do not update event_timer
-                            if abs(cx - end_pos_x) >= x_diff_max:
-                                logging.info(" Out - cxy(%i,%i) Dist=%i is "
+                            if abs(track_x - end_pos_x) >= x_diff_max:
+                                logging.info(" Out - xy(%i,%i) Dist=%i is "
                                              ">=%i px C=%i %ix%i=%i sqpx %s",
-                                             cx, cy, abs(cx - end_pos_x),
+                                             track_x, track_y, abs(track_x - end_pos_x),
                                              x_diff_max, total_contours,
-                                             mw, mh, biggest_area,
+                                             track_w, track_h, biggest_area,
                                              travel_direction)
                             # Did not move much so update event_timer
                             # and wait for next valid movement.
                             else:
-                                logging.info(" Out - cxy(%i,%i) Dist=%i is "
+                                logging.info(" Out - xy(%i,%i) Dist=%i is "
                                              "<=%i px C=%i %ix%i=%i sqpx %s",
-                                             cx, cy, abs(cx - end_pos_x),
+                                             track_x, track_y, abs(track_x - end_pos_x),
                                              x_diff_min, total_contours,
-                                             mw, mh, biggest_area,
+                                             track_w, track_h, biggest_area,
                                              travel_direction)
-                                event_timer = time.time()
+                        event_timer = time.time()  # Reset Event Timer
                 if gui_window_on:
-                    # show small circle at contour centre if required
+                    # show small circle at contour xy if required
                     # otherwise a rectangle around most recent contour
                     if SHOW_CIRCLE:
                         cv2.circle(image2,
-                                   (cx + x_left * WINDOW_BIGGER,
-                                    cy + y_upper * WINDOW_BIGGER),
+                                   (track_x + x_left * WINDOW_BIGGER,
+                                    track_y + y_upper * WINDOW_BIGGER),
                                    CIRCLE_SIZE, cvGreen, LINE_THICKNESS)
                     else:
                         cv2.rectangle(image2,
-                                      (int(cx + x_left - mw/2),
-                                       int(cy + y_upper - mh/2)),
-                                      (int(cx + x_left + mw/2),
-                                       int(cy + y_upper + mh/2)),
+                                      (int(x_left + track_x),
+                                       int(y_upper + track_y)),
+                                      (int(x_left + track_x + track_w),
+                                       int(y_upper + track_y + track_h)),
                                       cvGreen, LINE_THICKNESS)
         if gui_window_on:
             # cv2.imshow('Difference Image',difference image)
