@@ -22,12 +22,11 @@ y_lower = 340          # Default= 340 Exclude event if y greater than this value
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
-MIN_AREA = 200         # Default= 200 Exclude all contours less than or equal to this sq-px Area
-track_len_trig = 150   # Default= 150 Length of track to trigger speed photo
-x_diff_max = 90        # Default= 90 Exclude if max px away >= last motion event x pos
+MIN_AREA = 100         # Default= 100 Exclude all contours less than or equal to this sq-px Area
+x_diff_max = 200       # Default= 200 Exclude if max px away >= last motion event x pos
 x_diff_min = 1         # Default= 1  Exclude if min px away <= last event x pos
 track_timeout = 0.0    # Default= 0.0 Optional seconds to wait after track End (Avoid dual tracking)
-event_timeout = 0.7    # Default= 0.7 seconds to wait for next motion event before starting new track
+event_timeout = 0.4    # Default= 0.4 seconds to wait for next motion event before starting new track
 log_data_to_CSV = True # Default= True True= Save log data as CSV comma separated values
 
 # Camera Settings

@@ -20,12 +20,11 @@ y_lower = 460          # Default= 460 Exclude event if y greater than this value
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
-MIN_AREA = 200         # Default= 200 Exclude all contours less than or equal to this sq-px Area
-track_len_trig = 210   # Default= 210 Length of track to trigger speed photo
-x_diff_max = 100       # Default= 100 Exclude if max px away >= last motion event x pos
+MIN_AREA = 100         # Default= 100 Exclude all contours less than or equal to this sq-px Area
+x_diff_max = 200       # Default= 200 Exclude if max px away >= last motion event x pos
 x_diff_min = 1         # Default= 1  Exclude if min px away <= last event x pos
 track_timeout = 0.0    # Default= 0.0 Optional seconds to wait after track End (Avoid dual tracking)
-event_timeout = 0.7    # Default= 0.7 seconds to wait for next motion event before starting new track
+event_timeout = 0.4    # Default= 0.4 seconds to wait for next motion event before starting new track
 log_data_to_CSV = True # Default= True True= Save log data as CSV comma separated values
 
 # Camera Settings
@@ -36,7 +35,7 @@ WEBCAM = False         # Default= False False=PiCamera True=USB WebCamera
 # ------------------
 CAMERA_WIDTH = 1280    # Default= 1280 Image stream width for opencv motion scanning (quad core)
 CAMERA_HEIGHT = 720    # Default= 720 Image stream height for opencv motion scanning (quad core)
-CAMERA_FRAMERATE = 20  # Default= 20 framerate for video stream max for V2 can be higher
+CAMERA_FRAMERATE = 25  # Default= 25 framerate for video stream max for V2 can be higher
 
 # Camera Image Settings
 # ---------------------

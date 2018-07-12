@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.00"
+progVer = "9.01"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -1122,13 +1122,14 @@ def speed_camera():
                                 # if required check free disk space
                                 # and delete older files (jpg)
                                 if db_is_open:
-                                    log_idx = ("%04d%02d%02d%02d%02d%02d" %
+                                    log_idx = ("%04d%02d%02d-%02d%02d%02d%d" %
                                                (log_time.year,
                                                 log_time.month,
                                                 log_time.day,
                                                 log_time.hour,
                                                 log_time.minute,
-                                                log_time.second))
+                                                log_time.second,
+                                                log_time.microsecond/100000))
                                     log_date = ("%04d%02d%02d" %
                                                 (log_time.year,
                                                  log_time.month,
