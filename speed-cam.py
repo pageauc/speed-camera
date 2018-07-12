@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.01"
+progVer = "9.02"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -235,6 +235,7 @@ else:
 # Calculate conversion from camera pixel width to actual speed.
 px_to_kph = float(cal_obj_mm/cal_obj_px * 0.0036)
 quote = '"'  # Used for creating quote delimited log file of speed data
+
 if SPEED_MPH:
     speed_units = "mph"
     speed_conv = 0.621371 * px_to_kph
@@ -242,23 +243,38 @@ else:
     speed_units = "kph"
     speed_conv = px_to_kph
 
-crop_w = abs(x_right - x_left)  # width of cropped image
+try:
+    x_buf_adjust   # check if variable exists in config.py
+except:
+    x_buf_adjust = 10   # Default=10 Divisor for screen width to Set space on left and right
+                        # of Crop image to ensure object contour is mostly inside tracking area.
+                        # smaller give more buffer space.
+    logging.warn("x_buf_adjust Not Found in config.py Setting value to %d", x_buf_adjust)
+
+# setup buffer area to ensure contour is mostly contained in crop area
+x_buf = int((x_right - x_left) / x_buf_adjust)
 
 try:
-    print(track_counter)
+    track_counter  # check if variable exists in config.py
 except:
-    print("ERROR - Missing track_counter variable.")
-    print("        Update to latest config.py per commands below")
-    print("")
-    print("        cd ~/speed-camera")
-    print("        cp config.py config.py.bak")
-    print("        cp config.py.new config.py")
-    print("")
-    print("        Transfer settings from bak file to config.py")
-    print("")
-    print("NOTICE- Setting track_counter=3 To Allow Program to Continue")
     track_counter = 3  # number of consecutive movements before reporting speed
-    time.sleep(5)
+    fix_msg = ("""track_counter variable Not Found in config.py
+    To Fix Problem Run menubox.sh UPGRADE menu pick.
+    Latest config.py will be named config.py.new
+    Do the following commands in SSH or terminal
+
+        cd ~/speed-camera
+        cp config.py config.py.bak
+        cp config.py.new config.py
+
+    Then Transfer settings from bak File to config.py
+
+            Setting track_counter = %i""" % track_counter)
+    logging.warn(fix_msg)
+    try:
+        raw_input("Press Enter to Continue...")  # python 2
+    except:
+        input("Press Enter to Continue...")  # python 3
 
 #------------------------------------------------------------------------------
 class PiVideoStream:
@@ -475,9 +491,8 @@ def show_settings():
             print("Disk Space  ..... Disabled - spaceTimerHrs=%i"
                   "  Manage Target Free Disk Space. Delete Oldest %s Files"
                   % (spaceTimerHrs, spaceFileExt))
-            print("            ..... spaceTimerHrs=%i (0=Off)"
-                  "  Target spaceFreeMB=%i (min=100 MB)"
-                  % (spaceTimerHrs, spaceFreeMB))
+            print("                  spaceTimerHrs=%i (0=Off)"
+                  " Target spaceFreeMB=%i (min=100 MB)" % (spaceTimerHrs, spaceFreeMB))
         print("")
         print("--------------------------------------------------------------------------------")
     return
@@ -877,8 +892,6 @@ def speed_camera():
     event_timer = time.time()
     start_pos_x = None
     end_pos_x = None
-    # setup buffer area to ensure contour is mostly contained in crop area
-    x_buf = int((x_right - x_left) / 10)
     travel_direction = ""
     # initialize a cropped grayimage1 image
     # Only needs to be done once
