@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.04"
+progVer = "9.05"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -878,23 +878,23 @@ def db_open(db_file):
         db_conn.commit()
     return db_conn
 
-def speed_get_contours(grayimage1):
+def speed_get_contours(image, grayimage1):
     image_ok = False
     while not image_ok:
-        image2 = vs.read() # Read image data from video steam thread instance
+        image = vs.read() # Read image data from video steam thread instance
         if WEBCAM:
             if (WEBCAM_HFLIP and WEBCAM_VFLIP):
-                image2 = cv2.flip(image2, -1)
+                image = cv2.flip(image, -1)
             elif WEBCAM_HFLIP:
-                image2 = cv2.flip(image2, 1)
+                image = cv2.flip(image, 1)
             elif WEBCAM_VFLIP:
-                image2 = cv2.flip(image2, 0)
+                image = cv2.flip(image, 0)
         # crop image to motion tracking area only
         try:
-            image_crop = image2[y_upper:y_lower, x_left:x_right]
+            image_crop = image[y_upper:y_lower, x_left:x_right]
             image_ok = True
         except ValueError:
-            logging.error("image2 Stream Image is Not Complete. Cannot Crop. Retry.")
+            logging.error("image Stream Image is Not Complete. Cannot Crop. Retry.")
             image_ok = False
     # Convert to gray scale, which is easier
     grayimage2 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
@@ -1005,7 +1005,8 @@ def speed_camera():
     track_count = 0
     speed_list = []
     while still_scanning:  # process camera thread images and calculate speed
-        grayimage1, contours = speed_get_contours(grayimage1)
+        image2 = vs.read() # Read image data from video steam thread instance
+        grayimage1, contours = speed_get_contours(image2, grayimage1)
         total_contours = len(contours)
         # if contours found, find the one with biggest area
         if contours:
