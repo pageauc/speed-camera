@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.03"
+progVer = "9.04"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -514,11 +514,7 @@ def take_calibration_image(speed, filename, cal_image):
     for i in range(10, image_width - 9, 10):
         cv2.line(cal_image, (i, y_upper - 5), (i, y_upper + 30), hash_color, 1)
     # This is motion window
-    cv2.line(cal_image, (x_left, y_upper), (x_right, y_upper), motion_win_color, 1)
-    cv2.line(cal_image, (x_left, y_lower), (x_right, y_lower), motion_win_color, 1)
-    cv2.line(cal_image, (x_left, y_upper), (x_left, y_lower), motion_win_color, 1)
-    cv2.line(cal_image, (x_right, y_upper), (x_right, y_lower), motion_win_color, 1)
-
+    cal_image = speed_image_add_lines(cal_image, motion_win_color)
     if SPEED_MPH:
         speed_units = 'mph'
     else:
@@ -882,6 +878,60 @@ def db_open(db_file):
         db_conn.commit()
     return db_conn
 
+def speed_get_contours(grayimage1):
+    image_ok = False
+    while not image_ok:
+        image2 = vs.read() # Read image data from video steam thread instance
+        if WEBCAM:
+            if (WEBCAM_HFLIP and WEBCAM_VFLIP):
+                image2 = cv2.flip(image2, -1)
+            elif WEBCAM_HFLIP:
+                image2 = cv2.flip(image2, 1)
+            elif WEBCAM_VFLIP:
+                image2 = cv2.flip(image2, 0)
+        # crop image to motion tracking area only
+        try:
+            image_crop = image2[y_upper:y_lower, x_left:x_right]
+            image_ok = True
+        except ValueError:
+            logging.error("image2 Stream Image is Not Complete. Cannot Crop. Retry.")
+            image_ok = False
+    # Convert to gray scale, which is easier
+    grayimage2 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
+    # Get differences between the two greyed images
+    differenceimage = cv2.absdiff(grayimage1, grayimage2)
+    # Blur difference image to enhance motion vectors
+    differenceimage = cv2.blur(differenceimage, (BLUR_SIZE, BLUR_SIZE))
+    # Get threshold of blurred difference image
+    # based on THRESHOLD_SENSITIVITY variable
+    retval, thresholdimage = cv2.threshold(differenceimage,
+                                           THRESHOLD_SENSITIVITY,
+                                           255, cv2.THRESH_BINARY)
+    try:
+        # opencv 2 syntax default
+        contours, hierarchy = cv2.findContours(thresholdimage,
+                                               cv2.RETR_EXTERNAL,
+                                               cv2.CHAIN_APPROX_SIMPLE)
+    except ValueError:
+        # opencv 3 syntax
+        thresholdimage, contours, hierarchy = cv2.findContours(thresholdimage,
+                                                               cv2.RETR_EXTERNAL,
+                                                               cv2.CHAIN_APPROX_SIMPLE)
+    # Update grayimage1 to grayimage2 ready for next image2
+    grayimage1 = grayimage2
+    return grayimage1, contours
+
+def speed_image_add_lines(image, color):
+    cv2.line(image, (x_left, y_upper),
+             (x_right, y_upper), color, 1)
+    cv2.line(image, (x_left, y_lower),
+             (x_right, y_lower), color, 1)
+    cv2.line(image, (x_left, y_upper),
+             (x_left, y_lower), color, 1)
+    cv2.line(image, (x_right, y_upper),
+             (x_right, y_lower), color, 1)
+    return image
+
 #------------------------------------------------------------------------------
 def speed_camera():
     """ Main speed camera processing function """
@@ -955,47 +1005,8 @@ def speed_camera():
     track_count = 0
     speed_list = []
     while still_scanning:  # process camera thread images and calculate speed
-        image2 = vs.read() # Read image data from video steam thread instance
-        if WEBCAM:
-            if (WEBCAM_HFLIP and WEBCAM_VFLIP):
-                image2 = cv2.flip(image2, -1)
-            elif WEBCAM_HFLIP:
-                image2 = cv2.flip(image2, 1)
-            elif WEBCAM_VFLIP:
-                image2 = cv2.flip(image2, 0)
-        # crop image to motion tracking area only
-        try:
-            image_crop = image2[y_upper:y_lower, x_left:x_right]
-
-        except ValueError:
-            logging.error("image2 Stream Image is Not Complete. Cannot Crop.")
-            continue
-        # Convert to gray scale, which is easier
-        grayimage2 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
-        # Get differences between the two greyed images
-        differenceimage = cv2.absdiff(grayimage1, grayimage2)
-        # Blur difference image to enhance motion vectors
-        differenceimage = cv2.blur(differenceimage, (BLUR_SIZE, BLUR_SIZE))
-        # Get threshold of blurred difference image
-        # based on THRESHOLD_SENSITIVITY variable
-        retval, thresholdimage = cv2.threshold(differenceimage,
-                                               THRESHOLD_SENSITIVITY,
-                                               255, cv2.THRESH_BINARY)
-        try:
-            # opencv 2 syntax default
-            contours, hierarchy = cv2.findContours(thresholdimage,
-                                                   cv2.RETR_EXTERNAL,
-                                                   cv2.CHAIN_APPROX_SIMPLE)
-        except ValueError:
-            # opencv 3 syntax
-            thresholdimage, contours, hierarchy = cv2.findContours(thresholdimage,
-                                                                   cv2.RETR_EXTERNAL,
-                                                                   cv2.CHAIN_APPROX_SIMPLE)
+        grayimage1, contours = speed_get_contours(grayimage1)
         total_contours = len(contours)
-        # Update grayimage1 to grayimage2 ready for next image2
-        grayimage1 = grayimage2
-        # initialize variables
-
         # if contours found, find the one with biggest area
         if contours:
             motion_found = False
@@ -1105,17 +1116,9 @@ def speed_camera():
                                     # create image file name path
                                     filename = get_image_name(speed_path,
                                                               speed_prefix)
-                                # Add motion rectangle to image
-                                # if required
+                                # Add motion rectangle to image if required
                                 if image_show_motion_area:
-                                    cv2.line(prev_image, (x_left, y_upper),
-                                             (x_right, y_upper), cvRed, 1)
-                                    cv2.line(prev_image, (x_left, y_lower),
-                                             (x_right, y_lower), cvRed, 1)
-                                    cv2.line(prev_image, (x_left, y_upper),
-                                             (x_left, y_lower), cvRed, 1)
-                                    cv2.line(prev_image, (x_right, y_upper),
-                                             (x_right, y_lower), cvRed, 1)
+                                    prev_image = speed_image_add_lines(prev_image, cvRed)
                                     # show centre of motion if required
                                     if SHOW_CIRCLE:
                                         cv2.circle(prev_image,
@@ -1338,10 +1341,7 @@ def speed_camera():
                                       cvGreen, LINE_THICKNESS)
         if gui_window_on:
             # cv2.imshow('Difference Image',difference image)
-            cv2.line(image2, (x_left, y_upper), (x_right, y_upper), cvRed, 1)
-            cv2.line(image2, (x_left, y_lower), (x_right, y_lower), cvRed, 1)
-            cv2.line(image2, (x_left, y_upper), (x_left, y_lower), cvRed, 1)
-            cv2.line(image2, (x_right, y_upper), (x_right, y_lower), cvRed, 1)
+            image2 = speed_image_add_lines(image2, cvRed)
             image_view = cv2.resize(image2, (image_width, image_height))
             cv2.imshow('Movement (q Quits)', image_view)
             if show_thresh_on:
