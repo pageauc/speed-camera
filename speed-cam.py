@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.02"
+progVer = "9.03"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -68,7 +68,8 @@ mypath = os.path.abspath(__file__)  # Find the full path of this python script
 baseDir = mypath[0:mypath.rfind("/")+1]
 baseFileName = mypath[mypath.rfind("/")+1:mypath.rfind(".")]
 progName = os.path.basename(__file__)
-print("----------------------------------------------------------------------")
+horz_line = "----------------------------------------------------------------------"
+print(horz_line)
 print("%s %s   written by Claude Pageau" % (progName, progVer))
 # Color data for OpenCV lines and text
 cvWhite = (255, 255, 255)
@@ -415,12 +416,12 @@ def show_settings():
         os.makedirs(html_path)
     os.chdir(cwd)
     if verbose:
-        print("--------------------------------------------------------------------------------")
+        print(horz_line)
         print("Note: To Send Full Output to File Use command")
         print("python -u ./%s | tee -a log.txt" % progName)
         print("Set log_data_to_file=True to Send speed_Data to CSV File %s.log"
               % baseFileName)
-        print("--------------------------------- Settings -------------------------------------")
+        print(horz_line)
         print("")
         print("Debug Messages .. verbose=%s  display_fps=%s calibrate=%s"
               % (verbose, display_fps, calibrate))
@@ -494,7 +495,7 @@ def show_settings():
             print("                  spaceTimerHrs=%i (0=Off)"
                   " Target spaceFreeMB=%i (min=100 MB)" % (spaceTimerHrs, spaceFreeMB))
         print("")
-        print("--------------------------------------------------------------------------------")
+        print(horz_line)
     return
 
 #------------------------------------------------------------------------------
@@ -892,6 +893,7 @@ def speed_camera():
     event_timer = time.time()
     start_pos_x = None
     end_pos_x = None
+    prev_pos_x = None
     travel_direction = ""
     # initialize a cropped grayimage1 image
     # Only needs to be done once
@@ -951,6 +953,7 @@ def speed_camera():
             db_is_open = True
     track_right_side = True
     track_count = 0
+    speed_list = []
     while still_scanning:  # process camera thread images and calculate speed
         image2 = vs.read() # Read image data from video steam thread instance
         if WEBCAM:
@@ -1004,12 +1007,13 @@ def speed_camera():
                     (x, y, w, h) = cv2.boundingRect(c)
                     # check if object contour is completely within crop area
                     if (x > x_buf and x + w < x_right - x_left - x_buf):
-                        motion_found = True
-                        biggest_area = found_area
+                        cur_track_time = time.time() # record cur track time
                         track_x = x
                         track_y = y
                         track_w = w  # movement width of object contour
                         track_h = h  # movement height of object contour
+                        motion_found = True
+                        biggest_area = found_area
             if motion_found:
                 # Check if last motion event timed out
                 if time.time() - event_timer > event_timeout:
@@ -1017,6 +1021,7 @@ def speed_camera():
                     event_timer = time.time()
                     first_event = True
                     start_pos_x = None
+                    prev_pos_x = None
                     end_pos_x = None
                     logging.info("Reset- event_timer %.2f sec Exceeded",
                                  event_timeout)
@@ -1025,33 +1030,49 @@ def speed_camera():
                 ##############################
                 if first_event:   # This is a first valid motion event
                     first_event = False  # Only one first track event
-                    track_start_time = time.time() # Record track start time
+                    track_start_time = cur_track_time # Record track start time
+                    prev_start_time = cur_track_time
                     start_pos_x = track_x
+                    prev_pos_x = track_x
                     end_pos_x = track_x
                     logging.info("New  - xy(%i,%i) Start New Track", track_x, track_y)
                     event_timer = time.time() # Reset event timeout
                     track_count = 0
+                    speed_list = []
                 else:
+                    prev_pos_x = end_pos_x
+                    end_pos_x = track_x
                     # check if movement is within acceptable distance
                     # range of last event
-                    if (abs(track_x - end_pos_x) > x_diff_min and
-                            abs(track_x - end_pos_x) < x_diff_max):
+                    if (abs(end_pos_x - prev_pos_x) > x_diff_min and
+                            abs(end_pos_x - prev_pos_x) < x_diff_max):
                         track_count += 1  # increment
-                        end_pos_x = track_x # new position of track end point
-                        if end_pos_x - start_pos_x > 0:
+                        if end_pos_x - prev_pos_x > 0:
                             travel_direction = "L2R"
                         else:
                             travel_direction = "R2L"
-                        tot_track_dist = abs(end_pos_x - start_pos_x)
-                        tot_track_time = abs(time.time() - track_start_time)
-                        ave_speed = float((abs(tot_track_dist / tot_track_time)) * speed_conv)
+                        cur_track_dist = abs(end_pos_x - prev_pos_x)
+                        cur_ave_speed = float((abs(cur_track_dist / abs(cur_track_time - prev_start_time))) * speed_conv)
+                        speed_list.append(cur_ave_speed)
+                        prev_start_time = cur_track_time
                         event_timer = time.time()
                         if track_count >= track_counter:
+                            tot_track_dist = abs(track_x - start_pos_x)
+                            tot_track_time = abs(track_start_time - cur_track_time)
+                            # ave_speed = float((abs(tot_track_dist / tot_track_time)) * speed_conv)
+                            ave_speed = sum(speed_list) / float(len(speed_list))
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
                                 logging.info(" Add - xy(%i,%i) %3.2f %s cnt=%i/%i"
                                              " C=%i %ix%i=%i sqpx %s",
-                                             track_x, track_y, ave_speed, speed_units,
+                                             track_x, track_y, cur_ave_speed, speed_units,
+                                             track_count,
+                                             track_counter, total_contours,
+                                             track_w, track_h, biggest_area,
+                                             travel_direction)
+                                logging.info(" Add - xy(%i,%i) %3.2f %s cnt=%i/%i"
+                                             " C=%i %ix%i=%i sqpx %s",
+                                             track_x, track_y, cur_ave_speed, speed_units,
                                              track_count,
                                              track_counter, total_contours,
                                              track_w, track_h, biggest_area,
@@ -1239,6 +1260,7 @@ def speed_camera():
                                              tot_track_time,
                                              cal_obj_px,
                                              cal_obj_mm)
+                                print(horz_line)
                                 # Wait to avoid dual tracking same object.
                                 if track_timeout > 0:
                                     logging.info("Sleep - %0.2f seconds to Clear Track"
@@ -1269,7 +1291,7 @@ def speed_camera():
                         else:
                             logging.info(" Add - xy(%i,%i) %3.1f %s"
                                          " cnt=%i/%i C=%i %ix%i=%i sqpx %s",
-                                         track_x, track_y, ave_speed, speed_units,
+                                         track_x, track_y, cur_ave_speed, speed_units,
                                          track_count,
                                          track_counter, total_contours,
                                          track_w, track_h, biggest_area,
