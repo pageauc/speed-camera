@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.05"
+progVer = "9.06"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -945,18 +945,6 @@ def speed_camera():
     end_pos_x = None
     prev_pos_x = None
     travel_direction = ""
-    # initialize a cropped grayimage1 image
-    # Only needs to be done once
-    image2 = vs.read()  # Get image from PiVideoSteam thread instance
-    try:
-        # crop image to motion tracking area only
-        image_crop = image2[y_upper:y_lower, x_left:x_right]
-    except:
-        vs.stop()
-        logging.warn("Problem Connecting To Camera Stream.")
-        logging.warn("Restarting Camera.  One Moment Please ...")
-        time.sleep(4)
-        return
     if verbose:
         if gui_window_on:
             logging.info("Press lower case q on OpenCV GUI Window to Quit program")
@@ -984,11 +972,7 @@ def speed_camera():
         text_y = (image_height - 50)  # show text at bottom of image
     else:
         text_y = 10  # show text at top of image
-    grayimage1 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
-    event_timer = time.time()
     # Initialize prev_image used for taking speed image photo
-    prev_image = image2
-    still_scanning = True
     lastSpaceCheck = datetime.datetime.now()
     speed_path = image_path
     db_conn = db_check(DB_PATH)
@@ -1001,15 +985,31 @@ def speed_camera():
             logging.info("sqlite3 DB is Open %s", DB_PATH)
             db_cur = db_conn.cursor()  # Set cursor position
             db_is_open = True
+    # initialize a cropped grayimage1 image
+    # Only needs to be done once
+    image2 = vs.read()  # Get image from PiVideoSteam thread instance
+    try:
+        # crop image to motion tracking area only
+        image_crop = image2[y_upper:y_lower, x_left:x_right]
+    except:
+        vs.stop()
+        logging.warn("Problem Connecting To Camera Stream.")
+        logging.warn("Restarting Camera.  One Moment Please ...")
+        time.sleep(4)
+        return
+    prev_image = image2
+    grayimage1 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
     track_right_side = True
     track_count = 0
     speed_list = []
+    event_timer = time.time()
+    still_scanning = True
     while still_scanning:  # process camera thread images and calculate speed
         image2 = vs.read() # Read image data from video steam thread instance
         grayimage1, contours = speed_get_contours(image2, grayimage1)
         # if contours found, find the one with biggest area
         if contours:
-            total_contours = len(contours)        
+            total_contours = len(contours)
             motion_found = False
             biggest_area = MIN_AREA
             for c in contours:
@@ -1028,15 +1028,16 @@ def speed_camera():
                         biggest_area = found_area
             if motion_found:
                 # Check if last motion event timed out
-                if time.time() - event_timer > event_timeout:
+                reset_time_diff = time.time() - event_timer
+                if  reset_time_diff > event_timeout:
                     # event_timer exceeded so reset for new track
                     event_timer = time.time()
                     first_event = True
                     start_pos_x = None
                     prev_pos_x = None
                     end_pos_x = None
-                    logging.info("Reset- event_timer %.2f sec Exceeded",
-                                 event_timeout)
+                    logging.info("Reset- event_timer %.2f>%.2f sec Exceeded",
+                                 reset_time_diff, event_timeout)
                 ##############################
                 # Process motion events and track object movement
                 ##############################
@@ -1047,24 +1048,28 @@ def speed_camera():
                     start_pos_x = track_x
                     prev_pos_x = track_x
                     end_pos_x = track_x
-                    logging.info("New  - xy(%i,%i) Start New Track", track_x, track_y)
+                    logging.info("New  - 0/%i xy(%i,%i) Start New Track",
+                                 track_counter, track_x, track_y)
                     event_timer = time.time() # Reset event timeout
                     track_count = 0
                     speed_list = []
                 else:
                     prev_pos_x = end_pos_x
                     end_pos_x = track_x
+                    if end_pos_x - prev_pos_x > 0:
+                        travel_direction = "L2R"
+                    else:
+                        travel_direction = "R2L"
                     # check if movement is within acceptable distance
                     # range of last event
                     if (abs(end_pos_x - prev_pos_x) > x_diff_min and
                             abs(end_pos_x - prev_pos_x) < x_diff_max):
                         track_count += 1  # increment
-                        if end_pos_x - prev_pos_x > 0:
-                            travel_direction = "L2R"
-                        else:
-                            travel_direction = "R2L"
                         cur_track_dist = abs(end_pos_x - prev_pos_x)
-                        cur_ave_speed = float((abs(cur_track_dist / abs(cur_track_time - prev_start_time))) * speed_conv)
+                        cur_ave_speed = float((abs(cur_track_dist /
+                                               float(abs(cur_track_time -
+                                                         prev_start_time)))) *
+                                                         speed_conv)
                         speed_list.append(cur_ave_speed)
                         prev_start_time = cur_track_time
                         event_timer = time.time()
@@ -1075,18 +1080,14 @@ def speed_camera():
                             ave_speed = sum(speed_list) / float(len(speed_list))
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
-                                logging.info(" Add - xy(%i,%i) %3.2f %s cnt=%i/%i"
-                                             " C=%i %ix%i=%i sqpx %s",
-                                             track_x, track_y, cur_ave_speed, speed_units,
-                                             track_count,
-                                             track_counter, total_contours,
-                                             track_w, track_h, biggest_area,
-                                             travel_direction)
-                                logging.info(" Add - xy(%i,%i) %3.2f %s cnt=%i/%i"
-                                             " C=%i %ix%i=%i sqpx %s",
-                                             track_x, track_y, cur_ave_speed, speed_units,
-                                             track_count,
-                                             track_counter, total_contours,
+                                logging.info(" Add - %i/%i xy(%i,%i) %3.2f %s"
+                                             " D=%i/%i C=%i %ix%i=%i sqpx %s",
+                                             track_count, track_counter,
+                                             track_x, track_y,
+                                             cur_ave_speed, speed_units,
+                                             abs(track_x - prev_pos_x),
+                                             x_diff_max,
+                                             total_contours,
                                              track_w, track_h, biggest_area,
                                              travel_direction)
                                 # Resize and process previous image
@@ -1293,11 +1294,14 @@ def speed_camera():
                             track_count = 0
                             event_timer = time.time()
                         else:
-                            logging.info(" Add - xy(%i,%i) %3.1f %s"
-                                         " cnt=%i/%i C=%i %ix%i=%i sqpx %s",
-                                         track_x, track_y, cur_ave_speed, speed_units,
-                                         track_count,
-                                         track_counter, total_contours,
+                            logging.info(" Add - %i/%i xy(%i,%i) %3.2f %s"
+                                         " D=%i/%i C=%i %ix%i=%i sqpx %s",
+                                         track_count, track_counter,
+                                         track_x, track_y,
+                                         cur_ave_speed, speed_units,
+                                         abs(track_x - prev_pos_x),
+                                         x_diff_max,
+                                         total_contours,
                                          track_w, track_h, biggest_area,
                                          travel_direction)
                             end_pos_x = track_x
@@ -1308,22 +1312,31 @@ def speed_camera():
                         if show_out_range:
                             # movements exceeds Max px movement
                             # allowed so Ignore and do not update event_timer
-                            if abs(track_x - end_pos_x) >= x_diff_max:
-                                logging.info(" Out - xy(%i,%i) Dist=%i is "
-                                             ">=%i px C=%i %ix%i=%i sqpx %s",
-                                             track_x, track_y, abs(track_x - end_pos_x),
-                                             x_diff_max, total_contours,
+                            if abs(track_x - prev_pos_x) >= x_diff_max:
+                                logging.info(" Out - %i/%i xy(%i,%i) Max D=%i>=%ipx"
+                                             " C=%i %ix%i=%i sqpx %s",
+                                             track_count, track_counter,
+                                             track_x, track_y,
+                                             abs(track_x - prev_pos_x),
+                                             x_diff_max,
+                                             total_contours,
                                              track_w, track_h, biggest_area,
                                              travel_direction)
+                                first_event = True    # Too Far Away so restart Track
                             # Did not move much so update event_timer
                             # and wait for next valid movement.
                             else:
-                                logging.info(" Out - xy(%i,%i) Dist=%i is "
-                                             "<=%i px C=%i %ix%i=%i sqpx %s",
-                                             track_x, track_y, abs(track_x - end_pos_x),
-                                             x_diff_min, total_contours,
+                                logging.info(" Out - %i/%i xy(%i,%i) Min D=%i<=%ipx"
+                                             " C=%i %ix%i=%i sqpx %s",
+                                             track_count, track_counter,
+                                             track_x, track_y,
+                                             abs(track_x - end_pos_x),
+                                             x_diff_min,
+                                             total_contours,
                                              track_w, track_h, biggest_area,
                                              travel_direction)
+                                if track_count == 0:
+                                    first_event = True
                         event_timer = time.time()  # Reset Event Timer
                 if gui_window_on:
                     # show small circle at contour xy if required
