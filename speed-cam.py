@@ -1007,9 +1007,9 @@ def speed_camera():
     while still_scanning:  # process camera thread images and calculate speed
         image2 = vs.read() # Read image data from video steam thread instance
         grayimage1, contours = speed_get_contours(image2, grayimage1)
-        total_contours = len(contours)
         # if contours found, find the one with biggest area
         if contours:
+            total_contours = len(contours)        
             motion_found = False
             biggest_area = MIN_AREA
             for c in contours:
