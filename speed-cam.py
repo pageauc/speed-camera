@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.07"
+progVer = "9.08"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -177,8 +177,6 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
         except OSError as err:
             logging.warn("Failed To Remove File %s - %s",
                          pluginCurrentpyc, err)
-else:
-    logging.info("No Plugins Enabled per pluginEnable=%s", pluginEnable)
 
 # import the necessary packages
 # -----------------------------
@@ -930,28 +928,28 @@ def speed_image_add_lines(image, color):
     return image
 
 def speed_notify():
+    if pluginEnable:
+        logging.info("Plugin Enabled per pluginName=%s", pluginName)
+    else:
+        logging.info("Plugin Disabled per pluginEnable=%s", pluginEnable)
+
     if verbose:
+        if loggingToFile:
+            print("Logging to File %s (Console Messages Disabled)" % logFilePath)
+        else:
+            logging.info("Logging to Console per Variable verbose=True")
+
         if gui_window_on:
             logging.info("Press lower case q on OpenCV GUI Window to Quit program")
             logging.info("        or ctrl-c in this terminal session to Quit")
         else:
             logging.info("Press ctrl-c in this terminal session to Quit")
-
-        if loggingToFile:
-            logging.info("Sending Logging Data to %s (Console Messages Disabled)",
-                         logFilePath)
-        else:
-            logging.info("Start Logging Speed Camera Activity to Console")
-        logging.info("Logging to Console per Variable verbose=True")
     else:
-        logging.warn("Logging Messages Disabled per verbose=%s", verbose)
+        print("Logging Messages Disabled per verbose=%s" % verbose)
 
-    if pluginEnable:
-        logging.info("Plugin Enabled per pluginName=%s", pluginName)
-    else:
-        logging.info("Plugin Disabled per pluginEnable=%s", pluginEnable)
     if calibrate:
         logging.warn("IMPORTANT: Camera Is In Calibration Mode ....")
+
     logging.info("Begin Motion Tracking .....")
 
 #------------------------------------------------------------------------------
@@ -967,7 +965,6 @@ def speed_camera():
     end_pos_x = None
     prev_pos_x = None
     travel_direction = ""
-    speed_notify()
     font = cv2.FONT_HERSHEY_SIMPLEX
     # Calculate position of text on the images
     if image_text_bottom:
@@ -988,6 +985,7 @@ def speed_camera():
             logging.info("sqlite3 DB is Open %s", DB_PATH)
             db_cur = db_conn.cursor()  # Set cursor position
             db_is_open = True
+    speed_notify()
     # initialize a cropped grayimage1 image
     image2 = vs.read()  # Get image from PiVideoSteam thread instance
     prev_image = image2  # make a copy of the first image
