@@ -113,15 +113,14 @@ elif verbose:
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
-    logging.info("Logging to Console per Variable verbose=True")
 else:
     logging.basicConfig(level=logging.CRITICAL,
                         format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
-if not verbose:
-    logging.info("Logging Disabled per Variable verbose=False")
+
 from search_config import search_dest_path
-# Setup appropriate plugin if enabled
+
+# Import Settings from specified plugin if pluginEnable=True
 if pluginEnable:     # Check and verify plugin and load variable overlay
     pluginDir = os.path.join(baseDir, "plugins")
     # Check if there is a .py at the end of pluginName variable
@@ -130,43 +129,42 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
     pluginPath = os.path.join(pluginDir, pluginName + '.py')
     logging.info("pluginEnabled - loading pluginName %s", pluginPath)
     if not os.path.isdir(pluginDir):
-        print("ERROR : plugin Directory Not Found at %s" % pluginDir)
-        print("        Rerun github curl install script to install plugins")
-        print("        https://github.com/pageauc/pi-timolo/wiki/"
-              "How-to-Install-or-Upgrade#quick-install")
-        print("        %s %s Exiting Due to Error" % (progName, progVer))
+        logging.error("plugin Directory Not Found at %s", pluginDir)
+        logging.info("Rerun github curl install script to install plugins")
+        logging.info("https://github.com/pageauc/pi-timolo/wiki/")
+        logging.info("How-to-Install-or-Upgrade#quick-install")
+        logging.warn("%s %s Exiting Due to Error" % (progName, progVer))
         sys.exit(1)
     elif not os.path.exists(pluginPath):
-        print("ERROR : File Not Found pluginName %s" % pluginPath)
-        print("        Check Spelling of pluginName Value in %s"
-              % configFilePath)
-        print("        ------- Valid Names -------")
+        logging.error("File Not Found pluginName %s", pluginPath)
+        logging.info("Check Spelling of pluginName Value in %s", configFilePath)
+        logging.info("------- Valid Names -------")
         validPlugin = glob.glob(pluginDir + "/*py")
         validPlugin.sort()
         for entry in validPlugin:
             pluginFile = os.path.basename(entry)
             plugin = pluginFile.rsplit('.', 1)[0]
             if not ((plugin == "__init__") or (plugin == "current")):
-                print("        %s"  % plugin)
-        print("        ------- End of List -------")
-        print("        Note: pluginName Should Not have .py Ending.")
-        print("INFO  : or Rerun github curl install command.  See github wiki")
-        print("        https://github.com/pageauc/speed-camera/wiki/"
-              "How-to-Install-or-Upgrade#quick-install")
-        print("        %s %s Exiting Due to Error" % (progName, progVer))
+                logging.info("        %s", plugin)
+        logging.info("------- End of List -------")
+        logging.info("        Note: pluginName Should Not have .py Ending.")
+        logging.info("or Rerun github curl install command.  See github wiki")
+        logging.info("https://github.com/pageauc/speed-camera/wiki/")
+        logging.info("How-to-Install-or-Upgrade#quick-install")
+        logging.warn("%s %s Exiting Due to Error", progName, progVer)
         sys.exit(1)
     else:
         pluginCurrent = os.path.join(pluginDir, "current.py")
         try:    # Copy image file to recent folder
-            print("INFO  : Copy %s to %s" % (pluginPath, pluginCurrent))
+            logging.info("Copy %s to %s", pluginPath, pluginCurrent)
             shutil.copy(pluginPath, pluginCurrent)
         except OSError as err:
-            print('ERROR : Copy Failed from %s to %s - %s'
-                  % (pluginPath, pluginCurrent, err))
-            print("        Check permissions, disk space, Etc.")
-            print("        %s %s Exiting Due to Error" % (progName, progVer))
+            logging.error('Copy Failed from %s to %s - %s',
+                          pluginPath, pluginCurrent, err)
+            logging.info("Check permissions, disk space, Etc.")
+            logging.warn("%s %s Exiting Due to Error", progName, progVer)
             sys.exit(1)
-        print("INFO  : Import Plugin %s" % pluginPath)
+        logging.info("Import Plugin %s", pluginPath)
         # add plugin directory to program PATH
         sys.path.insert(0, pluginDir)
         from plugins.current import *
@@ -177,12 +175,11 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
             if os.path.exists(pluginCurrentpyc):
                 os.remove(pluginCurrentpyc)
         except OSError as err:
-            print("WARN  : Failed To Remove File %s - %s"
-                  % (pluginCurrentpyc, err))
-            print("        %s %s Exiting Due to Error"
-                  % (progName, progVer))
+            logging.warn("Failed To Remove File %s - %s",
+                         pluginCurrentpyc, err)
 else:
     logging.info("No Plugins Enabled per pluginEnable=%s", pluginEnable)
+
 # import the necessary packages
 # -----------------------------
 try:  #Add this check in case running on non RPI platform using web cam
@@ -945,15 +942,17 @@ def speed_notify():
                          logFilePath)
         else:
             logging.info("Start Logging Speed Camera Activity to Console")
+        logging.info("Logging to Console per Variable verbose=True")
     else:
-        print("INFO  : NOTE: Logging Messages Disabled per verbose=%s"
-              % verbose)
-    if pluginEnable:
-        logging.info("Plugin %s is Enabled." % pluginName)
-    if calibrate:
-        logging.info("IMPORTANT: Camera Is In Calibration Mode ....")
-    logging.info("Begin Motion Tracking .....")
+        logging.warn("Logging Messages Disabled per verbose=%s", verbose)
 
+    if pluginEnable:
+        logging.info("Plugin Enabled per pluginName=%s", pluginName)
+    else:
+        logging.info("Plugin Disabled per pluginEnable=%s", pluginEnable)
+    if calibrate:
+        logging.warn("IMPORTANT: Camera Is In Calibration Mode ....")
+    logging.info("Begin Motion Tracking .....")
 
 #------------------------------------------------------------------------------
 def speed_camera():
