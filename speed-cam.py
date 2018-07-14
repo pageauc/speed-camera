@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.06"
+progVer = "9.07"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -932,19 +932,7 @@ def speed_image_add_lines(image, color):
              (x_right, y_lower), color, 1)
     return image
 
-#------------------------------------------------------------------------------
-def speed_camera():
-    """ Main speed camera processing function """
-    ave_speed = 0.0
-    # initialize variables
-    frame_count = 0
-    fps_time = time.time()
-    first_event = True   # Start a New Motion Track
-    event_timer = time.time()
-    start_pos_x = None
-    end_pos_x = None
-    prev_pos_x = None
-    travel_direction = ""
+def speed_notify():
     if verbose:
         if gui_window_on:
             logging.info("Press lower case q on OpenCV GUI Window to Quit program")
@@ -965,9 +953,24 @@ def speed_camera():
     if calibrate:
         logging.info("IMPORTANT: Camera Is In Calibration Mode ....")
     logging.info("Begin Motion Tracking .....")
-    # Calculate position of text on the images
 
+
+#------------------------------------------------------------------------------
+def speed_camera():
+    """ Main speed camera processing function """
+    ave_speed = 0.0
+    # initialize variables
+    frame_count = 0
+    fps_time = time.time()
+    first_event = True   # Start a New Motion Track
+    event_timer = time.time()
+    start_pos_x = None
+    end_pos_x = None
+    prev_pos_x = None
+    travel_direction = ""
+    speed_notify()
     font = cv2.FONT_HERSHEY_SIMPLEX
+    # Calculate position of text on the images
     if image_text_bottom:
         text_y = (image_height - 50)  # show text at bottom of image
     else:
@@ -976,6 +979,7 @@ def speed_camera():
     lastSpaceCheck = datetime.datetime.now()
     speed_path = image_path
     db_conn = db_check(DB_PATH)
+    # check and open sqlite3 db
     if db_conn is not None:
         db_conn = db_open(DB_PATH)
         if db_conn is None:
@@ -986,8 +990,8 @@ def speed_camera():
             db_cur = db_conn.cursor()  # Set cursor position
             db_is_open = True
     # initialize a cropped grayimage1 image
-    # Only needs to be done once
     image2 = vs.read()  # Get image from PiVideoSteam thread instance
+    prev_image = image2  # make a copy of the first image
     try:
         # crop image to motion tracking area only
         image_crop = image2[y_upper:y_lower, x_left:x_right]
@@ -997,9 +1001,7 @@ def speed_camera():
         logging.warn("Restarting Camera.  One Moment Please ...")
         time.sleep(4)
         return
-    prev_image = image2
     grayimage1 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
-    track_right_side = True
     track_count = 0
     speed_list = []
     event_timer = time.time()
