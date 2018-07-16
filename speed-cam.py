@@ -197,11 +197,11 @@ if not WEBCAM:
         logging.error("%s %s Exiting Due to Error", progName, progVer)
         sys.exit(1)
     else:
-        logging.info("Camera Module is Enabled and Connected %s", camResult)
+        logging.info("Pi Camera Module is Enabled and Connected %s", camResult)
 try:   # Check to see if opencv is installed
     import cv2
 except ImportError:
-    logging.error("Could not import cv2 library")
+    logging.error("Could Not import cv2 library")
     if sys.version_info > (2, 9):
         logging.error("python3 failed to import cv2")
         logging.error("Try installing opencv for python3")

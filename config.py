@@ -54,11 +54,11 @@ SPEED_MPH = False      # Set Speed Units   kph=False  mph=True
 MIN_AREA = 100         # Default= 100 Exclude all contours less than or equal to this sq-px Area
 track_counter = 3      # Default= 3 Number of Consecutive Motion Events to trigger speed photo
 show_out_range = True  # Default= True Show Out of Range Events per x_diff settings below False= Off
-x_diff_max = 30        # Default= 30 Exclude if max px away >= last motion event x position
+x_diff_max = 20        # Default= 20 Exclude if max px away >= last motion event x position
 x_diff_min = 1         # Default= 1 Exclude if min px away <= last event x position
 x_buf_adjust = 10      # Default= 10 Divides motion Rect x for L&R Buffer Space to Ensure contours are in
 track_timeout = 0.0    # Default= 0.0 Optional seconds to wait after track End (Avoids dual tracking)
-event_timeout = 0.4    # Default= 0.4 seconds to wait for next motion event before starting new track
+event_timeout = 0.3    # Default= 0.3 seconds to wait for next motion event before starting new track
 max_speed_over = 0     # Exclude track if Speed less than or equal to value specified 0=All
                        # Can be useful to exclude pedestrians and/or bikes, Etc or track only fast objects
 
@@ -77,7 +77,7 @@ WEBCAM_VFLIP = False   # Default= False USB Webcam flip image vertically
 # ------------------
 CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning Default=320
 CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  Default=240
-CAMERA_FRAMERATE = 25  # Default= 25 Frame rate for video stream V2 picam can be higher
+CAMERA_FRAMERATE = 20  # Default= 20 Frame rate for video stream V2 picam can be higher
 CAMERA_ROTATION = 0    # Rotate camera image valid values are 0, 90, 180, 270
 CAMERA_VFLIP = True    # Flip the camera image vertically if required
 CAMERA_HFLIP = True    # Flip the camera image horizontally if required
