@@ -53,6 +53,7 @@ logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
 SPEED_MPH = False      # Set Speed Units   kph=False  mph=True
 MIN_AREA = 100         # Default= 100 Exclude all contours less than or equal to this sq-px Area
 track_counter = 3      # Default= 3 Number of Consecutive Motion Events to trigger speed photo
+track_len_trig = 70    # NOT USED. Used for version 8.87 or earlier see speed-cam_887.py 
 show_out_range = True  # Default= True Show Out of Range Events per x_diff settings below False= Off
 x_diff_max = 20        # Default= 20 Exclude if max px away >= last motion event x position
 x_diff_min = 1         # Default= 1 Exclude if min px away <= last event x position
