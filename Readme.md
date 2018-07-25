@@ -63,6 +63,9 @@ or
 [recent version of python installed](https://www.python.org/downloads/)
 For Details See [***Wiki details***](https://github.com/pageauc/speed-camera/wiki/Prerequisites-and-Install#windows-or-non-rpi-unix-installs).
 
+It is recommended you upgrade to OpenCV version 3.x.x  For Easy compile of opencv 3.4.2 from source 
+See https://github.com/pageauc/opencv3-setup
+
 ## Windows or Non RPI Unix Installs
 For Windows or Unix computer platforms (non RPI or Debian) ensure you have the most
 up-to-date python version. For Downloads visit https://www.python.org/downloads    
@@ -109,6 +112,9 @@ Review settings in ***config.py*** file and edit variables with nano as required
 You will need to perform a calibration to set the correct value for config.py ***cal_obj_px*** and ***cal_obj_mm*** 
 variables based on the distance from camera to objects being measured for speed.
 See [***Calibration Procedure***](https://github.com/pageauc/speed-camera/wiki/Calibrate-Camera-for-Distance) for more details.     
+
+The config.py motion tracking variable called track_counter = can be adjusted for your system and opencv version.
+default is 5 but a quad core RPI3 and latest opencv version eg 3.4.2 can be 10-15 or possibly greater. 
     
 ## Run menubox.sh 
 
