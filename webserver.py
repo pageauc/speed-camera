@@ -10,7 +10,7 @@ import urllib
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from StringIO import StringIO
 
-PROG_VER = "ver 7.5  written by Claude Pageau"
+PROG_VER = "ver 7.6  written by Claude Pageau"
 '''
  SimpleHTTPServer python program to allow selection of images from right panel and display in an iframe left panel
  Use for local network use only since this is not guaranteed to be a secure web server.
@@ -98,13 +98,13 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         # find index of first file or hyperlink
 
         file_found = False
-        cnt = 0        
+        cnt = 0
         for entry in list:  # See if there is a file for initializing iframe
-            fullname = os.path.join(path, entry)       
+            fullname = os.path.join(path, entry)
             if os.path.islink(fullname) or os.path.isfile(fullname):
                 file_found = True
                 break
-            cnt += 1                 
+            cnt += 1
 
         # Start HTML formatting code
         f.write('<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">')
@@ -124,7 +124,7 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
                 % (web_iframe_width_usage, web_image_height))
         if file_found:  # file was display it in left pane
             f.write('src="%s" name="imgbox" id="imgbox" alt="%s">'
-                    % (list[cnt], web_page_title))                
+                    % (list[cnt], web_page_title))
         else:  # No files found so blank left pane
             f.write('src="%s" name="imgbox" id="imgbox" alt="%s">'
                     % ("about:blank", web_page_title))
@@ -134,14 +134,10 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         list_style = '<div style="height: ' + web_list_height + 'px; overflow: auto; white-space: nowrap;">'
         f.write(list_style)
         # f.write('<center><b>%s</b></center>' % (self.path))
-        if web_page_refresh_on:
-            sort_heading = ('&nbsp;&nbsp;Refresh %s s&nbsp;&nbsp;<b>%s</b>' %
-                            (web_page_refresh_sec, list_title))
-        else:
-            # Show a refresh button since auto refesh is turned off.
-            sort_heading = ('''<FORM>&nbsp;&nbsp;<INPUT TYPE="button" onClick="history.go(0)"
+        # Show a refresh button at top of right pane
+        refresh_button = ('''<FORM>&nbsp;&nbsp;<INPUT TYPE="button" onClick="history.go(0)"
 VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
-        f.write('%s' % sort_heading)
+        f.write('%s' % refresh_button)
         f.write('<ul name="menu" id="menu" style="list-style-type:none; padding-left: 4px">')
         # Create the formatted list of right panel hyper-links to files in the specified directory
 
