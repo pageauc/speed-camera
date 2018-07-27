@@ -52,9 +52,9 @@ logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
 # ---------------------
 SPEED_MPH = False      # Set Speed Units   kph=False  mph=True
 track_counter = 5      # 1core=5 4cores=10 + Number of Consecutive Motion Events to trigger speed photo
-                       # Testing with RPI2 B 1core using opencv ver 3.4.2 
+                       # Testing with RPI2 B 1core using opencv ver 3.4.2
 MIN_AREA = 100         # Default= 100 Exclude all contours less than or equal to this sq-px Area
-track_len_trig = 70    # NOT USED. Used for version 8.87 or earlier see speed-cam_887.py 
+track_len_trig = 70    # NOT USED. Used for version 8.87 or earlier see speed-cam_887.py
 show_out_range = True  # Default= True Show Out of Range Events per x_diff settings below False= Off
 x_diff_max = 20        # Default= 20 Exclude if max px away >= last motion event x position
 x_diff_min = 1         # Default= 1 Exclude if min px away <= last event x position
@@ -133,8 +133,8 @@ THRESHOLD_SENSITIVITY = 20    # Default= 20 OpenCV setting for difference image 
 web_server_port = 8080        # Default= 8080 Web server access port eg http://192.168.1.100:8080
 web_server_root = "media"     # Default= "media" webserver root path to webserver image/video sub-folders
 web_page_title = "SPEED-CAMERA Media"  # web page title that browser show (not displayed on web page)
-web_page_refresh_on = False   # False=Off (never)  Refresh True=On (per seconds below)
-web_page_refresh_sec = "180"  # Default= "180" seconds to wait for web page refresh  seconds (three minutes)
+web_page_refresh_on = True    # False=Off (never)  Refresh True=On (per seconds below)
+web_page_refresh_sec = "900"  # Default= "900" seconds to wait for web page refresh  seconds (15 minutes)
 web_page_blank = False        # True Starts left image with a blank page until a right menu item is selected
                               # False displays second list[1] item since first may be in progress
 

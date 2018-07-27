@@ -134,7 +134,7 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         list_style = '<div style="height: ' + web_list_height + 'px; overflow: auto; white-space: nowrap;">'
         f.write(list_style)
         # f.write('<center><b>%s</b></center>' % (self.path))
-        # Show a refresh button at top of right pane
+        # Show a refresh button at top of right pane listing
         refresh_button = ('''<FORM>&nbsp;&nbsp;<INPUT TYPE="button" onClick="history.go(0)"
 VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
         f.write('%s' % refresh_button)
