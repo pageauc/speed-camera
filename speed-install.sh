@@ -153,12 +153,17 @@ sudo apt-get install -yq python-picamera
 sudo apt-get install -yq python3-picamera
 sudo apt-get install -yq python-imaging
 sudo apt-get install -yq sqlite3
+
 sudo apt-get install -yq gnuplot
 if [ $? -ne 0 ]; then
    sudo apt-get install -yq Gnuplot
+fi
+
 sudo apt-get install -yq python-gnuplot
 if [ $? -ne 0 ]; then
    sudo apt-get install -yq python-Gnuplot
+fi
+
 sudo apt-get install -yq libgl1-mesa-dri
 sudo apt-get install -yq fonts-freefont-ttf # Required for Jessie Lite Only
 sudo apt-get install -yq pandoc  # convert markdown to plain text for Readme.md
@@ -167,7 +172,7 @@ dos2unix -q *
 cd $DIR
 # Check if speed-install.sh was launched from speed-cam folder
 if [ "$DIR" != "$INSTALL_PATH" ]; then
-  if [ -f 'speed-install.sh' ]; then
+  if curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash[ -f 'speed-install.sh' ]; then
     echo "$STATUS Cleanup speed-install.sh"
     rm speed-install.sh
   fi
@@ -211,13 +216,3 @@ For Detailed Instructions See https://github.com/pageauc/speed-camera/wiki
 $SPEED_DIR version $ver
 Good Luck Claude ...
 Bye"
-
-
-
-
-
-
-
-
-
-

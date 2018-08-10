@@ -140,7 +140,6 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
         f.write('%s' % refresh_button)
         f.write('<ul name="menu" id="menu" style="list-style-type:none; padding-left: 4px">')
         # Create the formatted list of right panel hyper-links to files in the specified directory
-
         if not self.path is "/":   # Display folder Back arrow navigation if not in web root
             f.write('<li><a href="%s" >%s</a></li>\n'
                     % (urllib.quote(".."), cgi.escape("< BACK")))
@@ -169,17 +168,17 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
         if (not self.path is "/") and display_entries > 35:   # Display folder Back arrow navigation if not in web root
             f.write('<li><a href="%s" >%s</a></li>\n' % (urllib.quote(".."), cgi.escape("< BACK")))
         f.write('</ul></div><p><b>')
-        f.write('<div style="float: left; padding-left: 40px;">Web Root is [ %s ]</div>' % web_server_root)
+        f.write('<div style="float: left; padding-left: 40px;">Web Root = %s</div>' % web_server_root)
         f.write('<div style="text-align: center;">%s</div>' % web_page_title)
 
         if web_page_refresh_on:
-            f.write('<div style="float: left; padding-left: 40px;">Auto Refresh [ %s sec ]</div>' % web_page_refresh_sec)
+            f.write('<div style="float: left; padding-left: 40px;">Auto Refresh = %s sec</div>' % web_page_refresh_sec)
 
         if web_max_list_entries > 1:
-            f.write('<div style="text-align: right; padding-right: 40px;">Listing Only %i of %i Files in [ %s ]</div>'
+            f.write('<div style="text-align: right; padding-right: 40px;">Listing Only %i of %i Files in %s</div>'
                     % (display_entries, all_entries, self.path))
         else:
-            f.write('<div style="text-align: right; padding-right: 50px;">Listing All %i Files in [ %s ]</div>'
+            f.write('<div style="text-align: right; padding-right: 50px;">Listing All %i Files in %s</div>'
                     % (all_entries, self.path))
         # Display web refresh info only if setting is turned on
         f.write('</b></p>')

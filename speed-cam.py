@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.08"
+progVer = "9.09"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -1321,7 +1321,11 @@ def speed_camera():
                                              total_contours,
                                              track_w, track_h, biggest_area,
                                              travel_direction)
-                                first_event = True    # Too Far Away so restart Track
+                                # if track_count is over half way then do not start new track
+                                if track_count > track_counter / 2:
+                                    pass
+                                else:
+                                    first_event = True    # Too Far Away so restart Track
                             # Did not move much so update event_timer
                             # and wait for next valid movement.
                             else:
@@ -1334,6 +1338,7 @@ def speed_camera():
                                              total_contours,
                                              track_w, track_h, biggest_area,
                                              travel_direction)
+                                # Restart Track if first event otherwise continue
                                 if track_count == 0:
                                     first_event = True
                         event_timer = time.time()  # Reset Event Timer
