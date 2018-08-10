@@ -40,6 +40,8 @@ except ValueError:
 DB_PATH = 'data/speed_cam.db'
 DB_TABLE = 'speed'
 REPORTS_DIR = 'media/reports'
+if not os.path.isdir(REPORTS_DIR):
+    os.makedirs(REPORTS_DIR)   
 REPORTS_FILENAME = "hour_count_gt"
 REPORTS_PATH = os.path.join(REPORTS_DIR, REPORTS_FILENAME + SPEED_OVER + "_list.html")
 COUNT_PATH = os.path.join(REPORTS_DIR, REPORTS_FILENAME + SPEED_OVER + "_totals.html")
