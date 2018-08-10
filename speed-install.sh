@@ -170,13 +170,6 @@ sudo apt-get install -yq pandoc  # convert markdown to plain text for Readme.md
 dos2unix -q *
 
 cd $DIR
-# Check if speed-install.sh was launched from speed-cam folder
-if [ "$DIR" != "$INSTALL_PATH" ]; then
-  if curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash[ -f 'speed-install.sh' ]; then
-    echo "$STATUS Cleanup speed-install.sh"
-    rm speed-install.sh
-  fi
-fi
 echo "
 -----------------------------------------------
 $STATUS Complete
