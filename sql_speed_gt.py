@@ -159,7 +159,7 @@ def make_graph_data():
     del graph_html
     logging.info("Saved html File to %s", COUNT_PATH)
 
-def make_graph_png():
+def make_graph_image():
     make_graph_data()
     g = Gnuplot.Gnuplot()
     g.reset()
@@ -229,7 +229,7 @@ def make_html():
 if __name__ == '__main__':
     start_time = time.time()
     make_html()
-    make_graph_png()
+    make_graph_image()
     os.remove(GRAPH_DATA_PATH)
     duration = time.time() - start_time
     logging.info("Processing Took %.2f s.", duration)
