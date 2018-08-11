@@ -70,12 +70,14 @@ See https://github.com/pageauc/opencv3-setup
 For Windows or Unix computer platforms (non RPI or Debian) ensure you have the most
 up-to-date python version. For Downloads visit https://www.python.org/downloads    
 
-The latest python versions include numpy and recent opencv that is required to run this code. 
+The latest python versions includes numpy and recent opencv version that is required to run this code. 
 You will also need a USB web cam installed and working. 
 To install this program access the GitHub project page at https://github.com/pageauc/speed-camera
 Select the ***green Clone or download*** button. The files will be cloned or zipped
 to a speed-camera folder. You can run the code from python IDLE application (recommended), GUI desktop
-or command prompt terminal window.       
+or command prompt terminal window. Note bash .sh shell scripts will not work with windows unless 
+special support for bash is installed for windows Eg http://win-bash.sourceforge.net/  http://www.cygwin.com/
+Note I have Not tested these.   
 
 ***IMPORTANT*** speed-cam.py ver 8.x or greater Requires Updated config.py and plugins.
 
