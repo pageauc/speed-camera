@@ -4,32 +4,31 @@
 This is a stand alone web server.
 
 Please Note
-You will need at least two entries in a folder
+You will need at least one entry in a folder
 before the web server will display content.
 IMPORTANT: Use browser refresh to update files list
-then select a list hyperlink since 
-config.py default web server settings are 
+then select a list hyperlink.
+Default config.py webserver settings are
 
-web_page_refresh_on = False
-and
-web_page_blank = True
+    web_page_refresh_on = True
+    web_page_refresh_sec = "900"
+    web_page_blank = False
 
 If a folder is selected on the right pane listing
 the folder contents will appear in existing browser tab.
-Select the < BACK link on Right panel listing to
-navigate back to previous folder. < BACK will not
-be displayed when in web server root folder.	 
-Use browser refresh to update web page and display most
-recent data.
+Select the <BACK link on Right panel listing to
+navigate back to previous folder. <BACK will not
+be displayed when in web server root folder.
+Use browser refresh button to update web page and
+display most recent data.
 
-This web server can display other types of content
-but html files will be displayed full screen.
+This web server can display other types of content.
 Web pages with javascript, css Etc will run.
 If a folder has an index.html it will take over
 the browser tab.
 This browser can only access local raspberry pi
 files. It cannot access internet web pages.
 
-See speed camera github wiki for more details
+see pi-timolo github wiki for more details
 
-https://github.com/pageauc/speed-camera/wiki
+https://github.com/pageauc/pi-timolo/wiki
