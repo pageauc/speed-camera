@@ -31,4 +31,4 @@ files. It cannot access internet web pages.
 
 see pi-timolo github wiki for more details
 
-https://github.com/pageauc/pi-timolo/wiki
+https://github.com/pageauc/speed-camera/wiki
