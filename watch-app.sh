@@ -61,7 +61,7 @@ function do_watch_restart ()
     fi
     # restart the app
     ./$watch_app_fname  >/dev/null 2>&1 &
-    echo "Waiting 10 seconds for $watch_app_fname to restart"
+    echo "$now INFO  : Wait 10 seconds for $watch_app_fname to restart"
     sleep 10
     if [ -z "$(pgrep -f $watch_app_fname)" ] ; then
         # pi-timolo did not start
