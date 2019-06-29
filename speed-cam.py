@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.09"
+progVer = "9.20"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -228,16 +228,46 @@ else:
     image_width = int(CAMERA_WIDTH * image_bigger)
     # Set height of trigger point image to save
     image_height = int(CAMERA_HEIGHT * image_bigger)
+
+fix_msg = ("""
+    ---------- Upgrade Instructions -----------
+    To Fix Problem Run ./menubox.sh UPGRADE menu pick.
+    After upgrade newest config.py will be named config.py.new
+    In SSH or terminal perform the following commands to update to latest config.py
+
+        cd ~/speed-camera
+        cp config.py config.py.bak
+        cp config.py.new config.py
+
+    Then Edit config.py and transfer any customized settings from config.py.bak File
+    """)
+
 # Calculate conversion from camera pixel width to actual speed.
-px_to_kph = float(cal_obj_mm/cal_obj_px * 0.0036)
-quote = '"'  # Used for creating quote delimited log file of speed data
+try:
+    # Check if variables below are in config.py
+    cal_obj_mm_L2R
+    cal_obj_px_L2R
+    cal_obj_mm_R2L
+    cal_obj_px_R2L
+except:
+    logging.error("Missing some config.py variables per below")
+    logging.error("cal_obj_mm_L2R, cal_obj_px_L2R, cal_obj_mm_R2L cal_obj_px_R2L")
+    print(fix_msg)
+    logging.warn("You will need to recalibrate camera for L2R and R2L directions")
+    print("%s %s - Exiting Due to Errors " % (progName, progVer))
+    sys.exit(1)
+
+px_to_kph_L2R = float(cal_obj_mm_L2R/cal_obj_px_L2R * 0.0036)
+px_to_kph_R2L = float(cal_obj_mm_R2L/cal_obj_px_R2L * 0.0036)
 
 if SPEED_MPH:
     speed_units = "mph"
-    speed_conv = 0.621371 * px_to_kph
+    speed_conv_L2R = 0.621371 * px_to_kph_L2R
+    speed_conv_R2L = 0.621371 * px_to_kph_R2L
 else:
     speed_units = "kph"
-    speed_conv = px_to_kph
+    speed_conv_L2R = px_to_kph_L2R
+    speed_conv_R2L = px_to_kph_R2L
 
 try:
     x_buf_adjust   # check if variable exists in config.py
@@ -253,20 +283,10 @@ x_buf = int((x_right - x_left) / x_buf_adjust)
 try:
     track_counter  # check if variable exists in config.py
 except:
-    track_counter = 3  # number of consecutive movements before reporting speed
-    fix_msg = ("""track_counter variable Not Found in config.py
-    To Fix Problem Run menubox.sh UPGRADE menu pick.
-    Latest config.py will be named config.py.new
-    Do the following commands in SSH or terminal
-
-        cd ~/speed-camera
-        cp config.py config.py.bak
-        cp config.py.new config.py
-
-    Then Transfer settings from bak File to config.py
-
-            Setting track_counter = %i""" % track_counter)
+    logging.warn("Missing config.py variable track_counter")
     logging.warn(fix_msg)
+    track_counter = 5  # default number of consecutive movements before reporting speed
+    logging.warn("Setting Default Value of track_counter variable to %i", track_counter)
     try:
         raw_input("Press Enter to Continue...")  # python 2
     except:
@@ -293,18 +313,20 @@ class PiVideoStream:
         self.stream = self.camera.capture_continuous(self.rawCapture,
                                                      format="bgr",
                                                      use_video_port=True)
+
         """
         initialize the frame and the variable used to indicate
         if the thread should be stopped
         """
+        self.thread = None
         self.frame = None
         self.stopped = False
 
     def start(self):
         """ start the thread to read frames from the video stream """
-        t = Thread(target=self.update, args=())
-        t.daemon = True
-        t.start()
+        self.thread = Thread(target=self.update, args=())
+        self.thread.daemon = True
+        self.thread.start()
         return self
 
     def update(self):
@@ -330,6 +352,8 @@ class PiVideoStream:
     def stop(self):
         """ indicate that the thread should be stopped """
         self.stopped = True
+        if self.thread is not None:
+            self.thread.join()
 
 #------------------------------------------------------------------------------
 class WebcamVideoStream:
@@ -344,15 +368,16 @@ class WebcamVideoStream:
         self.stream.set(3, CAM_WIDTH)
         self.stream.set(4, CAM_HEIGHT)
         (self.grabbed, self.frame) = self.stream.read()
+        self.thread = None
         # initialize the variable used to indicate if the thread should
         # be stopped
         self.stopped = False
 
     def start(self):
         """ start the thread to read frames from the video stream """
-        t = Thread(target=self.update, args=())
-        t.daemon = True
-        t.start()
+        self.thread = Thread(target=self.update, args=())
+        self.thread.daemon = True
+        self.thread.start()
         return self
 
     def update(self):
@@ -360,9 +385,14 @@ class WebcamVideoStream:
         while True:
             # if the thread indicator variable is set, stop the thread
             if self.stopped:
-                return
+                break
             # otherwise, read the next frame from the stream
             (self.grabbed, self.frame) = self.stream.read()
+            #check for valid frames
+            if not self.grabbed:
+                # no frames recieved, then safely exit
+                self.stopped = True
+        self.stream.release()    #release resources
 
     def read(self):
         """ return the frame most recently read """
@@ -371,6 +401,12 @@ class WebcamVideoStream:
     def stop(self):
         """ indicate that the thread should be stopped """
         self.stopped = True
+        # wait until stream resources are released (producer thread might be still grabbing frame)
+        if self.thread is not None:
+            self.thread.join()  # properly handle thread exit
+
+    def isOpened(self):
+        return self.stream.isOpened()
 
 #------------------------------------------------------------------------------
 def get_fps(start_time, frame_count):
@@ -423,8 +459,10 @@ def show_settings():
         print("                  show_out_range=%s" % show_out_range)
         print("Plugins ......... pluginEnable=%s  pluginName=%s"
               % (pluginEnable, pluginName))
-        print("Calibration ..... cal_obj_px=%i px  cal_obj_mm=%i mm (longer is faster) speed_conv=%.5f"
-              % (cal_obj_px, cal_obj_mm, speed_conv))
+        print("Calibration ..... cal_obj_px_L2R=%i px  cal_obj_mm_L2R=%i mm  speed_conv_L2R=%.5f"
+              % (cal_obj_px_L2R, cal_obj_mm_L2R, speed_conv_L2R))
+        print("                  cal_obj_px_R2L=%i px  cal_obj_mm_R2L=%i mm  speed_conv_R2L=%.5f"
+              % (cal_obj_px_R2L, cal_obj_mm_R2L, speed_conv_R2L))
         if pluginEnable:
             print("                  (Change Settings in %s)" % pluginPath)
         else:
@@ -460,8 +498,8 @@ def show_settings():
               % (image_path, image_prefix))
         print("                  image_font_size=%i px high  image_text_bottom=%s"
               % (image_font_size, image_text_bottom))
-        print("Motion Settings . Size=%ix%i px  px_to_kph=%f  speed_units=%s"
-              % (CAMERA_WIDTH, CAMERA_HEIGHT, px_to_kph, speed_units))
+        print("Motion Settings . Size=%ix%i px  px_to_kph_L2R=%f  px_to_kph_R2L=%f speed_units=%s"
+              % (CAMERA_WIDTH, CAMERA_HEIGHT, px_to_kph_L2R, px_to_kph_R2L, speed_units))
         print("OpenCV Settings . MIN_AREA=%i sq-px  BLUR_SIZE=%i"
               "  THRESHOLD_SENSITIVITY=%i  CIRCLE_SIZE=%i px"
               % (MIN_AREA, BLUR_SIZE, THRESHOLD_SENSITIVITY, CIRCLE_SIZE))
@@ -520,13 +558,16 @@ def take_calibration_image(speed, filename, cal_image):
     print("")
     print("  Instructions for using %s image for camera calibration" % filename)
     print("")
-    print("  1 - Use Known Similar Size Reference Objects in Images, Like similar vehicles at the Required Distance.")
-    print("  2 - Record cal_obj_px Value Using Red y_upper Hash Marks at every 10 px  Current Setting is %i px" %
-          cal_obj_px)
-    print("  3 - Record cal_obj_mm of object. This is Actual length in mm of object above Current Setting is %i mm" %
-          cal_obj_mm)
-    print("      If Recorded Speed %.1f %s is Too Low, Increasing cal_obj_mm to Adjust or Visa-Versa" %
+    print("  Note: If there is only one lane then L2R and R2L settings will be the same")
+    print("  1 - Use L2R and R2L with Same Size Reference Object, Eg. same vehicle for both directions.")
+    print("  2 - For objects moving L2R Record cal_obj_px_L2R Value Using Red y_upper Hash Marks at every 10 px  Current Setting is %i px" %
+          cal_obj_px_L2R)
+    print("  3 - Record cal_obj_mm_L2R of object. This is Actual length in mm of object above Current Setting is %i mm" %
+          cal_obj_mm_L2R)
+    print("      If Recorded Speed %.1f %s is Too Low, Increasing cal_obj_mm_L2R to Adjust or Visa-Versa" %
           (speed, speed_units))
+    print("Repeat Calibration with same object moving R2L and update config.py R2L variables")
+    print("cal_obj_mm_R2L and cal_obj_px_R2L accordingly")
     if pluginEnable:
         print("  4 - Edit %s File and Change Values for Above Variables." %
               pluginPath)
@@ -534,11 +575,12 @@ def take_calibration_image(speed, filename, cal_image):
         print("  4 - Edit %s File and Change Values for the Above Variables." %
               configFilePath)
     print("  5 - Do a Speed Test to Confirm/Tune Settings.  You May Need to Repeat.")
-    print("  6 - When Calibration is Finished, Set config.py Variable   calibrate = False")
+    print("  6 - When Calibration is Finished, Set config.py Variable  calibrate = False")
     print("      Then Restart speed-cam.py and monitor activity.")
     print("")
     print("  WARNING: It is Advised to Use 320x240 Stream for Best Performance.")
     print("           Higher Resolutions Need More OpenCV Processing")
+    print("           and May Reduce Data Accuracy and Reliability.")
     print("")
     print("  Calibration Image Saved To %s%s  " % (baseDir, filename))
     print("  View Calibration Image in Web Browser (Ensure webserver.py is started)")
@@ -1057,25 +1099,34 @@ def speed_camera():
                     end_pos_x = track_x
                     if end_pos_x - prev_pos_x > 0:
                         travel_direction = "L2R"
+                        cal_obj_px = cal_obj_px_L2R
+                        cal_obj_mm = cal_obj_mm_L2R
                     else:
                         travel_direction = "R2L"
+                        cal_obj_px = cal_obj_px_R2L
+                        cal_obj_mm = cal_obj_mm_R2L
                     # check if movement is within acceptable distance
                     # range of last event
                     if (abs(end_pos_x - prev_pos_x) > x_diff_min and
                             abs(end_pos_x - prev_pos_x) < x_diff_max):
                         track_count += 1  # increment
                         cur_track_dist = abs(end_pos_x - prev_pos_x)
-                        cur_ave_speed = float((abs(cur_track_dist /
-                                               float(abs(cur_track_time -
-                                                         prev_start_time)))) *
-                                                         speed_conv)
+                        if travel_direction == 'L2R':
+                            cur_ave_speed = float((abs(cur_track_dist /
+                                                   float(abs(cur_track_time -
+                                                             prev_start_time)))) *
+                                                             speed_conv_L2R)
+                        else:
+                            cur_ave_speed = float((abs(cur_track_dist /
+                                                   float(abs(cur_track_time -
+                                                             prev_start_time)))) *
+                                                             speed_conv_R2L)
                         speed_list.append(cur_ave_speed)
                         prev_start_time = cur_track_time
                         event_timer = time.time()
                         if track_count >= track_counter:
                             tot_track_dist = abs(track_x - start_pos_x)
                             tot_track_time = abs(track_start_time - cur_track_time)
-                            # ave_speed = float((abs(tot_track_dist / tot_track_time)) * speed_conv)
                             ave_speed = sum(speed_list) / float(len(speed_list))
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
@@ -1258,12 +1309,14 @@ def speed_camera():
                                                filename,
                                                image_prefix)
 
-                                logging.info("End  - Ave Speed %.1f %s Tracked %i px in %.3f sec Calib %ipx %imm",
-                                             ave_speed, speed_units,
-                                             tot_track_dist,
-                                             tot_track_time,
-                                             cal_obj_px,
-                                             cal_obj_mm)
+                                logging.info("End  - %s Ave Speed %.1f %s Tracked %i px in %.3f sec Calib %ipx %imm",
+                                                 travel_direction,
+                                                 ave_speed, speed_units,
+                                                 tot_track_dist,
+                                                 tot_track_time,
+                                                 cal_obj_px,
+                                                 cal_obj_mm)
+
                                 print(horz_line)
                                 # Wait to avoid dual tracking same object.
                                 if track_timeout > 0:

@@ -1,10 +1,10 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="8.95"
+ver="8.96"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
-rclone_cur_ver="rclone v1.47.0"
+rclone_cur_ver="rclone v1.48.0"
 
 cd ~
 is_upgrade=false

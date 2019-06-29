@@ -1,19 +1,22 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 9.00 speed-cam.py Variable Configuration Settings (using picam480 plugin)
+#         Ver 9.20 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
 #  Default is 320x240 image stream size
-#  if using RPI3 you can try picam480
+#  if using RPI3 you can try picam480 plugin
 #  or larger stream image plugin.
 #######################################
 
 # Calibration Settings
 # --------------------
-calibrate = True       # Create a calibration image file with calibration hash markers 10 px per mark
-cal_obj_px = 90        # Length of a calibration object in pixels
-cal_obj_mm = 4700.0    # Length of the calibration object in millimetres (longer is faster)
-# Note if tested speed is too low increase cal_obj_mm  value and redo speed test.
+calibrate = True         # Create a calibration image file with calibration hash markers 10 px per mark
+cal_obj_px_L2R = 90      # L2R Moving Objects, Length of a calibration object in pixels
+cal_obj_mm_L2R = 4700.0  # L2R Moving Objects, Length of the calibration object in millimetres
+cal_obj_px_R2L = 95      # R2L Moving Objects, Length of a calibration object in pixels
+cal_obj_mm_R2L = 4700.0  # R2L Moving Objects, Length of the calibration object in millimetres
+
+# Note if tested speed is too low increase appropriate cal_obj_mm  value and redo speed test for desired direction.
 # IMPORTANT - If plugins Enabled Edit Settings in specified plugin file located in plugins folder.
 
 # Plugins overlay the config.py variable settings
@@ -25,13 +28,13 @@ pluginName = "picam240" # Specify filename in plugins subfolder without .py exte
                         # picam1080   (Experimental Not Recommended)
                         # secpicam480, secwebcam480 (Experimental no CSV entries)
 
-# 480 Crop Area for motion detection Tracking
-# Use plugins to override this configuration
-# ---------------------------------------
-x_left  = 25           # Default= 25 Exclude event if x less than this px position Default=25
-x_right = 295          # Default= 295 Exclude event if x greater than this px position Default=295
-y_upper = 75           # Default= 75 Exclude event if y less that this value Default=100
-y_lower = 185          # Default= 185 Exclude event if y greater than this value Default=175
+# Default 320 Crop Area for motion detection Tracking
+# Note Use plugins to override this default configuration
+# -------------------------------------------------------
+x_left  = 25           # Default= 25 Exclude event if x less than this px position
+x_right = 295          # Default= 295 Exclude event if x greater than this px position
+y_upper = 75           # Default= 75 Exclude event if y less that this value
+y_lower = 185          # Default= 185 Exclude event if y greater than this value
 
 # Display opencv windows on gui desktop
 # gui_window_on suppresses All Windows if False
@@ -51,8 +54,8 @@ logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set Speed Units   kph=False  mph=True
-track_counter = 5      # 1core=5 4cores=10 + Number of Consecutive Motion Events to trigger speed photo
-                       # Testing with RPI2 B 1core using opencv ver 3.4.2
+track_counter = 5      # one cpu core=5 four cores=10 Number of Consecutive Motion Events to trigger speed photo
+                       # Testing with RPI2 B one core using opencv ver 3.4.2
 MIN_AREA = 100         # Default= 100 Exclude all contours less than or equal to this sq-px Area
 track_len_trig = 70    # NOT USED. Used for version 8.87 or earlier see speed-cam_887.py
 show_out_range = True  # Default= True Show Out of Range Events per x_diff settings below False= Off
