@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.20"
+progVer = "9.21"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -229,6 +229,7 @@ else:
     # Set height of trigger point image to save
     image_height = int(CAMERA_HEIGHT * image_bigger)
 
+quote = '"'  # Used for creating quote delimited log file of speed data
 fix_msg = ("""
     ---------- Upgrade Instructions -----------
     To Fix Problem Run ./menubox.sh UPGRADE menu pick.
