@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.21"
+progVer = "9.22"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -837,7 +837,7 @@ def isSQLite3(filename):
             return False
         with open(filename, 'rb') as fd:
             header = fd.read(100)
-            if header.startswith('SQLite format 3'):
+            if header.startswith(b'SQLite format 3'):
                 logging.info("Success: File is sqlite3 Format %s", filename)
                 return True
             else:
@@ -1311,12 +1311,12 @@ def speed_camera():
                                                image_prefix)
 
                                 logging.info("End  - %s Ave Speed %.1f %s Tracked %i px in %.3f sec Calib %ipx %imm",
-                                                 travel_direction,
-                                                 ave_speed, speed_units,
-                                                 tot_track_dist,
-                                                 tot_track_time,
-                                                 cal_obj_px,
-                                                 cal_obj_mm)
+                                             travel_direction,
+                                             ave_speed, speed_units,
+                                             tot_track_dist,
+                                             tot_track_time,
+                                             cal_obj_px,
+                                             cal_obj_mm)
 
                                 print(horz_line)
                                 # Wait to avoid dual tracking same object.
