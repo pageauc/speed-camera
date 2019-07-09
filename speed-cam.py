@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.22"
+progVer = "9.3"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -635,7 +635,10 @@ def deleteOldFiles(maxFiles, dirPath, prefix):
         fileList = sorted(glob.glob(os.path.join(dirPath, prefix + '*')),
                           key=os.path.getmtime)
     except OSError as err:
-        logging.error('Problem Reading Directory %s - %s', dirPath, err)
+        logging.error('Problem Reading Directory %s', dirPath)
+        logging.error('%s',err)
+        logging.error('Possibly symlink destination File Does Not Exist')
+        logging.error('To Fix - Try Deleting All Files in recent folder %s', dirPath)
     else:
         while len(fileList) >= maxFiles:
             oldest = fileList[0]
@@ -666,7 +669,7 @@ def subDirCheckMaxHrs(directory, hrsMax, prefix):
     # remove prefix from dirName so just date-time left
     dirStr = dirName.replace(prefix, '')
     # convert string to datetime
-    dirDate = datetime.datetime.strptime(dirStr, "%Y-%m-%d-%H:%M")
+    dirDate = datetime.datetime.strptime(dirStr, "%Y%m%d-%H%M")
     rightNow = datetime.datetime.now()   # get datetime now
     diff = rightNow - dirDate  # get time difference between dates
     days, seconds = diff.days, diff.seconds
