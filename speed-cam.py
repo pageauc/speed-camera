@@ -50,7 +50,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.3"
+progVer = "9.31"
 
 # Temporarily put these variables here so config.py does not need updating
 # These are required for sqlite3 speed_cam.db database.
@@ -940,6 +940,7 @@ def speed_get_contours(image, grayimage1):
     # Convert to gray scale, which is easier
     grayimage2 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
     # Get differences between the two greyed images
+    global differenceimage
     differenceimage = cv2.absdiff(grayimage1, grayimage2)
     # Blur difference image to enhance motion vectors
     differenceimage = cv2.blur(differenceimage, (BLUR_SIZE, BLUR_SIZE))
@@ -1420,7 +1421,7 @@ def speed_camera():
             image_view = cv2.resize(image2, (image_width, image_height))
             cv2.imshow('Movement (q Quits)', image_view)
             if show_thresh_on:
-                cv2.imshow('Threshold', thresholdimage)
+                cv2.imshow('Threshold', differenceimage)
             if show_crop_on:
                 cv2.imshow('Crop Area', image_crop)
             # Close Window if q pressed
