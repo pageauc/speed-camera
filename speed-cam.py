@@ -1405,8 +1405,8 @@ def speed_camera():
                     # otherwise a rectangle around most recent contour
                     if SHOW_CIRCLE:
                         cv2.circle(image2,
-                                   (track_x + x_left * WINDOW_BIGGER,
-                                    track_y + y_upper * WINDOW_BIGGER),
+                                   (int(track_x + x_left * WINDOW_BIGGER),
+                                    int(track_y + y_upper * WINDOW_BIGGER)),
                                    CIRCLE_SIZE, cvGreen, LINE_THICKNESS)
                     else:
                         cv2.rectangle(image2,
