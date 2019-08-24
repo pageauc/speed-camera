@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 speed-cam.py written by Claude Pageau pageauc@gmail.com
 Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking
@@ -21,7 +21,9 @@ https://github.com/jrosebr1/imutils/blob/master/imutils/video/pivideostream.py
 Here is my YouTube video demonstrating a previous speed tracking demo
 program using a Raspberry Pi B2 https://youtu.be/09JS7twPBsQ
 and a fun speed lapse video https://youtu.be/-xdB_x_CbC8
+
 Installation
+------------
 Requires a Raspberry Pi with a RPI camera module or Web Cam installed and working
 or Windows, Unix Distro computer with a USB Web Cam.  See github wiki for
 more detail https://github.com/pageauc/speed-camera/wiki
@@ -29,12 +31,12 @@ more detail https://github.com/pageauc/speed-camera/wiki
 Install from a logged in SSH session per commands below.
 Code should run on a non RPI platform using a Web Cam
 
-curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash
+    curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash
 or
-wget https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
-chmod +x speed-install.sh
-./speed-install.sh
-./speed-cam.py
+    wget https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh
+    chmod +x speed-install.sh
+    ./speed-install.sh
+    ./speed-cam.py
 
 """
 from __future__ import print_function
@@ -50,27 +52,116 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.31"
+progVer = "9.4"  # current version of this python script
 
-# Temporarily put these variables here so config.py does not need updating
-# These are required for sqlite3 speed_cam.db database.
-# Will work on reports and possibly a web query page for speed data.
-DB_DIR = "/home/pi/speed-camera/data"
-DB_NAME = "speed_cam.db"
-DB_TABLE = "speed"
+"""
+This is a dictionary of the default settings for speed-cam.py
+If you don't want to use a config.py file these will create the required
+variables with default values.  Change dictionary values if you want different
+variable default values.
+A message will be displayed if a variable is Not imported from config.py.
+Note: plugins can override default and config.py values if plugins are
+      enabled.  This happens after config.py variables are initialized
+"""
+default_settings={
+'calibrate':True,
+'cal_obj_px_L2R':90,
+'cal_obj_mm_L2R':4700.0,
+'cal_obj_px_R2L':95,
+'cal_obj_mm_R2L':4700.0,
+'pluginEnable':False,
+'pluginName':"picam240",
+'x_left ':25,
+'x_right':295,
+'y_upper':75,
+'y_lower':185,
+'gui_window_on':False,
+'show_thresh_on':False,
+'show_crop_on':False,
+'verbose':True,
+'display_fps':False,
+'log_data_to_CSV':True,
+'loggingToFile':False,
+'logFilePath':'speed-cam.log',
+'SPEED_MPH':False,
+'track_counter':5,
+'MIN_AREA':100,
+'track_len_trig':70,
+'show_out_range':True,
+'x_diff_max':20,
+'x_diff_min':1,
+'x_buf_adjust':10,
+'track_timeout':0.0,
+'event_timeout':0.3,
+'max_speed_over':0,
+'WEBCAM_SRC':0,
+'WEBCAM_WIDTH':320,
+'WEBCAM_HEIGHT':240,
+'WEBCAM_HFLIP':True,
+'WEBCAM_VFLIP':True,
+'CAMERA_WIDTH':320,
+'CAMERA_HEIGHT':240,
+'CAMERA_FRAMERATE':20,
+'CAMERA_ROTATION':0,
+'CAMERA_VFLIP':True,
+'CAMERA_HFLIP':True,
+'image_path':"media/images",
+'image_prefix':"speed-",
+'image_format':".jpg",
+'image_show_motion_area':True,
+'image_filename_speed':False,
+'image_text_on':True,
+'image_text_bottom':True,
+'image_font_size':12,
+'image_bigger':3.0,
+'image_max_files':0,
+'imageSubDirMaxFiles':1000,
+'imageSubDirMaxHours':0,
+'imageRecentMax':100,
+'imageRecentDir':"media/recent",
+'spaceTimerHrs':0,
+'spaceFreeMB':500,
+'spaceMediaDir':'media/images',
+'spaceFileExt ':'jpg',
+'SHOW_CIRCLE':False,
+'CIRCLE_SIZE':5,
+'LINE_THICKNESS':1,
+'FONT_SCALE':0.5,
+'WINDOW_BIGGER':1.0,
+'BLUR_SIZE':10,
+'THRESHOLD_SENSITIVITY':20,
+'web_server_port':8080,
+'web_server_root':"media",
+'web_page_title':"SPEED-CAMERA Media",
+'web_page_refresh_on':True,
+'web_page_refresh_sec':"900",
+'web_page_blank':False,
+'web_image_height':"768",
+'web_iframe_width_usage':"70%",
+'web_iframe_width':"100%",
+'web_iframe_height':"100%",
+'web_max_list_entries':0,
+'web_list_height':"768",
+'web_list_by_datetime':True,
+'web_list_sort_descending':True,
+'DB_DIR':"/home/pi/speed-camera/data",
+'DB_NAME':"speed_cam.db",
+'DB_TABLE':"speed"
+}
 
-if not os.path.exists(DB_DIR):
-    os.makedirs(DB_DIR)
-DB_PATH = os.path.join(DB_DIR, DB_NAME)
-
+# Get information about this script including name, launch path, etc.
+# This allows script to be renamed or relocated to another directory
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0:mypath.rfind("/")+1]
 baseFileName = mypath[mypath.rfind("/")+1:mypath.rfind(".")]
 progName = os.path.basename(__file__)
+
 horz_line = "----------------------------------------------------------------------"
 print(horz_line)
 print("%s %s   written by Claude Pageau" % (progName, progVer))
+print(horz_line)
+
 # Color data for OpenCV lines and text
 cvWhite = (255, 255, 255)
 cvBlack = (0, 0, 0)
@@ -78,31 +169,34 @@ cvBlue = (255, 0, 0)
 cvGreen = (0, 255, 0)
 cvRed = (0, 0, 255)
 
-# Check for variable file to import and error out if not found.
+"""
+Check for config.py variable file to import and warn if not Found.
+Logging is not used since the logFilePath variable is needed before
+setting up logging
+"""
 configFilePath = os.path.join(baseDir, "config.py")
-if not os.path.exists(configFilePath):
-    print("ERROR : Missing config.py file - File Not Found %s"
-          % configFilePath)
-    import urllib2
-    config_url = "https://raw.github.com/pageauc/speed-camera/master/config.py"
-    print("INFO  : Attempting to Download config.py file from %s" % config_url)
+if os.path.exists(configFilePath):
+    # Read Configuration variables from config.py file
     try:
-        wgetfile = urllib2.urlopen(config_url)
-    except:
-        print("ERROR : Download of config.py Failed")
-        print("        Try Rerunning the speed-install.sh Again.")
-        print("        or")
-        print("        Perform GitHub curl install per Readme.md")
-        print("        and Try Again.")
-        print("        %s %s Exiting Due to Error" % (progName, progVer))
-        sys.exit(1)
-    f = open('config.py', 'wb')
-    f.write(wgetfile.read())
-    f.close()
-# Read Configuration variables from config.py file
-from config import *
+        from config import *
+    except ImportError:
+        print('WARN  : Problem reading configuration varibles from %s' % configFilePath)
+else:
+    print("WARN  : Missing config.py file - File Not Found %s"
+          % configFilePath)
 
-# Now that variables are imported from config.py Setup Logging
+"""
+Check if variables were imported from config.py. If not create variable using
+the values in the default_settings dictionary above.
+"""
+for key,val in default_settings.items():
+    try:
+        exec(key)
+    except NameError:
+        print('WARN  : config.py Variable Not Found. Setting ' + key + ' = ' + str(val))
+        exec(key + '=val')
+
+# Now that variables are imported from config.py Setup Logging since we have logFilePath
 if loggingToFile:
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
@@ -118,7 +212,19 @@ else:
                         format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
 
-from search_config import search_dest_path
+# Do a quick check to see if the sqlite database directory path exists
+if not os.path.exists(DB_DIR):  # Check if database directory exists
+    os.makedirs(DB_DIR)         # make directory if Not Found
+DB_PATH = os.path.join(DB_DIR, DB_NAME)   # Create path to db file
+
+# import a single variable from the search_config.py file
+# This is done to auto create a media/search directory
+try:
+    from search_config import search_dest_path
+except ImportError:
+    search_dest_path = 'media/search'
+    logging.warn("Problem importing search_dest_path variable")
+    logging.info("Setting default value sarch_dest_path = %s", search_dest_path)
 
 # Import Settings from specified plugin if pluginEnable=True
 if pluginEnable:     # Check and verify plugin and load variable overlay
@@ -167,7 +273,10 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
         logging.info("Import Plugin %s", pluginPath)
         # add plugin directory to program PATH
         sys.path.insert(0, pluginDir)
-        from plugins.current import *
+        try:
+            from plugins.current import *
+        except ImportError:
+            logging.warn("Problem importing variables from %s", pluginDir)
         try:
             if os.path.exists(pluginCurrent):
                 os.remove(pluginCurrent)
@@ -185,6 +294,7 @@ try:  #Add this check in case running on non RPI platform using web cam
     from picamera import PiCamera
 except ImportError:
     WEBCAM = True
+
 if not WEBCAM:
     # Check that pi camera module is installed and enabled
     camResult = subprocess.check_output("vcgencmd get_camera", shell=True)
@@ -198,6 +308,7 @@ if not WEBCAM:
         sys.exit(1)
     else:
         logging.info("Pi Camera Module is Enabled and Connected %s", camResult)
+
 try:   # Check to see if opencv is installed
     import cv2
 except ImportError:
@@ -217,6 +328,7 @@ if WINDOW_BIGGER < 1.0:
     WINDOW_BIGGER = 1.0
 if image_bigger < 1.0:
     image_bigger = 1.0
+
 # System Settings
 if WEBCAM:
     # Set width of trigger point image to save
@@ -282,7 +394,7 @@ except:
 x_buf = int((x_right - x_left) / x_buf_adjust)
 
 try:
-    track_counter  # check if variable exists in config.py
+    track_counter  # check if variable exists in config.py or dictionary settings
 except:
     logging.warn("Missing config.py variable track_counter")
     logging.warn(fix_msg)
@@ -386,6 +498,7 @@ class WebcamVideoStream:
         while True:
             # if the thread indicator variable is set, stop the thread
             if self.stopped:
+                self.stream.release()
                 break
             # otherwise, read the next frame from the stream
             (self.grabbed, self.frame) = self.stream.read()
@@ -831,7 +944,7 @@ def log_to_csv(data_to_append):
 #------------------------------------------------------------------------------
 def isSQLite3(filename):
     """
-    Determine if file is in sqlite3 format
+    Determine if filename is in sqlite3 format
     """
     if os.path.isfile(filename):
         if os.path.getsize(filename) < 100: # SQLite database file header is 100 bytes
@@ -1036,6 +1149,7 @@ def speed_camera():
     # initialize a cropped grayimage1 image
     image2 = vs.read()  # Get image from PiVideoSteam thread instance
     prev_image = image2  # make a copy of the first image
+
     try:
         # crop image to motion tracking area only
         image_crop = image2[y_upper:y_lower, x_left:x_right]

@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 9.20 speed-cam.py Variable Configuration Settings
+#         Ver 9.4 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -126,6 +126,12 @@ FONT_SCALE = 0.5              # Default= 0.5 OpenCV window text font size scalin
 WINDOW_BIGGER = 1.0           # Default= 1.0 Resize multiplier for opencv window if gui_window_on=True
 BLUR_SIZE = 10                # Default= 10 OpenCV setting for Gaussian difference image blur
 THRESHOLD_SENSITIVITY = 20    # Default= 20 OpenCV setting for difference image threshold
+
+# Sqlite3 Settings
+# ----------------
+DB_DIR   = "/home/pi/speed-camera/data",
+DB_NAME  = "speed_cam.db",
+DB_TABLE = "speed"
 
 #======================================
 #       webserver.py Settings
