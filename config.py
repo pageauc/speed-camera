@@ -129,8 +129,8 @@ THRESHOLD_SENSITIVITY = 20    # Default= 20 OpenCV setting for difference image 
 
 # Sqlite3 Settings
 # ----------------
-DB_DIR   = "/home/pi/speed-camera/data",
-DB_NAME  = "speed_cam.db",
+DB_DIR   = "/home/pi/speed-camera/data"
+DB_NAME  = "speed_cam.db"
 DB_TABLE = "speed"
 
 #======================================
