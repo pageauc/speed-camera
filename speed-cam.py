@@ -52,7 +52,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.4"  # current version of this python script
+progVer = "9.5"  # current version of this python script
 
 """
 This is a dictionary of the default settings for speed-cam.py
@@ -144,7 +144,7 @@ default_settings={
 'web_list_height':"768",
 'web_list_by_datetime':True,
 'web_list_sort_descending':True,
-'DB_DIR':"/home/pi/speed-camera/data",
+'DB_DIR':"data",
 'DB_NAME':"speed_cam.db",
 'DB_TABLE':"speed"
 }
@@ -213,9 +213,10 @@ else:
                         datefmt='%Y-%m-%d %H:%M:%S')
 
 # Do a quick check to see if the sqlite database directory path exists
-if not os.path.exists(DB_DIR):  # Check if database directory exists
-    os.makedirs(DB_DIR)         # make directory if Not Found
-DB_PATH = os.path.join(DB_DIR, DB_NAME)   # Create path to db file
+DB_DIR_PATH = os.path.join(baseDir, DB_DIR)
+if not os.path.exists(DB_DIR_PATH):  # Check if database directory exists
+    os.makedirs(DB_DIR_PATH)         # make directory if Not Found
+DB_PATH = os.path.join(DB_DIR_PATH, DB_NAME)   # Create path to db file
 
 # import a single variable from the search_config.py file
 # This is done to auto create a media/search directory

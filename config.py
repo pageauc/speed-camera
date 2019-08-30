@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 9.4 speed-cam.py Variable Configuration Settings
+#         Ver 9.5 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -129,7 +129,7 @@ THRESHOLD_SENSITIVITY = 20    # Default= 20 OpenCV setting for difference image 
 
 # Sqlite3 Settings
 # ----------------
-DB_DIR   = "/home/pi/speed-camera/data"
+DB_DIR   = "data"
 DB_NAME  = "speed_cam.db"
 DB_TABLE = "speed"
 
