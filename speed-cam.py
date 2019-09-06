@@ -52,7 +52,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.5"  # current version of this python script
+progVer = "9.6"  # current version of this python script
 
 """
 This is a dictionary of the default settings for speed-cam.py
@@ -461,6 +461,13 @@ class PiVideoStream:
 
     def read(self):
         """ return the frame most recently read """
+        if WEBCAM:
+            if (WEBCAM_HFLIP and WEBCAM_VFLIP):
+                self.frame = cv2.flip(self.frame, -1)
+            elif WEBCAM_HFLIP:
+                self.frame = cv2.flip(self.frame, 1)
+            elif WEBCAM_VFLIP:
+                self.frame = cv2.flip(self.frame, 0)
         return self.frame
 
     def stop(self):
@@ -1037,13 +1044,6 @@ def speed_get_contours(image, grayimage1):
     image_ok = False
     while not image_ok:
         image = vs.read() # Read image data from video steam thread instance
-        if WEBCAM:
-            if (WEBCAM_HFLIP and WEBCAM_VFLIP):
-                image = cv2.flip(image, -1)
-            elif WEBCAM_HFLIP:
-                image = cv2.flip(image, 1)
-            elif WEBCAM_VFLIP:
-                image = cv2.flip(image, 0)
         # crop image to motion tracking area only
         try:
             image_crop = image[y_upper:y_lower, x_left:x_right]
