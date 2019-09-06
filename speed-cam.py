@@ -52,7 +52,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.7"  # current version of this python script
+progVer = "9.71"  # current version of this python script
 
 """
 This is a dictionary of the default settings for speed-cam.py
@@ -511,13 +511,12 @@ class WebcamVideoStream:
 
     def read(self):
         """ return the frame most recently read """
-        if WEBCAM:
-            if (WEBCAM_HFLIP and WEBCAM_VFLIP):
-                self.frame = cv2.flip(self.frame, -1)
-            elif WEBCAM_HFLIP:
-                self.frame = cv2.flip(self.frame, 1)
-            elif WEBCAM_VFLIP:
-                self.frame = cv2.flip(self.frame, 0)
+        if (WEBCAM_HFLIP and WEBCAM_VFLIP):
+            self.frame = cv2.flip(self.frame, -1)
+        elif WEBCAM_HFLIP:
+            self.frame = cv2.flip(self.frame, 1)
+        elif WEBCAM_VFLIP:
+            self.frame = cv2.flip(self.frame, 0)
         return self.frame
 
     def stop(self):
