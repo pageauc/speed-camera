@@ -461,13 +461,6 @@ class PiVideoStream:
 
     def read(self):
         """ return the frame most recently read """
-        if WEBCAM:
-            if (WEBCAM_HFLIP and WEBCAM_VFLIP):
-                self.frame = cv2.flip(self.frame, -1)
-            elif WEBCAM_HFLIP:
-                self.frame = cv2.flip(self.frame, 1)
-            elif WEBCAM_VFLIP:
-                self.frame = cv2.flip(self.frame, 0)
         return self.frame
 
     def stop(self):
@@ -522,6 +515,13 @@ class WebcamVideoStream:
 
     def stop(self):
         """ indicate that the thread should be stopped """
+        if WEBCAM:
+            if (WEBCAM_HFLIP and WEBCAM_VFLIP):
+                self.frame = cv2.flip(self.frame, -1)
+            elif WEBCAM_HFLIP:
+                self.frame = cv2.flip(self.frame, 1)
+            elif WEBCAM_VFLIP:
+                self.frame = cv2.flip(self.frame, 0)
         self.stopped = True
         # wait until stream resources are released (producer thread might be still grabbing frame)
         if self.thread is not None:
