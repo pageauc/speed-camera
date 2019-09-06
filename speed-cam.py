@@ -52,7 +52,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.6"  # current version of this python script
+progVer = "9.7"  # current version of this python script
 
 """
 This is a dictionary of the default settings for speed-cam.py
@@ -511,10 +511,6 @@ class WebcamVideoStream:
 
     def read(self):
         """ return the frame most recently read """
-        return self.frame
-
-    def stop(self):
-        """ indicate that the thread should be stopped """
         if WEBCAM:
             if (WEBCAM_HFLIP and WEBCAM_VFLIP):
                 self.frame = cv2.flip(self.frame, -1)
@@ -522,6 +518,10 @@ class WebcamVideoStream:
                 self.frame = cv2.flip(self.frame, 1)
             elif WEBCAM_VFLIP:
                 self.frame = cv2.flip(self.frame, 0)
+        return self.frame
+
+    def stop(self):
+        """ indicate that the thread should be stopped """
         self.stopped = True
         # wait until stream resources are released (producer thread might be still grabbing frame)
         if self.thread is not None:

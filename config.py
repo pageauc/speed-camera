@@ -75,8 +75,8 @@ WEBCAM = False         # Default = False False=PiCamera True=USB WebCamera
 WEBCAM_SRC = 0         # Default= 0   USB opencv connection number
 WEBCAM_WIDTH = 320     # Default= 320 USB Webcam Image width
 WEBCAM_HEIGHT = 240    # Default= 240 USB Webcam Image height
-WEBCAM_HFLIP = True    # Default= False USB Webcam flip image horizontally
-WEBCAM_VFLIP = True    # Default= False USB Webcam flip image vertically
+WEBCAM_HFLIP = False   # Default= False USB Webcam flip image horizontally
+WEBCAM_VFLIP = False   # Default= False USB Webcam flip image vertically
 
 # Pi Camera Settings
 # ------------------
