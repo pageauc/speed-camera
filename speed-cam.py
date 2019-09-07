@@ -52,7 +52,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.71"  # current version of this python script
+progVer = "9.73"  # current version of this python script
 
 """
 This is a dictionary of the default settings for speed-cam.py
@@ -80,7 +80,7 @@ default_settings={
 'show_crop_on':False,
 'verbose':True,
 'display_fps':False,
-'log_data_to_CSV':True,
+'log_data_to_CSV':False,
 'loggingToFile':False,
 'logFilePath':'speed-cam.log',
 'SPEED_MPH':False,
@@ -97,8 +97,8 @@ default_settings={
 'WEBCAM_SRC':0,
 'WEBCAM_WIDTH':320,
 'WEBCAM_HEIGHT':240,
-'WEBCAM_HFLIP':True,
-'WEBCAM_VFLIP':True,
+'WEBCAM_HFLIP':False,
+'WEBCAM_VFLIP':False,
 'CAMERA_WIDTH':320,
 'CAMERA_HEIGHT':240,
 'CAMERA_FRAMERATE':20,
@@ -336,6 +336,12 @@ if WEBCAM:
     image_width = int(WEBCAM_WIDTH * image_bigger)
     # Set height of trigger point image to save
     image_height = int(WEBCAM_HEIGHT * image_bigger)
+    # It is NOT advised to flip a webcam image in any way since there
+    # will be a performance hit otherwise.  Advise flipping physical cam
+    # if required.
+    WEBCAM_FLIPPED = False
+    if (WEBCAM_HFLIP or WEBCAM_VFLIP):
+        WEBCAM_FLIPPED = True   # Is Web Cam image flipped in any way
 else:
     # Set width of trigger point image to save
     image_width = int(CAMERA_WIDTH * image_bigger)
@@ -510,13 +516,19 @@ class WebcamVideoStream:
         self.stream.release()    #release resources
 
     def read(self):
-        """ return the frame most recently read """
-        if (WEBCAM_HFLIP and WEBCAM_VFLIP):
-            self.frame = cv2.flip(self.frame, -1)
-        elif WEBCAM_HFLIP:
-            self.frame = cv2.flip(self.frame, 1)
-        elif WEBCAM_VFLIP:
-            self.frame = cv2.flip(self.frame, 0)
+        """ return the frame most recently read
+            Note there will be a significant performance hit to
+            flip the webcam image so it is advised to just
+            physically flip the camera and avoid
+            setting WEBCAM_HFLIP = True or WEBCAM_VFLIP = True
+        """
+        if WEBCAM_FLIPPED:
+            if (WEBCAM_HFLIP and WEBCAM_VFLIP):
+                self.frame = cv2.flip(self.frame, -1)
+            elif WEBCAM_HFLIP:
+                self.frame = cv2.flip(self.frame, 1)
+            elif WEBCAM_VFLIP:
+                self.frame = cv2.flip(self.frame, 0)
         return self.frame
 
     def stop(self):

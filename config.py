@@ -47,7 +47,7 @@ show_crop_on = False   # Same as show_thresh_on but in color. True=Show, False=D
 # ------------------------
 verbose = True         # True= Display basic status information on console False= Off
 display_fps = False    # True= Show average frame count every 1000 loops False= Off
-log_data_to_CSV = True # True= Save log data as CSV comma separated values  False= Off
+log_data_to_CSV = False # True= Save log data as CSV comma separated values  False= Off
 loggingToFile = False  # True= Send logging to file False= No Logging to File
 logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
 
