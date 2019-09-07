@@ -77,6 +77,7 @@ WEBCAM_WIDTH = 320     # Default= 320 USB Webcam Image width
 WEBCAM_HEIGHT = 240    # Default= 240 USB Webcam Image height
 WEBCAM_HFLIP = False   # Default= False USB Webcam flip image horizontally
 WEBCAM_VFLIP = False   # Default= False USB Webcam flip image vertically
+                       # IMPORTANT Webcam Streaming Performance Hit if Stream Flipped.
 
 # Pi Camera Settings
 # ------------------

@@ -38,6 +38,8 @@ or
     ./speed-install.sh
     ./speed-cam.py
 
+Note to Self - Look at eliminating python variable camel case and use all snake naming
+
 """
 from __future__ import print_function
 print("Loading ...")
@@ -52,7 +54,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.73"  # current version of this python script
+progVer = "9.74"  # current version of this python script
 
 """
 This is a dictionary of the default settings for speed-cam.py
@@ -340,8 +342,9 @@ if WEBCAM:
     # will be a performance hit otherwise.  Advise flipping physical cam
     # if required.
     WEBCAM_FLIPPED = False
+    # Check if Web Cam image flipped in any way
     if (WEBCAM_HFLIP or WEBCAM_VFLIP):
-        WEBCAM_FLIPPED = True   # Is Web Cam image flipped in any way
+        WEBCAM_FLIPPED = True
 else:
     # Set width of trigger point image to save
     image_width = int(CAMERA_WIDTH * image_bigger)
@@ -1158,8 +1161,14 @@ def speed_camera():
             db_cur = db_conn.cursor()  # Set cursor position
             db_is_open = True
     speed_notify()
+    # Warn user of performance hit if webcam image flipped
+    if (WEBCAM and WEBCAM_FLIPPED):
+        logging.warn("Recommend you do NOT Flip Webcam stream")
+        logging.warn("Otherwise SLOW streaming Will Result...")
+        logging.warn("If necessary physically flip camera and")
+        logging.warn("Set config.py WEBCAM_HFLIP and WEBCAM_VFLIP to False")
     # initialize a cropped grayimage1 image
-    image2 = vs.read()  # Get image from PiVideoSteam thread instance
+    image2 = vs.read()  # Get image from VideoSteam thread instance
     prev_image = image2  # make a copy of the first image
 
     try:
