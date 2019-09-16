@@ -88,7 +88,6 @@ default_settings = {
     'SPEED_MPH':False,
     'track_counter':5,
     'MIN_AREA':100,
-    'track_len_trig':70,
     'show_out_range':True,
     'x_diff_max':20,
     'x_diff_min':1,
