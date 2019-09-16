@@ -54,7 +54,7 @@ import sqlite3
 from threading import Thread
 import subprocess
 
-progVer = "9.74"  # current version of this python script
+progVer = "9.8"  # current version of this python script
 
 """
 This is a dictionary of the default settings for speed-cam.py
@@ -65,91 +65,91 @@ A message will be displayed if a variable is Not imported from config.py.
 Note: plugins can override default and config.py values if plugins are
       enabled.  This happens after config.py variables are initialized
 """
-default_settings={
-'calibrate':True,
-'cal_obj_px_L2R':90,
-'cal_obj_mm_L2R':4700.0,
-'cal_obj_px_R2L':95,
-'cal_obj_mm_R2L':4700.0,
-'pluginEnable':False,
-'pluginName':"picam240",
-'x_left ':25,
-'x_right':295,
-'y_upper':75,
-'y_lower':185,
-'gui_window_on':False,
-'show_thresh_on':False,
-'show_crop_on':False,
-'verbose':True,
-'display_fps':False,
-'log_data_to_CSV':False,
-'loggingToFile':False,
-'logFilePath':'speed-cam.log',
-'SPEED_MPH':False,
-'track_counter':5,
-'MIN_AREA':100,
-'track_len_trig':70,
-'show_out_range':True,
-'x_diff_max':20,
-'x_diff_min':1,
-'x_buf_adjust':10,
-'track_timeout':0.0,
-'event_timeout':0.3,
-'max_speed_over':0,
-'WEBCAM_SRC':0,
-'WEBCAM_WIDTH':320,
-'WEBCAM_HEIGHT':240,
-'WEBCAM_HFLIP':False,
-'WEBCAM_VFLIP':False,
-'CAMERA_WIDTH':320,
-'CAMERA_HEIGHT':240,
-'CAMERA_FRAMERATE':20,
-'CAMERA_ROTATION':0,
-'CAMERA_VFLIP':True,
-'CAMERA_HFLIP':True,
-'image_path':"media/images",
-'image_prefix':"speed-",
-'image_format':".jpg",
-'image_show_motion_area':True,
-'image_filename_speed':False,
-'image_text_on':True,
-'image_text_bottom':True,
-'image_font_size':12,
-'image_bigger':3.0,
-'image_max_files':0,
-'imageSubDirMaxFiles':1000,
-'imageSubDirMaxHours':0,
-'imageRecentMax':100,
-'imageRecentDir':"media/recent",
-'spaceTimerHrs':0,
-'spaceFreeMB':500,
-'spaceMediaDir':'media/images',
-'spaceFileExt ':'jpg',
-'SHOW_CIRCLE':False,
-'CIRCLE_SIZE':5,
-'LINE_THICKNESS':1,
-'FONT_SCALE':0.5,
-'WINDOW_BIGGER':1.0,
-'BLUR_SIZE':10,
-'THRESHOLD_SENSITIVITY':20,
-'web_server_port':8080,
-'web_server_root':"media",
-'web_page_title':"SPEED-CAMERA Media",
-'web_page_refresh_on':True,
-'web_page_refresh_sec':"900",
-'web_page_blank':False,
-'web_image_height':"768",
-'web_iframe_width_usage':"70%",
-'web_iframe_width':"100%",
-'web_iframe_height':"100%",
-'web_max_list_entries':0,
-'web_list_height':"768",
-'web_list_by_datetime':True,
-'web_list_sort_descending':True,
-'DB_DIR':"data",
-'DB_NAME':"speed_cam.db",
-'DB_TABLE':"speed"
-}
+default_settings = {
+    'calibrate':True,
+    'cal_obj_px_L2R':90,
+    'cal_obj_mm_L2R':4700.0,
+    'cal_obj_px_R2L':95,
+    'cal_obj_mm_R2L':4700.0,
+    'pluginEnable':False,
+    'pluginName':"picam240",
+    'x_left ':25,
+    'x_right':295,
+    'y_upper':75,
+    'y_lower':185,
+    'gui_window_on':False,
+    'show_thresh_on':False,
+    'show_crop_on':False,
+    'verbose':True,
+    'display_fps':False,
+    'log_data_to_CSV':False,
+    'loggingToFile':False,
+    'logFilePath':'speed-cam.log',
+    'SPEED_MPH':False,
+    'track_counter':5,
+    'MIN_AREA':100,
+    'track_len_trig':70,
+    'show_out_range':True,
+    'x_diff_max':20,
+    'x_diff_min':1,
+    'x_buf_adjust':10,
+    'track_timeout':0.0,
+    'event_timeout':0.3,
+    'max_speed_over':0,
+    'WEBCAM_SRC':0,
+    'WEBCAM_WIDTH':320,
+    'WEBCAM_HEIGHT':240,
+    'WEBCAM_HFLIP':False,
+    'WEBCAM_VFLIP':False,
+    'CAMERA_WIDTH':320,
+    'CAMERA_HEIGHT':240,
+    'CAMERA_FRAMERATE':20,
+    'CAMERA_ROTATION':0,
+    'CAMERA_VFLIP':True,
+    'CAMERA_HFLIP':True,
+    'image_path':"media/images",
+    'image_prefix':"speed-",
+    'image_format':".jpg",
+    'image_show_motion_area':True,
+    'image_filename_speed':False,
+    'image_text_on':True,
+    'image_text_bottom':True,
+    'image_font_size':12,
+    'image_bigger':3.0,
+    'image_max_files':0,
+    'imageSubDirMaxFiles':1000,
+    'imageSubDirMaxHours':0,
+    'imageRecentMax':100,
+    'imageRecentDir':"media/recent",
+    'spaceTimerHrs':0,
+    'spaceFreeMB':500,
+    'spaceMediaDir':'media/images',
+    'spaceFileExt ':'jpg',
+    'SHOW_CIRCLE':False,
+    'CIRCLE_SIZE':5,
+    'LINE_THICKNESS':1,
+    'FONT_SCALE':0.5,
+    'WINDOW_BIGGER':1.0,
+    'BLUR_SIZE':10,
+    'THRESHOLD_SENSITIVITY':20,
+    'web_server_port':8080,
+    'web_server_root':"media",
+    'web_page_title':"SPEED-CAMERA Media",
+    'web_page_refresh_on':True,
+    'web_page_refresh_sec':"900",
+    'web_page_blank':False,
+    'web_image_height':"768",
+    'web_iframe_width_usage':"70%",
+    'web_iframe_width':"100%",
+    'web_iframe_height':"100%",
+    'web_max_list_entries':0,
+    'web_list_height':"768",
+    'web_list_by_datetime':True,
+    'web_list_sort_descending':True,
+    'DB_DIR':"data",
+    'DB_NAME':"speed_cam.db",
+    'DB_TABLE':"speed"
+    }
 
 # Get information about this script including name, launch path, etc.
 # This allows script to be renamed or relocated to another directory
@@ -191,7 +191,7 @@ else:
 Check if variables were imported from config.py. If not create variable using
 the values in the default_settings dictionary above.
 """
-for key,val in default_settings.items():
+for key, val in default_settings.items():
     try:
         exec(key)
     except NameError:
@@ -227,7 +227,7 @@ try:
 except ImportError:
     search_dest_path = 'media/search'
     logging.warn("Problem importing search_dest_path variable")
-    logging.info("Setting default value sarch_dest_path = %s", search_dest_path)
+    logging.info("Setting default value search_dest_path = %s", search_dest_path)
 
 # Import Settings from specified plugin if pluginEnable=True
 if pluginEnable:     # Check and verify plugin and load variable overlay
@@ -242,7 +242,7 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
         logging.info("Rerun github curl install script to install plugins")
         logging.info("https://github.com/pageauc/pi-timolo/wiki/")
         logging.info("How-to-Install-or-Upgrade#quick-install")
-        logging.warn("%s %s Exiting Due to Error" % (progName, progVer))
+        logging.warn("%s %s Exiting Due to Error", progName, progVer)
         sys.exit(1)
     elif not os.path.exists(pluginPath):
         logging.error("File Not Found pluginName %s", pluginPath)
@@ -366,20 +366,6 @@ fix_msg = ("""
     """)
 
 # Calculate conversion from camera pixel width to actual speed.
-try:
-    # Check if variables below are in config.py
-    cal_obj_mm_L2R
-    cal_obj_px_L2R
-    cal_obj_mm_R2L
-    cal_obj_px_R2L
-except:
-    logging.error("Missing some config.py variables per below")
-    logging.error("cal_obj_mm_L2R, cal_obj_px_L2R, cal_obj_mm_R2L cal_obj_px_R2L")
-    print(fix_msg)
-    logging.warn("You will need to recalibrate camera for L2R and R2L directions")
-    print("%s %s - Exiting Due to Errors " % (progName, progVer))
-    sys.exit(1)
-
 px_to_kph_L2R = float(cal_obj_mm_L2R/cal_obj_px_L2R * 0.0036)
 px_to_kph_R2L = float(cal_obj_mm_R2L/cal_obj_px_R2L * 0.0036)
 
@@ -392,28 +378,8 @@ else:
     speed_conv_L2R = px_to_kph_L2R
     speed_conv_R2L = px_to_kph_R2L
 
-try:
-    x_buf_adjust   # check if variable exists in config.py
-except:
-    x_buf_adjust = 10   # Default=10 Divisor for screen width to Set space on left and right
-                        # of Crop image to ensure object contour is mostly inside tracking area.
-                        # smaller give more buffer space.
-    logging.warn("x_buf_adjust Not Found in config.py Setting value to %d", x_buf_adjust)
-
 # setup buffer area to ensure contour is mostly contained in crop area
 x_buf = int((x_right - x_left) / x_buf_adjust)
-
-try:
-    track_counter  # check if variable exists in config.py or dictionary settings
-except:
-    logging.warn("Missing config.py variable track_counter")
-    logging.warn(fix_msg)
-    track_counter = 5  # default number of consecutive movements before reporting speed
-    logging.warn("Setting Default Value of track_counter variable to %i", track_counter)
-    try:
-        raw_input("Press Enter to Continue...")  # python 2
-    except:
-        input("Press Enter to Continue...")  # python 3
 
 #------------------------------------------------------------------------------
 class PiVideoStream:
@@ -771,7 +737,7 @@ def deleteOldFiles(maxFiles, dirPath, prefix):
                           key=os.path.getmtime)
     except OSError as err:
         logging.error('Problem Reading Directory %s', dirPath)
-        logging.error('%s',err)
+        logging.error('%s', err)
         logging.error('Possibly symlink destination File Does Not Exist')
         logging.error('To Fix - Try Deleting All Files in recent folder %s', dirPath)
     else:
@@ -1014,6 +980,7 @@ def db_check(db_file):
     logging.info("Success: sqlite3 Connected to DB %s", db_file)
     return conn
 
+#------------------------------------------------------------------------------
 def db_open(db_file):
     """
     Insert speed data into database table
@@ -1253,14 +1220,14 @@ def speed_camera():
                         cur_track_dist = abs(end_pos_x - prev_pos_x)
                         if travel_direction == 'L2R':
                             cur_ave_speed = float((abs(cur_track_dist /
-                                                   float(abs(cur_track_time -
-                                                             prev_start_time)))) *
-                                                             speed_conv_L2R)
+                                                       float(abs(cur_track_time -
+                                                                 prev_start_time)))) *
+                                                  speed_conv_L2R)
                         else:
                             cur_ave_speed = float((abs(cur_track_dist /
-                                                   float(abs(cur_track_time -
-                                                             prev_start_time)))) *
-                                                             speed_conv_R2L)
+                                                       float(abs(cur_track_time -
+                                                                 prev_start_time)))) *
+                                                  speed_conv_R2L)
                         speed_list.append(cur_ave_speed)
                         prev_start_time = cur_track_time
                         event_timer = time.time()
