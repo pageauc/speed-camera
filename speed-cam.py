@@ -78,8 +78,6 @@ Note: plugins can override default and config.py values if plugins are
       enabled.  This happens after config.py variables are initialized
 """
 default_settings = {
-    'configName':'default_settings',
-    'configTitle':'No config.py so using internal dictionary settings',
     'calibrate':True,
     'cal_obj_px_L2R':90,
     'cal_obj_mm_L2R':4700.0,
