@@ -42,10 +42,24 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 """
 from __future__ import print_function
-print("Loading ...")
+
+progVer = "9.9"  # current version of this python script
+
+import os
+# Get information about this script including name, launch path, etc.
+# This allows script to be renamed or relocated to another directory
+mypath = os.path.abspath(__file__)  # Find the full path of this python script
+# get the path location only (excluding script name)
+baseDir = mypath[0:mypath.rfind("/")+1]
+baseFileName = mypath[mypath.rfind("/")+1:mypath.rfind(".")]
+progName = os.path.basename(__file__)
+horz_line = "----------------------------------------------------------------------"
+print(horz_line)
+print("%s %s   written by Claude Pageau" % (progName, progVer))
+print(horz_line)
+print("Loading  Wait ...")
 import time
 import datetime
-import os
 import sys
 import glob
 import shutil
@@ -53,8 +67,6 @@ import logging
 import sqlite3
 from threading import Thread
 import subprocess
-
-progVer = "9.8"  # current version of this python script
 
 """
 This is a dictionary of the default settings for speed-cam.py
@@ -66,6 +78,8 @@ Note: plugins can override default and config.py values if plugins are
       enabled.  This happens after config.py variables are initialized
 """
 default_settings = {
+    'configName':'default_settings',
+    'configTitle':'No config.py so using internal dictionary settings',
     'calibrate':True,
     'cal_obj_px_L2R':90,
     'cal_obj_mm_L2R':4700.0,
@@ -149,19 +163,6 @@ default_settings = {
     'DB_NAME':"speed_cam.db",
     'DB_TABLE':"speed"
     }
-
-# Get information about this script including name, launch path, etc.
-# This allows script to be renamed or relocated to another directory
-mypath = os.path.abspath(__file__)  # Find the full path of this python script
-# get the path location only (excluding script name)
-baseDir = mypath[0:mypath.rfind("/")+1]
-baseFileName = mypath[mypath.rfind("/")+1:mypath.rfind(".")]
-progName = os.path.basename(__file__)
-
-horz_line = "----------------------------------------------------------------------"
-print(horz_line)
-print("%s %s   written by Claude Pageau" % (progName, progVer))
-print(horz_line)
 
 # Color data for OpenCV lines and text
 cvWhite = (255, 255, 255)
@@ -332,15 +333,15 @@ if image_bigger < 1.0:
     image_bigger = 1.0
 
 # System Settings
+# It is NOT advised to flip a webcam image in any way since there
+# will be a performance hit otherwise.  Advise flipping physical cam
+# if required.
+WEBCAM_FLIPPED = False
 if WEBCAM:
     # Set width of trigger point image to save
     image_width = int(WEBCAM_WIDTH * image_bigger)
     # Set height of trigger point image to save
     image_height = int(WEBCAM_HEIGHT * image_bigger)
-    # It is NOT advised to flip a webcam image in any way since there
-    # will be a performance hit otherwise.  Advise flipping physical cam
-    # if required.
-    WEBCAM_FLIPPED = False
     # Check if Web Cam image flipped in any way
     if (WEBCAM_HFLIP or WEBCAM_VFLIP):
         WEBCAM_FLIPPED = True
