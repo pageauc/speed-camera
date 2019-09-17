@@ -1020,6 +1020,7 @@ def db_open(db_file):
         db_conn.commit()
     return db_conn
 
+#------------------------------------------------------------------------------
 def speed_get_contours(image, grayimage1):
     image_ok = False
     while not image_ok:
@@ -1057,6 +1058,7 @@ def speed_get_contours(image, grayimage1):
     grayimage1 = grayimage2
     return grayimage1, contours
 
+#------------------------------------------------------------------------------
 def speed_image_add_lines(image, color):
     cv2.line(image, (x_left, y_upper),
              (x_right, y_upper), color, 1)
@@ -1068,6 +1070,7 @@ def speed_image_add_lines(image, color):
              (x_right, y_lower), color, 1)
     return image
 
+#------------------------------------------------------------------------------
 def speed_notify():
     if pluginEnable:
         logging.info("Plugin Enabled per pluginName=%s", pluginName)
