@@ -43,7 +43,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "9.9"  # current version of this python script
+progVer = "9.91"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -1128,6 +1128,15 @@ def speed_camera():
             logging.info("sqlite3 DB is Open %s", DB_PATH)
             db_cur = db_conn.cursor()  # Set cursor position
             db_is_open = True
+            
+    # insert status column into speed table.  Can be used for 
+    # alpr (automatic license plate reader) processing to indicate 
+    # images to be processed eg null field entry.
+    try:
+        db_conn.execute('alter table speed add status text')
+    except sqlite3.OperationalError:
+        pass            
+            
     speed_notify()
     # Warn user of performance hit if webcam image flipped
     if (WEBCAM and WEBCAM_FLIPPED):
@@ -1356,7 +1365,7 @@ def speed_camera():
                                                   y_upper, y_lower,
                                                   max_speed_over,
                                                   MIN_AREA, track_counter,
-                                                  cal_obj_px, cal_obj_mm)
+                                                  cal_obj_px, cal_obj_mm, '')
 
                                     # Insert speed_data into sqlite3 database table
                                     try:
