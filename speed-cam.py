@@ -1008,7 +1008,7 @@ def db_open(db_file):
                  y_upper integer, y_lower integer,
                  max_speed_over integer,
                  min_area integer, track_counter integer,
-                 cal_obj_px integer, cal_obj_mm integer)'''.format(DB_TABLE)
+                 cal_obj_px integer, cal_obj_mm integer), status text'''.format(DB_TABLE)
     try:
         db_conn.execute(sql_cmd)
     except sqlite3.Error as e:
