@@ -1008,7 +1008,7 @@ def db_open(db_file):
                  y_upper integer, y_lower integer,
                  max_speed_over integer,
                  min_area integer, track_counter integer,
-                 cal_obj_px integer, cal_obj_mm integer), status text'''.format(DB_TABLE)
+                 cal_obj_px integer, cal_obj_mm integer, status text)'''.format(DB_TABLE)
     try:
         db_conn.execute(sql_cmd)
     except sqlite3.Error as e:
@@ -1128,15 +1128,15 @@ def speed_camera():
             logging.info("sqlite3 DB is Open %s", DB_PATH)
             db_cur = db_conn.cursor()  # Set cursor position
             db_is_open = True
-            
-    # insert status column into speed table.  Can be used for 
-    # alpr (automatic license plate reader) processing to indicate 
+
+    # insert status column into speed table.  Can be used for
+    # alpr (automatic license plate reader) processing to indicate
     # images to be processed eg null field entry.
     try:
         db_conn.execute('alter table speed add status text')
     except sqlite3.OperationalError:
-        pass            
-            
+        pass
+
     speed_notify()
     # Warn user of performance hit if webcam image flipped
     if (WEBCAM and WEBCAM_FLIPPED):
