@@ -43,7 +43,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "9.95"  # current version of this python script
+progVer = "9.96"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -75,7 +75,7 @@ variables with default values.  Change dictionary values if you want different
 variable default values.
 A message will be displayed if a variable is Not imported from config.py.
 Note: plugins can override default and config.py values if plugins are
-      enabled.  This happens after config.py variables are initialized
+      enabled.  This happens after config.py variables are imported
 """
 default_settings = {
     'calibrate':True,
@@ -1559,22 +1559,24 @@ if __name__ == '__main__':
                 vs.camera.hflip = CAMERA_HFLIP
                 vs.camera.vflip = CAMERA_VFLIP
                 time.sleep(2.0)  # Allow PiCamera to initialize
-            # get image size
+
+            # get actual image size from stream.
             test_img = vs.read()
             img_height, img_width, _ = test_img.shape
             # Set width of trigger point image to save
             image_width = int(img_width * image_bigger)
             # Set height of trigger point image to save
             image_height = int(img_height * image_bigger)
-            print("image size is %ix%i" %(img_width, img_height))
+
+            # Auto adjust the crop image to suit the real image size.
             x_left = int(img_width / 8)
             x_right = int(img_width - x_left)
             y_upper = int(img_height / 4)
             y_lower = int(img_height - y_upper)
-            print("x_left=%i x_right=%i y_upper=%i y_lower=%i" %
-                  (x_left, x_right, y_upper, y_lower))
+
             # setup buffer area to ensure contour is mostly contained in crop area
             x_buf = int((x_right - x_left) / x_buf_adjust)
+
             show_settings()  # Show variable settings
             speed_camera() # run main speed camera processing loop
     except KeyboardInterrupt:
