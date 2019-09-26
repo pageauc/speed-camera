@@ -11,13 +11,6 @@
 cal_obj_px = 620       # Length of a calibration object in pixels
 cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 
-# Crop Area for motion detection Tracking
-# =======================================
-x_left  = 660          # Default= 660 Exclude event if x less than this px position Default=25
-x_right = 1260         # Default= 1260 Exclude event if x greater than this px position Default=295
-y_upper = 340          # Default= 340 Exclude event if y less that this value default=100
-y_lower = 740          # Default= 740 Exclude event if y greater than this value default=175
-
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True

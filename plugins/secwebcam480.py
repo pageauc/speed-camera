@@ -9,13 +9,6 @@
 # --------------------
 calibrate = False      # Create a calibration image file with calibration hash markers 10 px per mark
 
-# Crop Area for motion detection Tracking
-# ---------------------------------------
-x_left  = 20          # Default= 20 Exclude event if x less than this px position
-x_right = 620         # Default= 620 Exclude event if x greater than this px position
-y_upper = 20          # Default= 20 Exclude event if y less that this value
-y_lower = 460         # Default= 460 Exclude event if y greater than this value
-
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True

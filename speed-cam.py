@@ -43,7 +43,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "9.91"  # current version of this python script
+progVer = "9.95"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -85,10 +85,6 @@ default_settings = {
     'cal_obj_mm_R2L':4700.0,
     'pluginEnable':False,
     'pluginName':"picam240",
-    'x_left ':25,
-    'x_right':295,
-    'y_upper':75,
-    'y_lower':185,
     'gui_window_on':False,
     'show_thresh_on':False,
     'show_crop_on':False,
@@ -330,24 +326,11 @@ if WINDOW_BIGGER < 1.0:
 if image_bigger < 1.0:
     image_bigger = 1.0
 
-# System Settings
-# It is NOT advised to flip a webcam image in any way since there
-# will be a performance hit otherwise.  Advise flipping physical cam
-# if required.
 WEBCAM_FLIPPED = False
 if WEBCAM:
-    # Set width of trigger point image to save
-    image_width = int(WEBCAM_WIDTH * image_bigger)
-    # Set height of trigger point image to save
-    image_height = int(WEBCAM_HEIGHT * image_bigger)
     # Check if Web Cam image flipped in any way
     if (WEBCAM_HFLIP or WEBCAM_VFLIP):
         WEBCAM_FLIPPED = True
-else:
-    # Set width of trigger point image to save
-    image_width = int(CAMERA_WIDTH * image_bigger)
-    # Set height of trigger point image to save
-    image_height = int(CAMERA_HEIGHT * image_bigger)
 
 quote = '"'  # Used for creating quote delimited log file of speed data
 fix_msg = ("""
@@ -375,9 +358,6 @@ else:
     speed_units = "kph"
     speed_conv_L2R = px_to_kph_L2R
     speed_conv_R2L = px_to_kph_R2L
-
-# setup buffer area to ensure contour is mostly contained in crop area
-x_buf = int((x_right - x_left) / x_buf_adjust)
 
 #------------------------------------------------------------------------------
 class PiVideoStream:
@@ -1107,7 +1087,7 @@ def speed_camera():
     start_pos_x = None
     end_pos_x = None
     prev_pos_x = None
-    travel_direction = ""
+    travel_direction = None
     font = cv2.FONT_HERSHEY_SIMPLEX
     # Calculate position of text on the images
     if image_text_bottom:
@@ -1547,7 +1527,6 @@ def speed_camera():
 
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
-    show_settings()  # Show variable settings
     try:
         WEBCAM_TRIES = 0
         while True:
@@ -1580,6 +1559,23 @@ if __name__ == '__main__':
                 vs.camera.hflip = CAMERA_HFLIP
                 vs.camera.vflip = CAMERA_VFLIP
                 time.sleep(2.0)  # Allow PiCamera to initialize
+            # get image size
+            test_img = vs.read()
+            img_height, img_width, _ = test_img.shape
+            # Set width of trigger point image to save
+            image_width = int(img_width * image_bigger)
+            # Set height of trigger point image to save
+            image_height = int(img_height * image_bigger)
+            print("image size is %ix%i" %(img_width, img_height))
+            x_left = int(img_width / 8)
+            x_right = int(img_width - x_left)
+            y_upper = int(img_height / 4)
+            y_lower = int(img_height - y_upper)
+            print("x_left=%i x_right=%i y_upper=%i y_lower=%i" %
+                  (x_left, x_right, y_upper, y_lower))
+            # setup buffer area to ensure contour is mostly contained in crop area
+            x_buf = int((x_right - x_left) / x_buf_adjust)
+            show_settings()  # Show variable settings
             speed_camera() # run main speed camera processing loop
     except KeyboardInterrupt:
         vs.stop()

@@ -28,14 +28,6 @@ pluginName = "picam240" # Specify filename in plugins subfolder without .py exte
                         # picam1080   (Experimental Not Recommended)
                         # secpicam480, secwebcam480 (Experimental no CSV entries)
 
-# Default 320 Crop Area for motion detection Tracking
-# Note Use plugins to override this default configuration
-# -------------------------------------------------------
-x_left  = 25           # Default= 25 Exclude event if x less than this px position
-x_right = 295          # Default= 295 Exclude event if x greater than this px position
-y_upper = 75           # Default= 75 Exclude event if y less that this value
-y_lower = 185          # Default= 185 Exclude event if y greater than this value
-
 # Display opencv windows on gui desktop
 # gui_window_on suppresses All Windows if False
 # ----------------------------------------------
@@ -57,7 +49,6 @@ SPEED_MPH = False      # Set Speed Units   kph=False  mph=True
 track_counter = 5      # one cpu core=5 four cores=10 Number of Consecutive Motion Events to trigger speed photo
                        # Testing with RPI2 B one core using opencv ver 3.4.2
 MIN_AREA = 100         # Default= 100 Exclude all contours less than or equal to this sq-px Area
-track_len_trig = 70    # NOT USED. Used for version 8.87 or earlier see speed-cam_887.py
 show_out_range = True  # Default= True Show Out of Range Events per x_diff settings below False= Off
 x_diff_max = 20        # Default= 20 Exclude if max px away >= last motion event x position
 x_diff_min = 1         # Default= 1 Exclude if min px away <= last event x position

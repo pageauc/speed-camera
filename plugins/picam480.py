@@ -12,13 +12,6 @@ cal_obj_mm = 4330.0    # Length of the calibration object in millimetres. (longe
 # Note if tested speed is too low increase cal_obj_mm  value and redo speed test.
 # IMPORTANT - If plugins NOT enabled in config.py then Edit config.py settings.
 
-# Crop Area for motion detection Tracking
-# ---------------------------------------
-x_left  = 150          # Default= 150 Exclude event if x less than this px position
-x_right = 490          # Default= 490 Exclude event if x greater than this px position
-y_upper = 140          # Default= 140 Exclude event if y less that this value
-y_lower = 340          # Default= 340 Exclude event if y greater than this value
-
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
