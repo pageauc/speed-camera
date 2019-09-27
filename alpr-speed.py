@@ -35,7 +35,7 @@ sudo ln -s /usr/share/openalpr/runtime_data/ocr/tessdata/lus.traineddata /usr/sh
 """
 from __future__ import print_function
 
-prog_ver = "ver 1.0"
+prog_ver = "ver 1.1"
 
 import sys
 import time
@@ -106,14 +106,17 @@ try:
             print('Processing %s' % image_path)
             results = alpr.recognize_file(image_path)
 
+            # Check for plate data in results
+            plate_data = 'none'
             for i, plate in enumerate(results['results']):
                 best_candidate = plate['candidates'][0]
                 # Could add to a database table eg speed_cam.db plate table image_path, plate columns
-                print('Plate #{}: {:7s} ({:.2f}%)'.format(i, best_candidate['plate'].upper(),
+                plate_data = ('Plate #{}: {:7s} ({:.2f}%)'.format(i, best_candidate['plate'].upper(),
                        best_candidate['confidence']))
-
+                print(plate_data)
+            print(plate_data)
             # Set speed_cam.db speed table status field to 'done'
-            sql_cmd = '''UPDATE speed SET status="done" WHERE idx="{}"'''.format(row_index)
+            sql_cmd = '''UPDATE speed SET status="{}" WHERE idx="{}"'''.format(plate_data, row_index)
             db_conn.execute(sql_cmd)
             db_conn.commit()
         print('Waiting 30 seconds')
