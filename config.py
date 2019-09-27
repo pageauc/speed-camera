@@ -42,7 +42,7 @@ verbose = True         # True= Display basic status information on console False
 display_fps = False    # True= Show average frame count every 1000 loops False= Off
 log_data_to_CSV = False # True= Save log data as CSV comma separated values  False= Off
 loggingToFile = False  # True= Send logging to file False= No Logging to File
-logFilePath = 'speed-cam.log'  # Location of log file when logDataToFile=True
+logFilePath = 'speed-cam.log'  # Location of log file when loggingToFile=True
 
 # Motion Event Settings
 # ---------------------
@@ -65,6 +65,8 @@ WEBCAM = False         # Default = False False=PiCamera True=USB WebCamera
 
 # Web Camera Settings
 WEBCAM_SRC = 0         # Default= 0   USB opencv connection number
+                       # or ip cam rtsp string eg "rtsp://192.168.1.101/RtspTranslator.12/camera"
+                       # See ip cam docs. WEBCAM_WIDTH & HEIGHT MUST match stream rtsp resolution
 WEBCAM_WIDTH = 320     # Default= 320 USB Webcam Image width
 WEBCAM_HEIGHT = 240    # Default= 240 USB Webcam Image height
 WEBCAM_HFLIP = False   # Default= False USB Webcam flip image horizontally
