@@ -43,7 +43,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "9.96"  # current version of this python script
+progVer = "9.97"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -1564,10 +1564,16 @@ if __name__ == '__main__':
             # Set height of trigger point image to save
             image_height = int(img_height * image_bigger)
 
+            x_scale = 8.0
+            y_scale = 4.0
+            # reduce motion area for larger stream sizes
+            if img_width > 1000:
+                x_scale = 3.0
+                y_scale = 3.0
             # Auto adjust the crop image to suit the real image size.
-            x_left = int(img_width / 8)
+            x_left = int(img_width / x_scale)
             x_right = int(img_width - x_left)
-            y_upper = int(img_height / 4)
+            y_upper = int(img_height / y_scale)
             y_lower = int(img_height - y_upper)
 
             # setup buffer area to ensure contour is mostly contained in crop area
