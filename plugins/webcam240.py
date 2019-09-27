@@ -7,8 +7,10 @@
 
 # Calibration Settings
 # --------------------
-cal_obj_px = 90        # Length of a calibration object in pixels
-cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
+cal_obj_px_L2R = 80      # L2R Moving Objects, Length of a calibration object in pixels
+cal_obj_mm_L2R = 4700.0  # L2R Moving Objects, Length of the calibration object in millimetres
+cal_obj_px_R2L = 85      # R2L Moving Objects, Length of a calibration object in pixels
+cal_obj_mm_R2L = 4700.0  # R2L Moving Objects, Length of the calibration object in millimetres
 
 # Motion Event Settings
 # ---------------------

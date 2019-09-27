@@ -12,9 +12,9 @@
 # Calibration Settings
 # --------------------
 calibrate = True         # Create a calibration image file with calibration hash markers 10 px per mark
-cal_obj_px_L2R = 90      # L2R Moving Objects, Length of a calibration object in pixels
+cal_obj_px_L2R = 80      # L2R Moving Objects, Length of a calibration object in pixels
 cal_obj_mm_L2R = 4700.0  # L2R Moving Objects, Length of the calibration object in millimetres
-cal_obj_px_R2L = 95      # R2L Moving Objects, Length of a calibration object in pixels
+cal_obj_px_R2L = 85      # R2L Moving Objects, Length of a calibration object in pixels
 cal_obj_mm_R2L = 4700.0  # R2L Moving Objects, Length of the calibration object in millimetres
 
 # Note if tested speed is too low increase appropriate cal_obj_mm  value and redo speed test for desired direction.
@@ -66,7 +66,7 @@ WEBCAM = False         # Default = False False=PiCamera True=USB WebCamera
 # Web Camera Settings
 WEBCAM_SRC = 0         # Default= 0   USB opencv connection number
                        # or ip cam rtsp string eg "rtsp://192.168.1.101/RtspTranslator.12/camera"
-                       # See ip cam docs. WEBCAM_WIDTH & HEIGHT MUST match stream rtsp resolution
+                       # See ip cam docs. WEBCAM_WIDTH & HEIGHT MUST match rtsp stream resolution
 WEBCAM_WIDTH = 320     # Default= 320 USB Webcam Image width
 WEBCAM_HEIGHT = 240    # Default= 240 USB Webcam Image height
 WEBCAM_HFLIP = False   # Default= False USB Webcam flip image horizontally
