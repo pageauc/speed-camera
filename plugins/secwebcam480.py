@@ -11,7 +11,6 @@ calibrate = False      # Create a calibration image file with calibration hash m
 
 # Motion Event Settings
 # ---------------------
-SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
 MIN_AREA = 200         # Default= 200 Exclude all contours less than or equal to this sq-px Area
 track_len_trig = 150   # Default= 150 Length of track to trigger speed photo
 x_diff_max = 90        # Default= 90 Exclude if max px away >= last motion event x pos

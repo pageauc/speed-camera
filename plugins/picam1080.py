@@ -13,7 +13,6 @@ cal_obj_mm = 4330.0    # Length of the calibration object in millimetres
 
 # Motion Event Settings
 # ---------------------
-SPEED_MPH = False      # Set the speed conversion  kph=False  mph=True
 MIN_AREA = 300         # Default= 300 Exclude all contours less than or equal to this sq-px Area
 track_len_trig = 100   # Default= 100 Length of track to trigger speed photo
 x_diff_max = 25        # Default= 25 Exclude if max px away >= last motion event x pos

@@ -628,10 +628,6 @@ def take_calibration_image(speed, filename, cal_image):
         cv2.line(cal_image, (i, y_upper - 5), (i, y_upper + 30), hash_color, 1)
     # This is motion window
     cal_image = speed_image_add_lines(cal_image, motion_win_color)
-    if SPEED_MPH:
-        speed_units = 'mph'
-    else:
-        speed_units = 'kph'
 
     print("----------------------------- Create Calibration Image "
           "-----------------------------")
