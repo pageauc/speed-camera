@@ -4,8 +4,9 @@
 #######################################
 #  speed-cam.py Variable Settings
 #  Default is 320x240 image stream size
-#  if using RPI3 you can try picam480 plugin
-#  or larger stream image plugin.
+#  Note motion track crop area is now
+#  auto configured so you man not need to use a plugin
+#  to change resolution.
 #######################################
 
 # Calibration Settings
