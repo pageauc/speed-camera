@@ -5,7 +5,7 @@
 #  speed-cam.py Variable Settings
 #  Default is 320x240 image stream size
 #  Note motion track crop area is now
-#  auto configured so you man not need to use a plugin
+#  auto configured so you may not need to use a plugin
 #  to change resolution.
 #######################################
 
