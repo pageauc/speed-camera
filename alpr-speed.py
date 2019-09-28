@@ -57,10 +57,12 @@ except ImportError:
 
 # User Variables
 # --------------
-PROG_VER = "ver 1.4"
+PROG_VER = "ver 1.5"
 
+VERBOSE_ON = True
 DB_FILE = '/home/pi/speed-camera/data/speed_cam.db'
 SPEED_DIR = '/home/pi/speed-camera'   # path to speed-camera folder
+WAIT_SECS = 30  # seconds to wait between queries for images to process
 
 # System Variables
 # ----------------
@@ -72,9 +74,11 @@ BASE_DIR = MY_PATH[0:MY_PATH.rfind("/")+1]
 BASE_FILE_NAME = MY_PATH[MY_PATH.rfind("/")+1:MY_PATH.rfind(".")]
 PROG_NAME = os.path.basename(__file__)
 HORZ_LINE = "----------------------------------------------------------------------"
-print(HORZ_LINE)
-print("%s %s   written by Claude Pageau" % (PROG_NAME, PROG_VER))
-print(HORZ_LINE)
+if VERBOSE_ON:
+    print(HORZ_LINE)
+    print("%s %s   written by Claude Pageau" % (PROG_NAME, PROG_VER))
+    print(HORZ_LINE)
+    print("Connecting to %s  Wait ..." % DB_FILE)
 
 ALPR = Alpr("us", "/etc/openalpr/openalpr.conf", "/usr/share/openalpr/runtime_data")
 if not ALPR.is_loaded():
@@ -97,42 +101,61 @@ DB_CONN.row_factory = sqlite3.Row
 CURSOR = DB_CONN.cursor()
 try:
     while True:
+        NO_DATA = ""
         # run sql query to select unprocessed images from speed_cam.db
+        ROW_TOTAL = CURSOR.execute("SELECT COUNT(*) FROM speed WHERE status=''").fetchone()[0]
         CURSOR.execute("SELECT idx, image_path FROM speed WHERE status=''")
+        ROW_COUNTER = 0
         while True:
             ROW = CURSOR.fetchone()
             if ROW is None:
+                NO_DATA = "No Data to Process"
                 break
+            ROW_COUNTER += 1
             ROW_INDEX = (ROW["idx"])
             ROW_PATH = (ROW["image_path"])
             # create full path to image file to process
             IMAGE_PATH = os.path.join(SPEED_DIR, ROW_PATH)
             # Do ALPR processing on selected image
-            print('Processing %s' % IMAGE_PATH)
             RESULTS = ALPR.recognize_file(IMAGE_PATH)
-
-            # Check for plate data in RESULTS
-            PLATE_DATA = 'none'
+            PLATE_DATA = 'Plate: '
+            FOUND_PLATE = False
             for i, plate in enumerate(RESULTS['results']):
+                FOUND_PLATE = True
                 best_candidate = plate['candidates'][0]
-                # Could add to a database table
-                # eg speed_cam.db plate table image_path, plate columns
-                PLATE_DATA = ('Plate #{}: {:7s} ({:.2f}%)'
-                              .format(i,
-                                      best_candidate['plate'].upper(),
-                                      best_candidate['confidence']))
-                print(PLATE_DATA)
-            # print(PLATE_DATA)
+                ROW_DATA = ('{:7s} ({:.2f}%) '.format
+                            (best_candidate['plate'].upper(),
+                             best_candidate['confidence']))
+                PLATE_DATA = PLATE_DATA + ROW_DATA
+
             # update speed_cam.db speed, status column with 'none' or plate info
-            SQL_CMD = ('''UPDATE speed SET status="{}" WHERE idx="{}"'''
-                       .format(PLATE_DATA, ROW_INDEX))
-            DB_CONN.execute(SQL_CMD)
-            DB_CONN.commit()
-        print('Waiting 30 seconds')
-        time.sleep(30)
+            if FOUND_PLATE:
+                if VERBOSE_ON:
+                    print("%i/%i SQLITE Add %s to %s" %
+                          (ROW_COUNTER, ROW_TOTAL, PLATE_DATA, IMAGE_PATH))
+                SQL_CMD = ('''UPDATE speed SET status="{}" WHERE idx="{}"'''
+                           .format(PLATE_DATA, ROW_INDEX))
+                DB_CONN.execute(SQL_CMD)
+                DB_CONN.commit()
+            else:
+                if VERBOSE_ON:
+                    print("%i/%i No Plate %s" %
+                          (ROW_COUNTER, ROW_TOTAL, IMAGE_PATH))
+                # set speed table status field to NULL
+                SQL_CMD = ('''UPDATE speed SET status=NULL WHERE idx="{}"'''
+                           .format(ROW_INDEX))
+                DB_CONN.execute(SQL_CMD)
+                DB_CONN.commit()
+        if VERBOSE_ON:
+            print('%s  Wait %is ...' % (NO_DATA, WAIT_SECS))
+            time.sleep(WAIT_SECS)
+
 except KeyboardInterrupt:
     print("")
     print("%s %s User Exited with ctr-c" %(PROG_NAME, PROG_VER))
 finally:
+    print("DB_CONN.close %s" % DB_FILE)
     DB_CONN.close()
+    print("ALRP.unload")
     ALPR.unload()
+    print("Bye ...")
