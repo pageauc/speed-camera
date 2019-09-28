@@ -56,15 +56,19 @@ except ImportError:
     sys.exit(1)
 
 # User Variables
-PROG_VER = "ver 1.3"
+# --------------
+PROG_VER = "ver 1.4"
 
 DB_FILE = '/home/pi/speed-camera/data/speed_cam.db'
 SPEED_DIR = '/home/pi/speed-camera'   # path to speed-camera folder
 
 # System Variables
-MY_PATH = os.path.abspath(__file__)  # Find the full path of this python script
+# ----------------
+# Find the full path of this python script
+MY_PATH = os.path.abspath(__file__)
 # get the path location only (excluding script name)
 BASE_DIR = MY_PATH[0:MY_PATH.rfind("/")+1]
+# BASE_FILE_NAME is This script name without extension
 BASE_FILE_NAME = MY_PATH[MY_PATH.rfind("/")+1:MY_PATH.rfind(".")]
 PROG_NAME = os.path.basename(__file__)
 HORZ_LINE = "----------------------------------------------------------------------"
@@ -103,28 +107,29 @@ try:
             ROW_PATH = (ROW["image_path"])
             # create full path to image file to process
             IMAGE_PATH = os.path.join(SPEED_DIR, ROW_PATH)
-            # This may have to be tweaked since image is from a file.
             # Do ALPR processing on selected image
             print('Processing %s' % IMAGE_PATH)
             RESULTS = ALPR.recognize_file(IMAGE_PATH)
 
-            # Check for plate data in results
+            # Check for plate data in RESULTS
             PLATE_DATA = 'none'
             for i, plate in enumerate(RESULTS['results']):
                 best_candidate = plate['candidates'][0]
-                # Could add to a database table eg speed_cam.db plate table image_path, plate columns
-                PLATE_DATA = ('Plate #{}: {:7s} ({:.2f}%)'.format(i, best_candidate['plate'].upper(),
-                                                                  best_candidate['confidence']))
+                # Could add to a database table
+                # eg speed_cam.db plate table image_path, plate columns
+                PLATE_DATA = ('Plate #{}: {:7s} ({:.2f}%)'
+                              .format(i,
+                                      best_candidate['plate'].upper(),
+                                      best_candidate['confidence']))
                 print(PLATE_DATA)
             # print(PLATE_DATA)
-            # Set speed_cam.db speed table status field to 'done'
+            # update speed_cam.db speed, status column with 'none' or plate info
             SQL_CMD = ('''UPDATE speed SET status="{}" WHERE idx="{}"'''
                        .format(PLATE_DATA, ROW_INDEX))
             DB_CONN.execute(SQL_CMD)
             DB_CONN.commit()
         print('Waiting 30 seconds')
         time.sleep(30)
-
 except KeyboardInterrupt:
     print("")
     print("%s %s User Exited with ctr-c" %(PROG_NAME, PROG_VER))
