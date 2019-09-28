@@ -37,21 +37,22 @@ Also included are
   
 * [***menubox.sh***](https://github.com/pageauc/speed-camera/wiki/Admin-and-Settings#manage-settings-using-menuboxsh)
 script is a whiptail menu system to allow easier management of program settings and operation. 
+* [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
+Allows viewing images and/or data from a web browser (see config.py for webserver settings)
 * [***rclone***](https://github.com/pageauc/speed-camera/wiki/Manage-rclone-Remote-Storage-File-Transfer)
 for optional remote file sync to a remote storage service like google drive, DropBox and many others. 
 * [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)
 for administration of settings from a remote storage service. Plus application monitoring.
+* [***sql_speed_gt.py***](https://github.com/pageauc/speed-camera/blob/master/sql_speed_gt.sh) Prompts for a speed value and runs a simple
+sqlite3 query to show all record that exceed the specified speed. Output can be found in media/reports folder and is available from browser. 
+* [***sql_hour_count.py***](https://github.com/pageauc/speed-camera/blob/master/sql_hour_count.py) Run report for count by hour.
+also produces a graph using gnuplot. Query output html report and .png graph can be found in media/reports folder and is available from browser.
+* [***alpr-speed.py***](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader) Process speed camera images with OPENALPR License plate reader
 * [***speed-search.py***](https://github.com/pageauc/rpi-speed-camera/wiki/How-to-Run-speed-search.py)
 allows searching for similar target object images using opencv template matching. 
 * [***makehtml.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#view-combined-imagedata-html-pages-on-a-web-browser)
 creates html files that combine csv and image data for easier viewing from a web browser.
 (Does not work with ***secpicam480.py*** or ***secwebcam480.py*** plugins enabled.
-* [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
-Allows viewing images and/or data from a web browser (see config.py for webserver settings)
-* [***sql_speed_gt.sh***](https://github.com/pageauc/speed-camera/blob/master/sql_speed_gt.sh) Prompts for a speed value and runs a simple
-sqlite3 query to show all record that exceed the specified speed. Output can be found in media/reports folder and is available from browser. 
-* [***sql_hour_count.py***](https://github.com/pageauc/speed-camera/blob/master/sql_hour_count.py) Run report for count by hour.
-also produces a graph using gnuplot. Query output html report and .png graph can be found in media/reports folder and is available from browser.
 
 ## Requirements
 [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
