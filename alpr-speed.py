@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 """
-This sample script will read speed-cam.py images from sqlite3 database.
+This sample script will read speed-cam.py images from sqlite3 database entries.
 It will then use openalpr to search for license plate numbers.
 
 You will need to configure openalpr to suit your needs eg
 country and regions Etc.  As each image is processed the speed_cam.db speed table
-status field will be updated to 'done' so image is only processed once.
+status field will be updated to 'none' or plate infor. image is only processed once.
 
 Note
-
+----
 When using speed camera for openalpr purposes the speed settings will
 most likely not be needed and motion tracking will only be used for triggering
 image for license plate capture.  It is suggested you set speed-cam.py config.py
@@ -23,8 +23,9 @@ Installation
 ------------
 I installed openalpr on RPI's per
 
-    sudo apt-get install openalpr
     sudo apt-get install python-openalpr
+    sudo apt-get install openalpr install openalpr-daemon
+    sudo apt-get openalpr-utils libopenalpr-dev
 
     sudo apt-get install sqlite3
 
@@ -35,7 +36,7 @@ sudo ln -s /usr/share/openalpr/runtime_data/ocr/tessdata/lus.traineddata /usr/sh
 """
 from __future__ import print_function
 
-prog_ver = "ver 1.1"
+prog_ver = "ver 1.2"
 
 import sys
 import time
@@ -46,6 +47,8 @@ except ImportError:
     print("ERROR : Problem loading openalpr.  Try Installing per")
     print("        sudo apt-get install python-openalpr")
     print("        sudo apt-get install openalpr")
+    print("        sudo apt-get install openalpr-daemon")
+    print("        sudo apt-get install openalpr-utils libopenalpr-dev")
     sys.exit(1)
 
 try:
@@ -78,12 +81,12 @@ if not alpr.is_loaded():
 alpr.set_top_n(3)      # Set max plates expected per image
 alpr.set_default_region('on')  # Ontario Canada
 
-# Connect to speed_cam.db
+# Connect to sqlite3 file database file speed_cam.db
 try:
     db_conn = sqlite3.connect(DB_FILE)
 except sqlite3.Error as err_msg:
-    logging.error("ERROR: Failed sqlite3 Connect to DB %s", DB_FILE)
-    logging.error("       %s", err_msg)
+    print("ERROR: Failed sqlite3 Connect to DB %s" % DB_FILE)
+    print("       %s" % err_msg)
     sys.exit(1)
 
 # setup cursor for processing db query rows
