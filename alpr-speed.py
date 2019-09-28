@@ -35,12 +35,9 @@ sudo ln -s /usr/share/openalpr/runtime_data/ocr/tessdata/lus.traineddata /usr/sh
 
 """
 from __future__ import print_function
-
-prog_ver = "ver 1.2"
-
 import sys
-import time
 import os
+import time
 try:
     from openalpr import Alpr
 except ImportError:
@@ -59,76 +56,78 @@ except ImportError:
     sys.exit(1)
 
 # User Variables
+PROG_VER = "ver 1.3"
+
 DB_FILE = '/home/pi/speed-camera/data/speed_cam.db'
 SPEED_DIR = '/home/pi/speed-camera'   # path to speed-camera folder
 
 # System Variables
-my_path = os.path.abspath(__file__)  # Find the full path of this python script
+MY_PATH = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
-base_dir = my_path[0:my_path.rfind("/")+1]
-base_file_name = my_path[my_path.rfind("/")+1:my_path.rfind(".")]
-prog_name = os.path.basename(__file__)
-horz_line = "----------------------------------------------------------------------"
-print(horz_line)
-print("%s %s   written by Claude Pageau" % (prog_name, prog_ver))
-print(horz_line)
+BASE_DIR = MY_PATH[0:MY_PATH.rfind("/")+1]
+BASE_FILE_NAME = MY_PATH[MY_PATH.rfind("/")+1:MY_PATH.rfind(".")]
+PROG_NAME = os.path.basename(__file__)
+HORZ_LINE = "----------------------------------------------------------------------"
+print(HORZ_LINE)
+print("%s %s   written by Claude Pageau" % (PROG_NAME, PROG_VER))
+print(HORZ_LINE)
 
-alpr = Alpr("us", "/etc/openalpr/openalpr.conf", "/usr/share/openalpr/runtime_data")
-if not alpr.is_loaded():
+ALPR = Alpr("us", "/etc/openalpr/openalpr.conf", "/usr/share/openalpr/runtime_data")
+if not ALPR.is_loaded():
     print('ERROR : Problem loading OpenALPR')
     sys.exit(1)
 
-alpr.set_top_n(3)      # Set max plates expected per image
-alpr.set_default_region('on')  # Ontario Canada
+ALPR.set_top_n(3)      # Set max plates expected per image
+ALPR.set_default_region('on')  # Ontario Canada
 
 # Connect to sqlite3 file database file speed_cam.db
 try:
-    db_conn = sqlite3.connect(DB_FILE)
+    DB_CONN = sqlite3.connect(DB_FILE)
 except sqlite3.Error as err_msg:
     print("ERROR: Failed sqlite3 Connect to DB %s" % DB_FILE)
     print("       %s" % err_msg)
     sys.exit(1)
 
-# setup cursor for processing db query rows
-db_conn.row_factory = sqlite3.Row
-cursor = db_conn.cursor()
+# setup CURSOR for processing db query rows
+DB_CONN.row_factory = sqlite3.Row
+CURSOR = DB_CONN.cursor()
 try:
     while True:
         # run sql query to select unprocessed images from speed_cam.db
-        cursor.execute("SELECT idx, image_path FROM speed WHERE status=''")
+        CURSOR.execute("SELECT idx, image_path FROM speed WHERE status=''")
         while True:
-            row = cursor.fetchone()
-            if row is None:
+            ROW = CURSOR.fetchone()
+            if ROW is None:
                 break
-            row_index = (row["idx"])
-            row_path = (row["image_path"])
+            ROW_INDEX = (ROW["idx"])
+            ROW_PATH = (ROW["image_path"])
             # create full path to image file to process
-            image_path = os.path.join(SPEED_DIR, row_path)
+            IMAGE_PATH = os.path.join(SPEED_DIR, ROW_PATH)
             # This may have to be tweaked since image is from a file.
             # Do ALPR processing on selected image
-            print('Processing %s' % image_path)
-            results = alpr.recognize_file(image_path)
+            print('Processing %s' % IMAGE_PATH)
+            RESULTS = ALPR.recognize_file(IMAGE_PATH)
 
             # Check for plate data in results
-            plate_data = 'none'
-            for i, plate in enumerate(results['results']):
+            PLATE_DATA = 'none'
+            for i, plate in enumerate(RESULTS['results']):
                 best_candidate = plate['candidates'][0]
                 # Could add to a database table eg speed_cam.db plate table image_path, plate columns
-                plate_data = ('Plate #{}: {:7s} ({:.2f}%)'.format(i, best_candidate['plate'].upper(),
-                       best_candidate['confidence']))
-                print(plate_data)
-            print(plate_data)
+                PLATE_DATA = ('Plate #{}: {:7s} ({:.2f}%)'.format(i, best_candidate['plate'].upper(),
+                                                                  best_candidate['confidence']))
+                print(PLATE_DATA)
+            # print(PLATE_DATA)
             # Set speed_cam.db speed table status field to 'done'
-            sql_cmd = '''UPDATE speed SET status="{}" WHERE idx="{}"'''.format(plate_data, row_index)
-            db_conn.execute(sql_cmd)
-            db_conn.commit()
+            SQL_CMD = ('''UPDATE speed SET status="{}" WHERE idx="{}"'''
+                       .format(PLATE_DATA, ROW_INDEX))
+            DB_CONN.execute(SQL_CMD)
+            DB_CONN.commit()
         print('Waiting 30 seconds')
         time.sleep(30)
 
 except KeyboardInterrupt:
     print("")
-    print("User Exited with ctr-c")
+    print("%s %s User Exited with ctr-c" %(PROG_NAME, PROG_VER))
 finally:
-    db_conn.close()
-    alpr.unload()
-
+    DB_CONN.close()
+    ALPR.unload()
