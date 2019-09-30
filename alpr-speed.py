@@ -57,7 +57,7 @@ except ImportError:
 
 # User Variables
 # --------------
-PROG_VER = "ver 1.7"
+PROG_VER = "ver 1.71"
 
 VERBOSE_ON = True
 DB_FILE = '/home/pi/speed-camera/data/speed_cam.db'
@@ -73,13 +73,15 @@ BASE_DIR = MY_PATH[0:MY_PATH.rfind("/")+1]
 # BASE_FILE_NAME is This script name without extension
 BASE_FILE_NAME = MY_PATH[MY_PATH.rfind("/")+1:MY_PATH.rfind(".")]
 PROG_NAME = os.path.basename(__file__)
+
 HORZ_LINE = "----------------------------------------------------------------------"
 if VERBOSE_ON:
     print(HORZ_LINE)
     print("%s %s   written by Claude Pageau" % (PROG_NAME, PROG_VER))
+    print("ALPR license plate search speed_cam.py Images")
     print(HORZ_LINE)
-    print("Connecting to %s  Wait ..." % DB_FILE)
-
+    print("Loading   Wait ...")
+    
 ALPR = Alpr("us", "/etc/openalpr/openalpr.conf", "/usr/share/openalpr/runtime_data")
 if not ALPR.is_loaded():
     print('ERROR : Problem loading OpenALPR')
@@ -89,7 +91,6 @@ ALPR.set_top_n(3)      # Set max plates expected per image
 ALPR.set_default_region('on')  # Ontario Canada
 
 # Connect to sqlite3 file database file speed_cam.db
-
 try:
     while True:
         try:
@@ -110,8 +111,8 @@ try:
         ROW_COUNTER = 0
         PLATES_DONE = 0
         for row in ALL_ROWS:
-            ROW_INDEX = row[0]
-            ROW_PATH = row[1]
+            ROW_INDEX = row[0] # get image idx from speed table
+            ROW_PATH = row[1]  # get image_path from speed table
             ROW_COUNTER += 1
             # create full path to image file to process
             IMAGE_PATH = os.path.join(SPEED_DIR, ROW_PATH)
@@ -128,7 +129,7 @@ try:
                 PLATE_DATA = PLATE_DATA + ROW_DATA
                 PLATES_DONE += 1
 
-            # update speed_cam.db speed, status column with 'none' or plate info
+            # UPDATE speed_cam.db speed, status column with PLATE_DATA or NULL
             try:
                 DB_CONN = sqlite3.connect(DB_FILE)
                 if FOUND_PLATE:
@@ -137,8 +138,6 @@ try:
                               (ROW_COUNTER, ROW_TOTAL, PLATE_DATA, IMAGE_PATH))
                     SQL_CMD = ('''UPDATE speed SET status="{}" WHERE idx="{}"'''
                                .format(PLATE_DATA, ROW_INDEX))
-                    DB_CONN.execute(SQL_CMD)
-                    DB_CONN.commit()
                 else:
                     if VERBOSE_ON:
                         print("%i/%i No Plate %s" %
@@ -146,8 +145,8 @@ try:
                     # set speed table status field to NULL
                     SQL_CMD = ('''UPDATE speed SET status=NULL WHERE idx="{}"'''
                                .format(ROW_INDEX))
-                    DB_CONN.execute(SQL_CMD)
-                    DB_CONN.commit()
+                DB_CONN.execute(SQL_CMD)
+                DB_CONN.commit()
                 DB_CONN.close()
             except sqlite3.OperationalError:
                 print("SQLITE3 DB Lock Problem Encountered.")
