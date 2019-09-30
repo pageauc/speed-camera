@@ -57,7 +57,7 @@ except ImportError:
 
 # User Variables
 # --------------
-PROG_VER = "ver 1.6"
+PROG_VER = "ver 1.7"
 
 VERBOSE_ON = True
 DB_FILE = '/home/pi/speed-camera/data/speed_cam.db'
@@ -92,29 +92,27 @@ ALPR.set_default_region('on')  # Ontario Canada
 
 try:
     while True:
-        NO_DATA = ""
-
         try:
-            DB_CONN = sqlite3.connect(DB_FILE, timeout=1)
+            DB_CONN = sqlite3.connect(DB_FILE)
         except sqlite3.Error as err_msg:
             print("ERROR: Failed sqlite3 Connect to DB %s" % DB_FILE)
             print("       %s" % err_msg)
+            time.sleep(5)
             continue
+
         # setup CURSOR for processing db query rows
-        DB_CONN.row_factory = sqlite3.Row
         CURSOR = DB_CONN.cursor()
-        # run sql query to select unprocessed images from speed_cam.db
-        ROW_TOTAL = CURSOR.execute("SELECT COUNT(*) FROM speed WHERE status=''").fetchone()[0]
         CURSOR.execute("SELECT idx, image_path FROM speed WHERE status=''")
+        ALL_ROWS = CURSOR.fetchall()
+        DB_CONN.close() # Close DB to minimize db lock issues
+        ROW_TOTAL = len(ALL_ROWS)  # Get total Rows to Process
+        ROW_MSG = "%i Rows Found to Process." % ROW_TOTAL
         ROW_COUNTER = 0
-        while True:
-            ROW = CURSOR.fetchone()
-            if ROW is None:
-                NO_DATA = "No Data to Process"
-                break
+        PLATES_DONE = 0
+        for row in ALL_ROWS:
+            ROW_INDEX = row[0]
+            ROW_PATH = row[1]
             ROW_COUNTER += 1
-            ROW_INDEX = (ROW["idx"])
-            ROW_PATH = (ROW["image_path"])
             # create full path to image file to process
             IMAGE_PATH = os.path.join(SPEED_DIR, ROW_PATH)
             # Do ALPR processing on selected image
@@ -128,9 +126,11 @@ try:
                             (best_candidate['plate'].upper(),
                              best_candidate['confidence']))
                 PLATE_DATA = PLATE_DATA + ROW_DATA
+                PLATES_DONE += 1
 
             # update speed_cam.db speed, status column with 'none' or plate info
             try:
+                DB_CONN = sqlite3.connect(DB_FILE)
                 if FOUND_PLATE:
                     if VERBOSE_ON:
                         print("%i/%i SQLITE Add %s to %s" %
@@ -148,14 +148,13 @@ try:
                                .format(ROW_INDEX))
                     DB_CONN.execute(SQL_CMD)
                     DB_CONN.commit()
+                DB_CONN.close()
             except sqlite3.OperationalError:
-                print("DB Locked")
-                pass
-        DB_CONN.close()
-
+                print("SQLITE3 DB Lock Problem Encountered.")
+            ROW_MSG = "Found %i Plates" % PLATES_DONE
         if VERBOSE_ON:
-            print('%s  Wait %is ...' % (NO_DATA, WAIT_SECS))
-            time.sleep(WAIT_SECS)
+            print('%s  Wait %is ...' % (ROW_MSG, WAIT_SECS))
+        time.sleep(WAIT_SECS)
 
 except KeyboardInterrupt:
     print("")
