@@ -19,10 +19,9 @@ To list licence plates in the system
    cd ~/speed-camera
    sqlite3 data/speed_cam.db
    SELECT image_path, status FROM speed WHERE status NOT NULL;
-
-Note this will also display unprocessed images.
-
-Good Luck Claude ....
+   
+ctl-d to exit sqlite3 console
+Note query will also display unprocessed images.
 
 Installation
 ------------
@@ -38,6 +37,8 @@ I Also needed to create symbolic link per below but this may be due to version t
 
 sudo ln -s /usr/share/openalpr/runtime_data/ocr/tessdata/lus.traineddata /usr/share/openalpr/runtime_data/ocr/lus.traineddata
 
+Still a work in progress
+Good Luck Claude ....
 """
 from __future__ import print_function
 import sys
