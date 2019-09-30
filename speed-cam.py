@@ -43,7 +43,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "9.97"  # current version of this python script
+progVer = "9.98"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -55,7 +55,8 @@ baseFileName = mypath[mypath.rfind("/")+1:mypath.rfind(".")]
 progName = os.path.basename(__file__)
 horz_line = "----------------------------------------------------------------------"
 print(horz_line)
-print("%s %s   written by Claude Pageau" % (progName, progVer))
+print("%s %s  written by Claude Pageau" % (progName, progVer))
+print("ALPR license plate search speed_cam.py Images")
 print(horz_line)
 print("Loading  Wait ...")
 import time
@@ -942,7 +943,7 @@ def db_check(db_file):
     """
     if isSQLite3(db_file):
         try:
-            conn = sqlite3.connect(db_file)
+            conn = sqlite3.connect(db_file, timeout=1)
         except sqlite3.Error as e:
             logging.error("Failed: sqlite3 Connect to DB %s", db_file)
             logging.error("Error Msg: %s", e)
@@ -959,11 +960,6 @@ def db_open(db_file):
     """
     Insert speed data into database table
     """
-    if os.path.isfile(db_file):
-        db_exists = True
-    else:
-        db_exists = False
-
     try:
         db_conn = sqlite3.connect(db_file)
         cursor = db_conn.cursor()
@@ -1112,7 +1108,7 @@ def speed_camera():
         db_conn.execute('alter table speed add status text')
     except sqlite3.OperationalError:
         pass
-
+    db_conn.close()
     speed_notify()
     # Warn user of performance hit if webcam image flipped
     if (WEBCAM and WEBCAM_FLIPPED):
@@ -1303,57 +1299,60 @@ def speed_camera():
                                 cv2.imwrite(filename, big_image)
                                 # if required check free disk space
                                 # and delete older files (jpg)
-                                if db_is_open:
-                                    log_idx = ("%04d%02d%02d-%02d%02d%02d%d" %
-                                               (log_time.year,
-                                                log_time.month,
-                                                log_time.day,
-                                                log_time.hour,
-                                                log_time.minute,
-                                                log_time.second,
-                                                log_time.microsecond/100000))
-                                    log_date = ("%04d%02d%02d" %
-                                                (log_time.year,
-                                                 log_time.month,
-                                                 log_time.day))
-                                    log_hour = ("%02d" % log_time.hour)
-                                    log_minute = ("%02d" % log_time.minute)
-                                    m_area = track_w*track_h
-                                    ave_speed = round(ave_speed, 2)
-                                    if WEBCAM:
-                                        camera = "WebCam"
-                                    else:
-                                        camera = "PiCam"
-                                    if pluginEnable:
-                                        plugin_name = pluginName
-                                    else:
-                                        plugin_name = "None"
-                                    # create the speed data list ready for db insert
-                                    speed_data = (log_idx,
-                                                  log_date, log_hour, log_minute,
-                                                  camera,
-                                                  ave_speed, speed_units, filename,
-                                                  image_width, image_height, image_bigger,
-                                                  travel_direction, plugin_name,
-                                                  track_x, track_y,
-                                                  track_w, track_h, m_area,
-                                                  x_left, x_right,
-                                                  y_upper, y_lower,
-                                                  max_speed_over,
-                                                  MIN_AREA, track_counter,
-                                                  cal_obj_px, cal_obj_mm, '')
 
-                                    # Insert speed_data into sqlite3 database table
-                                    try:
-                                        sql_cmd = '''insert into {} values {}'''.format(DB_TABLE, speed_data)
-                                        db_conn.execute(sql_cmd)
-                                        db_conn.commit()
-                                    except sqlite3.Error as e:
-                                        logging.error("sqlite3 DB %s", DB_PATH)
-                                        logging.error("Failed: To INSERT Speed Data into TABLE %s", DB_TABLE)
-                                        logging.error("Err Msg: %s", e)
-                                    else:
-                                        logging.info(" SQL - Update sqlite3 Data in %s", DB_PATH)
+                                log_idx = ("%04d%02d%02d-%02d%02d%02d%d" %
+                                           (log_time.year,
+                                            log_time.month,
+                                            log_time.day,
+                                            log_time.hour,
+                                            log_time.minute,
+                                            log_time.second,
+                                            log_time.microsecond/100000))
+                                log_date = ("%04d%02d%02d" %
+                                            (log_time.year,
+                                             log_time.month,
+                                             log_time.day))
+                                log_hour = ("%02d" % log_time.hour)
+                                log_minute = ("%02d" % log_time.minute)
+                                m_area = track_w*track_h
+                                ave_speed = round(ave_speed, 2)
+                                if WEBCAM:
+                                    camera = "WebCam"
+                                else:
+                                    camera = "PiCam"
+                                if pluginEnable:
+                                    plugin_name = pluginName
+                                else:
+                                    plugin_name = "None"
+                                # create the speed data list ready for db insert
+                                speed_data = (log_idx,
+                                              log_date, log_hour, log_minute,
+                                              camera,
+                                              ave_speed, speed_units, filename,
+                                              image_width, image_height, image_bigger,
+                                              travel_direction, plugin_name,
+                                              track_x, track_y,
+                                              track_w, track_h, m_area,
+                                              x_left, x_right,
+                                              y_upper, y_lower,
+                                              max_speed_over,
+                                              MIN_AREA, track_counter,
+                                              cal_obj_px, cal_obj_mm, '')
+
+                                # Insert speed_data into sqlite3 database table
+                                try:
+                                    sql_cmd = '''insert into {} values {}'''.format(DB_TABLE, speed_data)
+                                    db_conn = db_check(DB_PATH)
+                                    db_conn.execute(sql_cmd)
+                                    db_conn.commit()
+                                    db_conn.close()
+                                except sqlite3.Error as e:
+                                    logging.error("sqlite3 DB %s", DB_PATH)
+                                    logging.error("Failed: To INSERT Speed Data into TABLE %s", DB_TABLE)
+                                    logging.error("Err Msg: %s", e)
+                                else:
+                                    logging.info(" SQL - Update sqlite3 Data in %s", DB_PATH)
+
                                 # Format and Save Data to CSV Log File
                                 if log_data_to_CSV:
                                     log_csv_time = ("%s%04d%02d%02d%s,"
