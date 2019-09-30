@@ -57,7 +57,7 @@ except ImportError:
 
 # User Variables
 # --------------
-PROG_VER = "ver 1.5"
+PROG_VER = "ver 1.6"
 
 VERBOSE_ON = True
 DB_FILE = '/home/pi/speed-camera/data/speed_cam.db'
@@ -89,19 +89,20 @@ ALPR.set_top_n(3)      # Set max plates expected per image
 ALPR.set_default_region('on')  # Ontario Canada
 
 # Connect to sqlite3 file database file speed_cam.db
-try:
-    DB_CONN = sqlite3.connect(DB_FILE)
-except sqlite3.Error as err_msg:
-    print("ERROR: Failed sqlite3 Connect to DB %s" % DB_FILE)
-    print("       %s" % err_msg)
-    sys.exit(1)
 
-# setup CURSOR for processing db query rows
-DB_CONN.row_factory = sqlite3.Row
-CURSOR = DB_CONN.cursor()
 try:
     while True:
         NO_DATA = ""
+
+        try:
+            DB_CONN = sqlite3.connect(DB_FILE, timeout=1)
+        except sqlite3.Error as err_msg:
+            print("ERROR: Failed sqlite3 Connect to DB %s" % DB_FILE)
+            print("       %s" % err_msg)
+            continue
+        # setup CURSOR for processing db query rows
+        DB_CONN.row_factory = sqlite3.Row
+        CURSOR = DB_CONN.cursor()
         # run sql query to select unprocessed images from speed_cam.db
         ROW_TOTAL = CURSOR.execute("SELECT COUNT(*) FROM speed WHERE status=''").fetchone()[0]
         CURSOR.execute("SELECT idx, image_path FROM speed WHERE status=''")
@@ -129,23 +130,29 @@ try:
                 PLATE_DATA = PLATE_DATA + ROW_DATA
 
             # update speed_cam.db speed, status column with 'none' or plate info
-            if FOUND_PLATE:
-                if VERBOSE_ON:
-                    print("%i/%i SQLITE Add %s to %s" %
-                          (ROW_COUNTER, ROW_TOTAL, PLATE_DATA, IMAGE_PATH))
-                SQL_CMD = ('''UPDATE speed SET status="{}" WHERE idx="{}"'''
-                           .format(PLATE_DATA, ROW_INDEX))
-                DB_CONN.execute(SQL_CMD)
-                DB_CONN.commit()
-            else:
-                if VERBOSE_ON:
-                    print("%i/%i No Plate %s" %
-                          (ROW_COUNTER, ROW_TOTAL, IMAGE_PATH))
-                # set speed table status field to NULL
-                SQL_CMD = ('''UPDATE speed SET status=NULL WHERE idx="{}"'''
-                           .format(ROW_INDEX))
-                DB_CONN.execute(SQL_CMD)
-                DB_CONN.commit()
+            try:
+                if FOUND_PLATE:
+                    if VERBOSE_ON:
+                        print("%i/%i SQLITE Add %s to %s" %
+                              (ROW_COUNTER, ROW_TOTAL, PLATE_DATA, IMAGE_PATH))
+                    SQL_CMD = ('''UPDATE speed SET status="{}" WHERE idx="{}"'''
+                               .format(PLATE_DATA, ROW_INDEX))
+                    DB_CONN.execute(SQL_CMD)
+                    DB_CONN.commit()
+                else:
+                    if VERBOSE_ON:
+                        print("%i/%i No Plate %s" %
+                              (ROW_COUNTER, ROW_TOTAL, IMAGE_PATH))
+                    # set speed table status field to NULL
+                    SQL_CMD = ('''UPDATE speed SET status=NULL WHERE idx="{}"'''
+                               .format(ROW_INDEX))
+                    DB_CONN.execute(SQL_CMD)
+                    DB_CONN.commit()
+            except sqlite3.OperationalError:
+                print("DB Locked")
+                pass
+        DB_CONN.close()
+
         if VERBOSE_ON:
             print('%s  Wait %is ...' % (NO_DATA, WAIT_SECS))
             time.sleep(WAIT_SECS)
