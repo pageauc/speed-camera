@@ -5,17 +5,22 @@ It will then use openalpr to search for license plate numbers.
 
 You will need to configure openalpr to suit your needs eg
 country and regions Etc.  As each image is processed the speed_cam.db speed table
-status field will be updated to 'none' or plate infor. image is only processed once.
+status field will be updated to NULL or plate info. image is only processed once.
 
 Note
 ----
 When using speed camera for openalpr purposes the speed settings will
 most likely not be needed and motion tracking will only be used for triggering
-image for license plate capture.  It is suggested you set speed-cam.py config.py
+images for license plate capture.  It is suggested you set speed-cam.py config.py
 image resolution WIDTH and HEIGHT to 640x480 with image_bigger = 1.0
 
-This script will only print out the license plates info so you will need to modify
-code to save results to a sqlite database table, csv or other file.
+To list licence plates in the system
+
+   cd ~/speed-camera
+   sqlite3 data/speed_cam.db
+   SELECT image_path, status FROM speed WHERE status NOT NULL;
+
+Note this will also display unprocessed images.
 
 Good Luck Claude ....
 
@@ -81,7 +86,7 @@ if VERBOSE_ON:
     print("ALPR license plate search speed_cam.py Images")
     print(HORZ_LINE)
     print("Loading   Wait ...")
-    
+
 ALPR = Alpr("us", "/etc/openalpr/openalpr.conf", "/usr/share/openalpr/runtime_data")
 if not ALPR.is_loaded():
     print('ERROR : Problem loading OpenALPR')
