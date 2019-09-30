@@ -56,7 +56,7 @@ progName = os.path.basename(__file__)
 horz_line = "----------------------------------------------------------------------"
 print(horz_line)
 print("%s %s  written by Claude Pageau" % (progName, progVer))
-print("ALPR license plate search speed_cam.py Images")
+print("Motion Track Largest Moving Object and Calculate Speed per Calibration.")
 print(horz_line)
 print("Loading  Wait ...")
 import time
