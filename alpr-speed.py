@@ -62,12 +62,14 @@ try:
 except ImportError:
     print("ERROR : Problem importing openalpr. Try Installing per")
     print("        sudo apt-get install python-openalpr")
+    print("        sudo apt-get install python3-openalpr")
+    print("optional")
     print("        sudo apt-get install openalpr")
     print("        sudo apt-get install openalpr-daemon")
     print("        sudo apt-get install openalpr-utils libopenalpr-dev")
     sys.exit(1)
 
-PROG_VER = "ver 1.72"
+PROG_VER = "ver 1.73"
 
 # User Variables
 # --------------
