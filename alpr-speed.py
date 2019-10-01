@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
-This sample script will read speed-cam.py images from sqlite3 database entries.
+This sample script will read speed-cam.py image_path from sqlite3 database entries.
 It will then use openalpr to search for license plate numbers.
 
 You will need to configure openalpr to suit your needs eg
-country and regions Etc.  As each image is processed the speed_cam.db speed table
+country, regions, config, Etc.  As each image is processed the speed_cam.db speed table
 status field will be updated to NULL or plate info. image is only processed once.
 
 Note
@@ -14,12 +14,13 @@ most likely not be needed and motion tracking will only be used for triggering
 images for license plate capture.  It is suggested you set speed-cam.py config.py
 image resolution WIDTH and HEIGHT to 640x480 with image_bigger = 1.0
 
-To list licence plates in the system
+Example query for licence plate data in the sqlite3 database
 
    cd ~/speed-camera
    sqlite3 data/speed_cam.db
-   SELECT image_path, status FROM speed WHERE status NOT NULL;
-   
+   SELECT status, image_path FROM speed WHERE status NOT NULL;
+   or SELECT status, image_path FROM speed WHERE status LIKE 'Plate%'
+
 ctl-d to exit sqlite3 console
 Note query will also display unprocessed images.
 
@@ -33,7 +34,8 @@ I installed openalpr on RPI's per
 
     sudo apt-get install sqlite3
 
-I Also needed to create symbolic link per below but this may be due to version that was loaded
+I Also needed to create symbolic link per below
+but this may be due to version that was loaded
 
 sudo ln -s /usr/share/openalpr/runtime_data/ocr/tessdata/lus.traineddata /usr/share/openalpr/runtime_data/ocr/lus.traineddata
 
@@ -44,27 +46,28 @@ from __future__ import print_function
 import sys
 import os
 import time
+
+try:
+    import sqlite3
+except ImportError:
+    print("ERROR: Problem importing sqlite3. Try Installing per")
+    print("       sudo apt-get install sqlite3")
+    sys.exit(1)
+
 try:
     from openalpr import Alpr
 except ImportError:
-    print("ERROR : Problem loading openalpr.  Try Installing per")
+    print("ERROR : Problem importing openalpr. Try Installing per")
     print("        sudo apt-get install python-openalpr")
     print("        sudo apt-get install openalpr")
     print("        sudo apt-get install openalpr-daemon")
     print("        sudo apt-get install openalpr-utils libopenalpr-dev")
     sys.exit(1)
 
-try:
-    import sqlite3
-except ImportError:
-    print("ERROR: Problem loading sqlite3. Try Installing per")
-    print("       sudo apt-get install sqlite3")
-    sys.exit(1)
+PROG_VER = "ver 1.72"
 
 # User Variables
 # --------------
-PROG_VER = "ver 1.71"
-
 VERBOSE_ON = True
 DB_FILE = '/home/pi/speed-camera/data/speed_cam.db'
 SPEED_DIR = '/home/pi/speed-camera'   # path to speed-camera folder
