@@ -26,15 +26,18 @@ Note query will also display unprocessed images.
 
 Installation
 ------------
-I installed openalpr on RPI's per
+Install openalpr on RPI (stretch/buster) per
 
+    sudo apt-get update
     sudo apt-get install python-openalpr
+    sudo apt-get install python3-openalpr
+    sudo apt-get install sqlite3
+
+    optional
     sudo apt-get install openalpr install openalpr-daemon
     sudo apt-get openalpr-utils libopenalpr-dev
 
-    sudo apt-get install sqlite3
-
-I Also needed to create symbolic link per below
+I Also needed to create a symbolic link per below
 but this may be due to version that was loaded
 
 sudo ln -s /usr/share/openalpr/runtime_data/ocr/tessdata/lus.traineddata /usr/share/openalpr/runtime_data/ocr/lus.traineddata
