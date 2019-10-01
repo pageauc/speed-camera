@@ -33,7 +33,6 @@ Install openalpr on RPI (stretch/buster) per
     sudo apt-get install python3-openalpr
     sudo apt-get install sqlite3
 
-    optional
     sudo apt-get install openalpr install openalpr-daemon
     sudo apt-get openalpr-utils libopenalpr-dev
 
@@ -63,7 +62,6 @@ except ImportError:
     print("ERROR : Problem importing openalpr. Try Installing per")
     print("        sudo apt-get install python-openalpr")
     print("        sudo apt-get install python3-openalpr")
-    print("optional")
     print("        sudo apt-get install openalpr")
     print("        sudo apt-get install openalpr-daemon")
     print("        sudo apt-get install openalpr-utils libopenalpr-dev")
