@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """
-speed-cam.py written by Claude Pageau pageauc@gmail.com
+speed-cam.py written by Claude Pageau
 Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking
-using picamera module or Web Cam
+using picamera module, Web Cam or RTSP IP Camera
 GitHub Repo here https://github.com/pageauc/rpi-speed-camera/tree/master/
+Post issue to Github.
 
 This is a python openCV object speed tracking demonstration program.
 It will detect speed in the field of view and use openCV to calculate the
@@ -43,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "9.98"  # current version of this python script
+progVer = "9.99"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -177,7 +178,7 @@ if os.path.exists(configFilePath):
     try:
         from config import *
     except ImportError:
-        print('WARN  : Problem reading configuration varibles from %s' % configFilePath)
+        print('WARN  : Problem reading configuration variables from %s' % configFilePath)
 else:
     print("WARN  : Missing config.py file - File Not Found %s"
           % configFilePath)
@@ -321,11 +322,11 @@ except ImportError:
         logging.error("%s %s Exiting Due to Error", progName, progVer)
     sys.exit(1)
 
-# fix possible invalid values
-if WINDOW_BIGGER < 1.0:
-    WINDOW_BIGGER = 1.0
-if image_bigger < 1.0:
-    image_bigger = 1.0
+# fix possible invalid values when resizing
+if WINDOW_BIGGER < 0.1:
+    WINDOW_BIGGER = 0.1
+if image_bigger < 0.1:
+    image_bigger = 0.1
 
 WEBCAM_FLIPPED = False
 if WEBCAM:
@@ -1555,7 +1556,8 @@ if __name__ == '__main__':
                 vs.camera.vflip = CAMERA_VFLIP
                 time.sleep(2.0)  # Allow PiCamera to initialize
 
-            # get actual image size from stream.
+            # Get actual image size from stream.
+            # Necessary for IP camera
             test_img = vs.read()
             img_height, img_width, _ = test_img.shape
             # Set width of trigger point image to save
