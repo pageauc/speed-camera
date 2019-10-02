@@ -69,27 +69,28 @@ except ImportError:
     print("        sudo apt-get install openalpr-utils libopenalpr-dev")
     sys.exit(1)
 
-PROG_VER = "ver 1.74"
+PROG_VER = "ver 1.75"
 
+#=================
 # User Variables
-# --------------
+#=================
 VERBOSE_ON = True
 DB_FILE = '/home/pi/speed-camera/data/speed_cam.db' # path to speed cam database
 SPEED_DIR = '/home/pi/speed-camera'   # path to speed-camera folder
 WAIT_SECS = 30  # seconds to wait between queries for images to process
 
 ALPR_COUNTRY = "us"   # Country Code eg 'us', 'eu' See ALPR Docs
-ALPR_REGION  = "on"   # State/province Etc  See ALPR Docs
+ALPR_REGION = "on"   # State/province Etc  See ALPR Docs
 ALPR_TOP_N = 3        # Max Number of plates to search per image
 
 # File path to ALPR configuration file per ALPR docs
-ALPR_CONF_PATH = "/etc/openalpr/openalpr.conf"  
+ALPR_CONF_PATH = "/etc/openalpr/openalpr.conf"
 # Directory path to ALPR runtime_data per ALPR docs
 ALPR_RUNTIME_DATA_PATH = "/usr/share/openalpr/runtime_data"
-# --------------
 
+#=================
 # System Variables
-# ----------------
+#=================
 # Find the full path of this python script
 MY_PATH = os.path.abspath(__file__)
 # get the path location only (excluding script name)
@@ -97,7 +98,6 @@ BASE_DIR = MY_PATH[0:MY_PATH.rfind("/")+1]
 # BASE_FILE_NAME is This script name without extension
 BASE_FILE_NAME = MY_PATH[MY_PATH.rfind("/")+1:MY_PATH.rfind(".")]
 PROG_NAME = os.path.basename(__file__)
-# ----------------
 
 HORZ_LINE = "----------------------------------------------------------------------"
 if VERBOSE_ON:
@@ -115,16 +115,23 @@ if not ALPR.is_loaded():
 ALPR.set_top_n(ALPR_TOP_N)      # max plates expected per image
 ALPR.set_default_region(ALPR_REGION)  # State/Prov Etc per ALPR docs
 
-# Connect to sqlite3 file database file speed_cam.db
 try:
+    RETRY = 0
     while True:
         try:
+            # Connect to sqlite3 database file
             DB_CONN = sqlite3.connect(DB_FILE)
         except sqlite3.Error as err_msg:
-            print("ERROR: Failed sqlite3 Connect to DB %s" % DB_FILE)
+            print("ERROR: Failed sqlite3 Connect to DB %s"
+                  % DB_FILE)
             print("       %s" % err_msg)
-            time.sleep(5)
-            continue
+            RETRY += 1
+            if RETRY <= 5:
+                print('DB_CONN RETRY %i/5  Wait ...' % RETRY)
+                time.sleep(5)
+                continue  # loop
+            else:
+                sys.exit(1)
 
         # setup CURSOR for processing db query rows
         CURSOR = DB_CONN.cursor()
@@ -160,7 +167,8 @@ try:
                 if FOUND_PLATE:
                     if VERBOSE_ON:
                         print("%i/%i SQLITE Add %s to %s" %
-                              (ROW_COUNTER, ROW_TOTAL, PLATE_DATA, IMAGE_PATH))
+                              (ROW_COUNTER, ROW_TOTAL,
+                               PLATE_DATA, IMAGE_PATH))
                     SQL_CMD = ('''UPDATE speed SET status="{}" WHERE idx="{}"'''
                                .format(PLATE_DATA, ROW_INDEX))
                 else:
