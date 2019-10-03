@@ -12,8 +12,10 @@
 # Calibration Settings
 # --------------------
 calibrate = True         # Create a calibration image file with calibration hash markers 10 px per mark
+
 cal_obj_px_L2R = 80      # L2R Moving Objects, Length of a calibration object in pixels
 cal_obj_mm_L2R = 4700.0  # L2R Moving Objects, Length of the calibration object in millimetres
+
 cal_obj_px_R2L = 85      # R2L Moving Objects, Length of a calibration object in pixels
 cal_obj_mm_R2L = 4700.0  # R2L Moving Objects, Length of the calibration object in millimetres
 
@@ -92,7 +94,7 @@ image_filename_speed = False  # True= Prefix filename with speed value
 image_text_on = True          # True= Show Text on speed images   False= No Text on images
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
 image_font_size = 12          # Default= 12 Font text height in px for text on images
-image_bigger = 3.0            # Default= 3.0 Resize saved speed image by specified multiplier value
+image_bigger = 3.0            # Default= 3.0 min=0.1 Resize saved speed image by specified multiplier value
 image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldest are deleted  Default=0 (off)
 
 # Optional Manage SubDir Creation by time, number of files or both (not recommended)
@@ -118,7 +120,7 @@ SHOW_CIRCLE = False           # True=circle in center of motion, False=rectangle
 CIRCLE_SIZE = 5               # Default= 5 Diameter circle in px if SHOW_CIRCLE = True
 LINE_THICKNESS = 1            # Default= 1 Size of lines for circle or Rectangle
 FONT_SCALE = 0.5              # Default= 0.5 OpenCV window text font size scaling factor Default=.5 (lower is smaller)
-WINDOW_BIGGER = 1.0           # Default= 1.0 Resize multiplier for opencv window if gui_window_on=True
+WINDOW_BIGGER = 1.0           # Default= 1.0 min=0.1 Resize multiplier for opencv window if gui_window_on=True
 BLUR_SIZE = 10                # Default= 10 OpenCV setting for Gaussian difference image blur
 THRESHOLD_SENSITIVITY = 20    # Default= 20 OpenCV setting for difference image threshold
 
