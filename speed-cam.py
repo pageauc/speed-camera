@@ -1571,10 +1571,10 @@ if __name__ == '__main__':
             if img_width > 1000:
                 x_scale = 3.0
                 y_scale = 3.0
-            # Auto adjust the crop image to suit the real image size.
 
-            # If motion box crop settings not found in config.py the
+            # If motion box crop settings not found in config.py then
             # Auto adjust the crop image to suit the real image size.
+            # For details See comments in config.py Motion Events settings section
             try:
                 x_left
                 x_right
