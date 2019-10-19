@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 9.5 speed-cam.py Variable Configuration Settings
+#         Ver 10.0 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -60,6 +60,18 @@ track_timeout = 0.0    # Default= 0.0 Optional seconds to wait after track End (
 event_timeout = 0.3    # Default= 0.3 seconds to wait for next motion event before starting new track
 max_speed_over = 0     # Exclude track if Speed less than or equal to value specified 0=All
                        # Can be useful to exclude pedestrians and/or bikes, Etc or track only fast objects
+
+# Note: To see motion tracking crop area on images, Set variable image_show_motion_area = True
+
+# Allow user to customize the motion crop area (width) x values
+# If variables not found then values will be set automatically base on image size.
+# x_left = 50          # uncomment and change values to override auto calculate
+# x_right = 300        # uncomment and change values to override auto calculate
+
+# Allow user to customize the motion crop area (height) y values
+# If variables not found then values will be set automatically base on image size.
+# y_upper = 80         # uncomment and change values to override auto calculate
+# y_lower = 180        # uncomment and change values to override auto calculate
 
 # Camera Settings
 # ---------------

@@ -47,7 +47,8 @@ for administration of settings from a remote storage service. Plus application m
 sqlite3 query to show all record that exceed the specified speed. Output can be found in media/reports folder and is available from browser. 
 * [***sql_hour_count.py***](https://github.com/pageauc/speed-camera/blob/master/sql_hour_count.py) Run report for count by hour.
 also produces a graph using gnuplot. Query output html report and .png graph can be found in media/reports folder and is available from browser.
-* [***alpr-speed.py***](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader) Process speed camera images with OPENALPR License plate reader
+* [***alpr-speed.py***](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)
+Process speed camera images with [OPENALPR](https://github.com/openalpr/openalpr) License plate reader
 * [***speed-search.py***](https://github.com/pageauc/rpi-speed-camera/wiki/How-to-Run-speed-search.py)
 allows searching for similar target object images using opencv template matching. 
 * [***makehtml.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#view-combined-imagedata-html-pages-on-a-web-browser)

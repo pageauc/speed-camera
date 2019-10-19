@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "9.99"  # current version of this python script
+progVer = "10.00"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -1572,10 +1572,22 @@ if __name__ == '__main__':
                 x_scale = 3.0
                 y_scale = 3.0
             # Auto adjust the crop image to suit the real image size.
-            x_left = int(img_width / x_scale)
-            x_right = int(img_width - x_left)
-            y_upper = int(img_height / y_scale)
-            y_lower = int(img_height - y_upper)
+
+            # If motion box crop settings not found in config.py the
+            # Auto adjust the crop image to suit the real image size.
+            try:
+                x_left
+                x_right
+            except NameError:
+                x_left = int(img_width / x_scale)
+                x_right = int(img_width - x_left)
+
+            try:
+                y_upper
+                y_lower
+            except NameError:
+                y_upper = int(img_height / y_scale)
+                y_lower = int(img_height - y_upper)
 
             # setup buffer area to ensure contour is mostly contained in crop area
             x_buf = int((x_right - x_left) / x_buf_adjust)
