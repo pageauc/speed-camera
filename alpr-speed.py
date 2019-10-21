@@ -33,8 +33,8 @@ Install openalpr on RPI (stretch/buster) per
     sudo apt-get install python3-openalpr
     sudo apt-get install sqlite3
 
-    sudo apt-get install openalpr install openalpr-daemon
-    sudo apt-get openalpr-utils libopenalpr-dev
+    sudo apt-get install openalpr openalpr-daemon
+    sudo apt-get install openalpr-utils libopenalpr-dev
 
 I Also needed to create a symbolic link per below
 but this may be due to version that was loaded
