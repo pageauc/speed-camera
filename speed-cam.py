@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "10.00"  # current version of this python script
+progVer = "10.01"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -124,6 +124,9 @@ default_settings = {
     'image_text_on':True,
     'image_text_bottom':True,
     'image_font_size':12,
+    'image_font_thickness':2,
+    'image_font_scale':0.5,
+    'image_font_color': (255, 255, 255),
     'image_bigger':3.0,
     'image_max_files':0,
     'imageSubDirMaxFiles':1000,
@@ -455,7 +458,7 @@ class WebcamVideoStream:
             # if the thread indicator variable is set, stop the thread
             if self.stopped:
                 self.stream.release()
-                break
+                return
             # otherwise, read the next frame from the stream
             (self.grabbed, self.frame) = self.stream.read()
             #check for valid frames
@@ -1294,7 +1297,8 @@ def speed_camera():
                                                 (text_x, text_y),
                                                 font,
                                                 FONT_SCALE,
-                                                (cvWhite), 2)
+                                                image_font_color,
+                                                image_font_thickness)
                                 logging.info(" Saved %s", filename)
                                 # Save resized image
                                 cv2.imwrite(filename, big_image)
