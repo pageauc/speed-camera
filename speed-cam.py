@@ -140,7 +140,6 @@ default_settings = {
     'SHOW_CIRCLE':False,
     'CIRCLE_SIZE':5,
     'LINE_THICKNESS':1,
-    'FONT_SCALE':0.5,
     'WINDOW_BIGGER':1.0,
     'BLUR_SIZE':10,
     'THRESHOLD_SENSITIVITY':20,
@@ -1296,7 +1295,7 @@ def speed_camera():
                                                 image_text,
                                                 (text_x, text_y),
                                                 font,
-                                                FONT_SCALE,
+                                                image_font_scale,
                                                 image_font_color,
                                                 image_font_thickness)
                                 logging.info(" Saved %s", filename)
