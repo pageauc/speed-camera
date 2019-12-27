@@ -75,6 +75,7 @@ max_speed_over = 0     # Exclude track if Speed less than or equal to value spec
 
 # Camera Settings
 # ---------------
+CAM_LOCATION = 'None'  # Specify an address, physical location Etc for camera
 WEBCAM = False         # Default = False False=PiCamera True=USB WebCamera
 
 # Web Camera Settings

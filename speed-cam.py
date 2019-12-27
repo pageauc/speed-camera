@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "10.01"  # current version of this python script
+progVer = "10.02"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -105,6 +105,7 @@ default_settings = {
     'track_timeout':0.0,
     'event_timeout':0.3,
     'max_speed_over':0,
+    'CAM_LOCATION':'None',
     'WEBCAM_SRC':0,
     'WEBCAM_WIDTH':320,
     'WEBCAM_HEIGHT':240,
@@ -584,6 +585,7 @@ def show_settings():
               % (image_font_size, image_text_bottom))
         print("Motion Settings . Size=%ix%i px  px_to_kph_L2R=%f  px_to_kph_R2L=%f speed_units=%s"
               % (CAMERA_WIDTH, CAMERA_HEIGHT, px_to_kph_L2R, px_to_kph_R2L, speed_units))
+        print("                  CAM_LOCATION= %s" % CAM_LOCATION)
         print("OpenCV Settings . MIN_AREA=%i sq-px  BLUR_SIZE=%i"
               "  THRESHOLD_SENSITIVITY=%i  CIRCLE_SIZE=%i px"
               % (MIN_AREA, BLUR_SIZE, THRESHOLD_SENSITIVITY, CIRCLE_SIZE))
@@ -904,7 +906,7 @@ def log_to_csv(data_to_append):
     f = open(log_file_path, 'a+')
     f.write(filecontents)
     f.close()
-    logging.info("   CSV - Updated Data  %s", log_file_path)
+    logging.info("   CSV - Appended Data into %s", log_file_path)
     return
 
 #------------------------------------------------------------------------------
@@ -983,7 +985,7 @@ def db_open(db_file):
                  y_upper integer, y_lower integer,
                  max_speed_over integer,
                  min_area integer, track_counter integer,
-                 cal_obj_px integer, cal_obj_mm integer, status text)'''.format(DB_TABLE)
+                 cal_obj_px integer, cal_obj_mm integer, status text, cam_location text)'''.format(DB_TABLE)
     try:
         db_conn.execute(sql_cmd)
     except sqlite3.Error as e:
@@ -1109,6 +1111,7 @@ def speed_camera():
     # images to be processed eg null field entry.
     try:
         db_conn.execute('alter table speed add status text')
+        db_conn.execute('alter table speed add cam_location text')
     except sqlite3.OperationalError:
         pass
     db_conn.close()
@@ -1341,9 +1344,11 @@ def speed_camera():
                                               y_upper, y_lower,
                                               max_speed_over,
                                               MIN_AREA, track_counter,
-                                              cal_obj_px, cal_obj_mm, '')
+                                              cal_obj_px, cal_obj_mm, '', CAM_LOCATION)
 
                                 # Insert speed_data into sqlite3 database table
+                                # Note cam_location and status may not be in proper order
+                                # Unless speed table is recreated.
                                 try:
                                     sql_cmd = '''insert into {} values {}'''.format(DB_TABLE, speed_data)
                                     db_conn = db_check(DB_PATH)
@@ -1355,7 +1360,7 @@ def speed_camera():
                                     logging.error("Failed: To INSERT Speed Data into TABLE %s", DB_TABLE)
                                     logging.error("Err Msg: %s", e)
                                 else:
-                                    logging.info(" SQL - Update sqlite3 Data in %s", DB_PATH)
+                                    logging.info(" SQL - Inserted sqlite3 Data Row into %s", DB_PATH)
 
                                 # Format and Save Data to CSV Log File
                                 if log_data_to_CSV:
@@ -1387,6 +1392,9 @@ def speed_camera():
                                                        track_w * track_h,
                                                        quote,
                                                        travel_direction,
+                                                       quote,
+                                                       quote,
+                                                       CAM_LOCATION.
                                                        quote))
                                     log_to_csv(log_csv_text)
                                 if spaceTimerHrs > 0:
