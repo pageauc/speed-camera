@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "10.02"  # current version of this python script
+progVer = "10.03"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -1378,7 +1378,7 @@ def speed_camera():
                                                        log_time.minute,
                                                        quote))
                                     log_csv_text = ("%s,%.2f,%s%s%s,%s%s%s,"
-                                                    "%i,%i,%i,%i,%i,%s%s%s"
+                                                    "%i,%i,%i,%i,%i,%s%s%s,%s,%s,%s"
                                                     % (log_csv_time,
                                                        ave_speed,
                                                        quote,
@@ -1394,7 +1394,7 @@ def speed_camera():
                                                        travel_direction,
                                                        quote,
                                                        quote,
-                                                       CAM_LOCATION.
+                                                       CAM_LOCATION,
                                                        quote))
                                     log_to_csv(log_csv_text)
                                 if spaceTimerHrs > 0:
