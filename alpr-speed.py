@@ -5,7 +5,7 @@ It will then use openalpr to search for license plate numbers.
 
 You will need to configure openalpr to suit your needs eg
 country, regions, config, Etc.  As each image is processed the speed_cam.db speed table
-status field will be updated to NULL or plate info. image is only processed once.
+status field will be updated to NULL or plate info if found. image is only processed once.
 
 Note
 ----
@@ -69,7 +69,7 @@ except ImportError:
     print("        sudo apt-get install openalpr-utils libopenalpr-dev")
     sys.exit(1)
 
-PROG_VER = "ver 1.75"
+PROG_VER = "ver 1.76"
 
 #=================
 # User Variables
@@ -194,6 +194,6 @@ except KeyboardInterrupt:
 finally:
     print("DB_CONN.close %s" % DB_FILE)
     DB_CONN.close()
-    print("ALRP.unload")
+    print("ALPR.unload")
     ALPR.unload()
-    print("Bye ...")
+    print("%s %s  Bye ..." % (PROG_NAME, PROG_VER))
