@@ -76,14 +76,14 @@ max_speed_over = 0     # Exclude track if Speed less than or equal to value spec
 # Camera Settings
 # ---------------
 CAM_LOCATION = 'None'  # Specify an address, physical location Etc for camera
-WEBCAM = False         # Default = False False=PiCamera True=USB WebCamera
+WEBCAM = False         # Default= False False=PiCamera True= USB Webcam or RTSP,IP Camera
 
 # Web Camera Settings
-WEBCAM_SRC = 0         # Default= 0   USB opencv connection number
-                       # or ip cam rtsp string eg "rtsp://192.168.1.101/RtspTranslator.12/camera"
-                       # See ip cam docs. WEBCAM_WIDTH & HEIGHT MUST match rtsp stream resolution
-WEBCAM_WIDTH = 320     # Default= 320 USB Webcam Image width
-WEBCAM_HEIGHT = 240    # Default= 240 USB Webcam Image height
+WEBCAM_SRC = 0         # Default= 0   USB camera device connection number
+                       # or RTSP cam string eg "rtsp://192.168.1.101/RtspTranslator.12/camera"
+                       # see WIKI for details
+WEBCAM_WIDTH = 320     # Default= 320 USB Webcam Image width ignored for RTSP cam
+WEBCAM_HEIGHT = 240    # Default= 240 USB Webcam Image height ignored for RTSP cam
 WEBCAM_HFLIP = False   # Default= False USB Webcam flip image horizontally
 WEBCAM_VFLIP = False   # Default= False USB Webcam flip image vertically
                        # IMPORTANT Webcam Streaming Performance Hit if Stream Flipped.
