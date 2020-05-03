@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "10.03"  # current version of this python script
+progVer = "10.04"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -998,16 +998,30 @@ def db_open(db_file):
 
 #------------------------------------------------------------------------------
 def speed_get_contours(image, grayimage1):
+    """
+    Read Camera image and crop and process
+    with opencv to detect motion contours.
+    Added timeout in case camera has a problem.
+    """
     image_ok = False
+    start_time = time.time()
+    timeout = 60 # seconds to wait if camera communications is lost.
+                 # Note to self.  Look at adding setting to config.py
     while not image_ok:
         image = vs.read() # Read image data from video steam thread instance
         # crop image to motion tracking area only
         try:
             image_crop = image[y_upper:y_lower, x_left:x_right]
             image_ok = True
-        except ValueError:
+        except (ValueError, TypeError):
             logging.error("image Stream Image is Not Complete. Cannot Crop. Retry.")
-            image_ok = False
+            if time.time() - start_time > timeout:
+                logging.error("%i second timeout exceeded.  Partial or No images received.", timeout)
+                logging.error("Possible camera or communication problem.  Please Investigate.")
+                sys.exit(1)
+            else:
+                image_ok = False
+
     # Convert to gray scale, which is easier
     grayimage2 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
     # Get differences between the two greyed images
