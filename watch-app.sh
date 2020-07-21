@@ -10,8 +10,8 @@ echo "$progName $ver  written by Claude Pageau"
 #==================================
 
 watch_config_on=false    # true= Remotely Manage Files from Remote Storage  false=off
-watch_app_on=false       # true= Monitor watch_app_fname and attempt restart false=off
-watch_reboot_on=false    # true= Reboot RPI If watch_app_fname Down false=0ff
+watch_app_on=true        # true= Monitor watch_app_fname and attempt restart false=off
+watch_reboot_on=true     # true= Reboot RPI If watch_app_fname Down false=0ff
 
 watch_app_fname="speed-cam.py"  # Filename of Program to Monitor for Run Status
 
