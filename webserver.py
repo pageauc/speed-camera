@@ -89,7 +89,7 @@ def df(drive_mnt):
         df = subprocess.Popen(["df", "-h", drive_mnt], stdout=subprocess.PIPE)
         output = df.communicate()[0]
         device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
-        drive_status = ("Disk Info: %s Mount Point: %s Used: %s %s of %s  Avail: %s" %
+        drive_status = ("Disk: %s .. Mnt: %s .. Used: %s %s of %s .. Avail: %s" %
                         (device, mountpoint, percent, used, size, available))
     except:
         drive_status = "df command Error. No drive status avail"
@@ -187,7 +187,7 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
             f.write('<li><a href="%s" >%s</a></li>\n' % (urllib.quote(".."), cgi.escape("< BACK")))
         f.write('</ul></div><p><b>')
         drive_status = df(MNT_POINT)
-        f.write('<div style="float: left; padding-left: 40px;">Web Root is [ %s ]  %s</div>' % 
+        f.write('<div style="float: left; padding-left: 40px;">Web Root is [ %s ]  %s</div>' %
                 (web_server_root, drive_status))
         f.write('<div style="text-align: center;">%s</div>' % web_page_title)
 
