@@ -4,6 +4,8 @@ import cgi
 import os
 import subprocess
 import socket
+import fcntl
+import struct
 import SocketServer
 import sys
 import time
@@ -11,7 +13,7 @@ import urllib
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from StringIO import StringIO
 
-PROG_VER = "ver 7.7  written by Claude Pageau"
+PROG_VER = "ver 11.00 written by Claude Pageau"
 '''
  SimpleHTTPServer python program to allow selection of images from right panel and display in an iframe left panel
  Use for local network use only since this is not guaranteed to be a secure web server.
@@ -57,16 +59,6 @@ web_root = os.getcwd()
 os.chdir(BASE_DIR)
 MNT_POINT = "./"
 
-try:
-    myip = ([l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1],
-                         [[(s.connect(('8.8.8.8', 53)),
-                            s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET,
-                                                                                   socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
-except:
-    print("ERROR - Can't Find a Network IP Address on this Raspberry Pi")
-    print("        Configure Network and Try Again")
-    myip = None
-
 if web_list_by_datetime:
     dir_sort = 'Sort DateTime'
 else:
@@ -79,6 +71,24 @@ else:
 
 list_title = "%s %s" % (dir_sort, dir_order)
 
+#-------------------------------------------------------------------------------
+def get_ip_address(ifname):
+    '''
+    Function to Check network interface name to see if an ip address is bound to it
+    ifname is a byte string name of interface eg eth0, wlan0, lo Etc
+	returns None if there is an IO error.  This function works with python2 and python3
+    '''
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        return socket.inet_ntoa(fcntl.ioctl(
+            s.fileno(),
+            0x8915,  # SIOCGIFADDR
+            struct.pack('256s', ifname[:15])
+        )[20:24])
+    except IOError:
+        return None
+
+#-------------------------------------------------------------------------------
 def df(drive_mnt):
     '''
        function to read disk drive data using unix df command
@@ -89,12 +99,13 @@ def df(drive_mnt):
         df = subprocess.Popen(["df", "-h", drive_mnt], stdout=subprocess.PIPE)
         output = df.communicate()[0]
         device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
-        drive_status = ("Disk: %s .. Mnt: %s .. Used: %s %s of %s .. Avail: %s" %
+        drive_status = ("Drive [ %s ] Mount_Point [ %s ] Space_Used [ %s %s of %s ] Space_Avail [ %s ]" %
                         (device, mountpoint, percent, used, size, available))
     except:
         drive_status = "df command Error. No drive status avail"
     return drive_status
 
+#-------------------------------------------------------------------------------
 class DirectoryHandler(SimpleHTTPRequestHandler):
 
     def list_directory(self, path):
@@ -215,6 +226,14 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
 os.chdir(web_server_root)
 SocketServer.TCPServer.allow_reuse_address = True
 httpd = SocketServer.TCPServer(("", web_server_port), DirectoryHandler)
+
+net_interface_names = [ b'eth0', b'wlan0' ]   # byte string list of interface names to check
+ip_list = []
+for my_if in net_interface_names:
+    my_ip = get_ip_address(my_if)
+    if my_ip is not None:
+        ip_list.append(my_ip)
+
 print("----------------------------------------------------------------")
 print("%s %s" % (PROG_NAME, PROG_VER))
 print("---------------------------- Settings --------------------------")
@@ -232,10 +251,15 @@ print("----------------------------------------------------------------")
 print("From a computer on the same LAN. Use a Web Browser to access this server at")
 print("Type the URL below into the browser url bar then hit enter key.")
 print("")
-print("                 http://%s:%i"  % (myip, web_server_port))
+if not ip_list:
+    print("ERROR - Can't Find a Network IP Address on this Raspberry Pi")
+    print("        Check Network Interfaces and Try Again")
+else:
+    for myip in ip_list:
+        print("                 http://%s:%i"  % (myip, web_server_port))
 print("")
 print("IMPORTANT: If You Get - socket.error: [Errno 98] Address already in use")
-print("           Wait a minute or so for webserver to timeout and Retry.")
+print("           Check for Another app using port or Wait a minute for webserver to timeout and Retry.")
 print("              ctrl-c to exit this webserver script")
 print("----------------------------------------------------------------")
 try:
