@@ -4,7 +4,7 @@
 ver="9.99"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
-rclone_cur_ver="rclone v1.49.4"
+rclone_cur_ver="rclone v1.53.1"
 
 cd ~
 is_upgrade=false
@@ -120,7 +120,7 @@ if [ -f /usr/bin/rclone ]; then
     fi
 fi
 
-if "$rclone_install" = true ; then
+if "$rclone_install" == true ; then
     # Install rclone with latest version
     echo "INFO  : Install Latest Rclone from https://downloads.rclone.org/rclone-current-linux-arm.zip"
     wget -O rclone.zip -q --show-progress https://downloads.rclone.org/rclone-current-linux-arm.zip
