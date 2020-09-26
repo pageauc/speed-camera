@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "10.04"  # current version of this python script
+progVer = "10.10"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -196,6 +196,11 @@ for key, val in default_settings.items():
     except NameError:
         print('WARN  : config.py Variable Not Found. Setting ' + key + ' = ' + str(val))
         exec(key + '=val')
+
+# fix rounding problems with picamera resolution
+CAMERA_WIDTH = (CAMERA_WIDTH + 31) // 32 * 32
+CAMERA_HEIGHT = (CAMERA_HEIGHT + 15) // 16 * 16
+
 
 # Now that variables are imported from config.py Setup Logging since we have logFilePath
 if loggingToFile:
