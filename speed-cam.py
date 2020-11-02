@@ -69,6 +69,7 @@ import logging
 import sqlite3
 from threading import Thread
 import subprocess
+import numpy as np
 
 """
 This is a dictionary of the default settings for speed-cam.py
@@ -1159,6 +1160,9 @@ def speed_camera():
     speed_list = []
     event_timer = time.time()
     still_scanning = True
+    image_sign_bg = np.zeros((image_sign_resize[0], image_sign_resize[1], 4))
+    image_sign_view = cv2.resize(image_sign_bg, (image_sign_resize))
+    image_sign_view_time = time.time()
     while still_scanning:  # process camera thread images and calculate speed
         image2 = vs.read() # Read image data from video steam thread instance
         grayimage1, contours = speed_get_contours(image2, grayimage1)
@@ -1301,6 +1305,18 @@ def speed_camera():
                                 big_image = cv2.resize(prev_image,
                                                        (image_width,
                                                         image_height))
+                                if image_sign_on:
+                                    image_sign_view_time = time.time()
+                                    image_sign_bg = np.zeros((image_sign_resize[0], image_sign_resize[1], 4))
+                                    image_sign_view = cv2.resize(image_sign_bg, (image_sign_resize))
+                                    image_sign_text = str(int(round(ave_speed, 0)))
+                                    cv2.putText(image_sign_view,
+                                                image_sign_text,
+                                                image_sign_text_xy,
+                                                font,
+                                                image_sign_font_scale,
+                                                image_sign_font_color,
+                                                image_sign_font_thickness)
                                 # Write text on image before saving
                                 # if required.
                                 if image_text_on:
@@ -1537,11 +1553,18 @@ def speed_camera():
             # cv2.imshow('Difference Image',difference image)
             image2 = speed_image_add_lines(image2, cvRed)
             image_view = cv2.resize(image2, (image_width, image_height))
-            cv2.imshow('Movement (q Quits)', image_view)
+            if gui_show_camera:
+                cv2.imshow('Movement (q Quits)', image_view)
             if show_thresh_on:
                 cv2.imshow('Threshold', differenceimage)
             if show_crop_on:
                 cv2.imshow('Crop Area', image_crop)
+            if image_sign_on:
+                if time.time() - image_sign_view_time > image_sign_timeout:
+                    # Cleanup the image_sign_view
+                    image_sign_bg = np.zeros((image_sign_resize[0], image_sign_resize[1], 4))
+                    image_sign_view = cv2.resize(image_sign_bg, (image_sign_resize))
+                cv2.imshow('Last Average Speed:', image_sign_view)
             # Close Window if q pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 cv2.destroyAllWindows()

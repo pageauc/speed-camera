@@ -35,6 +35,7 @@ pluginName = "picam240" # Specify filename in plugins subfolder without .py exte
 # gui_window_on suppresses All Windows if False
 # ----------------------------------------------
 gui_window_on = False  # True= Turn On All desktop GUI openCV windows. False=Don't Show (req'd for SSH) .
+gui_show_camera = True # True=Show the camera on gui windows. False=Don't Show (useful for image_sign)
 show_thresh_on = False # Display desktop GUI openCV cropped threshold window. True=Show, False=Don't Show
 show_crop_on = False   # Same as show_thresh_on but in color. True=Show, False=Don't Show (Default)
 
@@ -112,6 +113,16 @@ image_font_thickness = 2      # Default= 2  Font text thickness in px for text o
 image_font_color = (255, 255, 255)  # Default= (255, 255, 255) White
 image_bigger = 3.0            # Default= 3.0 min=0.1 Resize saved speed image by specified multiplier value
 image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldest are deleted  Default=0 (off)
+
+image_sign_on = False
+image_sign_show_camera = False
+image_sign_resize = (480, 360)
+image_sign_text_xy = (20, 300)
+image_sign_font_size = 300
+image_sign_font_scale = 10.0
+image_sign_font_thickness = 30
+image_sign_font_color = (255, 255, 255)
+image_sign_timeout = 5        # Keep the image sign for 5 seconds.
 
 # Optional Manage SubDir Creation by time, number of files or both (not recommended)
 # ----------------------------------------------------------------
