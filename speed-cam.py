@@ -1564,7 +1564,10 @@ def speed_camera():
                     # Cleanup the image_sign_view
                     image_sign_bg = np.zeros((image_sign_resize[0], image_sign_resize[1], 4))
                     image_sign_view = cv2.resize(image_sign_bg, (image_sign_resize))
-                cv2.imshow('Last Average Speed:', image_sign_view)
+                cv2_window_speed_sign = 'Last Average Speed:'
+                cv2.namedWindow(cv2_window_speed_sign, cv2.WINDOW_NORMAL)
+                cv2.cv2.setWindowProperty(cv2_window_speed_sign, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+                cv2.imshow(cv2_window_speed_sign, image_sign_view)
             # Close Window if q pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 cv2.destroyAllWindows()

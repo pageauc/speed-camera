@@ -116,11 +116,10 @@ image_max_files = 0           # 0=off or specify MaxFiles to maintain then oldes
 
 image_sign_on = False
 image_sign_show_camera = False
-image_sign_resize = (480, 360)
-image_sign_text_xy = (20, 300)
-image_sign_font_size = 300
-image_sign_font_scale = 10.0
-image_sign_font_thickness = 30
+image_sign_resize = (1280, 720)
+image_sign_text_xy = (100, 675)
+image_sign_font_scale = 30.0
+image_sign_font_thickness = 60
 image_sign_font_color = (255, 255, 255)
 image_sign_timeout = 5        # Keep the image sign for 5 seconds.
 
