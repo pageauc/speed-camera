@@ -14,7 +14,7 @@ import urllib
 from http.server import SimpleHTTPRequestHandler
 from io import BytesIO
 
-PROG_VER = "ver 12.00 written by Claude Pageau modified by Alexandre Strube for python3 compatibility"
+PROG_VER = "ver 12.01 written by Claude Pageau modified by Alexandre Strube for python3 compatibility"
 '''
  SimpleHTTPServer python program to allow selection of images from right panel and display in an iframe left panel
  Use for local network use only since this is not guaranteed to be a secure web server.
@@ -94,7 +94,7 @@ def df(drive_mnt):
     '''
     try:
         df = subprocess.Popen(["df", "-h", drive_mnt], stdout=subprocess.PIPE)
-        output = df.communicate()[0]
+        output = df.communicate()[0].decode('utf-8')
         device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
         drive_status = ("Drive [ %s ] Mount_Point [ %s ] Space_Used [ %s %s of %s ] Space_Avail [ %s ]" %
                         (device, mountpoint, percent, used, size, available))
