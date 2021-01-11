@@ -39,6 +39,7 @@ Also included are
 script is a whiptail menu system to allow easier management of program settings and operation. 
 * [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
 Allows viewing images and/or data from a web browser (see config.py for webserver settings)
+To implement webserver3.py copy webserver3.py to webserver.py
 * [***rclone***](https://github.com/pageauc/speed-camera/wiki/Manage-rclone-Remote-Storage-File-Transfer)
 for optional remote file sync to a remote storage service like google drive, DropBox and many others. 
 * [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)

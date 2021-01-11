@@ -161,7 +161,15 @@ default_settings = {
     'web_list_sort_descending':True,
     'DB_DIR':"data",
     'DB_NAME':"speed_cam.db",
-    'DB_TABLE':"speed"
+    'DB_TABLE':"speed",
+    'image_sign_on':False,
+    'image_sign_show_camera':False,
+    'image_sign_resize':(1280, 720),
+    'image_sign_text_xy':(100, 675),
+    'image_sign_font_scale':30.0,
+    'image_sign_font_thickness':60,
+    'image_sign_font_color':(255, 255, 255),
+    'image_sign_timeout':5     
     }
 
 # Color data for OpenCV lines and text
