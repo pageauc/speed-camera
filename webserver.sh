@@ -5,9 +5,9 @@
 # /home/pi/pi-timolo/webserver.sh start
 
 progpath="/home/pi/speed-camera"
-progname="webserver3.py"
+progname="webserver.py"
 
-echo "$0 ver 6.01 written by Claude Pageau"
+echo "$0 ver 6.02 written by Claude Pageau"
 echo "-----------------------------------------------"
 cd $progpath
 
