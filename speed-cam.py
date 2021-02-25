@@ -1407,18 +1407,14 @@ def speed_camera():
 
                                 # Format and Save Data to CSV Log File
                                 if log_data_to_CSV:
-                                    log_csv_time = ("%s%04d%02d%02d%s,"
-                                                    "%s%02d%s,%s%02d%s"
+                                    llog_csv_time = ("%s%04d-%02d-%02d %02d:%02d:%02d%s"
                                                     % (quote,
                                                        log_time.year,
                                                        log_time.month,
                                                        log_time.day,
-                                                       quote,
-                                                       quote,
                                                        log_time.hour,
-                                                       quote,
-                                                       quote,
                                                        log_time.minute,
+                                                       log_time.second,
                                                        quote))
                                     log_csv_text = ("%s,%.2f,%s%s%s,%s%s%s,"
                                                     "%i,%i,%i,%i,%i,%s%s%s,%s,%s,%s"
