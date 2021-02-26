@@ -56,6 +56,15 @@ allows searching for similar target object images using opencv template matching
 creates html files that combine csv and image data for easier viewing from a web browser.
 (Does not work with ***secpicam480.py*** or ***secwebcam480.py*** plugins enabled.
 
+## Reference Links
+* YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
+* YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
+* YouTube motion-track video https://youtu.be/09JS7twPBsQ  
+* [How to Build a Cheap Homemade Speed Camera](https://mass.streetsblog.org/2021/02/26/how-to-build-a-homemade-speed-camera/)  
+* Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
+* YouTube Channel https://www.youtube.com/user/pageaucp 
+* Speed Camera GitHub Repo https://github.com/pageauc/speed-camera      
+
 ## Requirements
 [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
 or USB Camera plugged in. Make sure hardware is tested and works. Most [RPI models](https://www.raspberrypi.org/products/) will work OK. 
@@ -134,15 +143,6 @@ View speed-cam data and trends from web browser per sample screen shots
 ![Speed Camera Web Recent View](https://github.com/pageauc/speed-camera/blob/master/speed_web_recent.png)   
 ![Speed Camera Web html speed list Report](https://github.com/pageauc/speed-camera/blob/master/speed_web_sqlite.png)   
 ![Speed Camera Web Recent View](https://github.com/pageauc/speed-camera/blob/master/speed_web_gnuplot.png)   
-
-## Links
-* YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
-* YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
-* YouTube motion-track video https://youtu.be/09JS7twPBsQ  
-* [How to Build a Cheap Homemade Speed Camera](https://mass.streetsblog.org/2021/02/26/how-to-build-a-homemade-speed-camera/)  
-* Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
-* YouTube Channel https://www.youtube.com/user/pageaucp 
-* Speed Camera GitHub Repo https://github.com/pageauc/speed-camera      
 
 
 ## Credits  
