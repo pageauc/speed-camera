@@ -910,7 +910,7 @@ def log_to_csv(data_to_append):
     if not os.path.exists(log_file_path):
         open(log_file_path, 'w').close()
         f = open(log_file_path, 'ab')
-        # header_text = ('"YYYYMMDD","HH","MM","Speed","Unit",
+        # header_text = ('"YYYY-MM-DD HH:MM:SS","Speed","Unit",
         #                  "    Speed Photo Path            ",
         #                  "X","Y","W","H","Area","Direction"' + "\n")
         # f.write( header_text )
@@ -988,7 +988,7 @@ def db_open(db_file):
         return None
 
     sql_cmd = '''create table if not exists {} (idx text primary key,
-                 log_date text, log_hour text, log_minute text,
+                 log_timestamp text,
                  camera text,
                  ave_speed real, speed_units text, image_path text,
                  image_w integer, image_h integer, image_bigger integer,
@@ -1358,12 +1358,15 @@ def speed_camera():
                                             log_time.minute,
                                             log_time.second,
                                             log_time.microsecond/100000))
-                                log_date = ("%04d%02d%02d" %
-                                            (log_time.year,
-                                             log_time.month,
-                                             log_time.day))
-                                log_hour = ("%02d" % log_time.hour)
-                                log_minute = ("%02d" % log_time.minute)
+                                log_timestamp = ("%s%04d-%02d-%02d %02d:%02d:%02d%s" %
+                                                 (quote,
+                                                  log_time.year,
+                                                  log_time.month,
+                                                  log_time.day,
+                                                  log_time.hour,
+                                                  log_time.minute,
+                                                  log_time.second,
+                                                  quote))
                                 m_area = track_w*track_h
                                 ave_speed = round(ave_speed, 2)
                                 if WEBCAM:
@@ -1376,7 +1379,7 @@ def speed_camera():
                                     plugin_name = "None"
                                 # create the speed data list ready for db insert
                                 speed_data = (log_idx,
-                                              log_date, log_hour, log_minute,
+                                              log_timestamp,
                                               camera,
                                               ave_speed, speed_units, filename,
                                               image_width, image_height, image_bigger,
@@ -1407,7 +1410,7 @@ def speed_camera():
 
                                 # Format and Save Data to CSV Log File
                                 if log_data_to_CSV:
-                                    llog_csv_time = ("%s%04d-%02d-%02d %02d:%02d:%02d%s"
+                                    log_csv_time = ("%s%04d-%02d-%02d %02d:%02d:%02d%s"
                                                     % (quote,
                                                        log_time.year,
                                                        log_time.month,
