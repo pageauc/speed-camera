@@ -148,6 +148,7 @@ chmod -x config*
 
 echo "$STATUS Installing speed-cam.py Dependencies"
 sudo apt-get install -yq python-opencv
+sudo apt-get install -yq python3-opencv  # Raspbian Buster Installs opencv 3.2 (won't change existing)
 sudo apt-get install -yq dos2unix
 sudo apt-get install -yq python-picamera
 sudo apt-get install -yq python3-picamera
