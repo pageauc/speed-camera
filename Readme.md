@@ -139,7 +139,7 @@ View speed-cam data and trends from web browser per sample screen shots
 * YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
 * YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
 * YouTube motion-track video https://youtu.be/09JS7twPBsQ  
-* How to Build a Cheap Homemade Speed Camera https://mass.streetsblog.org/2021/02/26/how-to-build-a-homemade-speed-camera/  
+* [How to Build a Cheap Homemade Speed Camera](https://mass.streetsblog.org/2021/02/26/how-to-build-a-homemade-speed-camera/)  
 * Speed Camera RPI Forum post https://www.raspberrypi.org/forums/viewtopic.php?p=1004150#p1004150
 * YouTube Channel https://www.youtube.com/user/pageaucp 
 * Speed Camera GitHub Repo https://github.com/pageauc/speed-camera      
