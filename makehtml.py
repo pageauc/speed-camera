@@ -60,7 +60,7 @@ def make_web_page(up_html, row_data, dn_html):
         Guess = "Person on Bike or Golf Cart"
     else:
         Guess = "Vehicle"
-    Area=row_data[10]
+    Area=int(W)*int(H)
 
     pageTemplate = ('''<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
     <html>
