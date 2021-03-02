@@ -127,7 +127,7 @@ def make_web_page(up_html, row_data, dn_html):
 def check_row(row_data):
     found = False
     web_html_path = ""
-    img_path = row_data[5]
+    img_path = row_data[3]
     if os.path.isfile(img_path):
         base_filename = os.path.splitext(os.path.basename(img_path))[0]
         web_html_path = base_filename+'.html'
