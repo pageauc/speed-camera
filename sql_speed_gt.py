@@ -41,7 +41,7 @@ DB_PATH = 'data/speed_cam.db'
 DB_TABLE = 'speed'
 REPORTS_DIR = 'media/reports'
 if not os.path.isdir(REPORTS_DIR):
-    os.makedirs(REPORTS_DIR)   
+    os.makedirs(REPORTS_DIR)
 REPORTS_FILENAME = "hour_count_gt"
 REPORTS_PATH = os.path.join(REPORTS_DIR, REPORTS_FILENAME + SPEED_OVER + "_list.html")
 COUNT_PATH = os.path.join(REPORTS_DIR, REPORTS_FILENAME + SPEED_OVER + "_totals.html")
@@ -50,8 +50,8 @@ GRAPH_DATA_PATH = os.path.join(REPORTS_FILENAME + SPEED_OVER + ".txt")
 
 REPORT_QUERY = ('''
 select
-    log_date,
-    log_hour,
+    substr(log_timestamp, 2, 10) log_date,
+    substr(log_timestamp, 13, 2) log_hour,
     ave_speed,
     speed_units,
     image_path,
@@ -63,8 +63,8 @@ order by
 
 GRAPH_QUERY = ('''
 select
-    log_date,
-    log_hour,
+    substr(log_timestamp, 2, 10) log_date,
+    substr(log_timestamp, 13, 2) log_hour,
     count(*)
 from %s
 where
@@ -73,7 +73,7 @@ group by
     log_date,
     log_hour
 order by
-    idx asc
+    idx asc;
 ''' % (DB_TABLE, SPEED_OVER))
 
 HTML_HEADER_1 = (''' <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
@@ -156,7 +156,7 @@ def make_graph_data():
         f.write(item)
     f.write(HTML_FOOTER)
     f.close()
-    del graph_html
+    #del graph_html
     logging.info("Saved html File to %s", COUNT_PATH)
 
 def make_graph_image():
@@ -167,7 +167,7 @@ def make_graph_image():
     g.title(graph_title)
     png_file_path = ('set output "%s"' % GRAPH_PATH)
     g(png_file_path)
-    g.xlabel('Date')
+    g.xlabel('Date Hour')
     g.ylabel('Count')
     g("set autoscale")
     g("set key off")
@@ -175,12 +175,13 @@ def make_graph_image():
     g("set terminal png size 900,600")
     g("set xtics rotate")
     g("set xdata time")
-    g('set timefmt "%Y%m%d %H"')
-    g('set format x "%Y-%m-%d"')
+    g('set timefmt "%Y-%m-%d %H"')
+    g('set format x "%Y-%m-%d %H"')
     databuff = Gnuplot.File(GRAPH_DATA_PATH, using='1:3', with_='boxes fill solid')
     g.plot(databuff)
     logging.info("Saved Graph File To %s", GRAPH_PATH)
 
+#------------------------------------------------------------------------------
 def make_html():
     logging.info("Working.  Please Wait ...")
     html_table = []   # List to hold html table rows
@@ -225,6 +226,7 @@ def make_html():
     f.close()
     del html_table
     logging.info("Saved html File to %s", REPORTS_PATH)
+
 
 if __name__ == '__main__':
     start_time = time.time()
