@@ -37,21 +37,22 @@ if not os.path.isdir(web_html_dir):
 
 #------------------------------------------------------------------------------
 def make_web_page(up_html, row_data, dn_html):
-    YYYYMMDD=row_data[0]
-    HH=row_data[1]
-    MM=row_data[2]
-    Speed=row_data[3]
-    Unit=row_data[4]
-    img_path=row_data[5]
+    timestamp=datetime.datetime.strptime(row_data[0], "%Y-%m-%d %H:%M:%S")
+    YYYYMMDD=timestamp.strftime("%Y%m%d")
+    HH=timestamp.strftime("%H")
+    MM=timestamp.strftime("%M")
+    Speed=row_data[1]
+    Unit=row_data[2]
+    img_path=row_data[3]
     img_filename=os.path.basename(img_path)
     img_html_path = os.path.join(os.path.relpath(
                     os.path.abspath(os.path.dirname(img_path)),
                     os.path.abspath(web_html_dir)),
                     img_filename)
-    X=row_data[6]
-    Y=row_data[7]
-    W=row_data[8]
-    H=row_data[9]
+    X=row_data[4]
+    Y=row_data[5]
+    W=row_data[6]
+    H=row_data[7]
     aspect_ratio = float(W)/int(H)
     if aspect_ratio < guess_person:
         Guess = "Person Walking"
@@ -127,7 +128,7 @@ def make_web_page(up_html, row_data, dn_html):
 def check_row(row_data):
     found = False
     web_html_path = ""
-    img_path = row_data[5]
+    img_path = row_data[3]
     if os.path.isfile(img_path):
         base_filename = os.path.splitext(os.path.basename(img_path))[0]
         web_html_path = base_filename+'.html'
