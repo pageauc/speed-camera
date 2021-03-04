@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "10.10"  # current version of this python script
+progVer = "10.20"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
