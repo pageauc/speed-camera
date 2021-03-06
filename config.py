@@ -103,6 +103,8 @@ CAMERA_HFLIP = True    # Flip the camera image horizontally if required
 image_path = "media/images"   # folder name to store images
 image_prefix = "speed-"       # image name prefix
 image_format = ".jpg"         # Default = ".jpg"  image Formats .jpeg .png .gif .bmp
+image_jpeg_quality = 50       # Set the quality of the jpeg. Default = 50 https://docs.opencv.org/3.4/d8/d6a/group__imgcodecs__flags.html#ga292d81be8d76901bff7988d18d2b42ac
+image_jpeg_optimize = True    # Optimize the image. Default = True https://docs.opencv.org/3.4/d8/d6a/group__imgcodecs__flags.html#ga292d81be8d76901bff7988d18d2b42ac
 image_show_motion_area = True # True= Display motion detection rectangle area on saved images
 image_filename_speed = False  # True= Prefix filename with speed value
 image_text_on = True          # True= Show Text on speed images   False= No Text on images
