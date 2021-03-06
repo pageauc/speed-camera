@@ -45,3 +45,8 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Speed Camera Docker specific files & directories
+config/
+data/
+media/
