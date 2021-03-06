@@ -16,6 +16,14 @@ to ensure your system is up-to-date.
 This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed.
 See my Github [menu driven compile opencv3 from source](https://github.com/pageauc/opencv3-setup) project
 
+## Docker Quick Start
+1. If you haven't already, [install Docker](https://www.docker.com/get-started)
+1. Clone the repository
+1. Run `docker-compose up` from the directory you cloned the repo into.
+1. The Docker container will likely exit because it is using a default config.
+1. Edit the configuration file @ `config/config.py`
+1. Run `docker-compose up`
+
 ## Program Description   
 This is a raspberry pi, Windows, Unix Distro computer openCV object speed camera demo program.
 It is written in python and uses openCV to detect and track the x,y coordinates of the 
