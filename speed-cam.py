@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "10.2"  # current version of this python script
+progVer = "10.21"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -1349,8 +1349,10 @@ def speed_camera():
                                                 image_font_color,
                                                 image_font_thickness)
                                 logging.info(" Saved %s", filename)
-                                # Save resized image
-                                if image_format.lower() == ".jpg" or image_format.lower() == ".jpeg":
+                                # Save resized image Note if config.py image_jpeg_optimize = True and
+                                # jpg format set then image quality and optimization will enable reduce size with possible improved quality
+                                # otherwise if png or image_jpeg_quality = False then normal imwrite will save with jpq quality of 90                                
+                                if image_jpeg_optimize and (image_format.lower() == ".jpg" or image_format.lower() == ".jpeg"):
                                     cv2.imwrite(filename, big_image, [int(cv2.IMWRITE_JPEG_QUALITY), image_jpeg_quality, int(cv2.IMWRITE_JPEG_OPTIMIZE), image_jpeg_optimize])
                                 else:
                                     cv2.imwrite(filename, big_image)
