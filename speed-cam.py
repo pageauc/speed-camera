@@ -121,6 +121,8 @@ default_settings = {
     'image_path':"media/images",
     'image_prefix':"speed-",
     'image_format':".jpg",
+    'image_jpeg_quality': 95,
+    'image_jpeg_optimize': False,
     'image_show_motion_area':True,
     'image_filename_speed':False,
     'image_text_on':True,
@@ -597,6 +599,8 @@ def show_settings():
               % (image_path, image_prefix))
         print("                  image_font_size=%i px high  image_text_bottom=%s"
               % (image_font_size, image_text_bottom))
+        print("                  image_jpeg_quality=%s  image_jpeg_optimize=%s"
+              % (image_jpeg_quality, image_jpeg_optimize))
         print("Motion Settings . Size=%ix%i px  px_to_kph_L2R=%f  px_to_kph_R2L=%f speed_units=%s"
               % (CAMERA_WIDTH, CAMERA_HEIGHT, px_to_kph_L2R, px_to_kph_R2L, speed_units))
         print("                  CAM_LOCATION= %s" % CAM_LOCATION)
@@ -1346,7 +1350,10 @@ def speed_camera():
                                                 image_font_thickness)
                                 logging.info(" Saved %s", filename)
                                 # Save resized image
-                                cv2.imwrite(filename, big_image)
+                                if image_format.lower() == ".jpg" or image_format.lower() == ".jpeg":
+                                    cv2.imwrite(filename, big_image, [int(cv2.IMWRITE_JPEG_QUALITY), image_jpeg_quality, int(cv2.IMWRITE_JPEG_OPTIMIZE), image_jpeg_optimize])
+                                else:
+                                    cv2.imwrite(filename, big_image)
                                 # if required check free disk space
                                 # and delete older files (jpg)
 
