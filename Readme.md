@@ -24,6 +24,10 @@ See my Github [menu driven compile opencv3 from source](https://github.com/pagea
 1. Edit the configuration file @ `config/config.py`
 1. Run `docker-compose up`
 
+## OPENALPR Demo
+
+For installation, Settings and Run details see [ALPR Wiki Documentaion](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)
+
 ## Program Description   
 This is a raspberry pi, Windows, Unix Distro computer openCV object speed camera demo program.
 It is written in python and uses openCV to detect and track the x,y coordinates of the 
