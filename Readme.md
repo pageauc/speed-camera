@@ -1,6 +1,8 @@
 # SPEED CAMERA - Object Motion Tracker [![Mentioned in Awesome <INSERT LIST NAME>](https://awesome.re/mentioned-badge.svg)](https://github.com/thibmaek/awesome-raspberry-pi)
 ### RPI, Unix and Windows Speed Camera Using python, openCV, RPI camera module, USB Cam or IP Cam
-## For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features) and [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#links)
+## For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features), 
+[Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) 
+and [YouTube Videos](https://github.com/pageauc/speed-camera#reference-links)
 
 ## RPI Quick Install or Upgrade   
 ***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will
