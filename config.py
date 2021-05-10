@@ -50,9 +50,9 @@ logFilePath = 'speed-cam.log'  # Location of log file when loggingToFile=True
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set Speed Units   kph=False  mph=True
-track_counter = 5      # one cpu core=5 four cores=10 Number of Consecutive Motion Events to trigger speed photo
+track_counter = 4      # one cpu core=4 four cores=10 Number of Consecutive Motion Events to trigger speed photo
                        # Testing with RPI2 B one core using opencv ver 3.4.2
-MIN_AREA = 100         # Default= 100 Exclude all contours less than or equal to this sq-px Area
+MIN_AREA = 200         # Default= 200 Exclude all contours less than or equal to this sq-px Area
 show_out_range = True  # Default= True Show Out of Range Events per x_diff settings below False= Off
 x_diff_max = 20        # Default= 20 Exclude if max px away >= last motion event x position
 x_diff_min = 1         # Default= 1 Exclude if min px away <= last event x position
