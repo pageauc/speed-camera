@@ -121,6 +121,10 @@ def is_int(var):
 
 #----------------------------------------------------------------------------------------
 def get_timestamp_substr(total_by):
+    '''
+    Convert hour, day or month string to required
+    values for changing the log_timestamp to a appropriate value
+    '''
     total_by = total_by.upper()
     if total_by == 'HOUR':
         timestamp_subst = '2, 13'
@@ -276,7 +280,7 @@ if __name__ == '__main__':
             else:
                 graph_from_list()
     except KeyboardInterrupt:
-        print("\nUser Pressed Keboard Ctrl-C to Exit")
+        print("\nUser Pressed Keyboard Ctrl-C to Exit")
     print(help_msg)
     print('Ver %s Bye ....' % prog_ver)
 
