@@ -152,7 +152,10 @@ sudo apt-get install -yq python3-opencv  # Raspbian Buster Installs opencv 3.2 (
 sudo apt-get install -yq dos2unix
 sudo apt-get install -yq python-picamera
 sudo apt-get install -yq python3-picamera
+sudo apt-get install -yq python-pil
+sudo apt-get install -yq python3-pil
 sudo apt-get install -yq python-imaging
+sudo apt-get install -yq python3-imaging
 sudo apt-get install -yq sqlite3
 sudo apt-get install -yq python-matplotlib
 sudo apt-get install -yq python3-matplotlib
