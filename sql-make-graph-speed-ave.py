@@ -34,6 +34,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
+logging.getLogger('matplotlib.font_manager').disabled = True
 # Import Variable constants from config.py
 from config import DB_DIR
 from config import DB_NAME
