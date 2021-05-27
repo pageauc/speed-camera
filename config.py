@@ -164,7 +164,7 @@ GRAPH_PATH = 'media/graphs'  # Directory path for storing graph images
 GRAPH_ADD_DATE_TO_FILENAME = False  # True - Prefix graph image filenames with datetime default = False
 GRAPH_RUN_TIMER_HOURS = 0.5   # Default= 0.5 Update Graphs every specified hours wait (Continuous).
 # List of sql query Data for sql-make-graph-count-totals.py and sql-make-graph-speed-ave.py (with no parameters)
-#                [[Group_By, Days_Prev, Speed_Over]]  where Group_By string hour, day or month  
+#                [[Group_By, Days_Prev, Speed_Over]]  where Group_By is 'hour', 'day' or 'month'  
 GRAPH_RUN_LIST = [
                   ['day', 28, 10],
                   ['hour', 28, 10],                  
