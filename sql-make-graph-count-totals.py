@@ -46,6 +46,9 @@ from config import GRAPH_RUN_LIST
 
 DEBUG = False
 
+if not os.path.exists(GRAPH_PATH):  # Check if grpahs directory exists
+    os.makedirs(GRAPH_PATH)         # make directory if Not Found
+
 # Create help Message Strings
 
 help_msg_title = ('''
