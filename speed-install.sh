@@ -35,7 +35,7 @@ if $is_upgrade ; then
 else
     speedFiles=("config.py" "menubox.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
-"webserver.sh" "webserver3.py" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \ 
+"webserver.sh" "webserver3.py" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
 "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py")
 fi
 
