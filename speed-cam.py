@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "10.22"  # current version of this python script
+progVer = "11.0"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -147,6 +147,15 @@ default_settings = {
     'WINDOW_BIGGER':1.0,
     'BLUR_SIZE':10,
     'THRESHOLD_SENSITIVITY':20,
+    'DB_DIR':"data",
+    'DB_NAME':"speed_cam.db",
+    'DB_TABLE':"speed",
+    'GRAPH_PATH':'media/graphs',
+    'GRAPH_ADD_DATE_TO_FILENAME':False,
+    'GRAPH_RUN_TIMER_HOURS':0.5,
+    'GRAPH_RUN_LIST':[['hour', 2, 0],['hour', 7, 10],
+                      ['hour', 14, 10],['day', 28, 0],
+                      ['month', 180, 0]],    
     'web_server_port':8080,
     'web_server_root':"media",
     'web_page_title':"SPEED-CAMERA Media",
@@ -161,9 +170,6 @@ default_settings = {
     'web_list_height':"768",
     'web_list_by_datetime':True,
     'web_list_sort_descending':True,
-    'DB_DIR':"data",
-    'DB_NAME':"speed_cam.db",
-    'DB_TABLE':"speed",
     'image_sign_on':False,
     'image_sign_show_camera':False,
     'image_sign_resize':(1280, 720),

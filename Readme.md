@@ -56,10 +56,10 @@ To implement webserver3.py copy webserver3.py to webserver.py
 for optional remote file sync to a remote storage service like google drive, DropBox and many others. 
 * [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)
 for administration of settings from a remote storage service. Plus application monitoring.
-* [***sql_speed_gt.py***](https://github.com/pageauc/speed-camera/blob/master/sql_speed_gt.sh) Prompts for a speed value and runs a simple
-sqlite3 query to show all record that exceed the specified speed. Output can be found in media/reports folder and is available from browser. 
-* [***sql_hour_count.py***](https://github.com/pageauc/speed-camera/blob/master/sql_hour_count.py) Run report for count by hour.
-also produces a graph using gnuplot. Query output html report and .png graph can be found in media/reports folder and is available from browser.
+* ***sql-make-graph-count-totals.py*** Query sqlite database and Generate one or more graph images and save to media/graphs.
+Graphs display counts by hour, day or month for specfied previous days and speed over.    
+* ***sql-make-graph-speed-ave.py*** Query sqlite database and Generate one or more graph images and save to media/graphs.
+Graphs display Average Speed by hour, day or month for specfied previous days and speed over.    
 * [***alpr-speed.py***](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)
 Process speed camera images with [OPENALPR](https://github.com/openalpr/openalpr) License plate reader
 * [***speed-search.py***](https://github.com/pageauc/rpi-speed-camera/wiki/How-to-Run-speed-search.py)

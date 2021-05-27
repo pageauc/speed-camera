@@ -1,10 +1,10 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="10.00"
+ver="11.0"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
-rclone_cur_ver="rclone v1.53.3"
+rclone_cur_ver="rclone v1.54"
 
 cd ~
 is_upgrade=false
@@ -31,12 +31,12 @@ if $is_upgrade ; then
     echo "Note: config.py will not be overwritten. Updated settings are in config.py.new"
     speedFiles=("menubox.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
-"webserver.sh" "webserver3.py" "sql_speed_gt.py" "alpr-speed.py")
+"webserver.sh" "webserver3.py" "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py")
 else
     speedFiles=("config.py" "menubox.sh" "speed-cam.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
 "webserver.sh" "webserver3.py" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \ 
-"alpr-speed.py" "sql_speed_gt.py" )
+"alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py")
 fi
 
 for fname in "${speedFiles[@]}" ; do
@@ -154,16 +154,18 @@ sudo apt-get install -yq python-picamera
 sudo apt-get install -yq python3-picamera
 sudo apt-get install -yq python-imaging
 sudo apt-get install -yq sqlite3
+sudo apt-get install -yq python-matplotlib
+sudo apt-get install -yq python3-matplotlib
 
-sudo apt-get install -yq gnuplot
-if [ $? -ne 0 ]; then
-   sudo apt-get install -yq Gnuplot
-fi
+# sudo apt-get install -yq gnuplot
+# if [ $? -ne 0 ]; then
+#   sudo apt-get install -yq Gnuplot
+# fi
 
-sudo apt-get install -yq python-gnuplot
-if [ $? -ne 0 ]; then
-   sudo apt-get install -yq python-Gnuplot
-fi
+# sudo apt-get install -yq python-gnuplot
+# if [ $? -ne 0 ]; then
+#   sudo apt-get install -yq python-Gnuplot
+# fi
 
 sudo apt-get install -yq libgl1-mesa-dri
 sudo apt-get install -yq fonts-freefont-ttf # Required for Jessie Lite Only

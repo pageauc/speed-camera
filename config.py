@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 10.01 speed-cam.py Variable Configuration Settings
+#         Ver 11.0 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -157,6 +157,21 @@ THRESHOLD_SENSITIVITY = 20    # Default= 20 OpenCV setting for difference image 
 DB_DIR   = "data"
 DB_NAME  = "speed_cam.db"
 DB_TABLE = "speed"
+
+# matplotlib graph image settings
+# -------------------------------
+GRAPH_PATH = 'media/graphs'  # Directory path for storing graph images
+GRAPH_ADD_DATE_TO_FILENAME = False  # True - Prefix graph image filenames with datetime default = False
+GRAPH_RUN_TIMER_HOURS = 0.5   # Default= 0.5 Update Graphs every specified hours wait (Continuous).
+# List of sql query Data for sql-make-graph-count-totals.py and sql-make-graph-speed-ave.py (with no parameters)
+#                [Count_By, Days_Prev, Speed_Over]
+GRAPH_RUN_LIST = [
+                  ['hour', 2, 0],
+                  ['hour', 7, 10],                  
+                  ['hour', 14, 10],
+                  ['day', 28, 0],
+                  ['month', 180, 0]
+                 ]
 
 #======================================
 #       webserver.py Settings
