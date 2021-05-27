@@ -262,19 +262,21 @@ def graph_from_list():
 
 if __name__ == '__main__':
 
-    if len(sys.argv) > 1:
-        make_graph_image(total_by, days_prev, speed_over)
-    else:
-        if GRAPH_RUN_TIMER_HOURS > 0.0:
-            while True:
-                graph_from_list()
-                logging.warning('Looping Timer Set per config.py GRAPH_RUN_TIMER_HOURS = %.2f', GRAPH_RUN_TIMER_HOURS)
-                logging.info('Next Run is in %.2f hours', GRAPH_RUN_TIMER_HOURS)
-                print('Waiting ... Ctr-C to Exit')
-                time.sleep(GRAPH_RUN_TIMER_HOURS * 3600)
+    try:
+        if len(sys.argv) > 1:
+            make_graph_image(total_by, days_prev, speed_over)
         else:
-            graph_from_list()
-
+            if GRAPH_RUN_TIMER_HOURS > 0.0:
+                while True:
+                    graph_from_list()
+                    logging.warning('Looping Timer Set per config.py GRAPH_RUN_TIMER_HOURS = %.2f', GRAPH_RUN_TIMER_HOURS)
+                    logging.info('Next Run is in %.2f hours', GRAPH_RUN_TIMER_HOURS)
+                    print('Waiting ... Ctr-C to Exit')
+                    time.sleep(GRAPH_RUN_TIMER_HOURS * 3600)
+            else:
+                graph_from_list()
+    except KeyboardInterrupt:
+        print("\nUser Pressed Keboard Ctrl-C to Exit")
     print(help_msg)
     print('Ver %s Bye ....' % prog_ver)
 
