@@ -6,8 +6,9 @@ the sqlite3 database data/speed_cam.db using matplotlib.
 
 '''
 from __future__ import print_function
-prog_ver = '1.0'
-print('Loading ver %s ... ' % prog_ver)
+prog_ver = '1.1'
+DEBUG = False
+print('Loading ver %s DEBUG= %s ... ' % (prog_ver, DEBUG))
 import sqlite3
 import os
 import time
@@ -44,8 +45,6 @@ from config import GRAPH_PATH
 from config import GRAPH_ADD_DATE_TO_FILENAME   # Prefix graph image filename with datetime for uniqueness.
 from config import GRAPH_RUN_TIMER_HOURS
 from config import GRAPH_RUN_LIST
-
-DEBUG = False
 
 if not os.path.exists(GRAPH_PATH):  # Check if grpahs directory exists
     os.makedirs(GRAPH_PATH)         # make directory if Not Found
@@ -124,7 +123,8 @@ def is_int(var):
 def get_timestamp_substr(total_by):
     '''
     Convert hour, day or month string to required
-    values for changing the log_timestamp to a appropriate value
+    values for changing the log_timestamp to
+    an appropriate substring value
     '''
     total_by = total_by.upper()
     if total_by == 'HOUR':
@@ -151,7 +151,8 @@ def get_speed_units_str():
 
 #----------------------------------------------------------------------------------------
 def get_query_str(total_by, days_prev, speed_over):
-    ''' Sqlite3 Query to Get Speed Averages for specified days previous and speeds over
+    ''' Create Sqlite3 Query to Get Speed Averages for
+        specified days previous and speeds over
     '''
     timestamp_subst = get_timestamp_substr(total_by)
     sql_query_speed_ave = ('''
@@ -176,7 +177,7 @@ def make_graph_image(total_by, days_prev, speed_over):
     '''
 
     if not (is_int(days_prev) and is_int(speed_over)):
-        logging.error("days_prev and speed_over must integers >= 0")
+        logging.error("days_prev and speed_over must be integers >= 0")
         return
 
     days_prev = abs(days_prev)  # Make sure they are positive
@@ -220,6 +221,8 @@ def make_graph_image(total_by, days_prev, speed_over):
         row = cursor.fetchone()
         if row is None:
             break
+        if DEBUG:
+            print(row)
         xdat, ydat = row
         # Create x,y data lists for matplotlib plt
         if total_by == 'HOUR':
