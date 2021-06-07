@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.0"  # current version of this python script
+progVer = "11.01"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -154,7 +154,7 @@ default_settings = {
     'GRAPH_ADD_DATE_TO_FILENAME':False,
     'GRAPH_RUN_TIMER_HOURS':0.5,
     'GRAPH_RUN_LIST':[['hour', 2, 0],['hour', 7, 10],
-                      ['hour', 14, 10],['day', 28, 0]],    
+                      ['hour', 14, 10],['day', 28, 0]],
     'web_server_port':8080,
     'web_server_root':"media",
     'web_page_title':"SPEED-CAMERA Media",
@@ -1477,14 +1477,6 @@ def speed_camera():
                                              tot_track_time,
                                              cal_obj_px,
                                              cal_obj_mm)
-
-                                print(horz_line)
-                                # Wait to avoid dual tracking same object.
-                                if track_timeout > 0:
-                                    logging.info("Sleep - %0.2f seconds to Clear Track"
-                                                 % track_timeout)
-                                event_timer = time.time()
-                                time.sleep(track_timeout)
                             else:
                                 logging.info("End  - Skip Photo SPEED %.1f %s"
                                              " max_speed_over=%i  %i px in %.3f sec"
@@ -1493,12 +1485,12 @@ def speed_camera():
                                              max_speed_over, tot_track_dist,
                                              tot_track_time, total_contours,
                                              biggest_area)
-                                # Optional Wait to avoid dual tracking
-                                if track_timeout > 0:
-                                    logging.info("Sleep - %0.2f seconds to Clear Track"
-                                                 % track_timeout)
-                                event_timer = time.time()
+                            # Optional Wait to avoid multiple recording of same object
+                            if track_timeout > 0:
+                                logging.info("track_timeout %0.2f sec Sleep to Avoid Tracking Same Object Multiple Times."
+                                             % track_timeout)
                                 time.sleep(track_timeout)
+                            print(horz_line)
                             # Track Ended so Reset Variables ready for
                             # next tracking sequence
                             start_pos_x = None
