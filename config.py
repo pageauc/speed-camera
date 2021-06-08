@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 11.0 speed-cam.py Variable Configuration Settings
+#         Ver 11.02 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -50,8 +50,8 @@ logFilePath = 'speed-cam.log'  # Location of log file when loggingToFile=True
 # Motion Event Settings
 # ---------------------
 SPEED_MPH = False      # Set Speed Units   kph=False  mph=True
-track_counter = 4      # one cpu core=4 four cores=10 Number of Consecutive Motion Events to trigger speed photo
-                       # Testing with RPI2 B one core using opencv ver 3.4.2
+track_counter = 6      # Default= 6 Number of Consecutive Motion Events to trigger speed photo. Adjust to suit.
+                       # Suggest single core cpu=4-7 quad core=8-15 but adjust to smooth erratic readings due to contour jumps
 MIN_AREA = 200         # Default= 200 Exclude all contours less than or equal to this sq-px Area
 show_out_range = True  # Default= True Show Out of Range Events per x_diff settings below False= Off
 x_diff_max = 20        # Default= 20 Exclude if max px away >= last motion event x position
@@ -65,13 +65,13 @@ max_speed_over = 0     # Exclude track if Speed less than or equal to value spec
 # Note: To see motion tracking crop area on images, Set variable image_show_motion_area = True
 
 # Allow user to customize the motion crop area (width) x values
-# If variables not found then values will be set automatically base on image size.
+# If variable not found then values will be set automatically based on image size.
 # x_left = 50          # uncomment and change values to override auto calculate
 # x_right = 300        # uncomment and change values to override auto calculate
 
 # Allow user to customize the motion crop area (height) y values
 # If variables not found then values will be set automatically base on image size.
-# y_upper = 80         # uncomment and change values to override auto calculate
+# y_upper = 60         # uncomment and change values to override auto calculate
 # y_lower = 180        # uncomment and change values to override auto calculate
 
 # Camera Settings
@@ -164,10 +164,10 @@ GRAPH_PATH = 'media/graphs'  # Directory path for storing graph images
 GRAPH_ADD_DATE_TO_FILENAME = False  # True - Prefix graph image filenames with datetime default = False
 GRAPH_RUN_TIMER_HOURS = 0.5   # Default= 0.5 Update Graphs every specified hours wait (Continuous).
 # List of sql query Data for sql-make-graph-count-totals.py and sql-make-graph-speed-ave.py (with no parameters)
-#                [[Group_By, Days_Prev, Speed_Over]]  where Group_By is 'hour', 'day' or 'month'  
+#                [[Group_By, Days_Prev, Speed_Over]]  where Group_By is 'hour', 'day' or 'month'
 GRAPH_RUN_LIST = [
                   ['day', 28, 10],
-                  ['hour', 28, 10],                  
+                  ['hour', 28, 10],
                   ['hour', 7, 0],
                   ['hour', 2, 0]
                  ]
