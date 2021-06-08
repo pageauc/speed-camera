@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.01"  # current version of this python script
+progVer = "11.02"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -1647,16 +1647,22 @@ if __name__ == '__main__':
             # For details See comments in config.py Motion Events settings section
             try:
                 x_left
-                x_right
             except NameError:
                 x_left = int(img_width / x_scale)
+
+            try:
+                x_right
+            except NameError:
                 x_right = int(img_width - x_left)
 
             try:
                 y_upper
-                y_lower
             except NameError:
                 y_upper = int(img_height / y_scale)
+
+            try:
+                y_lower
+            except NameError:
                 y_lower = int(img_height - y_upper)
 
             # setup buffer area to ensure contour is mostly contained in crop area
