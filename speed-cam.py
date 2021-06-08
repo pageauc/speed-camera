@@ -1421,7 +1421,7 @@ def speed_camera():
                                     logging.error("Failed: To INSERT Speed Data into TABLE %s", DB_TABLE)
                                     logging.error("Err Msg: %s", e)
                                 else:
-                                    logging.info(" SQL - Inserted sqlite3 Data Row into %s", DB_PATH)
+                                    logging.info(" SQL - Inserted Data Row into %s", DB_PATH)
 
                                 # Format and Save Data to CSV Log File
                                 if log_data_to_CSV:
