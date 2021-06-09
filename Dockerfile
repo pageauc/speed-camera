@@ -18,4 +18,5 @@ ARG SPEED_CAMERA_VER=10.22
 RUN curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash
 
 COPY speed-camera-docker-run.sh /root/speed-camera/speed-camera-docker-run.sh
+RUN chmod +x /root/speed-camera/speed-camera-docker-run.sh
 ENTRYPOINT /root/speed-camera/speed-camera-docker-run.sh
