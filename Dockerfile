@@ -15,7 +15,7 @@ RUN apt-get install -yq python curl wget sudo python-numpy python3-opencv dos2un
 
 # set version and install speed camera
 ARG SPEED_CAMERA_VER=10.22
-RUN curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash
+RUN curl -L https://raw.github.com/mlapaglia/rpi-speed-camera/master/speed-install.sh | bash
 
 COPY speed-camera-docker-run.sh /root/speed-camera/speed-camera-docker-run.sh
 RUN chmod +x /root/speed-camera/speed-camera-docker-run.sh

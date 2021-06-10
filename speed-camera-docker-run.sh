@@ -14,7 +14,7 @@ if [ ! -L /root/speed-camera/config.py ]; then
 fi
 
 if [ ! -f /root/speed-camera/media/webserver.txt ]; then
-    wget -O /root/speed-camera/media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.txt
+    wget -O /root/speed-camera/media/webserver.txt -q --show-progress https://raw.github.com/mlapaglia/speed-camera/master/webserver.txt
 fi
 
 cd /root/speed-camera/

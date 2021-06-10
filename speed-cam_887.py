@@ -69,7 +69,7 @@ if not os.path.exists(configFilePath):
     print("ERROR : Missing config.py file - File Not Found %s"
           % configFilePath)
     import urllib2
-    config_url = "https://raw.github.com/pageauc/speed-camera/master/config.py"
+    config_url = "https://raw.github.com/mlapaglia/speed-camera/master/config.py"
     print("INFO  : Attempting to Download config.py file from %s" % config_url)
     try:
         wgetfile = urllib2.urlopen(config_url)

@@ -641,7 +641,7 @@ function do_upgrade()
                --yesno "Upgrade speed-cam Files from GitHub.\n Some config Files Will be Updated" 0 0 0 \
                --yes-button "upgrade" \
                --no-button "Cancel" ); then
-    curlcmd=('/usr/bin/curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash')
+    curlcmd=('/usr/bin/curl -L https://raw.github.com/mlapaglia/rpi-speed-camera/master/speed-install.sh | bash')
     eval $curlcmd
     do_anykey
   fi

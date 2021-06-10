@@ -54,7 +54,7 @@ configFilePath = baseDir + "search_config.py"
 if not os.path.exists(configFilePath):  # check if config.py file exist if not wget github copy
     print("ERROR - Could Not Find Configuration File %s" % (configFilePath))
     import urllib2
-    config_url = "https://raw.github.com/pageauc/rpi-speed-camera/master/search_config.py"
+    config_url = "https://raw.github.com/mlapaglia/rpi-speed-camera/master/search_config.py"
     print("   Attempting to Download config File from %s" % ( config_url ))
     try:
         wgetfile = urllib2.urlopen(config_url)
