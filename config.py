@@ -174,7 +174,7 @@ GRAPH_RUN_LIST = [
 
 # Webhook Settings
 # ----------------
-#webhook_url = "https://addressofwebhook/webhook"
+webhook_url = ''
 
 #======================================
 #       webserver.py Settings
