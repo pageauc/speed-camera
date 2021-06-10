@@ -43,6 +43,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 """
 from __future__ import print_function
+from webhook import Webhook
 
 progVer = "11.02"  # current version of this python script
 
@@ -1454,6 +1455,8 @@ def speed_camera():
                                                        CAM_LOCATION,
                                                        quote))
                                     log_to_csv(log_csv_text)
+                                if webhook_url:
+                                    Webhook().Post(webhook_url, log_timestamp, ave_speed, speed_units, travel_direction)
                                 if spaceTimerHrs > 0:
                                     lastSpaceCheck = freeDiskSpaceCheck(lastSpaceCheck)
                                 # Manage a maximum number of files

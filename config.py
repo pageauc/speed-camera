@@ -172,6 +172,10 @@ GRAPH_RUN_LIST = [
                   ['hour', 2, 0]
                  ]
 
+# Webhook Settings
+# ----------------
+#webhook_url = "https://addressofwebhook/webhook"
+
 #======================================
 #       webserver.py Settings
 #======================================
