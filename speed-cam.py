@@ -103,7 +103,7 @@ default_settings = {
     'x_diff_max':20,
     'x_diff_min':1,
     'x_buf_adjust':10,
-    'track_timeout':0.0,
+    'track_timeout':0.5,
     'event_timeout':0.3,
     'max_speed_over':0,
     'CAM_LOCATION':'None',
