@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.02"  # current version of this python script
+progVer = "11.03"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -54,11 +54,11 @@ mypath = os.path.abspath(__file__)  # Find the full path of this python script
 baseDir = mypath[0:mypath.rfind("/")+1]
 baseFileName = mypath[mypath.rfind("/")+1:mypath.rfind(".")]
 progName = os.path.basename(__file__)
-horz_line = "----------------------------------------------------------------------"
-print(horz_line)
+horiz_line = "----------------------------------------------------------------------"
+print(horiz_line)
 print("%s %s  written by Claude Pageau" % (progName, progVer))
 print("Motion Track Largest Moving Object and Calculate Speed per Calibration.")
-print(horz_line)
+print(horiz_line)
 print("Loading  Wait ...")
 import time
 import datetime
@@ -553,12 +553,12 @@ def show_settings():
         os.makedirs(html_path)
     os.chdir(cwd)
     if verbose:
-        print(horz_line)
+        print(horiz_line)
         print("Note: To Send Full Output to File Use command")
         print("python -u ./%s | tee -a log.txt" % progName)
         print("Set log_data_to_file=True to Send speed_Data to CSV File %s.log"
               % baseFileName)
-        print(horz_line)
+        print(horiz_line)
         print("")
         print("Debug Messages .. verbose=%s  display_fps=%s calibrate=%s"
               % (verbose, display_fps, calibrate))
@@ -637,7 +637,7 @@ def show_settings():
             print("                  spaceTimerHrs=%i (0=Off)"
                   " Target spaceFreeMB=%i (min=100 MB)" % (spaceTimerHrs, spaceFreeMB))
         print("")
-        print(horz_line)
+        print(horiz_line)
     return
 
 #------------------------------------------------------------------------------
@@ -1195,7 +1195,7 @@ def speed_camera():
                     (x, y, w, h) = cv2.boundingRect(c)
                     # check if object contour is completely within crop area
                     if (x > x_buf and x + w < x_right - x_left - x_buf):
-                        cur_track_time = time.time() # record cur track time
+
                         track_x = x
                         track_y = y
                         track_w = w  # movement width of object contour
@@ -1203,6 +1203,7 @@ def speed_camera():
                         motion_found = True
                         biggest_area = found_area
             if motion_found:
+                cur_track_time = time.time() # record cur track time
                 # Check if last motion event timed out
                 reset_time_diff = time.time() - event_timer
                 if  reset_time_diff > event_timeout:
@@ -1214,6 +1215,7 @@ def speed_camera():
                     end_pos_x = None
                     logging.info("Reset- event_timer %.2f>%.2f sec Exceeded",
                                  reset_time_diff, event_timeout)
+                    print(horiz_line)
                 ##############################
                 # Process motion events and track object movement
                 ##############################
@@ -1262,7 +1264,7 @@ def speed_camera():
                         if track_count >= track_counter:
                             tot_track_dist = abs(track_x - start_pos_x)
                             tot_track_time = abs(track_start_time - cur_track_time)
-                            ave_speed = sum(speed_list) / float(len(speed_list))
+                            ave_speed = np.mean(speed_list)
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
                                 logging.info(" Add - %i/%i xy(%i,%i) %3.2f %s"
@@ -1486,11 +1488,11 @@ def speed_camera():
                                              tot_track_time, total_contours,
                                              biggest_area)
                             # Optional Wait to avoid multiple recording of same object
+                            print(horiz_line)
                             if track_timeout > 0:
                                 logging.info("track_timeout %0.2f sec Sleep to Avoid Tracking Same Object Multiple Times."
                                              % track_timeout)
                                 time.sleep(track_timeout)
-                            print(horz_line)
                             # Track Ended so Reset Variables ready for
                             # next tracking sequence
                             start_pos_x = None
