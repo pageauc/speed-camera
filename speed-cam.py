@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.03"  # current version of this python script
+progVer = "11.04"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -1202,8 +1202,8 @@ def speed_camera():
                         track_h = h  # movement height of object contour
                         motion_found = True
                         biggest_area = found_area
+                        cur_track_time = time.time() # record cur track time
             if motion_found:
-                cur_track_time = time.time() # record cur track time
                 # Check if last motion event timed out
                 reset_time_diff = time.time() - event_timer
                 if  reset_time_diff > event_timeout:
@@ -1245,7 +1245,7 @@ def speed_camera():
                     # check if movement is within acceptable distance
                     # range of last event
                     if (abs(end_pos_x - prev_pos_x) > x_diff_min and
-                            abs(end_pos_x - prev_pos_x) < x_diff_max):
+                            abs(end_pos_x - prev_pos_x) <= x_diff_max):
                         track_count += 1  # increment
                         cur_track_dist = abs(end_pos_x - prev_pos_x)
                         if travel_direction == 'L2R':
@@ -1259,19 +1259,20 @@ def speed_camera():
                                                                  prev_start_time)))) *
                                                   speed_conv_R2L)
                         speed_list.append(cur_ave_speed)
+                        ave_speed = np.mean(speed_list)
                         prev_start_time = cur_track_time
                         event_timer = time.time()
                         if track_count >= track_counter:
                             tot_track_dist = abs(track_x - start_pos_x)
                             tot_track_time = abs(track_start_time - cur_track_time)
-                            ave_speed = np.mean(speed_list)
+
                             # Track length exceeded so take process speed photo
                             if ave_speed > max_speed_over or calibrate:
                                 logging.info(" Add - %i/%i xy(%i,%i) %3.2f %s"
                                              " D=%i/%i C=%i %ix%i=%i sqpx %s",
                                              track_count, track_counter,
                                              track_x, track_y,
-                                             cur_ave_speed, speed_units,
+                                             ave_speed, speed_units,
                                              abs(track_x - prev_pos_x),
                                              x_diff_max,
                                              total_contours,
@@ -1385,7 +1386,6 @@ def speed_camera():
                                                   log_time.second,
                                                   quote))
                                 m_area = track_w*track_h
-                                ave_speed = round(ave_speed, 2)
                                 if WEBCAM:
                                     camera = "WebCam"
                                 else:
@@ -1398,7 +1398,7 @@ def speed_camera():
                                 speed_data = (log_idx,
                                               log_timestamp,
                                               camera,
-                                              ave_speed, speed_units, filename,
+                                              round(ave_speed, 2), speed_units, filename,
                                               image_width, image_height, image_bigger,
                                               travel_direction, plugin_name,
                                               track_x, track_y,
@@ -1505,7 +1505,7 @@ def speed_camera():
                                          " D=%i/%i C=%i %ix%i=%i sqpx %s",
                                          track_count, track_counter,
                                          track_x, track_y,
-                                         cur_ave_speed, speed_units,
+                                         ave_speed, speed_units,
                                          abs(track_x - prev_pos_x),
                                          x_diff_max,
                                          total_contours,
