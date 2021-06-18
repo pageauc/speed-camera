@@ -159,6 +159,7 @@ sudo apt-get install -yq python3-imaging
 sudo apt-get install -yq sqlite3
 sudo apt-get install -yq python-matplotlib
 sudo apt-get install -yq python3-matplotlib
+sudo apt-get install -yq python3-numpy
 
 # sudo apt-get install -yq gnuplot
 # if [ $? -ne 0 ]; then
