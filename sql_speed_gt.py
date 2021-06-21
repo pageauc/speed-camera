@@ -7,18 +7,25 @@ the sqlite3 database data/speed_cam.db
 """
 
 from __future__ import print_function
-print("Loading ...")
-import sqlite3
-import Gnuplot
+print("Loading ...  Note this gnuplot report is deprecated.")
 import os
 import time
 import logging
 import argparse
 import sys
+import sqlite3
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
+
+try:
+    import Gnuplot
+except ImportError:
+    logging.error('Could Not import gnuplot')
+    logging.info('Install per following command')
+    logging.info('sudo apt install python-gnuplot')
+    sys.exit(1)
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-s", "--speed", required=False, type=int, nargs=1,
@@ -37,6 +44,7 @@ except ValueError:
     logging.info("If No Parameter is Supplied, You Will be Prompted for SPEED_OVER Value")
     sys.exit(1)
 
+# Setup variables
 DB_PATH = 'data/speed_cam.db'
 DB_TABLE = 'speed'
 REPORTS_DIR = 'media/reports'
