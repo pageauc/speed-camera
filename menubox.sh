@@ -552,6 +552,13 @@ function do_speed_search_menu ()
 #------------------------------------------------------------------------------
 function do_report_menu ()
 {
+  if [ ! -f ./sql_speed_gt.py ]; then
+    echo "Downloading sql_speed_gt.py"
+    wget -O sql_speed_gt.py https://raw.github.com/pageauc/speed-camera/master/sql_speed_gt.py
+    chmod +x sql_speed_gt.py 
+    sudo apt-get install python-gnuplot    
+  fi
+
   SET_SEL=$( whiptail --title "sqlite3 Report Menu" \
                       --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
                       --ok-button Select \
@@ -624,11 +631,20 @@ function do_report_about()
   whiptail --title "About SQL Reports Menu" --msgbox " \
        speed camera - SQL Reports Menu
 
-Reports use the sqlite3 speed camera database located at
+Reports uses the sqlite3 speed camera database located at
    /home/pi/speed-cam/data/speed_cam.db
 
-The reports runs sql queries for displaying formatted
+The reports runs sql_speed_gt.py queries for displaying formatted
 reports.
+
+Note: sql_speed_gt.py uses gnuplot and has been superceded by
+      the following graphing scripts that use matplotlib.
+
+       sql-make-graph-count-totals.py and
+       sql-make-graph-speed-ave.py
+       
+    Run these with the -h parameter to view help.  
+       
 
 \
 " 0 0 0
@@ -639,7 +655,7 @@ function do_upgrade()
 {
   if (whiptail --title "GitHub Upgrade speed-cam" \
                --yesno "Upgrade speed-cam Files from GitHub.\n Some config Files Will be Updated" 0 0 0 \
-               --yes-button "upgrade" \
+            s   --yes-button "upgrade" \
                --no-button "Cancel" ); then
     curlcmd=('/usr/bin/curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash')
     eval $curlcmd
