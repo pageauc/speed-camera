@@ -127,7 +127,7 @@ image_sign_timeout = 5        # Keep the image sign for 5 seconds.
 
 # Optional Manage SubDir Creation by time, number of files or both (not recommended)
 # ----------------------------------------------------------------
-imageSubDirMaxFiles = 1000    # 0=off or specify MaxFiles - Creates New dated sub-folder if MaxFiles exceeded
+imageSubDirMaxFiles = 2000    # 0=off or specify MaxFiles - Creates New dated sub-folder if MaxFiles exceeded
 imageSubDirMaxHours = 0       # 0=off or specify MaxHours - Creates New dated sub-folder if MaxHours exceeded
 
 # Optional Save Most Recent files in recent folder

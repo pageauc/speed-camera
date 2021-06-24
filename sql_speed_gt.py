@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 written by Claude Pageau
-Speed Camera Utility to create html and graph png files from
+Speed Camera Utility to create html and graph jpg files from
 the sqlite3 database data/speed_cam.db
 
 """
@@ -170,17 +170,17 @@ def make_graph_data():
 def make_graph_image():
     make_graph_data()
     g = Gnuplot.Gnuplot()
+    g('set terminal jpeg size 900,600')
     g.reset()
     graph_title = ('Speed Camera Count by Hour where speed gt %s' % SPEED_OVER)
     g.title(graph_title)
-    png_file_path = ('set output "%s"' % GRAPH_PATH)
-    g(png_file_path)
+    jpg_file_path = ('set output "%s"' % GRAPH_PATH)
+    g(jpg_file_path)
     g.xlabel('Date Hour')
     g.ylabel('Count')
     g("set autoscale")
     g("set key off")
     g("set grid")
-    g("set terminal png size 900,600")
     g("set xtics rotate")
     g("set xdata time")
     g('set timefmt "%Y-%m-%d %H"')
