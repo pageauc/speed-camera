@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.04"  # current version of this python script
+progVer = "11.05"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -216,7 +216,6 @@ for key, val in default_settings.items():
 # fix rounding problems with picamera resolution
 CAMERA_WIDTH = (CAMERA_WIDTH + 31) // 32 * 32
 CAMERA_HEIGHT = (CAMERA_HEIGHT + 15) // 16 * 16
-
 
 # Now that variables are imported from config.py Setup Logging since we have logFilePath
 if loggingToFile:
@@ -1297,15 +1296,14 @@ def speed_camera():
                                                               image_path, image_prefix)
                                     # Create image file name prefix
                                     if image_filename_speed:
-                                        speed_prefix = (str(int(round(ave_speed)))
+                                        image_prefix = (str(int(round(ave_speed)))
                                                         + "-" + image_prefix)
-                                    else:
-                                        speed_prefix = image_prefix
+
                                     # Record log_time for use later in csv and sqlite
                                     log_time = datetime.datetime.now()
                                     # create image file name path
                                     filename = get_image_name(speed_path,
-                                                              speed_prefix)
+                                                              image_prefix)
                                 # Add motion rectangle to image if required
                                 if image_show_motion_area:
                                     prev_image = speed_image_add_lines(prev_image, cvRed)
