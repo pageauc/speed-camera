@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.06"  # current version of this python script
+progVer = "11.07"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -755,7 +755,7 @@ def deleteOldFiles(maxFiles, dirPath, prefix):
 #------------------------------------------------------------------------------
 def subDirCheckMaxFiles(directory, filesMax):
     """ Count number of files in a folder path """
-    fileList = glob.glob(directory + '/*jpg')
+    fileList = glob.glob(directory + '/*')
     count = len(fileList)
     if count > filesMax:
         makeNewDir = True
