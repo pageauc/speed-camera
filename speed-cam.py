@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.05"  # current version of this python script
+progVer = "11.06"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -1290,20 +1290,23 @@ def speed_camera():
                                                                         prev_image)
                                 else:
                                     # Check if subdirectories configured
-                                    # and create as required
+                                    # and create new subdirectory if required
                                     speed_path = subDirChecks(imageSubDirMaxHours,
                                                               imageSubDirMaxFiles,
                                                               image_path, image_prefix)
-                                    # Create image file name prefix
-                                    if image_filename_speed:
-                                        image_prefix = (str(int(round(ave_speed)))
-                                                        + "-" + image_prefix)
 
                                     # Record log_time for use later in csv and sqlite
                                     log_time = datetime.datetime.now()
-                                    # create image file name path
-                                    filename = get_image_name(speed_path,
-                                                              image_prefix)
+                                    # Create image file name
+                                    if image_filename_speed:
+                                        # add ave_speed value to filename after prefix
+                                        speed_prefix = (image_prefix +
+                                                        str(int(round(ave_speed))) + '-')
+                                        filename = get_image_name(speed_path, speed_prefix)
+                                    else:
+                                        # create image file name path
+                                        filename = get_image_name(speed_path, image_prefix)
+
                                 # Add motion rectangle to image if required
                                 if image_show_motion_area:
                                     prev_image = speed_image_add_lines(prev_image, cvRed)
