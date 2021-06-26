@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="7.6"
+ver="11.08"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -563,10 +563,13 @@ function do_report_menu ()
                       --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
                       --ok-button Select \
                       --cancel-button Back \
-  "a SPEED" "Greater Than Specified Listing" \
-  "b HOUR" "Speed Greater Than 17 (Exclude bikes, people)" \
-  "c DELETE" "All Reports in media/reports" \
-  "d ABOUT" "This Report Menu" \
+  "a HTML" "Specify Report Listing Query Values" \
+  "b HTML" "5 day listing for Speed >=17 (Exclude bikes, people)" \
+  "c GRAPH" "Plot 5 DAY ave_speed by hour speed >= 17" \
+  "d GRAPH" "Plot 5 DAY count by hour" \
+  "e DELETE" "All Reports in media/reports" \
+  "f DELETE" "All Reports in media/graphs" \
+  "g ABOUT" "This Report Menu" \
   "q BACK" "To Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
@@ -584,7 +587,7 @@ function do_report_menu ()
             do_report_menu ;;
       b\ *) clear
             echo "Updating Speed Camera media/reports web files  Wait..."
-            echo "Report for ave_speed gt 17 within last 5 previous days"
+            echo "HTML Report for ave_speed gt 17 within last 5 days"
             ./sql_speed_gt.py 17 5
             echo ""
             echo "This report should eliminate bikes/pedestrians and other slower objects"
@@ -594,6 +597,16 @@ function do_report_menu ()
             do_anykey
             do_report_menu ;;
       c\ *) clear
+            echo "graphing 5 day hourly plot for aver speeds >= 17"
+            ./sql-make-graph-speed-ave.py -s 17 -d 5 -t hour           
+            do_anykey
+            do_report_menu ;;
+      d\ *) clear
+            echo "graphing 5 day hourly counts plot for speeds >= 17"
+            ./sql-make-graph-count-totals.py -s 17 -d 5 -t hour           
+            do_anykey
+            do_report_menu ;;
+      e\ *) clear
             echo "Dir Listing for media/reports"
             ls -l media/reports
             read -p "Delete All Files? (y/n) " choice
@@ -611,7 +624,25 @@ function do_report_menu ()
                 esac
             esac
             do_report_menu ;;
-      d\ *) do_report_about
+      f\ *) clear
+            echo "Dir Listing for media/graphs"
+            ls -l media/graphs
+            read -p "Delete All Files? (y/n) " choice
+            case "$choice" in
+                y|Y ) read -p "Are you Sure? (y/n) " choice
+                case "$choice" in
+                    y|Y ) echo ""
+                      rm media/graphs/*
+                      ls -l media/graphs
+                      echo "Files Deleted"
+                      do_anykey
+                      ;;
+                    * ) do_report_menu
+                      ;;
+                esac
+            esac
+            do_report_menu ;;            
+      g\ *) do_report_about
             do_report_menu ;;
       q\ *) clear
             do_main_menu ;;
