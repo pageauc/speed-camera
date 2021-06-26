@@ -583,14 +583,9 @@ function do_report_menu ()
             do_anykey
             do_report_menu ;;
       b\ *) clear
-            sqlite3 data/speed_cam.db \
-              -header -column \
-              "select idx, log_hour, ave_speed, speed_units,image_path,direction \
-              from speed \
-              where ave_speed > 17"  | more -d
-            echo ""
             echo "Updating Speed Camera media/reports web files  Wait..."
-            ./sql_speed_gt.py 17
+            echo "Report for ave_speed gt 17 within last 5 previous days"
+            ./sql_speed_gt.py 17 5
             echo ""
             echo "This report should eliminate bikes/pedestrians and other slower objects"
             echo "View this report in html format"
