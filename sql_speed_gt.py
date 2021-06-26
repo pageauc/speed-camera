@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 """
 written by Claude Pageau
-Speed Camera Utility to create html and graph jpg files from
-the sqlite3 database data/speed_cam.db
+Speed Camera Utility to create html report files from
+the sqlite3 database default data/speed_cam.db
 
 """
 
 from __future__ import print_function
-print("Loading ...  Note this gnuplot report is deprecated.")
+print("Loading ...")
 import os
 import time
 import logging
-import argparse
 import sys
 import sqlite3
 
@@ -19,70 +18,90 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
-try:
-    import Gnuplot
-except ImportError:
-    logging.error('Could Not import gnuplot')
-    logging.info('Install per following command')
-    logging.info('sudo apt install python-gnuplot')
-    sys.exit(1)
-
-ap = argparse.ArgumentParser()
-ap.add_argument("-s", "--speed", required=False, type=int, nargs=1,
-	help="Speed Over Value")
-if not len(sys.argv) > 1:
-    print("----------------- Speed Camera Report ----------------------")
-    print("This Report will Display all Records with Speeds Over")
-    print("Specified Value. SPEED_OVER Must be Integer. 0=all")
-    SPEED_OVER = raw_input("Enter SPEED_OVER: ")
-else:
-    SPEED_OVER = sys.argv[1]
-try:
-    test = int(SPEED_OVER)
-except ValueError:
-    logging.error("%s SPEED_OVER Must be Integer. 0=all", SPEED_OVER)
-    logging.info("If No Parameter is Supplied, You Will be Prompted for SPEED_OVER Value")
-    sys.exit(1)
+# Import Variable constants from config.py
+from config import DB_DIR
+from config import DB_NAME
+from config import DB_TABLE
 
 # Setup variables
-DB_PATH = 'data/speed_cam.db'
-DB_TABLE = 'speed'
+DB_PATH = os.path.join(DB_DIR, DB_NAME)
 REPORTS_DIR = 'media/reports'
 if not os.path.isdir(REPORTS_DIR):
     os.makedirs(REPORTS_DIR)
-REPORTS_FILENAME = "hour_count_gt"
-REPORTS_PATH = os.path.join(REPORTS_DIR, REPORTS_FILENAME + SPEED_OVER + "_list.html")
-COUNT_PATH = os.path.join(REPORTS_DIR, REPORTS_FILENAME + SPEED_OVER + "_totals.html")
-GRAPH_PATH = os.path.join(REPORTS_DIR, REPORTS_FILENAME + SPEED_OVER + "_graph.jpg")
-GRAPH_DATA_PATH = os.path.join(REPORTS_FILENAME + SPEED_OVER + ".txt")
 
-REPORT_QUERY = ('''
+help_msg=('''
+     ------------ Report Help ------------
+Creates a formatted html report listing from the sqlite3 database
+based on vales for speeds gt and days previous.
+
+If No Parameters provided, You will be prompted for Report values
+
+parameter usage
+
+-h Show this Help Page
+
+or specify parameters per
+param 1: speed_over integer
+param 2: days_prev integer
+
+eg
+
+%s 50 5
+
+Bye ...
+
+''' % sys.argv[0])
+
+if not len(sys.argv) > 1:
+    print("----------------- Speed Camera Report ----------------------")
+    print("This Report will Display all Database Records with")
+    print("specified Speeds Over and specified days previous.\n")
+    print("Value Must be Integer 0=all")
+    try:
+        speed_over = raw_input("Enter speed_over: ")
+    except NameError:
+        speed_over = input("Enter speed_over: ")
+    print("\nValue Must be Integer > 0")
+    try:
+        days_prev = raw_input("Enter days_prev: ")
+    except NameError:
+        days_prev = input("Enter days_prev: ")
+else:
+    # check if first parameter is -h
+    if (sys.argv[1]).lower() == '-h':
+        print(help_msg)
+        sys.exit(0)
+
+    speed_over = sys.argv[1]
+    days_prev = sys.argv[2]
+try:
+    test = int(speed_over)
+except ValueError:
+    logging.error("%s speed_over Must be Integer. 0=all", speed_over)
+    sys.exit(1)
+try:
+    test = int(days_prev)
+except ValueError:
+    logging.error("%s days_prev Must be Integer > 0", days_prev)
+    sys.exit(1)
+
+REPORT_FILENAME = ("speed_gt" + speed_over + "_prev_" + days_prev + "days.html")
+REPORT_PATH = os.path.join(REPORTS_DIR, REPORT_FILENAME)
+
+html_list_query = ('''
 select
-    substr(log_timestamp, 2, 10) log_date,
-    substr(log_timestamp, 13, 2) log_hour,
+    substr(log_timestamp, 2, 16) log_date,
     ave_speed,
     speed_units,
-    image_path,
-    direction
-from %s
-where ave_speed > %s
-order by
-    idx desc''' % (DB_TABLE, SPEED_OVER))
-
-GRAPH_QUERY = ('''
-select
-    substr(log_timestamp, 2, 10) log_date,
-    substr(log_timestamp, 13, 2) log_hour,
-    count(*)
+    direction,
+    image_path
 from %s
 where
-    ave_speed > %s
-group by
-    log_date,
-    log_hour
+    ave_speed >= %s and
+    substr(log_timestamp, 2, 11) >= DATE('now', '-%s days')  and
+    substr(log_timestamp, 2, 11) <= DATE('now', '+1 day')
 order by
-    idx asc;
-''' % (DB_TABLE, SPEED_OVER))
+    ave_speed DESC''' % (DB_TABLE, speed_over, days_prev))
 
 HTML_HEADER_1 = (''' <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
     <html>
@@ -106,18 +125,16 @@ HTML_HEADER_1 = (''' <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
     </style>
     </head>
     <body>''')
-HTML_HEADER_2 = ('''<center><h2>Speed Camera Report Listing for Speeds gt %s</h2>
-    <h4>Click Image Path to View Image. Use Browser Back Button to Return to This List</h4>'''% (SPEED_OVER))
-HTML_HEADER_2C = ('''<center><h2>Speed Camera Hourly Count Summary Report for Speeds gt %s</h2>
-   <img src="%s" alt="Hourly Bar Graph" </center>''' % (SPEED_OVER, os.path.basename(GRAPH_PATH)))
+HTML_HEADER_2 = ('''<center><h3>Speed Camera Report for Previous %s Days and Speeds >= %s  Sort by Speed desc</h3>
+                 <h4>Click Image Path to View Image. Use Browser Back Button to Return to This Report</h4>''' %
+                 (days_prev, speed_over))
 HTML_HEADER_3 = ('''
     <table id="t01">
     <tr>
-    <th>Date</th>
-    <th>Hour</th>
+    <th>timestamp</th>
     <th>Speed</th>
-    <th>Image Path</th>
     <th>Direction</th>
+    <th>Image Path</th>
     </tr>''')
 HTML_HEADER_3C = ('''
     <table id="t01">
@@ -127,70 +144,10 @@ HTML_HEADER_3C = ('''
     <th>Count/Hr Totals</th>
     </tr>''')
 # HTML_HEADER = HTML_HEADER_1 + HTML_HEADER_2 + HTML_HEADER_3
-HTML_FOOTER = "</table></body></html>"
-
-def make_graph_data():
-    logging.info("Working.  Please Wait ...")
-    graph_data = []
-    graph_html = []
-    start_time = time.time()
-    logging.info("Connect to Database %s", DB_PATH)
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
-    cursor = connection.cursor()
-    cursor.execute(GRAPH_QUERY)
-    f = open(GRAPH_DATA_PATH, "w")
-    while True:
-        row = cursor.fetchone()
-        if row is None:
-            break
-        log_date = (row["log_date"])
-        log_hour = (row["log_hour"])
-        count = (row[cursor.rowcount])
-        row_html = ('''<tr><td>%s</td><td>%s</td><td>%s</td></tr>''' %(log_date, log_hour, count))
-        graph_html.append(row_html)
-        row_data = ("%s %s %s \n" %(log_date, log_hour, count))
-        f.write(row_data)
-       # graph_data.append(row)
-    f.close()
-    cursor.close()
-    connection.close()
-    # Write count report html file with graph on top
-    f = open(COUNT_PATH, "w")
-    f.write(HTML_HEADER_1)
-    f.write(HTML_HEADER_2C)
-    f.write(HTML_HEADER_3C)
-    for item in graph_html:
-        f.write(item)
-    f.write(HTML_FOOTER)
-    f.close()
-    #del graph_html
-    logging.info("Saved html File to %s", COUNT_PATH)
-
-def make_graph_image():
-    make_graph_data()
-    g = Gnuplot.Gnuplot()
-    g('set terminal jpeg size 900,600')
-    g.reset()
-    graph_title = ('Speed Camera Count by Hour where speed gt %s' % SPEED_OVER)
-    g.title(graph_title)
-    jpg_file_path = ('set output "%s"' % GRAPH_PATH)
-    g(jpg_file_path)
-    g.xlabel('Date Hour')
-    g.ylabel('Count')
-    g("set autoscale")
-    g("set key off")
-    g("set grid")
-    g("set xtics rotate")
-    g("set xdata time")
-    g('set timefmt "%Y-%m-%d %H"')
-    g('set format x "%Y-%m-%d %H"')
-    databuff = Gnuplot.File(GRAPH_DATA_PATH, using='1:3', with_='boxes fill solid')
-    g.plot(databuff)
-    logging.info("Saved Graph File To %s", GRAPH_PATH)
+HTML_FOOTER = "</table><center>End of Report</center></body></html>"
 
 #------------------------------------------------------------------------------
-def make_html():
+def make_html_report_list():
     logging.info("Working.  Please Wait ...")
     html_table = []   # List to hold html table rows
     start_time = time.time()
@@ -198,13 +155,13 @@ def make_html():
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
-    cursor.execute(REPORT_QUERY)
+    cursor.execute(html_list_query)
+    logging.info("Start Report %s", REPORT_PATH)
     while True:
         row = cursor.fetchone()
         if row is None:
             break
         log_date = (row["log_date"])
-        log_hour = (row["log_hour"])
         ave_speed = (row["ave_speed"])
         speed_units = (row["speed_units"])
         image_path = (row["image_path"])
@@ -214,17 +171,17 @@ def make_html():
                         os.path.abspath(os.path.dirname(image_path)),
                         os.path.abspath(REPORTS_DIR)),
                         image_filename)
-        table_row = ('<tr><td>%s</td><td>%s</td><td>%s %s</td><td><a href="%s">%s</a></td><td>%s</td></tr>' %
+        table_row = ('<tr><td>%s</td><td>%s %s</td><td>%s</td><td><a href="%s">%s</a></td></tr>' %
                     (log_date,
-                     log_hour,
                      ave_speed,
                      speed_units,
+                     direction,
                      link_path,
-                     image_path,
-                     direction))
+                     image_path))
         html_table.append(table_row)
+
     connection.close()
-    f = open(REPORTS_PATH, "w")
+    f = open(REPORT_PATH, "w")
     f.write(HTML_HEADER_1)
     f.write(HTML_HEADER_2)
     f.write(HTML_HEADER_3)
@@ -233,14 +190,11 @@ def make_html():
     f.write(HTML_FOOTER)
     f.close()
     del html_table
-    logging.info("Saved html File to %s", REPORTS_PATH)
-
 
 if __name__ == '__main__':
     start_time = time.time()
-    make_html()
-    make_graph_image()
-    os.remove(GRAPH_DATA_PATH)
+    make_html_report_list()
     duration = time.time() - start_time
     logging.info("Processing Took %.2f s.", duration)
-    logging.info("View Reports from Speed Camera Web Page under media/reports")
+    logging.info("View Reports from Speed Camera Web Page")
+    logging.info("At %s", REPORT_PATH)
