@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 # makehtml.py written by Claude Pageau
-# Create html pages from csv log file entries
-# for viewing speed images and data on a web server
+# Create linked html pages from csv log file entries
+# for easier viewing speed camera images and data on a web server
 
-progVer = "6.70"
-
+from __future__ import print_function
+progVer = "11.08"
+print('Loading ...')
 import glob
 import os
 import csv
@@ -21,19 +22,29 @@ baseDir = os.path.dirname(progName)
 os.chdir(baseDir)
 
 # User Variable Settings for this script
-verbose = True
-image_ext = ".jpg"
-source_csv = "speed-cam.csv"
-web_html_dir = "media/html"  # Dir path to html files
-web_image_dir = "media/images/"   # Dir path of images
-# contour width to height ratio
-guess_person = .73
-guess_cart = 1.1
-# End of Variable Settings
+# --------------------------------------
 
-if not os.path.isdir(web_html_dir):
-    print("Creating html Folder %s" % web_html_dir)
-    os.makedirs(web_html_dir)
+VERBOSE = True  # produce addition log information
+HTML_MAX_FILES = 100  # Default= 100 Set mazimum html files to create 0=All
+DELETE_PREVIOUS_HTML = True
+SOURCE_CSV_PATH = "./speed-cam.csv"  # location of the speed camera csv file
+WEB_HTML_DIR = "media/html"  # Dir path to html folder to store html files
+
+# Guess contour width to height ratio.  Added this Just for fun
+PERSON_GUESS_RATIO = .73
+PERSON_BIKE_RATIO = 1.1
+
+# ------- End of User Variable Settings -------
+
+if not os.path.exists(SOURCE_CSV_PATH):
+    print('%s File Does Not Exist.  Please set')
+    print('config.py variable log_data_to_CSV = True')
+    print('Restart speed-cam.py and allow time to collect data')
+    sys.exit(1)
+
+if not os.path.isdir(WEB_HTML_DIR):
+    print("Creating html Folder %s" % WEB_HTML_DIR)
+    os.makedirs(WEB_HTML_DIR)
 
 #------------------------------------------------------------------------------
 def make_web_page(up_html, row_data, dn_html):
@@ -47,16 +58,16 @@ def make_web_page(up_html, row_data, dn_html):
     img_filename=os.path.basename(img_path)
     img_html_path = os.path.join(os.path.relpath(
                     os.path.abspath(os.path.dirname(img_path)),
-                    os.path.abspath(web_html_dir)),
+                    os.path.abspath(WEB_HTML_DIR)),
                     img_filename)
     X=row_data[4]
     Y=row_data[5]
     W=row_data[6]
     H=row_data[7]
     aspect_ratio = float(W)/int(H)
-    if aspect_ratio < guess_person:
+    if aspect_ratio < PERSON_GUESS_RATIO:
         Guess = "Person Walking"
-    elif aspect_ratio < guess_cart:
+    elif aspect_ratio < PERSON_BIKE_RATIO:
         Guess = "Person on Bike or Golf Cart"
     else:
         Guess = "Vehicle"
@@ -108,7 +119,7 @@ def make_web_page(up_html, row_data, dn_html):
                   img_filename, dn_html, up_html))
     # Write the html file
     base_filename = os.path.splitext(os.path.basename(img_path))[0]
-    web_html_path = os.path.join(web_html_dir, base_filename + '.html')
+    web_html_path = os.path.join(WEB_HTML_DIR, base_filename + '.html')
 
     if os.path.isfile(img_path):
         f = open(web_html_path, "w")
@@ -116,11 +127,11 @@ def make_web_page(up_html, row_data, dn_html):
         f.close()
         # Sync file stat dates of html with jpg file
         shutil.copystat(img_path, web_html_path)
-        if verbose:
+        if VERBOSE:
             print("Saved %s<- %s ->%s" % (dn_html, web_html_path , up_html))
     else:
         if os.path.isfile(web_html_path):
-            if verbose:
+            if VERBOSE:
                 print("Remove File %s" % web_html_path)
             os.remove(web_html_path)
 
@@ -131,12 +142,23 @@ def check_row(row_data):
     img_path = row_data[3]
     if os.path.isfile(img_path):
         base_filename = os.path.splitext(os.path.basename(img_path))[0]
-        web_html_path = base_filename+'.html'
+        web_html_path = base_filename + '.html'
         found = True
     return found, web_html_path
 
 #------------------------------------------------------------------------------
+def csv_line_count(filename):
+    with open(filename) as f:
+        return sum(1 for line in f)
+
+#------------------------------------------------------------------------------
+def file_last_mod_datetime(filename):
+    t = os.path.getmtime(filename)
+    return datetime.datetime.fromtimestamp(t)
+
+#------------------------------------------------------------------------------
 def read_from_csv(filename):
+    csv_last_mod_time = file_last_mod_datetime(filename)
     this_is_first_row = True
     this_is_third_row = True
     cur_link = ""
@@ -147,6 +169,20 @@ def read_from_csv(filename):
     cur_row  = []
     prev_row = []
 
+    if DELETE_PREVIOUS_HTML:
+        print('Remove html files in %s since DELETE_PREVIOUS_HTML = %s' %
+              (WEB_HTML_DIR, DELETE_PREVIOUS_HTML))
+        html_dir_list = glob.glob(WEB_HTML_DIR + "/*html")
+        for file in html_dir_list:
+            os.remove(file)
+
+    csv_rows = csv_line_count(filename)
+    print('csv file %s contains %i rows' % (filename, csv_rows))
+    skip_rows = 0
+    if csv_rows > HTML_MAX_FILES and not HTML_MAX_FILES == 0:
+        skip_rows = csv_rows - HTML_MAX_FILES
+        print('Skipping %s rows in %s since HTML_MAX_FILES = %i' %
+              (skip_rows, filename, HTML_MAX_FILES))
     f = open(filename, 'rt')
     cnt=0
     workStart = time.time()
@@ -155,6 +191,8 @@ def read_from_csv(filename):
         reader = csv.reader(f)
         for row in reader:
             workCount += 1
+            if workCount <= skip_rows:
+                continue
             if not next_row:
                 jpg_exists, next_link = check_row(row)
                 if jpg_exists:
@@ -193,10 +231,17 @@ def read_from_csv(filename):
     finally:
         f.close()
         workEnd = time.time()
-        outDir = os.path.abspath(web_html_dir)
+        outDir = os.path.abspath(WEB_HTML_DIR)
         print("-----------------")
         print("%s ver %s - written by Claude Pageau" % (progName, progVer))
-        print("Processed %i web pages in %i seconds into Folder %s" %
-              (workCount, workEnd - workStart, outDir))
+        print('Process speed camera csv file and create linked html files')
+        print('for the most recent CSV entries if HTML_MAX_FILES > 0')
+        print("%s last modified on %s\n" % (filename, csv_last_mod_time))
+        print('HTML_MAX_FILES= %i  DELETE_PREVIOUS_HTML= %s' %
+              (HTML_MAX_FILES, DELETE_PREVIOUS_HTML ))
+        print("Processed %i web pages in %.2f seconds into Folder %s" %
+              (workCount-skip_rows, workEnd - workStart, outDir))
         print("Done ...")
-read_from_csv(source_csv)
+
+# Start program
+read_from_csv(SOURCE_CSV_PATH)
