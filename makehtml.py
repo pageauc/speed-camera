@@ -38,9 +38,10 @@ PERSON_BIKE_RATIO = 1.1
 # ------- End of User Variable Settings -------
 
 if not os.path.exists(SOURCE_CSV_PATH):
-    print('%s File Does Not Exist.  Please set')
+    print('%s File Does Not Exist.  Please set' % SOURCE_CSV_PATH)
     print('config.py variable log_data_to_CSV = True')
-    print('Restart speed-cam.py and allow time to collect data')
+    print('Restart speed-cam.py and allow time to collect data,')
+    print('then rerun makehtml.py')
     sys.exit(1)
 
 if not os.path.isdir(WEB_HTML_DIR):
