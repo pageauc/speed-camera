@@ -105,6 +105,7 @@ def make_web_page(up_html, row_data, dn_html):
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <a href="%s" style="text-decoration:none";>DOWN</a>
               </h1>
+              Click image to enlarge in new browser tab
             </center>
           </div>
           </span>
