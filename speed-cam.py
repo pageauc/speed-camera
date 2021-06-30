@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.07"  # current version of this python script
+progVer = "11.08"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -247,6 +247,20 @@ except ImportError:
     search_dest_path = 'media/search'
     logging.warn("Problem importing search_dest_path variable")
     logging.info("Setting default value search_dest_path = %s", search_dest_path)
+
+# Check for user_motion_code.py file to import and error out if not found.
+userMotionFilePath = os.path.join(baseDir, "user_motion_code.py")
+if not os.path.isfile(userMotionFilePath):
+    print('WARN  : %s File Not Found. Cannot Import user_motion_code functions.' %
+          userMotionFilePath)
+else:
+    # Read Configuration variables from config.py file
+    try:
+        motionCode = True
+        import user_motion_code
+    except ImportError:
+        print('WARN  : Failed Import of File user_motion_code.py Investigate Problem')
+        motionCode = False
 
 # Import Settings from specified plugin if pluginEnable=True
 if pluginEnable:     # Check and verify plugin and load variable overlay
@@ -1366,8 +1380,17 @@ def speed_camera():
                                                                       int(cv2.IMWRITE_JPEG_OPTIMIZE), image_jpeg_optimize])
                                 else:
                                     cv2.imwrite(filename, big_image)
-                                # if required check free disk space
-                                # and delete older files (jpg)
+
+                                if motionCode:
+                                    # ===========================================
+                                    # Put your user code in userMotionCode() function
+                                    # In the File user_motion_code.py
+                                    # ===========================================
+                                    try:
+                                        user_motion_code.userMotionCode(filename)
+                                    except ValueError:
+                                        logging.error("Problem running userMotionCode function from File %s",
+                                                      userMotionFilePath)
 
                                 log_idx = ("%04d%02d%02d-%02d%02d%02d%d" %
                                            (log_time.year,
