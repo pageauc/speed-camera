@@ -2,7 +2,7 @@
 ### RPI, Unix and Windows Speed Camera Using python, openCV, RPI camera module, USB Cam or IP Cam
 ## For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features), [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#reference-links).
 
-## RPI Quick Install or Upgrade   
+## RPI Quick curl Install or Upgrade   
 ***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will
 **NOT** be performed as part of   
 **speed-install.sh** so it is recommended you run these prior to install
@@ -16,13 +16,19 @@ to ensure your system is up-to-date.
 This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed.
 See my Github [menu driven compile opencv3 from source](https://github.com/pageauc/opencv3-setup) project
 
-## Docker Quick Start
-1. If you haven't already, [install Docker](https://www.docker.com/get-started)
-1. Clone the repository
-1. Run `docker-compose up` from the directory you cloned the repo into.
-1. The Docker container will likely exit because it is using a default config.
-1. Edit the configuration file @ `config/config.py`
-1. Run `docker-compose up`
+***IMPORTANT*** speed-cam.py ver 8.x or greater Requires Updated config.py and plugins.
+
+    cd ~/speed-camera
+    cp config.py config.py.bak
+    cp config.py.new config.py
+    
+To replace plugins rename (or delete) plugins folder per below
+
+    cd ~/speed-camera
+    mv plugins pluginsold   # renames plugins folder
+    rm -r plugins           # deletes plugins folder
+
+Then run ***menubox.sh*** UPGRADE menu pick.
 
 ## Program Description   
 This is a raspberry pi, Windows, Unix Distro computer openCV object speed camera demo program.
@@ -43,7 +49,7 @@ CSV (Comma Separated Values) format. This can be imported into a spreadsheet, da
 Release 8.9 adds a **sqlite3** database to store speed data. Default is ***data/speed_cam.db*** with data in the ***speed*** table.
 Database setting can be managed from config.py.  Database is automatically created from config.py settings.
 
-## For admin, reports, graphs, utilities scripts, Etc
+## Admin, Reports, Graphs and Utilities scripts
   
 * [***menubox.sh***](https://github.com/pageauc/speed-camera/wiki/Admin-and-Settings#manage-settings-using-menuboxsh)
 script is a whiptail menu system to allow easier management of program settings and operation.    
@@ -106,19 +112,15 @@ or command prompt terminal window. Note bash .sh shell scripts will not work wit
 special support for bash is installed for windows Eg http://win-bash.sourceforge.net/  http://www.cygwin.com/
 Note I have Not tested these.   
 
-***IMPORTANT*** speed-cam.py ver 8.x or greater Requires Updated config.py and plugins.
+## Docker Install Quick Start
+speed camera supports a docker installation per the following
 
-    cd ~/speed-camera
-    cp config.py config.py.bak
-    cp config.py.new config.py
-    
-To replace plugins rename (or delete) plugins folder per below
-
-    cd ~/speed-camera
-    mv plugins pluginsold   # renames plugins folder
-    rm -r plugins           # deletes plugins folder
-
-Then run ***menubox.sh*** UPGRADE menu pick.
+1. If you haven't already, [install Docker](https://www.docker.com/get-started)
+1. Clone the repository
+1. Run `docker-compose up` from the directory you cloned the repo into.
+1. The Docker container will likely exit because it is using a default config.
+1. Edit the configuration file @ `config/config.py`
+1. Run `docker-compose up`
  
 ## Manual Install or Upgrade   
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
