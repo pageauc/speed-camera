@@ -47,7 +47,8 @@ For variable settings details see [config.py file](https://github.com/pageauc/sp
 If ***log_data_to_CSV*** = ***True*** then a ***speed-cam.csv*** file will be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc program for further processing.
 Release 8.9 adds a **sqlite3** database to store speed data. Default is ***data/speed_cam.db*** with data in the ***speed*** table.
-Database setting can be managed from config.py.  Database is automatically created from config.py settings.
+Database setting can be managed from config.py.  Database is automatically created from config.py settings. For more
+details see [How to Manage Sqlite3 Database](https://github.com/pageauc/speed-camera/wiki/How-to-Manage-Sqlite3-Database)
 
 ## Admin, Reports, Graphs and Utilities scripts
   
