@@ -53,19 +53,20 @@ script is a whiptail menu system to allow easier management of program settings 
 Allows viewing images and/or data from a web browser (see config.py for webserver settings)
 To implement webserver3.py copy webserver3.py to webserver.py
 * [***rclone***](https://github.com/pageauc/speed-camera/wiki/Manage-rclone-Remote-Storage-File-Transfer)
-for optional remote file sync to a remote storage service like google drive, DropBox and many others. 
+for optional remote file sync to a remote storage service like google drive, DropBox and many others.  
 * [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)
-for administration of settings from a remote storage service. Plus application monitoring.
-* ***sql-make-graph-count-totals.py*** Query sqlite database and Generate one or more graph images and save to media/graphs.
+for administration of settings from a remote storage service. Plus application monitoring.  
+* ***sql-make-graph-count-totals.py*** Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs.
 Graphs display counts by hour, day or month for specfied previous days and speed over.    
-* ***sql-make-graph-speed-ave.py*** Query sqlite database and Generate one or more graph images and save to media/graphs.
+* ***sql-make-graph-speed-ave.py*** Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs.
 Graphs display Average Speed by hour, day or month for specfied previous days and speed over.    
-* [***alpr-speed.py***](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)
-Process speed camera images with [OPENALPR](https://github.com/openalpr/openalpr) License plate reader
-* [***speed-search.py***](https://github.com/pageauc/rpi-speed-camera/wiki/How-to-Run-speed-search.py)
-allows searching for similar target object images using opencv template matching. 
 * [***makehtml.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#view-combined-imagedata-html-pages-on-a-web-browser)
 creates html files that combine csv and image data for easier viewing from a web browser.
+* [***alpr-speed.py***](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)
+Process speed camera images with [OPENALPR](https://github.com/openalpr/openalpr) License plate reader   
+* [***speed-search.py***](https://github.com/pageauc/rpi-speed-camera/wiki/How-to-Run-speed-search.py)
+allows searching for similar target object images using opencv template matching.  
+
 (Does not work with ***secpicam480.py*** or ***secwebcam480.py*** plugins enabled.
 
 ## Reference Links
@@ -150,12 +151,17 @@ default is 5 but a quad core RPI3 and latest opencv version eg 3.4.2 can be 10-1
 Admin speed-cam Easier using menubox.sh (Once calibrated and/or testing complete)  
 ![menubox main menu](https://github.com/pageauc/speed-camera/blob/master/menubox.png)     
 
-View speed-cam data and trends from web browser per sample screen shots
+View speed-cam data and trends from web browser per sample screen shots. These can be generated 
+from Menubox.sh menu pick or by running scripts from console or via crontab schedule.
 
-![Speed Camera Web Recent View](https://github.com/pageauc/speed-camera/blob/master/speed_web_recent.png)   
-![Speed Camera Web html speed list Report](https://github.com/pageauc/speed-camera/blob/master/speed_web_sqlite.png)   
-![Speed Camera Web Recent View](https://github.com/pageauc/speed-camera/blob/master/speed_web_gnuplot.png)   
+![Speed Camera REPORTS Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_reports.png)   
+![Speed Camera GRAPHS Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_graphs.png)  
+![Speed Camera HTML Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_html.png)    
 
+You can view recent or historical images directly from the speed web browser page.  These are dynamically created
+and show up-to-date images.  Press the web page refesh button to update display 
+![Speed Camera RECENT Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_recent.png)   
+![Speed Camera IMAGES Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_images.png)   
 
 ## Credits  
 Some of this code is based on a YouTube tutorial by
