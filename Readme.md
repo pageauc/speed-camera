@@ -24,28 +24,26 @@ See my Github [menu driven compile opencv3 from source](https://github.com/pagea
 1. Edit the configuration file @ `config/config.py`
 1. Run `docker-compose up`
 
-## OPENALPR Demo
-
-For installation, Settings and Run details see [ALPR Wiki Documentaion](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)
-
 ## Program Description   
 This is a raspberry pi, Windows, Unix Distro computer openCV object speed camera demo program.
 It is written in python and uses openCV to detect and track the x,y coordinates of the 
 largest moving object in the camera view above a minimum pixel area.
+
 User variables are stored in the [***config.py***](https://github.com/pageauc/speed-camera/blob/master/config.py) file.
 Motion detection is restricted between ***y_upper***, ***y_lower***, ***x_left***, ***x_right*** variables  (road or area of interest).
-If a track is longer than ***track_len_trig*** variable then average speed will be 
-calculated based on ***cal_obj_px*** and ***cal_obj_mm*** variables and a speed photo will be
-taken and saved in ***media/images*** dated subfolders per variable ***imageSubDirMaxFiles*** = ***1000*** 
-(see config.py). 
+Auto calculated but can be overridden in config.py by uncommenting desired variable settings.
+Motion Tracking is controlled by the ***track_counter*** variable in config.py.  This sets the number of track events and 
+the track length in pixels.  This may need to be tuned for camera view, cpu speed, etc. 
+Speed is calculated based on ***cal_obj_px*** and ***cal_obj_mm*** variables for L2R and R2L motion direction. A video stream frame image will be
+captured and saved in ***media/images*** dated subfolders (optional) per variable ***imageSubDirMaxFiles*** = ***2000*** 
+For variable settings details see [config.py file](https://github.com/pageauc/speed-camera/blob/master/config.py). 
 
 If ***log_data_to_CSV*** = ***True*** then a ***speed-cam.csv*** file will be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc program for further processing.
-Release 8.9 adds a **sqlite3** database to store speed data. Default is ***data/speed_cam.db*** with data in the ***speed*** table .
-there is a simple report ***sql_speed_gt.sh*** that can query for records with greater than a specified speed.
-I plan on doing more but this should be a good start. Take a look at the code for details.
+Release 8.9 adds a **sqlite3** database to store speed data. Default is ***data/speed_cam.db*** with data in the ***speed*** table.
+Database setting can be managed from config.py.  Database is automatically created from config.py settings.
 
-Also included are 
+## For admin, reports, graphs, utilities scripts, Etc
   
 * [***menubox.sh***](https://github.com/pageauc/speed-camera/wiki/Admin-and-Settings#manage-settings-using-menuboxsh)
 script is a whiptail menu system to allow easier management of program settings and operation.    
@@ -57,19 +55,21 @@ Manage settings and setup for optional remote file sync to a remote storage serv
 * [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)
 for administration of settings from a remote storage service. Plus application monitoring.  
 * ***sql-make-graph-count-totals.py*** Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs folder.
-Graphs display counts by hour, day or month for specfied previous days and speed over.    
+Graphs display counts by hour, day or month for specfied previous days and speed over. Multiple reports can be managed from
+the config.py ***GRAPH_RUN_LIST*** variable under matplotlib image settings section.       
 * ***sql-make-graph-speed-ave.py*** Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs folder.
-Graphs display Average Speed by hour, day or month for specfied previous days and speed over.    
-* ***sql-speed_gt.py*** Query sqlite database and Generate html formatted report with links to images and save to media/reports folder.   
+Graphs display Average Speed by hour, day or month for specfied previous days and speed over. Multiple reports can be managed from
+the config.py ***GRAPH_RUN_LIST*** variable under matplotlib image settings section.    
+* ***sql-speed_gt.py*** Query sqlite database and Generate html formatted report with links to images and save to media/reports folder.
+Can accept parameters or will prompt user if run from console with no parameters
 * [***makehtml.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#view-combined-imagedata-html-pages-on-a-web-browser)
 Creates html files that combine csv and image data for easier viewing from a web browser and saved to media/html folder.    
-* [***alpr-speed.py***](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)
-output is saved to media/alpr folder.    
-Process speed camera images with [OPENALPR](https://github.com/openalpr/openalpr) License plate reader   
 * [***speed-search.py***](https://github.com/pageauc/rpi-speed-camera/wiki/How-to-Run-speed-search.py)
 allows searching for similar target object images using opencv template matching.  Results save to media/search folder.    
-
-(Does not work with ***secpicam480.py*** or ***secwebcam480.py*** plugins enabled.
+* [***alpr-speed.py***](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)
+This is a demo that processes existing speed camera images with a front or back view of vehicle using [OPENALPR](https://github.com/openalpr/openalpr)
+License plate reader. Output is saved to media/alpr folder. For installation, Settings and Run details see
+[ALPR Wiki Documentaion](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)       
 
 ## Reference Links
 * YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
