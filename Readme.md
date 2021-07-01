@@ -48,24 +48,26 @@ I plan on doing more but this should be a good start. Take a look at the code fo
 Also included are 
   
 * [***menubox.sh***](https://github.com/pageauc/speed-camera/wiki/Admin-and-Settings#manage-settings-using-menuboxsh)
-script is a whiptail menu system to allow easier management of program settings and operation. 
+script is a whiptail menu system to allow easier management of program settings and operation.    
 * [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
 Allows viewing images and/or data from a web browser (see config.py for webserver settings)
-To implement webserver3.py copy webserver3.py to webserver.py
+To implement webserver3.py copy webserver3.py to webserver.py  Note and update will undo this change.   
 * [***rclone***](https://github.com/pageauc/speed-camera/wiki/Manage-rclone-Remote-Storage-File-Transfer)
-for optional remote file sync to a remote storage service like google drive, DropBox and many others.  
+Manage settings and setup for optional remote file sync to a remote storage service like google drive, DropBox and many others.   
 * [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)
 for administration of settings from a remote storage service. Plus application monitoring.  
-* ***sql-make-graph-count-totals.py*** Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs.
+* ***sql-make-graph-count-totals.py*** Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs folder.
 Graphs display counts by hour, day or month for specfied previous days and speed over.    
-* ***sql-make-graph-speed-ave.py*** Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs.
+* ***sql-make-graph-speed-ave.py*** Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs folder.
 Graphs display Average Speed by hour, day or month for specfied previous days and speed over.    
+* ***sql-speed_gt.py*** Query sqlite database and Generate html formatted report with links to images and save to media/reports folder.   
 * [***makehtml.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#view-combined-imagedata-html-pages-on-a-web-browser)
-creates html files that combine csv and image data for easier viewing from a web browser.
+Creates html files that combine csv and image data for easier viewing from a web browser and saved to media/html folder.    
 * [***alpr-speed.py***](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)
+output is saved to media/alpr folder.    
 Process speed camera images with [OPENALPR](https://github.com/openalpr/openalpr) License plate reader   
 * [***speed-search.py***](https://github.com/pageauc/rpi-speed-camera/wiki/How-to-Run-speed-search.py)
-allows searching for similar target object images using opencv template matching.  
+allows searching for similar target object images using opencv template matching.  Results save to media/search folder.    
 
 (Does not work with ***secpicam480.py*** or ***secwebcam480.py*** plugins enabled.
 
