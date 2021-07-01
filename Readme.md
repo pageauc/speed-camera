@@ -140,12 +140,13 @@ See [***How to Run***](https://github.com/pageauc/speed-camera/wiki/How-to-Run) 
 
 ***IMPORTANT*** Speed Camera will start in ***calibrate*** = ***True*** Mode.    
 Review settings in ***config.py*** file and edit variables with nano as required.
-You will need to perform a calibration to set the correct value for config.py ***cal_obj_px*** and ***cal_obj_mm*** 
-variables based on the distance from camera to objects being measured for speed.
+You will need to perform a calibration to set the correct value for config.py ***cal_obj_px*** and ***cal_obj_mm*** for
+L2R and R2L directions. The variables are based on the distance from camera to objects being measured for speed.
 See [***Calibration Procedure***](https://github.com/pageauc/speed-camera/wiki/Calibrate-Camera-for-Distance) for more details.     
 
-The config.py motion tracking variable called track_counter = can be adjusted for your system and opencv version.
-default is 5 but a quad core RPI3 and latest opencv version eg 3.4.2 can be 10-15 or possibly greater. 
+The config.py motion tracking variable called ***track_counter*** = can be adjusted for your system and opencv version.
+Default is 5 but a quad core RPI3 and latest opencv version eg 3.4.2 can be 10-15 or possibly greater.  This will
+require monitoring the verbose log messages in order to fine tune.
     
 ## Run menubox.sh 
 
