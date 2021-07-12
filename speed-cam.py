@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.08"  # current version of this python script
+progVer = "11.09"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -1259,18 +1259,23 @@ def speed_camera():
                     # range of last event
                     if (abs(end_pos_x - prev_pos_x) > x_diff_min and
                             abs(end_pos_x - prev_pos_x) <= x_diff_max):
-                        track_count += 1  # increment
+
                         cur_track_dist = abs(end_pos_x - prev_pos_x)
-                        if travel_direction == 'L2R':
-                            cur_ave_speed = float((abs(cur_track_dist /
-                                                       float(abs(cur_track_time -
-                                                                 prev_start_time)))) *
-                                                  speed_conv_L2R)
-                        else:
-                            cur_ave_speed = float((abs(cur_track_dist /
-                                                       float(abs(cur_track_time -
-                                                                 prev_start_time)))) *
-                                                  speed_conv_R2L)
+                        try:
+                            if travel_direction == 'L2R':
+                                cur_ave_speed = float((abs(cur_track_dist /
+                                                           float(abs(cur_track_time -
+                                                                     prev_start_time)))) *
+                                                      speed_conv_L2R)
+                            else:
+                                cur_ave_speed = float((abs(cur_track_dist /
+                                                           float(abs(cur_track_time -
+                                                                     prev_start_time)))) *
+                                                      speed_conv_R2L)
+                        except ZeroDivisionError:  # This sometimes happens on windows due to clock accuracy issue
+                            logging.warn("Division by Zero Error Aborting this track")
+                            continue
+                        track_count += 1  # increment track counter
                         speed_list.append(cur_ave_speed)
                         ave_speed = np.mean(speed_list)
                         prev_start_time = cur_track_time
