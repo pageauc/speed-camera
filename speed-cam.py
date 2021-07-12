@@ -1272,8 +1272,8 @@ def speed_camera():
                                                            float(abs(cur_track_time -
                                                                      prev_start_time)))) *
                                                       speed_conv_R2L)
-                        except ZeroDivisionError:  # This sometimes happens on windows due to clock accuracy issue
-                            logging.warn("Division by Zero Error Aborting this track")
+                        except ZeroDivisionError:  # This sometimes happens on windows due to clock precision issue
+                            logging.warn("Division by Zero Error. Aborting this track event.")
                             continue
                         track_count += 1  # increment track counter
                         speed_list.append(cur_ave_speed)
