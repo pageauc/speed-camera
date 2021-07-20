@@ -106,7 +106,7 @@ image_format = ".jpg"         # Default = ".jpg"  image Formats .jpg .jpeg .png 
 image_jpeg_quality = 98       # Set the quality of the jpeg. Default = 95 https://docs.opencv.org/3.4/d8/d6a/group__imgcodecs__flags.html#ga292d81be8d76901bff7988d18d2b42ac
 image_jpeg_optimize = True    # Optimize the image. Default = False https://docs.opencv.org/3.4/d8/d6a/group__imgcodecs__flags.html#ga292d81be8d76901bff7988d18d2b42ac
 image_show_motion_area = True # True= Display motion detection rectangle area on saved images
-image_filename_speed = False  # True= Prefix filename with speed value
+image_filename_speed = True   # True= Include speed value in filename
 image_text_on = True          # True= Show Text on speed images   False= No Text on images
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
 image_font_size = 12          # Default= 12 Font text height in px for text on images
