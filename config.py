@@ -64,17 +64,16 @@ event_timeout = 0.3    # Default= 0.3 seconds to wait for next motion event befo
 max_speed_over = 0     # Exclude track if Speed less than or equal to value specified 0=All
                        # Can be useful to exclude pedestrians and/or bikes, Etc or track only fast objects
 
-# Note: To see motion tracking crop area on images, Set variable image_show_motion_area = True
-
-# Allow user to customize the motion crop area (width) x values
-# If variable not found (commented) then values will be set automatically based on image size.
-x_left = 90          # uncomment and change values to override auto calculate
-x_right = 240         # uncomment and change values to override auto calculate
-
-# Allow user to customize the motion crop area (height) y values
-# If variables not found (commented) then values will be set automatically based on image size.
-y_upper = 100          # uncomment and change values to override auto calculate
-y_lower = 150          # uncomment and change values to override auto calculate
+# Motion Tracking Window Crop Area Settings
+# -----------------------------------------
+# Note: Values based on 320x240 image stream size.
+# If variable is commented, value will be set automatically based on image size.
+# To see motion tracking crop area on images, Set variable image_show_motion_area = True
+# Set align_cam_on = True to help with adjusting settings.
+x_left = 85           # Default=85 comment variable for auto calculate
+x_right = 235         # Defaykt=235 comment variable for auto calculate
+y_upper = 100         # Default=100 comment variable for auto calculate
+y_lower = 150         # Defaykt=150 comment variable for auto calculate
 
 # Camera Settings
 # ---------------
