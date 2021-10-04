@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 11.03 speed-cam.py Variable Configuration Settings
+#         Ver 11.10 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -12,6 +12,8 @@
 # Calibration Settings
 # --------------------
 calibrate = True         # Create a calibration image file with calibration hash markers 10 px per mark
+align_cam_on = False     # Default=False  True Saves alignment image to help with camera pointing
+align_delay_sec = 5      # Default=5 seconds delay between each alignment image
 
 cal_obj_px_L2R = 80      # L2R Moving Objects, Length of a calibration object in pixels
 cal_obj_mm_L2R = 4700.0  # L2R Moving Objects, Length of the calibration object in millimetres
@@ -65,13 +67,13 @@ max_speed_over = 0     # Exclude track if Speed less than or equal to value spec
 # Note: To see motion tracking crop area on images, Set variable image_show_motion_area = True
 
 # Allow user to customize the motion crop area (width) x values
-# If variable not found then values will be set automatically based on image size.
-# x_left = 50          # uncomment and change values to override auto calculate
-# x_right = 300        # uncomment and change values to override auto calculate
+# If variable not found (commented) then values will be set automatically based on image size.
+x_left = 90          # uncomment and change values to override auto calculate
+x_right = 240         # uncomment and change values to override auto calculate
 
 # Allow user to customize the motion crop area (height) y values
-# If variables not found then values will be set automatically base on image size.
-# y_upper = 60         # uncomment and change values to override auto calculate
+# If variables not found (commented) then values will be set automatically based on image size.
+y_upper = 100          # uncomment and change values to override auto calculate
 y_lower = 150          # uncomment and change values to override auto calculate
 
 # Camera Settings

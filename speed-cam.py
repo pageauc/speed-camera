@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.09"  # current version of this python script
+progVer = "11.10"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -82,6 +82,8 @@ Note: plugins can override default and config.py values if plugins are
 """
 default_settings = {
     'calibrate':True,
+    'align_cam_on': False,
+    'align_delay_sec':5,
     'cal_obj_px_L2R':90,
     'cal_obj_mm_L2R':4700.0,
     'cal_obj_px_R2L':95,
@@ -245,7 +247,7 @@ try:
     from search_config import search_dest_path
 except ImportError:
     search_dest_path = 'media/search'
-    logging.warn("Problem importing search_dest_path variable")
+    logging.warning("Problem importing search_dest_path variable")
     logging.info("Setting default value search_dest_path = %s", search_dest_path)
 
 # Check for user_motion_code.py file to import and error out if not found.
@@ -275,7 +277,7 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
         logging.info("Rerun github curl install script to install plugins")
         logging.info("https://github.com/pageauc/pi-timolo/wiki/")
         logging.info("How-to-Install-or-Upgrade#quick-install")
-        logging.warn("%s %s Exiting Due to Error", progName, progVer)
+        logging.warning("%s %s Exiting Due to Error", progName, progVer)
         sys.exit(1)
     elif not os.path.exists(pluginPath):
         logging.error("File Not Found pluginName %s", pluginPath)
@@ -293,7 +295,7 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
         logging.info("or Rerun github curl install command.  See github wiki")
         logging.info("https://github.com/pageauc/speed-camera/wiki/")
         logging.info("How-to-Install-or-Upgrade#quick-install")
-        logging.warn("%s %s Exiting Due to Error", progName, progVer)
+        logging.warning("%s %s Exiting Due to Error", progName, progVer)
         sys.exit(1)
     else:
         pluginCurrent = os.path.join(pluginDir, "current.py")
@@ -304,7 +306,7 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
             logging.error('Copy Failed from %s to %s - %s',
                           pluginPath, pluginCurrent, err)
             logging.info("Check permissions, disk space, Etc.")
-            logging.warn("%s %s Exiting Due to Error", progName, progVer)
+            logging.warning("%s %s Exiting Due to Error", progName, progVer)
             sys.exit(1)
         logging.info("Import Plugin %s", pluginPath)
         # add plugin directory to program PATH
@@ -312,7 +314,7 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
         try:
             from plugins.current import *
         except ImportError:
-            logging.warn("Problem importing variables from %s", pluginDir)
+            logging.warning("Problem importing variables from %s", pluginDir)
         try:
             if os.path.exists(pluginCurrent):
                 os.remove(pluginCurrent)
@@ -320,7 +322,7 @@ if pluginEnable:     # Check and verify plugin and load variable overlay
             if os.path.exists(pluginCurrentpyc):
                 os.remove(pluginCurrentpyc)
         except OSError as err:
-            logging.warn("Failed To Remove File %s - %s",
+            logging.warning("Failed To Remove File %s - %s",
                          pluginCurrentpyc, err)
 
 # import the necessary packages
@@ -397,6 +399,9 @@ else:
     speed_units = "kph"
     speed_conv_L2R = px_to_kph_L2R
     speed_conv_R2L = px_to_kph_R2L
+
+# path to alignment camera image
+align_filename = os.path.join(imageRecentDir, "align_cam.jpg")
 
 #------------------------------------------------------------------------------
 class PiVideoStream:
@@ -1118,7 +1123,13 @@ def speed_notify():
         print("Logging Messages Disabled per verbose=%s" % verbose)
 
     if calibrate:
-        logging.warn("IMPORTANT: Camera Is In Calibration Mode ....")
+        logging.warning("IMPORTANT: Camera Is In Calibration Mode ....")
+    if align_cam_on:
+        logging.warning("IMPORTANT: Camera is in Alignment Mode ....")
+    else:
+        if os.path.isfile(align_filename):
+            os.remove(align_filename) 
+            logging.info("Removed camera alignment image at %s", align_filename)            
 
     logging.info("Begin Motion Tracking .....")
 
@@ -1168,10 +1179,10 @@ def speed_camera():
     speed_notify()
     # Warn user of performance hit if webcam image flipped
     if (WEBCAM and WEBCAM_FLIPPED):
-        logging.warn("Recommend you do NOT Flip Webcam stream")
-        logging.warn("Otherwise SLOW streaming Will Result...")
-        logging.warn("If necessary physically flip camera and")
-        logging.warn("Set config.py WEBCAM_HFLIP and WEBCAM_VFLIP to False")
+        logging.warning("Recommend you do NOT Flip Webcam stream")
+        logging.warning("Otherwise SLOW streaming Will Result...")
+        logging.warning("If necessary physically flip camera and")
+        logging.warning("Set config.py WEBCAM_HFLIP and WEBCAM_VFLIP to False")
     # initialize a cropped grayimage1 image
     image2 = vs.read()  # Get image from VideoSteam thread instance
     prev_image = image2  # make a copy of the first image
@@ -1181,8 +1192,8 @@ def speed_camera():
         image_crop = image2[y_upper:y_lower, x_left:x_right]
     except:
         vs.stop()
-        logging.warn("Problem Connecting To Camera Stream.")
-        logging.warn("Restarting Camera.  One Moment Please ...")
+        logging.warning("Problem Connecting To Camera Stream.")
+        logging.warning("Restarting Camera.  One Moment Please ...")
         time.sleep(4)
         return
     grayimage1 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
@@ -1273,7 +1284,7 @@ def speed_camera():
                                                                      prev_start_time)))) *
                                                       speed_conv_R2L)
                         except ZeroDivisionError:  # This sometimes happens on windows due to clock precision issue
-                            logging.warn("Division by Zero Error. Aborting this track event.")
+                            logging.warning("Division by Zero Error. Aborting this track event.")
                             continue
                         track_count += 1  # increment track counter
                         speed_list.append(cur_ave_speed)
@@ -1385,7 +1396,7 @@ def speed_camera():
                                                                       int(cv2.IMWRITE_JPEG_OPTIMIZE), image_jpeg_optimize])
                                 else:
                                     cv2.imwrite(filename, big_image)
-
+                                    
                                 if motionCode:
                                     # ===========================================
                                     # Put your user code in userMotionCode() function
@@ -1594,6 +1605,14 @@ def speed_camera():
                                       (int(x_left + track_x + track_w),
                                        int(y_upper + track_y + track_h)),
                                       cvGreen, LINE_THICKNESS)
+        if align_cam_on:
+            image2 = speed_image_add_lines(image2, cvRed)
+            image_view = cv2.resize(image2, (image_width, image_height))
+            cv2.imwrite(align_filename, image_view)
+            logging.info("align_cam_on=%s align_delay_sec=%i - Browser View Cam Align Image at %s", align_cam_on, align_delay_sec, align_filename)
+            time.sleep(align_delay_sec)
+        
+
         if gui_window_on:
             # cv2.imshow('Difference Image',difference image)
             image2 = speed_image_add_lines(image2, cvRed)
