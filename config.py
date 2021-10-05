@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 11.10 speed-cam.py Variable Configuration Settings
+#         Ver 11.20 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -70,9 +70,9 @@ max_speed_over = 0     # Exclude track if Speed less than or equal to value spec
 # If variable is commented, value will be set automatically based on image size.
 # To see motion tracking crop area on images, Set variable image_show_motion_area = True
 # Set align_cam_on = True to help with adjusting settings.
-x_left = 85           # Default=85 comment variable for auto calculate
-x_right = 235         # Defaykt=235 comment variable for auto calculate
-y_upper = 100         # Default=100 comment variable for auto calculate
+x_left = 50           # Default=50 comment variable for auto calculate
+x_right = 250         # Defaykt=250 comment variable for auto calculate
+y_upper = 90          # Default=90 comment variable for auto calculate
 y_lower = 150         # Defaykt=150 comment variable for auto calculate
 
 # Camera Settings
