@@ -260,7 +260,7 @@ if os.path.isfile(userMotionFilePath):
     except ImportError:
         print('WARN  : Failed Import of File user_motion_code.py Investigate Problem')
         motionCode = False
-else
+else:
     print('WARN  : %s File Not Found. Cannot Import user_motion_code functions.' %
           userMotionFilePath)
 
