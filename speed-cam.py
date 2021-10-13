@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.10"  # current version of this python script
+progVer = "11.20"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -1128,8 +1128,8 @@ def speed_notify():
         logging.warning("IMPORTANT: Camera is in Alignment Mode ....")
     else:
         if os.path.isfile(align_filename):
-            os.remove(align_filename) 
-            logging.info("Removed camera alignment image at %s", align_filename)            
+            os.remove(align_filename)
+            logging.info("Removed camera alignment image at %s", align_filename)
 
     logging.info("Begin Motion Tracking .....")
 
@@ -1396,14 +1396,14 @@ def speed_camera():
                                                                       int(cv2.IMWRITE_JPEG_OPTIMIZE), image_jpeg_optimize])
                                 else:
                                     cv2.imwrite(filename, big_image)
-                                    
+
                                 if motionCode:
                                     # ===========================================
                                     # Put your user code in userMotionCode() function
                                     # In the File user_motion_code.py
                                     # ===========================================
                                     try:
-                                        user_motion_code.userMotionCode(filename)
+                                        user_motion_code.userMotionCode(vs, image_width, image_height, filename)
                                     except ValueError:
                                         logging.error("Problem running userMotionCode function from File %s",
                                                       userMotionFilePath)
@@ -1611,7 +1611,7 @@ def speed_camera():
             cv2.imwrite(align_filename, image_view)
             logging.info("align_cam_on=%s align_delay_sec=%i - Browser View Cam Align Image at %s", align_cam_on, align_delay_sec, align_filename)
             time.sleep(align_delay_sec)
-        
+
 
         if gui_window_on:
             # cv2.imshow('Difference Image',difference image)

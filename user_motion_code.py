@@ -14,7 +14,7 @@ program when motion tracking is tiggered.
 """
 
 #------------------------------------------------------------------------------
-def userMotionCode(filenamePath):
+def userMotionCode(vs, image_width, image_height, filenamePath):
     """
     Users can put code here that needs to be run
     after speed camera motion tracking and image taken
