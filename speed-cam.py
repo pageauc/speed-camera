@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.20"  # current version of this python script
+progVer = "11.21"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -255,6 +255,7 @@ userMotionFilePath = os.path.join(baseDir, "user_motion_code.py")
 if not os.path.isfile(userMotionFilePath):
     print('WARN  : %s File Not Found. Cannot Import user_motion_code functions.' %
           userMotionFilePath)
+    motionCode = False
 else:
     # Read Configuration variables from config.py file
     try:
