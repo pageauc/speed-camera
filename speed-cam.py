@@ -252,18 +252,17 @@ except ImportError:
 
 # Check for user_motion_code.py file to import and error out if not found.
 userMotionFilePath = os.path.join(baseDir, "user_motion_code.py")
-if not os.path.isfile(userMotionFilePath):
-    print('WARN  : %s File Not Found. Cannot Import user_motion_code functions.' %
-          userMotionFilePath)
-    motionCode = False
-else:
-    # Read Configuration variables from config.py file
+motionCode = False
+if os.path.isfile(userMotionFilePath):
     try:
         motionCode = True
         import user_motion_code
     except ImportError:
         print('WARN  : Failed Import of File user_motion_code.py Investigate Problem')
         motionCode = False
+else
+    print('WARN  : %s File Not Found. Cannot Import user_motion_code functions.' %
+          userMotionFilePath)
 
 # Import Settings from specified plugin if pluginEnable=True
 if pluginEnable:     # Check and verify plugin and load variable overlay
