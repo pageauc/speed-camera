@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.21"  # current version of this python script
+progVer = "11.22"  # current version of this python script
 
 import os
 # Get information about this script including name, launch path, etc.
@@ -1392,8 +1392,11 @@ def speed_camera():
                                 # and/or enble/disable optimization per config.py settings.
                                 # otherwise if png, bmp, gif, etc normal image write will occur
                                 if image_format.lower() == ".jpg" or image_format.lower() == ".jpeg":
-                                    cv2.imwrite(filename, big_image, [int(cv2.IMWRITE_JPEG_QUALITY), image_jpeg_quality,
-                                                                      int(cv2.IMWRITE_JPEG_OPTIMIZE), image_jpeg_optimize])
+                                    try:
+                                        cv2.imwrite(filename, big_image, [int(cv2.IMWRITE_JPEG_QUALITY), image_jpeg_quality,
+                                                                          int(cv2.IMWRITE_JPEG_OPTIMIZE), image_jpeg_optimize])
+                                    except:   # sometimes issue with IP camera so default to non optimized imwrite
+                                        cv2.imwrite(filename, big_image)
                                 else:
                                     cv2.imwrite(filename, big_image)
 
