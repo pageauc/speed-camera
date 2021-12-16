@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 11.02 speed-cam.py Variable Configuration Settings
+#         Ver 11.20 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -12,6 +12,8 @@
 # Calibration Settings
 # --------------------
 calibrate = True         # Create a calibration image file with calibration hash markers 10 px per mark
+align_cam_on = False     # Default=False  True Saves alignment image to help with camera pointing
+align_delay_sec = 5      # Default=5 seconds delay between each alignment image
 
 cal_obj_px_L2R = 80      # L2R Moving Objects, Length of a calibration object in pixels
 cal_obj_mm_L2R = 4700.0  # L2R Moving Objects, Length of the calibration object in millimetres
@@ -54,25 +56,24 @@ track_counter = 6      # Default= 6 Number of Consecutive Motion Events to trigg
                        # Suggest single core cpu=4-7 quad core=8-15 but adjust to smooth erratic readings due to contour jumps
 MIN_AREA = 200         # Default= 200 Exclude all contours less than or equal to this sq-px Area
 show_out_range = True  # Default= True Show Out of Range Events per x_diff settings below False= Off
-x_diff_max = 20        # Default= 20 Exclude if max px away >= last motion event x position
+x_diff_max = 24        # Default= 20 Exclude if max px away >= last motion event x position
 x_diff_min = 1         # Default= 1 Exclude if min px away <= last event x position
 x_buf_adjust = 10      # Default= 10 Divides motion Rect x for L&R Buffer Space to Ensure contours are in
-track_timeout = 0.0    # Default= 0.0 Optional seconds to wait after track End (Avoids dual tracking)
+track_timeout = 0.5    # Default= 0.5 Optional seconds to wait after track End (Avoids dual tracking)
 event_timeout = 0.3    # Default= 0.3 seconds to wait for next motion event before starting new track
 max_speed_over = 0     # Exclude track if Speed less than or equal to value specified 0=All
                        # Can be useful to exclude pedestrians and/or bikes, Etc or track only fast objects
 
-# Note: To see motion tracking crop area on images, Set variable image_show_motion_area = True
-
-# Allow user to customize the motion crop area (width) x values
-# If variable not found then values will be set automatically based on image size.
-# x_left = 50          # uncomment and change values to override auto calculate
-# x_right = 300        # uncomment and change values to override auto calculate
-
-# Allow user to customize the motion crop area (height) y values
-# If variables not found then values will be set automatically base on image size.
-# y_upper = 60         # uncomment and change values to override auto calculate
-# y_lower = 180        # uncomment and change values to override auto calculate
+# Motion Tracking Window Crop Area Settings
+# -----------------------------------------
+# Note: Values based on 320x240 image stream size.
+# If variable is commented, value will be set automatically based on image size.
+# To see motion tracking crop area on images, Set variable image_show_motion_area = True
+# Set align_cam_on = True to help with adjusting settings.
+x_left = 50           # Default=50 comment variable for auto calculate
+x_right = 250         # Defaykt=250 comment variable for auto calculate
+y_upper = 90          # Default=90 comment variable for auto calculate
+y_lower = 150         # Defaykt=150 comment variable for auto calculate
 
 # Camera Settings
 # ---------------
@@ -93,7 +94,7 @@ WEBCAM_VFLIP = False   # Default= False USB Webcam flip image vertically
 # ------------------
 CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning Default=320
 CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  Default=240
-CAMERA_FRAMERATE = 20  # Default= 20 Frame rate for video stream V2 picam can be higher
+CAMERA_FRAMERATE = 22  # Default= 20 Frame rate for video stream V2 picam can be higher
 CAMERA_ROTATION = 0    # Rotate camera image valid values are 0, 90, 180, 270
 CAMERA_VFLIP = True    # Flip the camera image vertically if required
 CAMERA_HFLIP = True    # Flip the camera image horizontally if required
@@ -103,10 +104,10 @@ CAMERA_HFLIP = True    # Flip the camera image horizontally if required
 image_path = "media/images"   # folder name to store images
 image_prefix = "speed-"       # image name prefix
 image_format = ".jpg"         # Default = ".jpg"  image Formats .jpg .jpeg .png .gif .bmp
-image_jpeg_quality = 95       # Set the quality of the jpeg. Default = 95 https://docs.opencv.org/3.4/d8/d6a/group__imgcodecs__flags.html#ga292d81be8d76901bff7988d18d2b42ac
-image_jpeg_optimize = False   # Optimize the image. Default = False https://docs.opencv.org/3.4/d8/d6a/group__imgcodecs__flags.html#ga292d81be8d76901bff7988d18d2b42ac
+image_jpeg_quality = 98       # Set the quality of the jpeg. Default = 95 https://docs.opencv.org/3.4/d8/d6a/group__imgcodecs__flags.html#ga292d81be8d76901bff7988d18d2b42ac
+image_jpeg_optimize = True    # Optimize the image. Default = False https://docs.opencv.org/3.4/d8/d6a/group__imgcodecs__flags.html#ga292d81be8d76901bff7988d18d2b42ac
 image_show_motion_area = True # True= Display motion detection rectangle area on saved images
-image_filename_speed = False  # True= Prefix filename with speed value
+image_filename_speed = True   # True= Include speed value in filename
 image_text_on = True          # True= Show Text on speed images   False= No Text on images
 image_text_bottom = True      # True= Show image text at bottom otherwise at top
 image_font_size = 12          # Default= 12 Font text height in px for text on images
@@ -127,7 +128,7 @@ image_sign_timeout = 5        # Keep the image sign for 5 seconds.
 
 # Optional Manage SubDir Creation by time, number of files or both (not recommended)
 # ----------------------------------------------------------------
-imageSubDirMaxFiles = 1000    # 0=off or specify MaxFiles - Creates New dated sub-folder if MaxFiles exceeded
+imageSubDirMaxFiles = 2000    # 0=off or specify MaxFiles - Creates New dated sub-folder if MaxFiles exceeded
 imageSubDirMaxHours = 0       # 0=off or specify MaxHours - Creates New dated sub-folder if MaxHours exceeded
 
 # Optional Save Most Recent files in recent folder

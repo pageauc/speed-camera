@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="7.6"
+ver="11.08"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -552,14 +552,24 @@ function do_speed_search_menu ()
 #------------------------------------------------------------------------------
 function do_report_menu ()
 {
+  if [ ! -f ./sql_speed_gt.py ]; then
+    echo "Downloading sql_speed_gt.py"
+    wget -O sql_speed_gt.py https://raw.github.com/pageauc/speed-camera/master/sql_speed_gt.py
+    chmod +x sql_speed_gt.py 
+    sudo apt-get install python-gnuplot    
+  fi
+
   SET_SEL=$( whiptail --title "sqlite3 Report Menu" \
                       --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
                       --ok-button Select \
                       --cancel-button Back \
-  "a SPEED" "Greater Than Specified Listing" \
-  "b HOUR" "Speed Greater Than 17 (Exclude bikes, people)" \
-  "c DELETE" "All Reports in media/reports" \
-  "d ABOUT" "This Report Menu" \
+  "a HTML" "Specify Report Listing Query Values" \
+  "b HTML" "5 day listing for Speed >=17 (Exclude bikes, people)" \
+  "c GRAPH" "Plot 5 DAY ave_speed by hour speed >= 17" \
+  "d GRAPH" "Plot 5 DAY count by hour" \
+  "e DELETE" "All Reports in media/reports" \
+  "f DELETE" "All Reports in media/graphs" \
+  "g ABOUT" "This Report Menu" \
   "q BACK" "To Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
@@ -576,14 +586,9 @@ function do_report_menu ()
             do_anykey
             do_report_menu ;;
       b\ *) clear
-            sqlite3 data/speed_cam.db \
-              -header -column \
-              "select idx, log_hour, ave_speed, speed_units,image_path,direction \
-              from speed \
-              where ave_speed > 17"  | more -d
-            echo ""
             echo "Updating Speed Camera media/reports web files  Wait..."
-            ./sql_speed_gt.py 17
+            echo "HTML Report for ave_speed gt 17 within last 5 days"
+            ./sql_speed_gt.py 17 5
             echo ""
             echo "This report should eliminate bikes/pedestrians and other slower objects"
             echo "View this report in html format"
@@ -592,6 +597,16 @@ function do_report_menu ()
             do_anykey
             do_report_menu ;;
       c\ *) clear
+            echo "graphing 5 day hourly plot for aver speeds >= 17"
+            ./sql-make-graph-speed-ave.py -s 17 -d 5 -t hour           
+            do_anykey
+            do_report_menu ;;
+      d\ *) clear
+            echo "graphing 5 day hourly counts plot for speeds >= 17"
+            ./sql-make-graph-count-totals.py -s 17 -d 5 -t hour           
+            do_anykey
+            do_report_menu ;;
+      e\ *) clear
             echo "Dir Listing for media/reports"
             ls -l media/reports
             read -p "Delete All Files? (y/n) " choice
@@ -609,7 +624,25 @@ function do_report_menu ()
                 esac
             esac
             do_report_menu ;;
-      d\ *) do_report_about
+      f\ *) clear
+            echo "Dir Listing for media/graphs"
+            ls -l media/graphs
+            read -p "Delete All Files? (y/n) " choice
+            case "$choice" in
+                y|Y ) read -p "Are you Sure? (y/n) " choice
+                case "$choice" in
+                    y|Y ) echo ""
+                      rm media/graphs/*
+                      ls -l media/graphs
+                      echo "Files Deleted"
+                      do_anykey
+                      ;;
+                    * ) do_report_menu
+                      ;;
+                esac
+            esac
+            do_report_menu ;;            
+      g\ *) do_report_about
             do_report_menu ;;
       q\ *) clear
             do_main_menu ;;
@@ -624,11 +657,20 @@ function do_report_about()
   whiptail --title "About SQL Reports Menu" --msgbox " \
        speed camera - SQL Reports Menu
 
-Reports use the sqlite3 speed camera database located at
+Reports uses the sqlite3 speed camera database located at
    /home/pi/speed-cam/data/speed_cam.db
 
-The reports runs sql queries for displaying formatted
+The reports runs sql_speed_gt.py queries for displaying formatted
 reports.
+
+Note: sql_speed_gt.py uses gnuplot and has been superceded by
+      the following graphing scripts that use matplotlib.
+
+       sql-make-graph-count-totals.py and
+       sql-make-graph-speed-ave.py
+       
+    Run these with the -h parameter to view help.  
+       
 
 \
 " 0 0 0
@@ -639,7 +681,7 @@ function do_upgrade()
 {
   if (whiptail --title "GitHub Upgrade speed-cam" \
                --yesno "Upgrade speed-cam Files from GitHub.\n Some config Files Will be Updated" 0 0 0 \
-               --yes-button "upgrade" \
+            s   --yes-button "upgrade" \
                --no-button "Cancel" ); then
     curlcmd=('/usr/bin/curl -L https://raw.github.com/mlapaglia/rpi-speed-camera/master/speed-install.sh | bash')
     eval $curlcmd

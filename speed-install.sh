@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="11.0"
+ver="11.08"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
 rclone_cur_ver="rclone v1.55.1"
@@ -29,14 +29,14 @@ echo "-----------------------------------------------"
 echo "$STATUS Download GitHub Files"
 if $is_upgrade ; then
     echo "Note: config.py will not be overwritten. Updated settings are in config.py.new"
-    speedFiles=("menubox.sh" "speed-cam.py" \
+    speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
 "webserver.sh" "webserver3.py" "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py")
 else
-    speedFiles=("config.py" "menubox.sh" "speed-cam.py" \
+    speedFiles=("config.py" "menubox.sh" "speed-cam.py" "sql_speed_gt.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
 "webserver.sh" "webserver3.py" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
-"alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py")
+"alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" "user_motion_code.py")
 fi
 
 for fname in "${speedFiles[@]}" ; do
@@ -49,6 +49,7 @@ for fname in "${speedFiles[@]}" ; do
         fi
     fi
 done
+wget -q --show-progress -nc https://raw.github.com/mlapaglia/speed-camera/master/user_motion_code.py
 wget -O media/webserver.txt -q --show-progress https://raw.github.com/mlapaglia/speed-camera/master/webserver.txt
 wget -O config.py.new -q --show-progress https://raw.github.com/mlapaglia/speed-camera/master/config.py
 
@@ -159,6 +160,7 @@ sudo apt-get install -yq python3-imaging
 sudo apt-get install -yq sqlite3
 sudo apt-get install -yq python-matplotlib
 sudo apt-get install -yq python3-matplotlib
+sudo apt-get install -yq python3-numpy
 
 # sudo apt-get install -yq gnuplot
 # if [ $? -ne 0 ]; then
