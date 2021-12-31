@@ -127,7 +127,7 @@ per [System requirements and Instructions](https://docs.docker.com/desktop/windo
 1. The Docker container will likely exit because it is using a default config.
 1. Edit the configuration file @ `config/config.py`
 1. Run [docker-compose up](https://docs.docker.com/compose/reference/up/) per documentation
-1. Run [docker build[(https://docs.docker.com/engine/reference/commandline/build/) command locally to get a fresh image.
+1. Run [docker build](https://docs.docker.com/engine/reference/commandline/build/) command locally to get a fresh image.
  
 ## Manual Install or Upgrade   
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
