@@ -117,8 +117,9 @@ Note I have Not tested these.
 speed camera supports a docker installation on    
 Apple Macintosh per [System requirements and Instructions](https://docs.docker.com/desktop/mac/install/)    
 and      
-Microsoft Windows 10/11 64bit with BIOS Virtualization enabled
-and [Microsoft Windows Subsystem for Linux WSL 2](https://docs.microsoft.com/en-us/windows/wsl/install) per [System requirements and Instructions](https://docs.docker.com/desktop/windows/install/)).   
+Microsoft Windows 10/11 64 bit with BIOS Virtualization enabled
+and [Microsoft Windows Subsystem for Linux WSL 2](https://docs.microsoft.com/en-us/windows/wsl/install) 
+per [System requirements and Instructions](https://docs.docker.com/desktop/windows/install/).   
 
 1. [install Docker](https://www.docker.com/get-started) for your System
 1. Clone the repository
