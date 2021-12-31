@@ -14,7 +14,7 @@ RUN dpkg-reconfigure --frontend noninteractive tzdata
 RUN apt-get install -yq python curl wget sudo python-numpy python3-opencv dos2unix python-pil sqlite3 gnuplot python3-gnuplot libgl1-mesa-dri pandoc
 
 # set version and install speed camera
-ARG SPEED_CAMERA_VER=10.22
+ARG SPEED_CAMERA_VER=11.22
 RUN curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash
 
 COPY speed-camera-docker-run.sh /root/speed-camera/speed-camera-docker-run.sh
