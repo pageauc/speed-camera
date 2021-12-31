@@ -16,6 +16,9 @@ to ensure your system is up-to-date.
 This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed.
 See my Github [menu driven compile opencv3 from source](https://github.com/pageauc/opencv3-setup) project
 
+## Mac or Windows Systems
+See [Docker Install Quick Start](https://github.com/pageauc/speed-camera#docker-install-quick-start)
+
 ***IMPORTANT*** speed-cam.py ver 8.x or greater Requires Updated config.py and plugins.
 
     cd ~/speed-camera
