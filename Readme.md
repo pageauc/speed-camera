@@ -114,7 +114,7 @@ special support for bash is installed for windows Eg http://win-bash.sourceforge
 Note I have Not tested these.   
 
 ## Docker Install Quick Start
-speed camera supports a docker installation on 
+speed camera supports a docker installation on    
 [Apple Mac](https://docs.docker.com/desktop/mac/install/) Read System requirements and Instructions     
 and      
 [Microsoft Windows 10/11 64bit](https://docs.docker.com/desktop/windows/install/) with BIOS Virtualization enabled
