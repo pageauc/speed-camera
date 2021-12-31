@@ -114,14 +114,19 @@ special support for bash is installed for windows Eg http://win-bash.sourceforge
 Note I have Not tested these.   
 
 ## Docker Install Quick Start
-speed camera supports a docker installation per the following
+speed camera supports a docker installation on 
+[Apple Mac](https://docs.docker.com/desktop/mac/install/) Read System requirements and Instructions     
+and      
+[Microsoft Windows 10/11 64bit](https://docs.docker.com/desktop/windows/install/) with BIOS Virtualization enabled
+and [Microsoft Windows Subsystem for Linux WSL 2](https://docs.microsoft.com/en-us/windows/wsl/install) per System requirements and Instructions.   
 
-1. If you haven't already, [install Docker](https://www.docker.com/get-started)
+1. [install Docker](https://www.docker.com/get-started) for your System
 1. Clone the repository
-1. Run `docker-compose up` from the directory you cloned the repo into.
+1. Run [docker-compose up](https://docs.docker.com/compose/reference/up/) from the directory you cloned the repo into.
 1. The Docker container will likely exit because it is using a default config.
 1. Edit the configuration file @ `config/config.py`
-1. Run `docker-compose up`
+1. Run [docker-compose up](https://docs.docker.com/compose/reference/up/) per documentation
+1. Run [docker build[(https://docs.docker.com/engine/reference/commandline/build/) command locally to get a fresh image.
  
 ## Manual Install or Upgrade   
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
