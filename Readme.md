@@ -121,7 +121,7 @@ Microsoft Windows 10/11 64 bit with BIOS Virtualization enabled
 and [Microsoft Windows Subsystem for Linux WSL 2](https://docs.microsoft.com/en-us/windows/wsl/install) 
 per [System requirements and Instructions](https://docs.docker.com/desktop/windows/install/).   
 
-1. [install Docker](https://www.docker.com/get-started) for your System
+1. Download and install [Docker Desktop](https://www.docker.com/get-started) for your System
 1. Clone the GitHub [Speed Camera repository](https://github.com/pageauc/speed-camera) using green Clone button (top right)
 1. Run [docker-compose up](https://docs.docker.com/compose/reference/up/) from the directory you cloned the repo into.
 1. The Docker container will likely exit because it is using a default config.
