@@ -115,10 +115,10 @@ Note I have Not tested these.
 
 ## Docker Install Quick Start
 speed camera supports a docker installation on    
-[Apple Mac](https://docs.docker.com/desktop/mac/install/) Read System requirements and Instructions     
+Apple Macintosh Read [System requirements and Instructions](https://docs.docker.com/desktop/mac/install/)    
 and      
-[Microsoft Windows 10/11 64bit](https://docs.docker.com/desktop/windows/install/) with BIOS Virtualization enabled
-and [Microsoft Windows Subsystem for Linux WSL 2](https://docs.microsoft.com/en-us/windows/wsl/install) per System requirements and Instructions.   
+Microsoft Windows 10/11 64bit with BIOS Virtualization enabled
+and [Microsoft Windows Subsystem for Linux WSL 2](https://docs.microsoft.com/en-us/windows/wsl/install) per [System requirements and Instructions](https://docs.docker.com/desktop/windows/install/)).   
 
 1. [install Docker](https://www.docker.com/get-started) for your System
 1. Clone the repository
