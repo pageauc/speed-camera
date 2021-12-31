@@ -122,7 +122,7 @@ and [Microsoft Windows Subsystem for Linux WSL 2](https://docs.microsoft.com/en-
 per [System requirements and Instructions](https://docs.docker.com/desktop/windows/install/).   
 
 1. [install Docker](https://www.docker.com/get-started) for your System
-1. Clone the repository
+1. Clone the GitHub [Speed Camera repository](https://github.com/pageauc/speed-camera) using green Clone button (top right)
 1. Run [docker-compose up](https://docs.docker.com/compose/reference/up/) from the directory you cloned the repo into.
 1. The Docker container will likely exit because it is using a default config.
 1. Edit the configuration file @ `config/config.py`
