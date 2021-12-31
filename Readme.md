@@ -16,9 +16,6 @@ to ensure your system is up-to-date.
 This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed.
 See my Github [menu driven compile opencv3 from source](https://github.com/pageauc/opencv3-setup) project
 
-## Mac or Windows Systems
-See [Docker Install Quick Start](https://github.com/pageauc/speed-camera#docker-install-quick-start)
-
 ***IMPORTANT*** speed-cam.py ver 8.x or greater Requires Updated config.py and plugins.
 
     cd ~/speed-camera
@@ -32,6 +29,9 @@ To replace plugins rename (or delete) plugins folder per below
     rm -r plugins           # deletes plugins folder
 
 Then run ***menubox.sh*** UPGRADE menu pick.
+
+## Mac or Windows Systems
+See [Docker Install Quick Start](https://github.com/pageauc/speed-camera#docker-install-quick-start)
 
 ## Program Description   
 This is a raspberry pi, Windows, Unix Distro computer openCV object speed camera demo program.
@@ -105,7 +105,7 @@ See https://github.com/pageauc/opencv3-setup
 
 ## Windows or Non RPI Unix Installs
 For Windows or Unix computer platforms (non RPI or Debian) ensure you have the most
-up-to-date python version. For Downloads visit https://www.python.org/downloads    
+up-to-date python version. For Download and Install [pyrhon](https://www.python.org/downloads) and [Opencv](https://docs.opencv.org/4.x/d5/de5/tutorial_py_setup_in_windows.html)    
 
 The latest python versions includes numpy and recent opencv version that is required to run this code. 
 You will also need a USB web cam installed and working. 
@@ -114,7 +114,7 @@ Select the ***green Clone or download*** button. The files will be cloned or zip
 to a speed-camera folder. You can run the code from python IDLE application (recommended), GUI desktop
 or command prompt terminal window. Note bash .sh shell scripts will not work with windows unless 
 special support for bash is installed for windows Eg http://win-bash.sourceforge.net/  http://www.cygwin.com/
-Note I have Not tested these.   
+***Note:*** I have Not tested these.   
 
 ## Docker Install Quick Start
 speed camera supports a docker installation on    
@@ -132,7 +132,7 @@ per [System requirements and Instructions](https://docs.docker.com/desktop/windo
 1. Run [docker-compose up](https://docs.docker.com/compose/reference/up/) per documentation
 1. Run [docker build](https://docs.docker.com/engine/reference/commandline/build/) command locally to get a fresh image.
  
-## Manual Install or Upgrade   
+## Raspberry pi Manual Install or Upgrade   
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
 
     cd ~
