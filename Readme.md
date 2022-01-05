@@ -31,7 +31,8 @@ To replace plugins rename (or delete) plugins folder per below
 Then run ***menubox.sh*** UPGRADE menu pick.
 
 ## Mac or Windows Systems
-See [Docker Install Quick Start](https://github.com/pageauc/speed-camera#docker-install-quick-start)
+See [Windows 10/11 or Apple Mac Docker Install Quick Start](https://github.com/pageauc/speed-camera#docker-install-quick-start)    
+or [Windows or Unix Distro Installs without Docker](https://github.com/pageauc/speed-camera#windows-or-non-rpi-unix-installs)
 
 ## Program Description   
 This is a raspberry pi, Windows, Unix Distro computer openCV object speed camera demo program.
@@ -105,7 +106,7 @@ See https://github.com/pageauc/opencv3-setup
 
 ## Windows or Non RPI Unix Installs
 For Windows or Unix computer platforms (non RPI or Debian) ensure you have the most
-up-to-date python version. For Download and Install [pyrhon](https://www.python.org/downloads) and [Opencv](https://docs.opencv.org/4.x/d5/de5/tutorial_py_setup_in_windows.html)    
+up-to-date python version. For Download and Install [python](https://www.python.org/downloads) and [Opencv](https://docs.opencv.org/4.x/d5/de5/tutorial_py_setup_in_windows.html)    
 
 The latest python versions includes numpy and recent opencv version that is required to run this code. 
 You will also need a USB web cam installed and working. 
