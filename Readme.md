@@ -64,10 +64,10 @@ To implement webserver3.py copy webserver3.py to webserver.py  Note and update w
 Manage settings and setup for optional remote file sync to a remote storage service like google drive, DropBox and many others.   
 * [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)
 for administration of settings from a remote storage service. Plus application monitoring.  
-* ***sql-make-graph-count-totals.py*** Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs folder.
+* [***sql-make-graph-count-totals.py***](https://github.com/pageauc/speed-camera/wiki/How-to-Generate-Speed-Camera-Graphs#sql-make-graph-count-totalspy) Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs folder.
 Graphs display counts by hour, day or month for specfied previous days and speed over. Multiple reports can be managed from
 the config.py ***GRAPH_RUN_LIST*** variable under matplotlib image settings section.       
-* ***sql-make-graph-speed-ave.py*** Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs folder.
+* [***sql-make-graph-speed-ave.py***](https://github.com/pageauc/speed-camera/wiki/How-to-Generate-Speed-Camera-Graphs#sql-make-graph-speed-avepy) Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs folder.
 Graphs display Average Speed by hour, day or month for specfied previous days and speed over. Multiple reports can be managed from
 the config.py ***GRAPH_RUN_LIST*** variable under matplotlib image settings section.    
 * ***sql-speed_gt.py*** Query sqlite database and Generate html formatted report with links to images and save to media/reports folder.
