@@ -70,7 +70,7 @@ the config.py ***GRAPH_RUN_LIST*** variable under matplotlib image settings sect
 * [***sql-make-graph-speed-ave.py***](https://github.com/pageauc/speed-camera/wiki/How-to-Generate-Speed-Camera-Graphs#sql-make-graph-speed-avepy) Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs folder.
 Graphs display Average Speed by hour, day or month for specfied previous days and speed over. Multiple reports can be managed from
 the config.py ***GRAPH_RUN_LIST*** variable under matplotlib image settings section.    
-* ***sql-speed_gt.py*** Query sqlite database and Generate html formatted report with links to images and save to media/reports folder.
+* [***sql-speed_gt.py***](https://github.com/pageauc/speed-camera/wiki/How-to-Generate-Speed-Camera-Graphs#sql-speed_gtpy) Query sqlite database and Generate html formatted report with links to images and save to media/reports folder.
 Can accept parameters or will prompt user if run from console with no parameters
 * [***makehtml.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#view-combined-imagedata-html-pages-on-a-web-browser)
 Creates html files that combine csv and image data for easier viewing from a web browser and saved to media/html folder.    
