@@ -112,12 +112,11 @@ if len(sys.argv) > 1:
 def is_int(var):
     ''' Check if variable string can successfully be converted to an integer.
     '''
-    success = True
     try:
-        test = int(var)
+        int(var)
     except ValueError:
-        sucess = False
-    return success
+        return False
+    return True
 
 #----------------------------------------------------------------------------------------
 def get_timestamp_substr(total_by):
