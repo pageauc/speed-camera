@@ -1626,9 +1626,13 @@ def speed_camera():
                                             userMotionFilePath,
                                         )
                                     except TypeError as err:
-                                        logging.error("Problem with file user_motion_code.py Possibly out of date")
+                                        logging.error(
+                                            "Problem with file user_motion_code.py Possibly out of date"
+                                        )
                                         logging.error("Err Msg: %s", err)
-                                        logging.error("Suggest you delete/rename file and perform menubox UPGRADE")
+                                        logging.error(
+                                            "Suggest you delete/rename file and perform menubox UPGRADE"
+                                        )
 
                                 log_idx = "%04d%02d%02d-%02d%02d%02d%d" % (
                                     log_time.year,
