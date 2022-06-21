@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.24"  # current version of this python script
+progVer = "11.25"  # current version of this python script
 
 import os
 import sys
@@ -362,17 +362,25 @@ except ImportError:
     WEBCAM = True
 if not WEBCAM:
     # Check that pi camera module is installed and enabled
+    print("Checking Pi Camera Module using command - vcgencmd get_camera")
     camResult = subprocess.check_output("vcgencmd get_camera", shell=True)
     camResult = camResult.decode("utf-8")
     camResult = camResult.replace("\n", "")
-    if (camResult.find("0")) >= 0:  # -1 is zero not found. Cam OK
-        logging.error("Pi Camera Module Not Found %s", camResult)
-        logging.error("if supported=0 Enable Camera per command sudo raspi-config")
-        logging.error("if detected=0 Check Pi Camera Module is Installed Correctly")
-        logging.error("%s %s Exiting Due to Error", progName, progVer)
-        sys.exit(1)
+    print("Camera Status is %s" % camResult)
+    print("Checking supported and detected Status")
+    params = camResult.split()
+    for x in range(0,2):
+        if params[x].find("0") >= 0:
+            print("Detected Problem with Pi Camera Module per %s" % params[x])
+            print("")
+            print("  if supported=0 Enable Camera per command sudo raspi-config")
+            print("  if detected=0 Check Pi Camera Module is Installed Correctly.")
+            print("")
+            print("%s %s Exiting Due to Error" % ( progName, progVer))
+            sys.exit(1)
     else:
-        logging.info("Pi Camera Module is Enabled and Connected %s", camResult)
+        print("Success Pi Camera Module is Enabled and Connected %s" % camResult)
+
 try:  # Check to see if opencv is installed
     import cv2
 except ImportError:
