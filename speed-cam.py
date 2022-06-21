@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 """
 from __future__ import print_function
 
-progVer = "11.25"  # current version of this python script
+progVer = "11.26"  # current version of this python script
 
 import os
 import sys
@@ -62,25 +62,6 @@ print("%s %s  written by Claude Pageau" % (progName, progVer))
 print("Motion Track Largest Moving Object and Calculate Speed per Calibration.")
 print(horiz_line)
 print("Loading  Wait ...")
-import platform
-
-def is_debian_gt_Buster():
-    platform_sys = platform.system()
-    if platform_sys == "Linux":
-        platform_info = platform.platform()
-        if platform_info.split('-')[-2] == 'debian':
-            dist_ver = float(platform_info.split('-')[-1])
-            if dist_ver >= 11:
-                print("OS is Debian 11.x Bullseye or Greater")
-                return True
-            else:
-                return False
-    return None
-
-if is_debian_gt_Buster():
-    print('Speed Camera Does Not Run on Debian 11 Bullseye or Greater')
-    print('It is recommended you run on Debian Buster Distro or Earlier')
-    sys.exit()
 
 import time
 import datetime
