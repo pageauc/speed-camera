@@ -2,10 +2,14 @@
 ### RPI, Unix and Windows Speed Camera Using python, openCV, RPI camera module, USB Cam or IP Cam
 ## For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features), [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#reference-links).
 
+## Note re Bullseye: 
+Speed-cam.py ver 11.26 will now run under the latest Raspberry Pi OS Bullseye with a pi camera module as well as webcam and IP cameras. 
+Run ***sudo raspi-config***, Interface Options, enable Legacy Camera option and reboot.
+
 ## RPI Quick curl Install or Upgrade   
 ***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will
 **NOT** be performed as part of   
-**speed-install.sh** so it is recommended you run these prior to install
+**speed-install.sh** so it is highly recommended you run these prior to install
 to ensure your system is up-to-date.     
 
 ***Step 1*** With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and Copy.     
