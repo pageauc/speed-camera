@@ -4,7 +4,7 @@
 
 ## Note re Bullseye: 
 Speed-cam.py ver 11.26 will now run under the latest Raspberry Pi OS Bullseye with a pi camera module as well as webcam and IP cameras. 
-Run ***sudo raspi-config***, Interface Options, enable Legacy Camera option and reboot.
+For picamera support Run ***sudo raspi-config***, Interface Options, then enable Legacy Camera option and reboot.
 
 ## RPI Quick curl Install or Upgrade   
 ***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will
