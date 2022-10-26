@@ -14,7 +14,7 @@ import urllib
 from http.server import SimpleHTTPRequestHandler
 from io import BytesIO
 
-PROG_VER = "ver 12.01 written by Claude Pageau modified by Alexandre Strube for python3 compatibility"
+PROG_VER = "ver 12.02 written by Claude Pageau modified by Alexandre Strube for python3 compatibility"
 '''
  SimpleHTTPServer python program to allow selection of images from right panel and display in an iframe left panel
  Use for local network use only since this is not guaranteed to be a secure web server.
@@ -166,7 +166,7 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
         f.write(b'%s' % refresh_button.encode('utf-8'))
         f.write(b'<ul name="menu" id="menu" style="list-style-type:none; padding-left: 4px">')
         # Create the formatted list of right panel hyper-links to files in the specified directory
-        if not self.path is "/":   # Display folder Back arrow navigation if not in web root
+        if self.path != "/":   # Display folder Back arrow navigation if not in web root
             f.write(b'<li><a href="%s" >%s</a></li>\n'
                     % (urllib.parse.quote("..").encode('utf-8'), html.escape("< BACK").encode('utf-8')))
         display_entries = 0
@@ -191,7 +191,7 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
                 f.write(b'<li><a href="%s" target="imgbox">%s</a> - %s</li>\n'
                         % (urllib.parse.quote(linkname).encode('utf-8'), html.escape(displayname).encode('utf-8'), date_modified.encode('utf-8')))
 
-        if (not self.path is "/") and display_entries > 35:   # Display folder Back arrow navigation if not in web root
+        if (self.path != "/") and display_entries > 35:   # Display folder Back arrow navigation if not in web root
             f.write(b'<li><a href="%s" >%s</a></li>\n' % (urllib.parse.quote("..").encode('utf-8'), html.escape("< BACK").encode('utf-8')))
         f.write(b'</ul></div><p><b>')
         drive_status = df(MNT_POINT)
