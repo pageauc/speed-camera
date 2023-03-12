@@ -339,7 +339,7 @@ if pluginEnable:  # Check and verify plugin and load variable overlay
 try:  # Add this check in case running on non RPI platform using web cam
     from picamera.array import PiRGBArray
     from picamera import PiCamera
-except ImportError or OSError:
+except OSError or ImportError:
     WEBCAM = True
 if not WEBCAM:
     # Check that pi camera module is installed and enabled
