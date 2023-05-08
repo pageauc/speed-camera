@@ -1,21 +1,5 @@
-#!/usr/bin/python3
-from __future__ import print_function
-print('Loading Wait...')
-import os
-import sys
-import time
-import datetime
-import glob
-import shutil
-import logging
-import sqlite3
-from threading import Thread
-import subprocess
-import numpy as np
-
-PROG_VER = "12.00"  # current version of this python script
-
-'''
+#!/usr/bin/env python
+"""
 speed-cam.py written by Claude Pageau
 Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking
 using picamera module, Web Cam or RTSP IP Camera
@@ -57,7 +41,13 @@ or
 
 Note to Self - Look at eliminating python variable camel case and use all snake naming
 
-'''
+"""
+from __future__ import print_function
+
+progVer = "11.26"  # current version of this python script
+
+import os
+import sys
 
 # Get information about this script including name, launch path, etc.
 # This allows script to be renamed or relocated to another directory
@@ -65,16 +55,25 @@ mypath = os.path.abspath(__file__)  # Find the full path of this python script
 # get the path location only (excluding script name)
 baseDir = mypath[0 : mypath.rfind("/") + 1]
 baseFileName = mypath[mypath.rfind("/") + 1 : mypath.rfind(".")]
-PROG_NAME = os.path.basename(__file__)
-CAMLIST = ('usbcam', 'ipcam', 'pilibcam', 'pilegcam')
-
-HORIZ_LINE = "----------------------------------------------------------------------"
-print(HORIZ_LINE)
-print("%s %s  written by Claude Pageau" % (PROG_NAME, PROG_VER))
+progName = os.path.basename(__file__)
+horiz_line = "----------------------------------------------------------------------"
+print(horiz_line)
+print("%s %s  written by Claude Pageau" % (progName, progVer))
 print("Motion Track Largest Moving Object and Calculate Speed per Calibration.")
-print(HORIZ_LINE)
+print(horiz_line)
+print("Loading  Wait ...")
 
-'''
+import time
+import datetime
+import glob
+import shutil
+import logging
+import sqlite3
+from threading import Thread
+import subprocess
+import numpy as np
+
+"""
 This is a dictionary of the default settings for speed-cam.py
 If you don't want to use a config.py file these will create the required
 variables with default values.  Change dictionary values if you want different
@@ -82,7 +81,7 @@ variable default values.
 A message will be displayed if a variable is Not imported from config.py.
 Note: plugins can override default and config.py values if plugins are
       enabled.  This happens after config.py variables are imported
-'''
+"""
 default_settings = {
     "calibrate": True,
     "align_cam_on": False,
@@ -112,9 +111,7 @@ default_settings = {
     "event_timeout": 0.3,
     "max_speed_over": 0,
     "CAM_LOCATION": "None",
-    "CAMERA" : "pilibcam",
-    "USBCAM_SRC" : 1,
-    "IPCAM_SRC" : "rtsp://USERID:PASSWORD@IP:PORT/PATH",
+    "WEBCAM_SRC": 0,
     "WEBCAM_WIDTH": 320,
     "WEBCAM_HEIGHT": 240,
     "WEBCAM_HFLIP": False,
@@ -197,11 +194,11 @@ cvBlue = (255, 0, 0)
 cvGreen = (0, 255, 0)
 cvRed = (0, 0, 255)
 
-'''
+"""
 Check for config.py variable file to import and warn if not Found.
 Logging is not used since the logFilePath variable is needed before
 setting up logging
-'''
+"""
 configFilePath = os.path.join(baseDir, "config.py")
 if os.path.exists(configFilePath):
     # Read Configuration variables from config.py file
@@ -264,14 +261,14 @@ except ImportError:
     logging.info("Setting default value search_dest_path = %s", search_dest_path)
 # Check for user_motion_code.py file to import and error out if not found.
 userMotionFilePath = os.path.join(baseDir, "user_motion_code.py")
-MOTION_CODE = False
+motionCode = False
 if os.path.isfile(userMotionFilePath):
     try:
-        MOTION_CODE = True
+        motionCode = True
         import user_motion_code
     except ImportError:
         print("WARN  : Failed Import of File user_motion_code.py Investigate Problem")
-        MOTION_CODE = False
+        motionCode = False
 else:
     print(
         "WARN  : %s File Not Found. Cannot Import user_motion_code functions."
@@ -290,7 +287,7 @@ if pluginEnable:  # Check and verify plugin and load variable overlay
         logging.info("Rerun github curl install script to install plugins")
         logging.info("https://github.com/pageauc/pi-timolo/wiki/")
         logging.info("How-to-Install-or-Upgrade#quick-install")
-        logging.warning("%s %s Exiting Due to Error", PROG_NAME, PROG_VER)
+        logging.warning("%s %s Exiting Due to Error", progName, progVer)
         sys.exit(1)
     elif not os.path.exists(pluginPath):
         logging.error("File Not Found pluginName %s", pluginPath)
@@ -308,7 +305,7 @@ if pluginEnable:  # Check and verify plugin and load variable overlay
         logging.info("or Rerun github curl install command.  See github wiki")
         logging.info("https://github.com/pageauc/speed-camera/wiki/")
         logging.info("How-to-Install-or-Upgrade#quick-install")
-        logging.warning("%s %s Exiting Due to Error", PROG_NAME, PROG_VER)
+        logging.warning("%s %s Exiting Due to Error", progName, progVer)
         sys.exit(1)
     else:
         pluginCurrent = os.path.join(pluginDir, "current.py")
@@ -320,7 +317,7 @@ if pluginEnable:  # Check and verify plugin and load variable overlay
                 "Copy Failed from %s to %s - %s", pluginPath, pluginCurrent, err
             )
             logging.info("Check permissions, disk space, Etc.")
-            logging.warning("%s %s Exiting Due to Error", PROG_NAME, PROG_VER)
+            logging.warning("%s %s Exiting Due to Error", progName, progVer)
             sys.exit(1)
         logging.info("Import Plugin %s", pluginPath)
         # add plugin directory to program PATH
@@ -339,6 +336,31 @@ if pluginEnable:  # Check and verify plugin and load variable overlay
             logging.warning("Failed To Remove File %s - %s", pluginCurrentpyc, err)
 # import the necessary packages
 # -----------------------------
+try:  # Add this check in case running on non RPI platform using web cam
+    from picamera.array import PiRGBArray
+    from picamera import PiCamera
+except OSError or ImportError:
+    WEBCAM = True
+if not WEBCAM:
+    # Check that pi camera module is installed and enabled
+    print("Checking Pi Camera Module using command - vcgencmd get_camera")
+    camResult = subprocess.check_output("vcgencmd get_camera", shell=True)
+    camResult = camResult.decode("utf-8")
+    camResult = camResult.replace("\n", "")
+    print("Camera Status is %s" % camResult)
+    print("Checking supported and detected Status")
+    params = camResult.split()
+    for x in range(0,2):
+        if params[x].find("0") >= 0:
+            print("Detected Problem with Pi Camera Module per %s" % params[x])
+            print("")
+            print("  if supported=0 Enable Camera per command sudo raspi-config")
+            print("  if detected=0 Check Pi Camera Module is Installed Correctly.")
+            print("")
+            print("%s %s Exiting Due to Error" % ( progName, progVer))
+            sys.exit(1)
+    else:
+        print("Success Pi Camera Module is Enabled and Connected %s" % camResult)
 
 try:  # Check to see if opencv is installed
     import cv2
@@ -351,13 +373,18 @@ except ImportError:
     else:
         logging.error("python2 failed to import cv2")
         logging.error("Try RPI Install per command")
-        logging.error("%s %s Exiting Due to Error", PROG_NAME, PROG_VER)
+        logging.error("%s %s Exiting Due to Error", progName, progVer)
     sys.exit(1)
 # fix possible invalid values when resizing
 if WINDOW_BIGGER < 0.1:
     WINDOW_BIGGER = 0.1
 if image_bigger < 0.1:
     image_bigger = 0.1
+WEBCAM_FLIPPED = False
+if WEBCAM:
+    # Check if Web Cam image flipped in any way
+    if WEBCAM_HFLIP or WEBCAM_VFLIP:
+        WEBCAM_FLIPPED = True
 quote = '"'  # Used for creating quote delimited log file of speed data
 fix_msg = """
     ---------- Upgrade Instructions -----------
@@ -388,111 +415,141 @@ else:
 align_filename = os.path.join(imageRecentDir, "align_cam.jpg")
 
 # ------------------------------------------------------------------------------
-def is_pi_legacy_cam():
-    '''
-    Determine if pi camera is configured for Legacy = True or Libcam = False.
-    '''
-    logging.info("Check for Legacy Pi Camera Module with command - vcgencmd get_camera")
-    camResult = subprocess.check_output("vcgencmd get_camera", shell=True)
-    camResult = camResult.decode("utf-8")
-    camResult = camResult.replace("\n", "")
-    params = camResult.split()
-    if params[0].find("=1") >= 1 and params[1].find("=1") >= 1:
-        logging.info("Pi Camera Module Found %s", camResult)
-        return True
-    else:
-        logging.error("Problem Finding Pi Legacy Camera %s", camResult)
-        logging.error('Check if Legacy pi Camera is Enabled and Camera is working.')
-        return False
-
-
-# ------------------------------------------------------------------------------
-def create_cam_thread(mycam):
-    '''
-    Create the appropriate video stream thread
-    bassed on the specified camera name
-    returns vs video stream and updated camera name with source if applicable
-    '''
-    cam = None
-    if mycam == 'pilibcam':
-        # check if pi libcam
-        if not is_pi_legacy_cam():
-            if not os.path.exists('/usr/bin/libcamera-still'):
-                logging.error('libcamera not Installed')
-                logging.info('Edit config.py and Change CAMERA variable as Required.')
-                sys.exit(1)
-            if not os.path.exists('strmpilibcam.py'):
-                logging.error("strmpilibcam.py File Not Found.")
-                sys.exit(1)
-            try:
-                from strmpilibcam import PiLibCam
-            except ImportError:
-                logging.error("Failed Import of pilibcam.py")
-                sys.exit(1)
-            cam = mycam
-            vs = PiLibCam(size=(CAMERA_WIDTH, CAMERA_HEIGHT),
-                          vflip=CAMERA_VFLIP,
-                          hflip=CAMERA_HFLIP).start()
-        else:
-            logging.error('Looks like Pi Legacy Camera is Enabled')
-            logging.info('Edit config.py and Change CAMERA variable as Required.')
-            logging.info('or Disable Legacy Pi Camera using sudo raspi-config')
-            sys.exit(1)
-
-    elif mycam == 'pilegcam':
-        # Check if Pi Legacy pi Camera
-        if not is_pi_legacy_cam():
-            sys.exit(1)
-
-        if not os.path.exists('strmpilegcam.py'):
-            logging.error("strmpilegcam.py File Not Found.")
-            sys.exit(1)
-        try:  # Add this check in case running on non RPI platform using usb camera
-            from strmpilegcam import PiLegacyCam
-        except ImportError:
-            logging.error("Could Not Import pilegacycam.py")
-            sys.exit(1)
-        cam = mycam
-        vs = PiLegacyCam(size=(CAMERA_WIDTH, CAMERA_HEIGHT),
-                               framerate=CAMERA_FRAMERATE,
-                               rotation=CAMERA_ROTATION,
-                               hflip=CAMERA_HFLIP,
-                               vflip=CAMERA_VFLIP).start()
-    elif mycam == 'usbcam' or mycam == 'ipcam':
-        if mycam == 'ipcam':
-            cam_src = IPCAM_SRC
-            cam = "IPCamera " + cam_src
-        elif mycam == 'usbcam':
-            cam_src = USBCAM_SRC
-            cam = "USBCamera " + str(cam_src)
-
-        logging.info("Start Stream Thread: %s", cam)
-        if not os.path.exists('strmusbipcam.py'):
-            logging.error("Import Problem. strmusbipcam.py File Not Found.")
-            sys.exit(1)
+class PiVideoStream:
+    def __init__(
+        self,
+        resolution=(CAMERA_WIDTH, CAMERA_HEIGHT),
+        framerate=CAMERA_FRAMERATE,
+        rotation=0,
+        hflip=CAMERA_HFLIP,
+        vflip=CAMERA_VFLIP,
+    ):
+        """initialize the camera and stream"""
         try:
-            from strmusbipcam import Webcam
-        except ImportError:
-            logging.error("Import Failed for strmusbipcam.py")
+            self.camera = PiCamera()
+        except:
+            logging.error("PiCamera Already in Use by Another Process")
+            logging.error("%s %s Exiting Due to Error", progName, progVer)
             sys.exit(1)
-        vs = Webcam(src=cam_src, size=(WEBCAM_WIDTH,WEBCAM_HEIGHT)).start()
+        self.camera.resolution = resolution
+        self.camera.rotation = rotation
+        self.camera.framerate = framerate
+        self.camera.hflip = hflip
+        self.camera.vflip = vflip
+        self.rawCapture = PiRGBArray(self.camera, size=resolution)
+        self.stream = self.camera.capture_continuous(
+            self.rawCapture, format="bgr", use_video_port=True
+        )
 
-    return vs, cam
+        """
+        initialize the frame and the variable used to indicate
+        if the thread should be stopped
+        """
+        self.thread = None
+        self.frame = None
+        self.stopped = False
+
+    def start(self):
+        """start the thread to read frames from the video stream"""
+        self.thread = Thread(target=self.update, args=())
+        self.thread.daemon = True
+        self.thread.start()
+        return self
+
+    def update(self):
+        """keep looping infinitely until the thread is stopped"""
+        for f in self.stream:
+            # grab the frame from the stream and clear the stream in
+            # preparation for the next frame
+            self.frame = f.array
+            self.rawCapture.truncate(0)
+
+            # if the thread indicator variable is set, stop the thread
+            # and resource camera resources
+            if self.stopped:
+                self.stream.close()
+                self.rawCapture.close()
+                self.camera.close()
+                return
+
+    def read(self):
+        """return the frame most recently read"""
+        return self.frame
+
+    def stop(self):
+        """indicate that the thread should be stopped"""
+        self.stopped = True
+        if self.thread is not None:
+            self.thread.join()
 
 
 # ------------------------------------------------------------------------------
-def validate_cam(cam, camlist):
-    ''' Make sure camera value is correct (case insensitive)
-    '''
-    camlow = cam.lower()
-    if not camlow in camlist:
-        logging.error('%s Not a Valid Camera Value', cam)
-        logging.info('Valid Values are %s', ' '.join(camlist))
-        logging.info('Edit config.py CAMERA variable.')
-        sys.exit(1)
-    else:
-        logging.info('Connecting to camera %s', camlow)
-    return camlow
+class WebcamVideoStream:
+    def __init__(
+        self, CAM_SRC=WEBCAM_SRC, CAM_WIDTH=WEBCAM_WIDTH, CAM_HEIGHT=WEBCAM_HEIGHT
+    ):
+        """
+        initialize the video camera stream and read the first frame
+        from the stream
+        """
+        self.stream = CAM_SRC
+        self.stream = cv2.VideoCapture(CAM_SRC)
+        self.stream.set(3, CAM_WIDTH)
+        self.stream.set(4, CAM_HEIGHT)
+        (self.grabbed, self.frame) = self.stream.read()
+        self.thread = None
+        # initialize the variable used to indicate if the thread should
+        # be stopped
+        self.stopped = False
+
+    def start(self):
+        """start the thread to read frames from the video stream"""
+        self.thread = Thread(target=self.update, args=())
+        self.thread.daemon = True
+        self.thread.start()
+        return self
+
+    def update(self):
+        """keep looping infinitely until the thread is stopped"""
+        while True:
+            # if the thread indicator variable is set, stop the thread
+            if self.stopped:
+                self.stream.release()
+                return
+            # otherwise, read the next frame from the stream
+            (self.grabbed, self.frame) = self.stream.read()
+            # check for valid frames
+            if not self.grabbed:
+                # no frames recieved, then safely exit
+                self.stopped = True
+        self.stream.release()  # release resources
+
+    def read(self):
+        """return the frame most recently read
+        Note there will be a significant performance hit to
+        flip the webcam image so it is advised to just
+        physically flip the camera and avoid
+        setting WEBCAM_HFLIP = True or WEBCAM_VFLIP = True
+        """
+        if WEBCAM_FLIPPED:
+            if WEBCAM_HFLIP and WEBCAM_VFLIP:
+                self.frame = cv2.flip(self.frame, -1)
+            elif WEBCAM_HFLIP:
+                self.frame = cv2.flip(self.frame, 1)
+            elif WEBCAM_VFLIP:
+                self.frame = cv2.flip(self.frame, 0)
+        return self.frame
+
+    def stop(self):
+        """indicate that the thread should be stopped"""
+        self.stopped = True
+        # wait until stream resources are released (producer thread might be still grabbing frame)
+        if self.thread is not None:
+            self.thread.join()  # properly handle thread exit
+
+    def isOpened(self):
+        return self.stream.isOpened()
+
 
 # ------------------------------------------------------------------------------
 def get_fps(start_time, frame_count):
@@ -533,14 +590,14 @@ def show_settings():
         os.makedirs(html_path)
     os.chdir(cwd)
     if verbose:
-        print(HORIZ_LINE)
+        print(horiz_line)
         print("Note: To Send Full Output to File Use command")
-        print("python -u ./%s | tee -a log.txt" % PROG_NAME)
+        print("python -u ./%s | tee -a log.txt" % progName)
         print(
             "Set log_data_to_file=True to Send speed_Data to CSV File %s.log"
             % baseFileName
         )
-        print(HORIZ_LINE)
+        print(horiz_line)
         print("")
         print(
             "Debug Messages .. verbose=%s  display_fps=%s calibrate=%s"
@@ -637,7 +694,7 @@ def show_settings():
             % (MIN_AREA, BLUR_SIZE, THRESHOLD_SENSITIVITY, CIRCLE_SIZE)
         )
         print(
-            "                  WINDOW_BIGGER=%d gui_window_on=%s"
+            "                  WINDOW_BIGGER=%i gui_window_on=%s"
             " (Display OpenCV Status Windows on GUI Desktop)"
             % (WINDOW_BIGGER, gui_window_on)
         )
@@ -679,7 +736,7 @@ def show_settings():
                 " Target spaceFreeMB=%i (min=100 MB)" % (spaceTimerHrs, spaceFreeMB)
             )
         print("")
-        print(HORIZ_LINE)
+        print(horiz_line)
     return
 
 
@@ -903,62 +960,29 @@ def filesToDelete(mediaDirPath, extension=image_format):
         reverse=True,
     )
 
-# ------------------------------------------------------------------------------
-def makeRelSymlink(sourceFilenamePath, symDestDir):
-    '''
-    Creates a relative symlink in the specified symDestDir
-    that points to the Target file via a relative rather than
-    absolute path. If a symlink already exists it will be replaced.
-    Warning message will be displayed if symlink path is a file
-    rather than an existing symlink.
-    '''
-
-    # Initialize target and symlink file paths
-    targetDirPath = os.path.dirname(sourceFilenamePath)
-    srcfilename = os.path.basename(sourceFilenamePath)
-    symDestFilePath = os.path.join(symDestDir, srcfilename)
-    # Check if symlink already exists and unlink if required.
-    if os.path.islink(symDestFilePath):
-        logging.info("Remove Existing Symlink at %s ", symDestFilePath)
-        os.unlink(symDestFilePath)
-    # Check if symlink path is a file rather than a symlink. Error out if required
-    if os.path.isfile(symDestFilePath):
-        logging.warning("Failed. File Exists at %s.", symDestFilePath)
-        return
-
-    # Initialize required entries for creating a relative symlink to target file
-    absTargetDirPath = os.path.abspath(targetDirPath)
-    absSymDirPath = os.path.abspath(symDestDir)
-    relativeDirPath = os.path.relpath(absTargetDirPath, absSymDirPath)
-    # Initialize relative symlink entries to target file.
-
-    symFilePath = os.path.join(relativeDirPath, srcfilename)
-    # logging.info("ln -s %s %s ", symFilePath, symDestFilePath)
-    os.symlink(symFilePath, symDestFilePath)  # Create the symlink
-    # Check if symlink was created successfully
-    if os.path.islink(symDestFilePath):
-        logging.info("Saved at %s", symDestFilePath)
-    else:
-        logging.warning("Failed to Create Symlink at %s", symDestFilePath)
 
 # ------------------------------------------------------------------------------
-def saveRecent(recentMax, recentDir, filepath, prefix):
+def saveRecent(recentMax, recentDir, filename, prefix):
     """
     Create a symlink file in recent folder or file if non unix system
     or symlink creation fails.
     Delete Oldest symlink file if recentMax exceeded.
     """
-    if recentMax > 0:
-        deleteOldFiles(recentMax, os.path.abspath(recentDir), prefix)
-        try:
-            makeRelSymlink(filepath, recentDir)
+    src = os.path.abspath(filename)  # Original Source File Path
+    # Destination Recent Directory Path
+    dest = os.path.abspath(os.path.join(recentDir, os.path.basename(filename)))
+    deleteOldFiles(recentMax, os.path.abspath(recentDir), prefix)
+    try:  # Create symlink in recent folder
+        logging.info("   symlink %s", dest)
+        os.symlink(src, dest)  # Create a symlink to actual file
+    # Symlink can fail on non unix systems so copy file to Recent Dir instead
+    except OSError as err:
+        logging.error("symlink Failed: %s", err)
+        try:  # Copy image file to recent folder (if no support for symlinks)
+            shutil.copy(filename, recentDir)
         except OSError as err:
-            logging.error("symlink Failed: %s", err)
-            try:  # Copy image file to recent folder (if no support for symlinks)
-                shutil.copy(filepath, recentDir)
-                logging.info("Saved %s to %s", filepath, recentDir)
-            except OSError as err:
-                logging.error("Copy Failed %s to %s - %s", filepath, recentDir, err)
+            logging.error("Copy from %s to %s - %s", filename, recentDir, err)
+
 
 # ------------------------------------------------------------------------------
 def freeSpaceUpTo(freeMB, mediaDir, extension=image_format):
@@ -1234,7 +1258,18 @@ def speed_notify():
         logging.info("Plugin Enabled per pluginName=%s", pluginName)
     else:
         logging.info("Plugin Disabled per pluginEnable=%s", pluginEnable)
-
+    if verbose:
+        if loggingToFile:
+            print("Logging to File %s (Console Messages Disabled)" % logFilePath)
+        else:
+            logging.info("Logging to Console per Variable verbose=True")
+        if gui_window_on:
+            logging.info("Press lower case q on OpenCV GUI Window to Quit program")
+            logging.info("        or ctrl-c in this terminal session to Quit")
+        else:
+            logging.info("Press ctrl-c in this terminal session to Quit")
+    else:
+        print("Logging Messages Disabled per verbose=%s" % verbose)
     if calibrate:
         logging.warning("IMPORTANT: Camera Is In Calibration Mode ....")
     if align_cam_on:
@@ -1243,8 +1278,7 @@ def speed_notify():
         if os.path.isfile(align_filename):
             os.remove(align_filename)
             logging.info("Removed camera alignment image at %s", align_filename)
-    logging.info("%s video stream size is %i x %i", mycam, img_width, img_height)
-    logging.info("Resized Photos after image_bigger=%i is %i x %i", image_bigger, image_width, image_height)
+    logging.info("Begin Motion Tracking .....")
 
 
 # ------------------------------------------------------------------------------
@@ -1275,9 +1309,11 @@ def speed_camera():
         db_conn = db_open(DB_PATH)
         if db_conn is None:
             logging.error("Failed: Connect to sqlite3 DB %s", DB_PATH)
+            db_is_open = False
         else:
             logging.info("sqlite3 DB is Open %s", DB_PATH)
             db_cur = db_conn.cursor()  # Set cursor position
+            db_is_open = True
     # insert status column into speed table.  Can be used for
     # alpr (automatic license plate reader) processing to indicate
     # images to be processed eg null field entry.
@@ -1288,6 +1324,12 @@ def speed_camera():
         pass
     db_conn.close()
     speed_notify()
+    # Warn user of performance hit if webcam image flipped
+    if WEBCAM and WEBCAM_FLIPPED:
+        logging.warning("Recommend you do NOT Flip Webcam stream")
+        logging.warning("Otherwise SLOW streaming Will Result...")
+        logging.warning("If necessary physically flip camera and")
+        logging.warning("Set config.py WEBCAM_HFLIP and WEBCAM_VFLIP to False")
     # initialize a cropped grayimage1 image
     image2 = vs.read()  # Get image from VideoSteam thread instance
     prev_image = image2  # make a copy of the first image
@@ -1309,20 +1351,6 @@ def speed_camera():
     image_sign_bg = np.zeros((image_sign_resize[0], image_sign_resize[1], 4))
     image_sign_view = cv2.resize(image_sign_bg, (image_sign_resize))
     image_sign_view_time = time.time()
-    if verbose:
-        if loggingToFile:
-            print("Logging to File %s (Console Messages Disabled)" % logFilePath)
-        else:
-            logging.info("Logging to Console per Variable verbose=True")
-        if gui_window_on:
-            logging.info("Press lower case q on OpenCV GUI Window to Quit program")
-            logging.info("        or ctrl-c in this terminal session to Quit")
-        else:
-            logging.info("Press ctrl-c in this terminal session to Quit")
-    else:
-        print("Logging Messages Disabled per verbose=%s" % verbose)
-    logging.info("Begin Motion Tracking .....")
-    print(HORIZ_LINE)
     while still_scanning:  # process camera thread images and calculate speed
         image2 = vs.read()  # Read image data from video steam thread instance
         grayimage1, contours = speed_get_contours(image2, grayimage1)
@@ -1361,7 +1389,7 @@ def speed_camera():
                         reset_time_diff,
                         event_timeout,
                     )
-                    print(HORIZ_LINE)
+                    print(horiz_line)
                 ##############################
                 # Process motion events and track object movement
                 ##############################
@@ -1569,7 +1597,7 @@ def speed_camera():
                                         image_font_color,
                                         image_font_thickness,
                                     )
-                                logging.info(" Saved %ix%i %s", image_width, image_height, filename)
+                                logging.info(" Saved %s", filename)
                                 # Save resized image. If jpg format, user can customize image quality 1-100 (higher is better)
                                 # and/or enble/disable optimization per config.py settings.
                                 # otherwise if png, bmp, gif, etc normal image write will occur
@@ -1592,7 +1620,7 @@ def speed_camera():
                                         cv2.imwrite(filename, big_image)
                                 else:
                                     cv2.imwrite(filename, big_image)
-                                if MOTION_CODE:
+                                if motionCode:
                                     # ===========================================
                                     # Put your user code in userMotionCode() function
                                     # In the File user_motion_code.py
@@ -1635,7 +1663,10 @@ def speed_camera():
                                     quote,
                                 )
                                 m_area = track_w * track_h
-
+                                if WEBCAM:
+                                    camera = "WebCam"
+                                else:
+                                    camera = "PiCam"
                                 if pluginEnable:
                                     plugin_name = pluginName
                                 else:
@@ -1644,7 +1675,7 @@ def speed_camera():
                                 speed_data = (
                                     log_idx,
                                     log_timestamp,
-                                    mycam,
+                                    camera,
                                     round(ave_speed, 2),
                                     speed_units,
                                     filename,
@@ -1775,7 +1806,7 @@ def speed_camera():
                                     biggest_area,
                                 )
                             # Optional Wait to avoid multiple recording of same object
-                            print(HORIZ_LINE)
+                            print(horiz_line)
                             if track_timeout > 0:
                                 logging.info(
                                     "track_timeout %0.2f sec Sleep to Avoid Tracking Same Object Multiple Times."
@@ -1931,56 +1962,79 @@ def speed_camera():
 
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
-
     try:
-        mycam = validate_cam(CAMERA, CAMLIST)
-        vs, cam = create_cam_thread(mycam)
+        WEBCAM_TRIES = 0
+        while True:
+            # Start Web Cam stream (Note USB webcam must be plugged in)
+            if WEBCAM:
+                WEBCAM_TRIES += 1
+                logging.info("Initializing USB Web Camera Try .. %i", WEBCAM_TRIES)
+                # Start video stream on a processor Thread for faster speed
+                vs = WebcamVideoStream().start()
+                vs.CAM_SRC = WEBCAM_SRC
+                vs.CAM_WIDTH = WEBCAM_WIDTH
+                vs.CAM_HEIGHT = WEBCAM_HEIGHT
+                if WEBCAM_TRIES > 3:
+                    logging.error(
+                        "USB Web Cam Not Connecting to WEBCAM_SRC %i", WEBCAM_SRC
+                    )
+                    logging.error("Check Camera is Plugged In and Working")
+                    logging.error("on Specified SRC")
+                    logging.error("and Not Used(busy) by Another Process.")
+                    logging.error("%s %s Exiting Due to Error", progName, progVer)
+                    vs.stop()
+                    sys.exit(1)
+                time.sleep(4.0)  # Allow WebCam to initialize
+            else:
+                logging.info("Initializing Pi Camera ....")
+                # Start a pi-camera video stream thread
+                vs = PiVideoStream().start()
+                vs.camera.rotation = CAMERA_ROTATION
+                vs.camera.hflip = CAMERA_HFLIP
+                vs.camera.vflip = CAMERA_VFLIP
+                time.sleep(2.0)  # Allow PiCamera to initialize
+            # Get actual image size from stream.
+            # Necessary for IP camera
+            test_img = vs.read()
+            img_height, img_width, _ = test_img.shape
+            # Set width of trigger point image to save
+            image_width = int(img_width * image_bigger)
+            # Set height of trigger point image to save
+            image_height = int(img_height * image_bigger)
 
-        logging.info("Wait ...")
-        time.sleep(3)  # Allow Camera to warm up
+            x_scale = 8.0
+            y_scale = 4.0
+            # reduce motion area for larger stream sizes
+            if img_width > 1000:
+                x_scale = 3.0
+                y_scale = 3.0
+            # If motion box crop settings not found in config.py then
+            # Auto adjust the crop image to suit the real image size.
+            # For details See comments in config.py Motion Events settings section
+            try:
+                x_left
+            except NameError:
+                x_left = int(img_width / x_scale)
+            try:
+                x_right
+            except NameError:
+                x_right = int(img_width - x_left)
+            try:
+                y_upper
+            except NameError:
+                y_upper = int(img_height / y_scale)
+            try:
+                y_lower
+            except NameError:
+                y_lower = int(img_height - y_upper)
+            # setup buffer area to ensure contour is mostly contained in crop area
+            x_buf = int((x_right - x_left) / x_buf_adjust)
 
-        # Get actual image size from stream.
-        # Necessary for IP camera
-        test_img = vs.read()
-        img_height, img_width, _ = test_img.shape
-        # Set width of trigger point image to save
-        image_width = int(img_width * image_bigger)
-        # Set height of trigger point image to save
-        image_height = int(img_height * image_bigger)
-        x_scale = 8.0
-        y_scale = 4.0
-        # reduce motion area for larger stream sizes
-        if img_width > 1000:
-            x_scale = 3.0
-            y_scale = 3.0
-        # If motion box crop settings not found in config.py then
-        # Auto adjust the crop image to suit the real image size.
-        # For details See comments in config.py Motion Events settings section
-        try:
-            x_left
-        except NameError:
-            x_left = int(img_width / x_scale)
-        try:
-            x_right
-        except NameError:
-            x_right = int(img_width - x_left)
-        try:
-            y_upper
-        except NameError:
-            y_upper = int(img_height / y_scale)
-        try:
-            y_lower
-        except NameError:
-            y_lower = int(img_height - y_upper)
-        # setup buffer area to ensure contour is mostly contained in crop area
-        x_buf = int((x_right - x_left) / x_buf_adjust)
-
-        show_settings()  # Show variable settings
-        speed_camera()  # run main speed camera processing loop
+            show_settings()  # Show variable settings
+            speed_camera()  # run main speed camera processing loop
     except KeyboardInterrupt:
         vs.stop()
         print("")
         logging.info("User Pressed Keyboard ctrl-c")
-        logging.info("%s %s Exiting Program", PROG_NAME, PROG_VER)
-        logging.info("Wait...")
+        logging.info("%s %s Exiting Program", progName, progVer)
         sys.exit()

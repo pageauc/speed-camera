@@ -31,12 +31,14 @@ if $is_upgrade ; then
     echo "Note: config.py will not be overwritten. Updated settings are in config.py.new"
     speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
-"webserver.sh" "webserver2.py" "webserver3.py" "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py")
+"webserver.sh" "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" \
+"strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
 else
     speedFiles=("config.py" "menubox.sh" "speed-cam.py" "sql_speed_gt.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
-"webserver.sh" "webserver2.py" "webserver3.py" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
-"alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" "user_motion_code.py")
+"webserver.sh" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
+"alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" "user_motion_code.py" \
+"strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
 fi
 
 for fname in "${speedFiles[@]}" ; do
@@ -146,6 +148,7 @@ echo "$STATUS Make required Files Executable"
 chmod +x *.py
 chmod +x *.sh
 chmod -x config*
+chmod -x strm*
 
 echo "$STATUS Installing speed-cam.py Dependencies"
 sudo apt-get install -yq python-opencv

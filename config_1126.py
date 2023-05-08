@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 12.00 speed-cam.py Variable Configuration Settings
+#         Ver 11.20 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -16,34 +16,10 @@ align_cam_on = False     # Default=False  True Saves alignment image to help wit
 align_delay_sec = 5      # Default=5 seconds delay between each alignment image
 
 cal_obj_px_L2R = 80      # L2R Moving Objects, Length of a calibration object in pixels
-cal_obj_mm_L2R = 4700    # L2R Moving Objects, Length of the calibration object in millimetres
+cal_obj_mm_L2R = 4700.0  # L2R Moving Objects, Length of the calibration object in millimetres
 
 cal_obj_px_R2L = 85      # R2L Moving Objects, Length of a calibration object in pixels
-cal_obj_mm_R2L = 4700    # R2L Moving Objects, Length of the calibration object in millimetres
-
-# Camera Settings
-# ---------------
-CAMERA = "pilibcam"      # valid values are usbcam, ipcam, pilibcam, pilegcam
-CAM_LOCATION = 'None'    # Specify an address, physical location Etc for camera
-
-# Libcam (Bullseye or later) and Legacy Pi Camera Settings
-# --------------------------------------------------------
-CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning Default=320
-CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  Default=240
-CAMERA_FRAMERATE = 22  # Default= 20 Frame rate for video stream V2 picam can be higher
-CAMERA_ROTATION = 0    # Rotate camera image valid values are 0, 90, 180, 270
-CAMERA_VFLIP = True    # Flip the camera image vertically if required
-CAMERA_HFLIP = True    # Flip the camera image horizontally if required
-
-# USB, WEB and RTSP IP Cam Settings
-# ---------------------------------
-USBCAM_SRC = 1         # Used if CAMERA = "usbcam"
-IPCAM_SRC = "rtsp://USERID:PASSWORD@IP:PORT/PATH"  # Set low res stream per IP Cam Docs and config
-WEBCAM_WIDTH = 320     # Default= 320 USB, RTSP cam image stream width
-WEBCAM_HEIGHT = 240    # Default= 240 USB, RTSP cam image stream height
-WEBCAM_HFLIP = False   # Default= False USB Webcam flip image horizontally
-WEBCAM_VFLIP = False   # Default= False USB Webcam flip image vertically
-                       # IMPORTANT Webcam Streaming Performance Hit if Stream Flipped.
+cal_obj_mm_R2L = 4700.0  # R2L Moving Objects, Length of the calibration object in millimetres
 
 # Note if tested speed is too low increase appropriate cal_obj_mm  value and redo speed test for desired direction.
 # IMPORTANT - If plugins Enabled Edit Settings in specified plugin file located in plugins folder.
@@ -99,7 +75,35 @@ x_right = 250         # Default=250 comment variable for auto calculate
 y_upper = 90          # Default=90 comment variable for auto calculate
 y_lower = 150         # Default=150 comment variable for auto calculate
 
+# Camera Settings
+# ---------------
+CAMERA = "usbcam"    # valid values usbcam, rtspcam, pilibcam, pilegcam
+ 
+USBCAM_SRC = 0
+RTSPCAM_SRC = "rtsp://user:passwd@192.168.1.200:554/12"  # Set per IP Cam Docs and config
 
+
+CAM_LOCATION = 'None'  # Specify an address, physical location Etc for camera
+WEBCAM = False         # Default= False False=PiCamera True= USB Webcam or RTSP,IP Camera
+
+# Web Camera Settings
+WEBCAM_SRC = 0         # Default= 0   USB camera device connection number
+                       # or RTSP cam string eg "rtsp://192.168.1.101/RtspTranslator.12/camera"
+                       # see WIKI for details
+WEBCAM_WIDTH = 320     # Default= 320 USB Webcam Image width ignored for RTSP cam
+WEBCAM_HEIGHT = 240    # Default= 240 USB Webcam Image height ignored for RTSP cam
+WEBCAM_HFLIP = False   # Default= False USB Webcam flip image horizontally
+WEBCAM_VFLIP = False   # Default= False USB Webcam flip image vertically
+                       # IMPORTANT Webcam Streaming Performance Hit if Stream Flipped.
+
+# Pi Camera Settings
+# ------------------
+CAMERA_WIDTH = 320     # Image stream width for opencv motion scanning Default=320
+CAMERA_HEIGHT = 240    # Image stream height for opencv motion scanning  Default=240
+CAMERA_FRAMERATE = 22  # Default= 20 Frame rate for video stream V2 picam can be higher
+CAMERA_ROTATION = 0    # Rotate camera image valid values are 0, 90, 180, 270
+CAMERA_VFLIP = True    # Flip the camera image vertically if required
+CAMERA_HFLIP = True    # Flip the camera image horizontally if required
 
 # Camera Image Settings
 # ---------------------
