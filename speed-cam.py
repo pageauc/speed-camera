@@ -13,7 +13,7 @@ from threading import Thread
 import subprocess
 import numpy as np
 
-PROG_VER = "12.00"  # current version of this python script
+PROG_VER = "12.01"  # current version of this python script
 
 '''
 speed-cam.py written by Claude Pageau
@@ -1163,7 +1163,7 @@ def db_open(db_file):
 
 
 # ------------------------------------------------------------------------------
-def speed_get_contours(image, grayimage1):
+def speed_get_contours(grayimage1):
     """
     Read Camera image and crop and process
     with opencv to detect motion contours.
@@ -1171,8 +1171,11 @@ def speed_get_contours(image, grayimage1):
     """
     image_ok = False
     start_time = time.time()
-    timeout = 60  # seconds to wait if camera communications is lost.
-    # Note to self.  Look at adding setting to config.py
+    timeout = 60  # seconds to wait if camera communications is lost eg network stream.
+                  # Note to self.  Look at adding setting to config.py
+    global image_crop
+    global differenceimage
+
     while not image_ok:
         image = vs.read()  # Read image data from video steam thread instance
         # crop image to motion tracking area only
@@ -1195,7 +1198,6 @@ def speed_get_contours(image, grayimage1):
     # Convert to gray scale, which is easier
     grayimage2 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
     # Get differences between the two greyed images
-    global differenceimage
     differenceimage = cv2.absdiff(grayimage1, grayimage2)
     # Blur difference image to enhance motion vectors
     differenceimage = cv2.blur(differenceimage, (BLUR_SIZE, BLUR_SIZE))
@@ -1216,7 +1218,7 @@ def speed_get_contours(image, grayimage1):
         )
     # Update grayimage1 to grayimage2 ready for next image2
     grayimage1 = grayimage2
-    return grayimage1, contours
+    return image, grayimage1, contours
 
 
 # ------------------------------------------------------------------------------
@@ -1324,8 +1326,7 @@ def speed_camera():
     logging.info("Begin Motion Tracking .....")
     print(HORIZ_LINE)
     while still_scanning:  # process camera thread images and calculate speed
-        image2 = vs.read()  # Read image data from video steam thread instance
-        grayimage1, contours = speed_get_contours(image2, grayimage1)
+        image2, grayimage1, contours = speed_get_contours(grayimage1)
         # if contours found, find the one with biggest area
         if contours:
             total_contours = len(contours)
@@ -1432,7 +1433,8 @@ def speed_camera():
                             continue
                         track_count += 1  # increment track counter
                         speed_list.append(cur_ave_speed)
-                        ave_speed = np.mean(speed_list)
+                        ave_speed = np.std(speed_list)  # chsnged from mesn to standard deviation
+
                         prev_start_time = cur_track_time
                         event_timer = time.time()
                         if track_count >= track_counter:
