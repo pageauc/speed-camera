@@ -13,7 +13,7 @@ from threading import Thread
 import subprocess
 import numpy as np
 
-PROG_VER = "12.01"  # current version of this python script
+PROG_VER = "12.02"  # current version of this python script
 
 '''
 speed-cam.py written by Claude Pageau
@@ -1433,7 +1433,7 @@ def speed_camera():
                             continue
                         track_count += 1  # increment track counter
                         speed_list.append(cur_ave_speed)
-                        ave_speed = np.std(speed_list)  # chsnged from mesn to standard deviation
+                        ave_speed = np.median(speed_list)  # Cslculate the median ave speed
 
                         prev_start_time = cur_track_time
                         event_timer = time.time()
