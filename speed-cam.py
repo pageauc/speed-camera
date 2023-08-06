@@ -13,7 +13,7 @@ from threading import Thread
 import subprocess
 import numpy as np
 
-PROG_VER = "12.02"  # current version of this python script
+PROG_VER = "12.03"  # current version of this python script
 
 '''
 speed-cam.py written by Claude Pageau
@@ -1173,7 +1173,6 @@ def speed_get_contours(grayimage1):
     start_time = time.time()
     timeout = 60  # seconds to wait if camera communications is lost eg network stream.
                   # Note to self.  Look at adding setting to config.py
-    global image_crop
     global differenceimage
 
     while not image_ok:
@@ -1905,6 +1904,7 @@ def speed_camera():
             if show_thresh_on:
                 cv2.imshow("Threshold", differenceimage)
             if show_crop_on:
+                image_crop = image[y_upper:y_lower, x_left:x_right]
                 cv2.imshow("Crop Area", image_crop)
             if image_sign_on:
                 if time.time() - image_sign_view_time > image_sign_timeout:
