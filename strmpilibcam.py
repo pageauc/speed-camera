@@ -30,6 +30,7 @@ class PiLibCam:
         self.picam2.configure(self.picam2.create_preview_configuration(
                               main={"format": 'XRGB8888',
                               "size": size},
+                              raw={"size":self.picam2.sensor_resolution},
                               transform=Transform(vflip=vflip,
                                                   hflip=hflip)))
         self.picam2.start()
