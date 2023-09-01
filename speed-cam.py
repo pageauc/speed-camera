@@ -86,7 +86,7 @@ Note: plugins can override default and config.py values if plugins are
 default_settings = {
     "calibrate": True,
     "align_cam_on": False,
-    "align_delay_sec": 5,
+    "align_delay_sec": 2,
     "cal_obj_px_L2R": 90,
     "cal_obj_mm_L2R": 4700.0,
     "cal_obj_px_R2L": 95,
