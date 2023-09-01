@@ -12,8 +12,8 @@
 # Calibration Settings
 # --------------------
 calibrate = True         # Create a calibration image file with calibration hash markers 10 px per mark
-align_cam_on = False     # Default=False  True Saves alignment image to help with camera pointing
-align_delay_sec = 5      # Default=5 seconds delay between each alignment image
+align_cam_on = False     # Default=False True Saves align_cam.jpg See Web page recent align cam
+align_delay_sec = 2      # Default=2 seconds delay between each alignment image (disables motion tracking)
 
 cal_obj_px_L2R = 80      # L2R Moving Objects, Length of a calibration object in pixels
 cal_obj_mm_L2R = 4700    # L2R Moving Objects, Length of the calibration object in millimetres

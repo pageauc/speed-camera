@@ -13,7 +13,7 @@ from threading import Thread
 import subprocess
 import numpy as np
 
-PROG_VER = "12.03"  # current version of this python script
+PROG_VER = "12.04"  # current version of this python script
 
 '''
 speed-cam.py written by Claude Pageau
@@ -1267,7 +1267,7 @@ def speed_camera():
         text_y = image_height - 50  # show text at bottom of image
     else:
         text_y = 10  # show text at top of image
-    # Initialize prev_image used for taking speed image photo
+
     lastSpaceCheck = datetime.datetime.now()
     speed_path = image_path
     db_conn = db_check(DB_PATH)
@@ -1291,7 +1291,6 @@ def speed_camera():
     speed_notify()
     # initialize a cropped grayimage1 image
     image2 = vs.read()  # Get image from VideoSteam thread instance
-    prev_image = image2  # make a copy of the first image
 
     try:
         # crop image to motion tracking area only
@@ -1326,6 +1325,7 @@ def speed_camera():
     print(HORIZ_LINE)
     while still_scanning:  # process camera thread images and calculate speed
         image2, grayimage1, contours = speed_get_contours(grayimage1)
+        image2_copy = image2  # make a copy of the first image
         # if contours found, find the one with biggest area
         if contours:
             total_contours = len(contours)
@@ -1461,15 +1461,12 @@ def speed_camera():
                                 )
                                 # Resize and process previous image
                                 # before saving to disk
-                                prev_image = image2
                                 # Create a calibration image file name
                                 # There are no subdirectories to deal with
                                 if calibrate:
                                     log_time = datetime.datetime.now()
                                     filename = get_image_name(speed_path, "calib-")
-                                    prev_image = take_calibration_image(
-                                        ave_speed, filename, prev_image
-                                    )
+                                    image2 = take_calibration_image(ave_speed, filename, image2_copy)
                                 else:
                                     # Check if subdirectories configured
                                     # and create new subdirectory if required
@@ -1500,13 +1497,11 @@ def speed_camera():
                                         )
                                 # Add motion rectangle to image if required
                                 if image_show_motion_area:
-                                    prev_image = speed_image_add_lines(
-                                        prev_image, cvRed
-                                    )
+                                    image2 = speed_image_add_lines(image2, cvRed)
                                     # show centre of motion if required
                                     if SHOW_CIRCLE:
                                         cv2.circle(
-                                            prev_image,
+                                            image2,
                                             (track_x + x_left, track_y + y_upper),
                                             CIRCLE_SIZE,
                                             cvGreen,
@@ -1514,7 +1509,7 @@ def speed_camera():
                                         )
                                     else:
                                         cv2.rectangle(
-                                            prev_image,
+                                            image2,
                                             (
                                                 int(track_x + x_left),
                                                 int(track_y + y_upper),
@@ -1526,9 +1521,7 @@ def speed_camera():
                                             cvGreen,
                                             LINE_THICKNESS,
                                         )
-                                big_image = cv2.resize(
-                                    prev_image, (image_width, image_height)
-                                )
+                                big_image = cv2.resize(image2, (image_width, image_height ))
                                 if image_sign_on:
                                     image_sign_view_time = time.time()
                                     image_sign_bg = np.zeros(
@@ -1885,9 +1878,9 @@ def speed_camera():
                             LINE_THICKNESS,
                         )
         if align_cam_on:
-            image2 = speed_image_add_lines(image2, cvRed)
-            image_view = cv2.resize(image2, (image_width, image_height))
-            cv2.imwrite(align_filename, image_view)
+            image2 = speed_image_add_lines(image2_copy, cvRed)
+            image_align = cv2.resize(image2, (image_width, image_height))
+            cv2.imwrite(align_filename, image_align)
             logging.info(
                 "align_cam_on=%s align_delay_sec=%i - Browser View Cam Align Image at %s",
                 align_cam_on,
@@ -1896,16 +1889,23 @@ def speed_camera():
             )
             time.sleep(align_delay_sec)
         if gui_window_on:
-            # cv2.imshow('Difference Image',difference image)
-            image2 = speed_image_add_lines(image2, cvRed)
-            image_view = cv2.resize(image2, (image_width, image_height))
-            if gui_show_camera:
-                cv2.imshow("Movement (q Quits)", image_view)
             if show_thresh_on:
-                cv2.imshow("Threshold", differenceimage)
+                # resize and display motion threshold image
+                diff_size = (int(differenceimage.shape[1] * image_bigger),
+                             int(differenceimage.shape[0] * image_bigger))
+                big_diff_image = cv2.resize(differenceimage, diff_size)
+                cv2.imshow("Threshold", big_diff_image)
             if show_crop_on:
-                image_crop = image[y_upper:y_lower, x_left:x_right]
-                cv2.imshow("Crop Area", image_crop)
+                # resize and display cropped image
+                crop_image = image2[y_upper + LINE_THICKNESS:y_lower, x_left + LINE_THICKNESS:x_right]
+                crop_size = (int(crop_image.shape[1] * image_bigger),
+                             int(crop_image.shape[0] * image_bigger))
+                big_crop_image = cv2.resize(crop_image, crop_size)
+                cv2.imshow("Crop Area", big_crop_image)
+            if gui_show_camera:
+                image2 = speed_image_add_lines(image2_copy, cvRed)
+                big_image = cv2.resize(image2, (image_width, image_height))               
+                cv2.imshow("Movement (q Quits)", big_image)
             if image_sign_on:
                 if time.time() - image_sign_view_time > image_sign_timeout:
                     # Cleanup the image_sign_view
