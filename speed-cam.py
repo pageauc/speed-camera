@@ -13,7 +13,7 @@ from threading import Thread
 import subprocess
 import numpy as np
 
-PROG_VER = "12.04"  # current version of this python script
+PROG_VER = "12.05"  # current version of this python script
 
 '''
 speed-cam.py written by Claude Pageau
@@ -1325,7 +1325,8 @@ def speed_camera():
     print(HORIZ_LINE)
     while still_scanning:  # process camera thread images and calculate speed
         image2, grayimage1, contours = speed_get_contours(grayimage1)
-        image2_copy = image2  # make a copy of the first image
+        if gui_window_on or align_cam_on or calibrate:
+            image2_copy = image2  # make a copy of current image2 when needed
         # if contours found, find the one with biggest area
         if contours:
             total_contours = len(contours)
@@ -1904,7 +1905,7 @@ def speed_camera():
                 cv2.imshow("Crop Area", big_crop_image)
             if gui_show_camera:
                 image2 = speed_image_add_lines(image2_copy, cvRed)
-                big_image = cv2.resize(image2, (image_width, image_height))               
+                big_image = cv2.resize(image2, (image_width, image_height))
                 cv2.imshow("Movement (q Quits)", big_image)
             if image_sign_on:
                 if time.time() - image_sign_view_time > image_sign_timeout:
