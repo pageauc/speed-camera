@@ -13,7 +13,7 @@ from threading import Thread
 import subprocess
 import numpy as np
 
-PROG_VER = "12.05"  # current version of this python script
+PROG_VER = "12.06"  # current version of this python script
 
 '''
 speed-cam.py written by Claude Pageau
@@ -1568,22 +1568,16 @@ def speed_camera():
                                 # Save resized image. If jpg format, user can customize image quality 1-100 (higher is better)
                                 # and/or enble/disable optimization per config.py settings.
                                 # otherwise if png, bmp, gif, etc normal image write will occur
-                                if (
-                                    image_format.lower() == ".jpg"
-                                    or image_format.lower() == ".jpeg"
-                                ):
+                                if ((image_format.lower() == ".jpg" or image_format.lower() == ".jpeg")
+                                     and image_jpeg_optimize):
                                     try:
-                                        cv2.imwrite(
-                                            filename,
-                                            big_image,
-                                            [
-                                                int(cv2.IMWRITE_JPEG_QUALITY),
-                                                image_jpeg_quality,
-                                                int(cv2.IMWRITE_JPEG_OPTIMIZE),
-                                                image_jpeg_optimize,
-                                            ],
-                                        )
+                                        cv2.imwrite( filename, big_image,
+                                                    [ int(cv2.IMWRITE_JPEG_QUALITY), image_jpeg_quality,
+                                                      int(cv2.IMWRITE_JPEG_OPTIMIZE), 1
+                                                    ]
+                                                   )
                                     except:  # sometimes issue with IP camera so default to non optimized imwrite
+                                        logging.warn('Problem writing optimized. Saving Normal %s', filename)
                                         cv2.imwrite(filename, big_image)
                                 else:
                                     cv2.imwrite(filename, big_image)
@@ -1981,9 +1975,10 @@ if __name__ == "__main__":
         show_settings()  # Show variable settings
         speed_camera()  # run main speed camera processing loop
     except KeyboardInterrupt:
-        vs.stop()
         print("")
         logging.info("User Pressed Keyboard ctrl-c")
         logging.info("%s %s Exiting Program", PROG_NAME, PROG_VER)
-        logging.info("Wait...")
+        vs.stop()
+        logging.info("%s Stopped Camera Stream Thread.", cam.upper())
+        logging.info("Bye ...")
         sys.exit()
