@@ -34,7 +34,7 @@ class PiLibCam:
                               transform=Transform(vflip=vflip,
                                                   hflip=hflip)))
         self.picam2.start()
-        time.sleep(2)
+        time.sleep(2)  # allow time for camera to warm up
 
         # initialize variables
         self.thread = None  # Initialize Thread variable
@@ -54,17 +54,17 @@ class PiLibCam:
             # if the thread indicator variable is set,
             # release camera resources and stop the thread
             if self.stopped:
-                self.picam2.stop()
-                if self.thread is not None:
-                    self.thread.join()
                 return
-            time.sleep(0.01)  # short delay
-            self.frame = self.picam2.capture_array()
+            time.sleep(0.001)  # Slow loop down a little
+
 
     def read(self):
         '''return the frame array data'''
+        self.frame = self.picam2.capture_array("main")
         return self.frame
 
     def stop(self):
         '''indicate that the thread should be stopped'''
+        self.picam2.stop()  # stop picamera2 libcamera
+        time.sleep(2)  # allow camera time to released
         self.stopped = True
