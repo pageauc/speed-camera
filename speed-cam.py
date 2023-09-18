@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from __future__ import print_function
-PROG_VER = "13.00"  # current version of this python script
+PROG_VER = "13.01"  # current version of this python script
 '''
 speed-cam.py written by Claude Pageau
 Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking
@@ -54,8 +54,6 @@ import glob
 import shutil
 import logging
 import sqlite3
-# from threading import Thread
-# import subprocess
 import numpy as np
 
 try:
@@ -216,11 +214,11 @@ for key, val in default_settings.items():
         exec(key + "=val")
 
 # import variables from configcam.py
-try:   
+try:
     from configcam import *
 except Exception as err_msg:
     print("ERROR: %s" % err_msg)
-    sys.exit(1)   
+    sys.exit(1)
 
 # fix rounding problems with picamera resolution
 CAMERA_WIDTH = (IM_SIZE[0] + 31) // 32 * 32
@@ -411,6 +409,9 @@ def get_fps(start_time, frame_count):
     return start_time, frame_count
 
 def make_media_dirs():
+    """"
+    Create media default folders per config.py settings.
+    """"
     cwd = os.getcwd()
     html_path = "media/html"
     if not os.path.isdir(IM_DIR_PATH):

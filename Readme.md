@@ -3,8 +3,8 @@
 ## For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features), [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#reference-links).
 
 ## Note re Bullseye: 
-Speed-cam.py ver 11.26 will now run under the latest Raspberry Pi OS Bullseye with a pi camera module as well as webcam and IP cameras. 
-For picamera support Run ***sudo raspi-config***, Interface Options, then enable Legacy Camera option and reboot.
+Speed-cam.py ver 11.26 and greater will now run under Raspberry Pi OS Bullseye or later with a pi camera module as well as usbcam and IP/RTSP cameras. 
+For picamera support Run ***sudo raspi-config***, Interface Options, then enable/disable Legacy Camera option and reboot.
 
 ## RPI Quick curl Install or Upgrade   
 ***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will **NOT** be performed as part of   
@@ -16,8 +16,8 @@ to ensure your system is up-to-date.
 
     curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
 
-This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed.
-See my Github [menu driven compile opencv3 from source](https://github.com/pageauc/opencv3-setup) project
+This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed if not installed.
+If you need to compile openCV see my Github Repo at [menu driven compile opencv3 from source](https://github.com/pageauc/opencv3-setup) project
 
 #### Ver 13.00 Notes
 Version 13.00 is a major speed camera revision. Camera thread code is now handled by a strmcam.py module.
@@ -25,8 +25,11 @@ config.py variable names have changed so you will need to backup and cp config.p
 
 Also the camera settings are moved to configcam.py to allow code to be more portable. 
 
-The code to start a video stream thread is now greatly simplified. per example below
+Example code to start a video stream thread is now greatly simplified. per example below
 
+    # The following files need to be in the same folder as the script
+    # configcam.py, strmcam.py, strmpilegcam.py, strmpilibcam.py and strmusbipcam.py
+    
     from strmcam import strmcam   # import camera stream function
     
     vs = strmcam()      # start video stream thread per configcam.py settings using appropriate strm.....py file
