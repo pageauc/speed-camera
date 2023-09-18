@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from __future__ import print_function
-PROG_VER = "13.01"  # current version of this python script
+PROG_VER = "13.02"  # current version of this python script
 '''
 speed-cam.py written by Claude Pageau
 Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking
@@ -409,9 +409,9 @@ def get_fps(start_time, frame_count):
     return start_time, frame_count
 
 def make_media_dirs():
-    """"
+    """
     Create media default folders per config.py settings.
-    """"
+    """
     cwd = os.getcwd()
     html_path = "media/html"
     if not os.path.isdir(IM_DIR_PATH):
