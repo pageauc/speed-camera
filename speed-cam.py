@@ -410,10 +410,7 @@ def get_fps(start_time, frame_count):
         frame_count += 1
     return start_time, frame_count
 
-
-# ------------------------------------------------------------------------------
-def show_settings():
-    """Initialize and Display program variable settings from config.py"""
+def make_media_dirs():
     cwd = os.getcwd()
     html_path = "media/html"
     if not os.path.isdir(IM_DIR_PATH):
@@ -435,6 +432,12 @@ def show_settings():
         logging.info("Creating html Folder %s", html_path)
         os.makedirs(html_path)
     os.chdir(cwd)
+
+
+# ------------------------------------------------------------------------------
+def show_settings():
+    """Initialize and Display program variable settings from config.py"""
+
     if LOG_VERBOSE_ON:
         print(HORIZ_LINE)
         print("Note: To Send Full Output to File Use command")
@@ -1871,6 +1874,7 @@ if __name__ == "__main__":
         # setup buffer area to ensure contour is mostly contained in crop area
         x_buf = int((MO_CROP_X_RIGHT - MO_CROP_X_LEFT) / MO_X_LR_SIDE_BUFF_PX)
 
+        make_media_dirs()
         if SHOW_SETTINGS_ON:
             show_settings()  # Show variable settings
         if SHOW_CAM_SETTINGS_ON:
