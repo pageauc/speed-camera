@@ -60,7 +60,6 @@ import numpy as np
 
 try:
     from strmcam import strmcam
-    from configcam import *
 except Exception as err_msg:
     print("ERROR: %s" % err_msg)
     sys.exit(1)
@@ -215,6 +214,13 @@ for key, val in default_settings.items():
     except NameError:
         print("WARN : config.py Variable Not Found. Setting " + key + " = " + str(val))
         exec(key + "=val")
+
+# import variables from configcam.py
+try:   
+    from configcam import *
+except Exception as err_msg:
+    print("ERROR: %s" % err_msg)
+    sys.exit(1)   
 
 # fix rounding problems with picamera resolution
 CAMERA_WIDTH = (IM_SIZE[0] + 31) // 32 * 32

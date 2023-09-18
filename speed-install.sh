@@ -57,7 +57,7 @@ wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/sp
 if [ -f config.py ]; then     # check if local file exists.
     wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
 else
-    wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master//config.py
+    wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
 fi
 
 if [ -f configcam.py ]; then     # check if local file exists.
