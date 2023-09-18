@@ -11,8 +11,11 @@ For picamera support Run ***sudo raspi-config***, Interface Options, then enable
 **speed-install.sh** so it is highly recommended you run these prior to install
 to ensure your system is up-to-date.     
 
-***Step 1*** With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and Copy.     
-***Step 2*** On RPI putty SSH or terminal session right click, select paste then Enter to download and run script.  
+#### Step 1
+Press GitHub copy icon on right side of code box below.
+or With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and select Copy.
+#### Step 2
+On RPI putty SSH or terminal session right click, select paste then Enter to download and run script.  
 
     curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
 
