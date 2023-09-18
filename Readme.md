@@ -12,12 +12,13 @@ For picamera support Run ***sudo raspi-config***, Interface Options, then enable
 to ensure your system is up-to-date.     
 
 #### Step 1
-Press GitHub copy icon on right side of code box below.
+Press GitHub copy icon on right side of code box below.     
 or With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and select Copy.
-#### Step 2
-On RPI putty SSH or terminal session right click, select paste then Enter to download and run script.  
 
     curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
+
+#### Step 2
+On RPI putty SSH or terminal session right click, select paste then Enter to download and run script.  
 
 This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed if not installed.
 If you need to compile openCV see my Github Repo at [menu driven compile opencv3 from source](https://github.com/pageauc/opencv3-setup) project
