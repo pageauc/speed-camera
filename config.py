@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 13.00 speed-cam.py Variable Configuration Settings
+#        Ver 13.00 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
