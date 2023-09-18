@@ -32,7 +32,7 @@ if $is_upgrade ; then
     speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
 "webserver.sh" "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" \
-"strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
+"strmcam.py" "strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
 else
     speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
