@@ -55,15 +55,15 @@ wget -q --show-progress -nc https://raw.github.com/pageauc/speed-camera/master/u
 wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.txt
 
 if [ -f config.py ]; then     # check if local file exists.
-    wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/MoTrack-Picam2-Demo/master/config.py
+    wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
 else
-    wget -O config.py -q --show-progress https://raw.github.com/pageauc/MoTrack-Picam2-Demo/master/config.py
+    wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master//config.py
 fi
 
 if [ -f configcam.py ]; then     # check if local file exists.
-    wget -O configcam.py.new -q --show-progress https://raw.github.com/pageauc/MoTrack-Picam2-Demo/master/configcam.py
+    wget -O configcam.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/configcam.py
 else
-    wget -O configcam.py -q --show-progress https://raw.github.com/pageauc/MoTrack-Picam2-Demo/master/configcam.py
+    wget -O configcam.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/configcam.py
 fi
 
 
