@@ -7,8 +7,7 @@ Speed-cam.py ver 11.26 will now run under the latest Raspberry Pi OS Bullseye wi
 For picamera support Run ***sudo raspi-config***, Interface Options, then enable Legacy Camera option and reboot.
 
 ## RPI Quick curl Install or Upgrade   
-***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will
-**NOT** be performed as part of   
+***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will **NOT** be performed as part of   
 **speed-install.sh** so it is highly recommended you run these prior to install
 to ensure your system is up-to-date.     
 
@@ -20,7 +19,7 @@ to ensure your system is up-to-date.
 This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed.
 See my Github [menu driven compile opencv3 from source](https://github.com/pageauc/opencv3-setup) project
 
-***Ver 13.00 Notes***
+#### Ver 13.00 Notes
 Version 13.00 is a major speed camera revision. Camera thread code is now handled by a strmcam.py module.
 config.py variable names have changed so you will need to backup and cp config.py.new config.py (see below for details) 
 
