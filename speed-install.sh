@@ -53,13 +53,13 @@ for fname in "${speedFiles[@]}" ; do
 done
 wget -q --show-progress -nc https://raw.github.com/pageauc/speed-camera/master/user_motion_code.py
 wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.txt
-wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
 
 if [ -f config.py ]; then     # check if local file exists.
     wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/MoTrack-Picam2-Demo/master/config.py
 else
     wget -O config.py -q --show-progress https://raw.github.com/pageauc/MoTrack-Picam2-Demo/master/config.py
 fi
+
 if [ -f configcam.py ]; then     # check if local file exists.
     wget -O configcam.py.new -q --show-progress https://raw.github.com/pageauc/MoTrack-Picam2-Demo/master/configcam.py
 else
