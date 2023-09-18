@@ -1,8 +1,7 @@
 def strmcam():
-'''
-This is a launcher for the creating video a stream for one of various camera types 
-per CAMLIST list below
-'''
+    # This is a launcher for the creating video a stream for one of various camera types 
+    # per CAMLIST list below
+
     import sys
     import os
     import time
@@ -33,6 +32,11 @@ per CAMLIST list below
         logging.error(e)
         sys.exit(1)
 
+    # fix rounding problems with picamera resolution
+    new_im_w = (IM_SIZE[0] + 31) // 32 * 32
+    new_im_h = (IM_SIZE[1] + 15) // 16 * 16
+ 
+    new_im_size = (new_im_w, new_im_h)
 
     # ------------------------------------------------------------------------------
     def is_pi_legacy_cam():
@@ -85,7 +89,7 @@ per CAMLIST list below
                     logging.error("import Failed. from strmpilibcam import PiLibCamStream")
                     sys.exit(1)
                 cam_title = cam_name
-                vs = CamStream(size=IM_SIZE,
+                vs = CamStream(size=new_im_size,
                                vflip=IM_VFLIP,
                                hflip=IM_HFLIP).start()
 
@@ -114,7 +118,7 @@ per CAMLIST list below
             cam_title = cam_name
 
             # Create Legacy Pi Camera Video Stream Thread
-            vs = CamStream(size=IM_SIZE,
+            vs = CamStream(size=new_im_size,
                            framerate=IM_FRAMERATE,
                            rotation=IM_ROTATION,
                            hflip=IM_HFLIP,
@@ -135,7 +139,7 @@ per CAMLIST list below
             except ImportError:
                 logging.error("Could Not Import Webcam from strmusbipcam.py")
                 sys.exit(1)
-            vs = CamStream(src=cam_src, size=IM_SIZE).start()
+            vs = CamStream(src=cam_src, size=new_im_size).start()
 
         logging.info("%s Started Video Stream Thread.", cam_title.upper())
         return vs
