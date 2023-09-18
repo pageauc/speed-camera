@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="11.08"
+ver="13.00"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
 rclone_cur_ver="rclone v1.63.1"
@@ -34,11 +34,11 @@ if $is_upgrade ; then
 "webserver.sh" "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" \
 "strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
 else
-    speedFiles=("config.py" "menubox.sh" "speed-cam.py" "sql_speed_gt.py" \
+    speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
 "webserver.sh" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
 "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" "user_motion_code.py" \
-"strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
+"strmcam.py" "strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
 fi
 
 for fname in "${speedFiles[@]}" ; do
@@ -54,6 +54,18 @@ done
 wget -q --show-progress -nc https://raw.github.com/pageauc/speed-camera/master/user_motion_code.py
 wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.txt
 wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
+
+if [ -f config.py ]; then     # check if local file exists.
+    wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/MoTrack-Picam2-Demo/master/config.py
+else
+    wget -O config.py -q --show-progress https://raw.github.com/pageauc/MoTrack-Picam2-Demo/master/config.py
+fi
+if [ -f configcam.py ]; then     # check if local file exists.
+    wget -O configcam.py.new -q --show-progress https://raw.github.com/pageauc/MoTrack-Picam2-Demo/master/configcam.py
+else
+    wget -O configcam.py -q --show-progress https://raw.github.com/pageauc/MoTrack-Picam2-Demo/master/configcam.py
+fi
+
 
 if [ ! -f remote-run.sh ] ; then
     wget -O watch-app.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/watch-app.sh

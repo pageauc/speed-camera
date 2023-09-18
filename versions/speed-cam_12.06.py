@@ -1,6 +1,20 @@
 #!/usr/bin/python3
 from __future__ import print_function
-PROG_VER = "13.00"  # current version of this python script
+print('Loading Wait...')
+import os
+import sys
+import time
+import datetime
+import glob
+import shutil
+import logging
+import sqlite3
+from threading import Thread
+import subprocess
+import numpy as np
+
+PROG_VER = "12.06"  # current version of this python script
+
 '''
 speed-cam.py written by Claude Pageau
 Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking
@@ -45,26 +59,6 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 '''
 
-print('Loading Wait...')
-import os
-import sys
-import time
-import datetime
-import glob
-import shutil
-import logging
-import sqlite3
-# from threading import Thread
-# import subprocess
-import numpy as np
-
-try:
-    from strmcam import strmcam
-    from configcam import *
-except Exception as err_msg:
-    print("ERROR: %s" % err_msg)
-    sys.exit(1)
-
 # Get information about this script including name, launch path, etc.
 # This allows script to be renamed or relocated to another directory
 mypath = os.path.abspath(__file__)  # Find the full path of this python script
@@ -90,62 +84,74 @@ Note: plugins can override default and config.py values if plugins are
       enabled.  This happens after config.py variables are imported
 '''
 default_settings = {
-    "CALIBRATE_ON": True,
-    "ALIGN_CAM_ON": False,
-    "ALIGN_DELAY_SEC": 2,
-    "SHOW_SETTINGS_ON": False,
-    "SHOW_CAM_SETTINGS_ON": True,
-    "CAL_OBJ_PX_L2R": 90,
-    "CAL_OBJ_MM_L2R": 4700.0,
-    "CAL_OBJ_PX_R2L": 95,
-    "CAL_OBJ_MM_R2L": 4700.0,
-    "PLUGIN_ENABLE_ON": False,
-    "PLUGIN_NAME": "picam240",
-    "GUI_WINDOW_ON": False,
-    "GUI_THRESH_WIN_ON": False,
-    "GUI_CROP_WIN_ON": False,
-    "LOG_VERBOSE_ON": True,
-    "LOG_FPS_ON": False,
-    "LOG_DATA_TO_CSV": False,
-    "LOG_TO_FILE_ON": False,
-    "LOG_FILE_PATH": "speed-cam.log",
-    "MO_SPEED_MPH_ON": False,
-    "MO_TRACK_EVENT_COUNT": 5,
-    "MO_MIN_AREA_PX": 100,
-    "MO_LOG_OUT_RANGE_ON": True,
-    "MO_MAX_X_DIFF_PX": 20,
-    "MO_MIN_X_DIFF_PX": 1,
-    "MO_X_LR_SIDE_BUFF_PX": 10,
-    "MO_TRACK_TIMEOUT_SEC": 0.5,
-    "MO_EVENT_TIMEOUT_SEC": 0.3,
-    "MO_MAX_SPEED_OVER": 0,
-    "IM_DIR_PATH": "media/images",
-    "IM_PREFIX": "speed-",
-    "IM_FORMAT_EXT": ".jpg",
-    "IM_JPG_QUALITY": 95,
-    "IM_JPG_OPTIMIZE_ON": False,
-    "IM_SHOW_CROP_AREA_ON": True,
-    "IM_SHOW_SPEED_FILENAME_ON": False,
-    "IM_SHOW_TEXT_ON": True,
-    "IM_SHOW_TEXT_BOTTOM_ON": True,
-    "IM_FONT_SIZE_PX": 12,
-    "IM_FONT_THICKNESS": 2,
-    "IM_FONT_SCALE": 0.5,
-    "IM_FONT_COLOR": (255, 255, 255),
-    "IM_BIGGER": 3.0,
-    "IM_MAX_FILES": 0,
-    "IM_SUBDIR_MAX_FILES": 1000,
-    "IM_SUBDIR_MAX_HOURS": 0,
-    "IM_RECENT_MAX_FILES": 100,
-    "IM_RECENT_DIR_PATH": "media/recent",
-    "SPACE_TIMER_HRS": 0,
-    "SPACE_FREE_MB": 500,
-    "SPACE_MEDIA_DIR": "media/images",
-    "SPACE_FILE_EXT ": "jpg",
-    "CV_SHOW_CIRCLE_ON": False,
-    "CV_CIRCLE_SIZE_PX": 5,
-    "CV_LINE_WIDTH_PX": 1,
-    "CV_WINDOW_BIGGER": 1.0,
+    "calibrate": True,
+    "align_cam_on": False,
+    "align_delay_sec": 2,
+    "cal_obj_px_L2R": 90,
+    "cal_obj_mm_L2R": 4700.0,
+    "cal_obj_px_R2L": 95,
+    "cal_obj_mm_R2L": 4700.0,
+    "pluginEnable": False,
+    "pluginName": "picam240",
+    "gui_window_on": False,
+    "show_thresh_on": False,
+    "show_crop_on": False,
+    "verbose": True,
+    "display_fps": False,
+    "log_data_to_CSV": False,
+    "loggingToFile": False,
+    "logFilePath": "speed-cam.log",
+    "SPEED_MPH": False,
+    "track_counter": 5,
+    "MIN_AREA": 100,
+    "show_out_range": True,
+    "x_diff_max": 20,
+    "x_diff_min": 1,
+    "x_buf_adjust": 10,
+    "track_timeout": 0.5,
+    "event_timeout": 0.3,
+    "max_speed_over": 0,
+    "CAM_LOCATION": "None",
+    "CAMERA" : "pilibcam",
+    "USBCAM_SRC" : 1,
+    "IPCAM_SRC" : "rtsp://USERID:PASSWORD@IP:PORT/PATH",
+    "WEBCAM_WIDTH": 320,
+    "WEBCAM_HEIGHT": 240,
+    "WEBCAM_HFLIP": False,
+    "WEBCAM_VFLIP": False,
+    "CAMERA_WIDTH": 320,
+    "CAMERA_HEIGHT": 240,
+    "CAMERA_FRAMERATE": 20,
+    "CAMERA_ROTATION": 0,
+    "CAMERA_VFLIP": True,
+    "CAMERA_HFLIP": True,
+    "image_path": "media/images",
+    "image_prefix": "speed-",
+    "image_format": ".jpg",
+    "image_jpeg_quality": 95,
+    "image_jpeg_optimize": False,
+    "image_show_motion_area": True,
+    "image_filename_speed": False,
+    "image_text_on": True,
+    "image_text_bottom": True,
+    "image_font_size": 12,
+    "image_font_thickness": 2,
+    "image_font_scale": 0.5,
+    "image_font_color": (255, 255, 255),
+    "image_bigger": 3.0,
+    "image_max_files": 0,
+    "imageSubDirMaxFiles": 1000,
+    "imageSubDirMaxHours": 0,
+    "imageRecentMax": 100,
+    "imageRecentDir": "media/recent",
+    "spaceTimerHrs": 0,
+    "spaceFreeMB": 500,
+    "spaceMediaDir": "media/images",
+    "spaceFileExt ": "jpg",
+    "SHOW_CIRCLE": False,
+    "CIRCLE_SIZE": 5,
+    "LINE_THICKNESS": 1,
+    "WINDOW_BIGGER": 1.0,
     "BLUR_SIZE": 10,
     "THRESHOLD_SENSITIVITY": 20,
     "DB_DIR": "data",
@@ -160,27 +166,28 @@ default_settings = {
         ["hour", 14, 10],
         ["day", 28, 0],
     ],
-    "WEB_SERVER_PORT": 8080,
-    "WEB_SERVER_ROOT": "media",
-    "WEB_PAGE_TITLE": "SPEED-CAMERA Media",
-    "WEB_PAGE_REFRESH_ON": True,
-    "WEB_PAGE_REFRESH_SEC": "900",
-    "WEB_PAGE_BLANK_ON": False,
-    "WEB_IMAGE_HEIGHT": "768",
-    "WEB_IFRAME_WIDTH_PERCENT": "70%",
-    "WEB_IFRAME_WIDTH": "100%",
-    "WEB_IFRAME_HEIGHT": "100%",
-    "WEB_MAX_LIST_ENTRIES": 0,
-    "WEB_LIST_HEIGHT": "768",
-    "WEB_LIST_BY_DATETIME_ON": True,
-    "WEB_LIST_SORT_DESC_ON": True,
-    "IM_SHOW_SIGN_ON": False,
-    "IM_SIGN_RESIZE": (1280, 720),
-    "IM_SIGN_TEXT_XY": (100, 675),
-    "IM_SIGN_FONT_SCALE": 30.0,
-    "IM_SIGN_FONT_THICK_PX": 60,
-    "IM_SIGN_FONT_COLOR": (255, 255, 255),
-    "IM_SIGN_TIMEOUT_SEC": 5,
+    "web_server_port": 8080,
+    "web_server_root": "media",
+    "web_page_title": "SPEED-CAMERA Media",
+    "web_page_refresh_on": True,
+    "web_page_refresh_sec": "900",
+    "web_page_blank": False,
+    "web_image_height": "768",
+    "web_iframe_width_usage": "70%",
+    "web_iframe_width": "100%",
+    "web_iframe_height": "100%",
+    "web_max_list_entries": 0,
+    "web_list_height": "768",
+    "web_list_by_datetime": True,
+    "web_list_sort_descending": True,
+    "image_sign_on": False,
+    "image_sign_show_camera": False,
+    "image_sign_resize": (1280, 720),
+    "image_sign_text_xy": (100, 675),
+    "image_sign_font_scale": 30.0,
+    "image_sign_font_thickness": 60,
+    "image_sign_font_color": (255, 255, 255),
+    "image_sign_timeout": 5,
 }
 
 # Color data for OpenCV lines and text
@@ -192,17 +199,18 @@ cvRed = (0, 0, 255)
 
 '''
 Check for config.py variable file to import and warn if not Found.
-Logging is not used since the LOG_FILE_PATH variable is needed before
+Logging is not used since the logFilePath variable is needed before
 setting up logging
 '''
-
 configFilePath = os.path.join(baseDir, "config.py")
 if os.path.exists(configFilePath):
     # Read Configuration variables from config.py file
     try:
         from config import *
-    except Exception as err_msg:
-        print("WARN : %s" % err_msg)
+    except ImportError:
+        print(
+            "WARN  : Problem reading configuration variables from %s" % configFilePath
+        )
 else:
     print("WARN  : Missing config.py file - File Not Found %s" % configFilePath)
 """
@@ -213,23 +221,22 @@ for key, val in default_settings.items():
     try:
         exec(key)
     except NameError:
-        print("WARN : config.py Variable Not Found. Setting " + key + " = " + str(val))
+        print("WARN  : config.py Variable Not Found. Setting " + key + " = " + str(val))
         exec(key + "=val")
-
 # fix rounding problems with picamera resolution
-CAMERA_WIDTH = (IM_SIZE[0] + 31) // 32 * 32
-CAMERA_HEIGHT = (IM_SIZE[1] + 15) // 16 * 16
+CAMERA_WIDTH = (CAMERA_WIDTH + 31) // 32 * 32
+CAMERA_HEIGHT = (CAMERA_HEIGHT + 15) // 16 * 16
 
-# Now that variables are imported from config.py Setup Logging since we have LOG_FILE_PATH
-if LOG_TO_FILE_ON:
+# Now that variables are imported from config.py Setup Logging since we have logFilePath
+if loggingToFile:
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
-        filename=LOG_FILE_PATH,
+        filename=logFilePath,
         filemode="w",
     )
-elif LOG_VERBOSE_ON:
+elif verbose:
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s",
@@ -262,20 +269,22 @@ if os.path.isfile(userMotionFilePath):
     try:
         MOTION_CODE = True
         import user_motion_code
-    except Exception as err_msg:
-        print("WARN: %s" % err_msg)
+    except ImportError:
+        print("WARN  : Failed Import of File user_motion_code.py Investigate Problem")
         MOTION_CODE = False
 else:
-    print("WARN : import Failed. File Not Found %s" % userMotionFilePath
+    print(
+        "WARN  : %s File Not Found. Cannot Import user_motion_code functions."
+        % userMotionFilePath
     )
-# Import Settings from specified plugin if PLUGIN_ENABLE_ON=True
-if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
+# Import Settings from specified plugin if pluginEnable=True
+if pluginEnable:  # Check and verify plugin and load variable overlay
     pluginDir = os.path.join(baseDir, "plugins")
-    # Check if there is a .py at the end of PLUGIN_NAME variable
-    if PLUGIN_NAME.endswith(".py"):
-        PLUGIN_NAME = PLUGIN_NAME[:-3]  # Remove .py extensiion
-    pluginPath = os.path.join(pluginDir, PLUGIN_NAME + ".py")
-    logging.info("pluginEnabled - loading PLUGIN_NAME %s", pluginPath)
+    # Check if there is a .py at the end of pluginName variable
+    if pluginName.endswith(".py"):
+        pluginName = pluginName[:-3]  # Remove .py extensiion
+    pluginPath = os.path.join(pluginDir, pluginName + ".py")
+    logging.info("pluginEnabled - loading pluginName %s", pluginPath)
     if not os.path.isdir(pluginDir):
         logging.error("plugin Directory Not Found at %s", pluginDir)
         logging.info("Rerun github curl install script to install plugins")
@@ -284,8 +293,8 @@ if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
         logging.warning("%s %s Exiting Due to Error", PROG_NAME, PROG_VER)
         sys.exit(1)
     elif not os.path.exists(pluginPath):
-        logging.error("File Not Found PLUGIN_NAME %s", pluginPath)
-        logging.info("Check Spelling of PLUGIN_NAME Value in %s", configFilePath)
+        logging.error("File Not Found pluginName %s", pluginPath)
+        logging.info("Check Spelling of pluginName Value in %s", configFilePath)
         logging.info("------- Valid Names -------")
         validPlugin = glob.glob(pluginDir + "/*py")
         validPlugin.sort()
@@ -295,7 +304,7 @@ if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
             if not ((plugin == "__init__") or (plugin == "current")):
                 logging.info("        %s", plugin)
         logging.info("------- End of List -------")
-        logging.info("        Note: PLUGIN_NAME Should Not have .py Ending.")
+        logging.info("        Note: pluginName Should Not have .py Ending.")
         logging.info("or Rerun github curl install command.  See github wiki")
         logging.info("https://github.com/pageauc/speed-camera/wiki/")
         logging.info("How-to-Install-or-Upgrade#quick-install")
@@ -318,16 +327,16 @@ if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
         sys.path.insert(0, pluginDir)
         try:
             from plugins.current import *
-        except Exception as err_msg:
-            logging.warn("%s" % err_msg)
+        except ImportError:
+            logging.warning("Problem importing variables from %s", pluginDir)
         try:
             if os.path.exists(pluginCurrent):
                 os.remove(pluginCurrent)
             pluginCurrentpyc = os.path.join(pluginDir, "current.pyc")
             if os.path.exists(pluginCurrentpyc):
                 os.remove(pluginCurrentpyc)
-        except OSError as err_msg:
-            logging.warning("Failed To Remove File %s - %s", pluginCurrentpyc, err_msg)
+        except OSError as err:
+            logging.warning("Failed To Remove File %s - %s", pluginCurrentpyc, err)
 # import the necessary packages
 # -----------------------------
 
@@ -345,11 +354,11 @@ except ImportError:
         logging.error("%s %s Exiting Due to Error", PROG_NAME, PROG_VER)
     sys.exit(1)
 # fix possible invalid values when resizing
-if CV_WINDOW_BIGGER < 0.1:
-    CV_WINDOW_BIGGER = 0.1
-if IM_BIGGER < 0.1:
-    IM_BIGGER = 0.1
-QUOTE = '"'  # Used for creating QUOTE delimited log file of speed data
+if WINDOW_BIGGER < 0.1:
+    WINDOW_BIGGER = 0.1
+if image_bigger < 0.1:
+    image_bigger = 0.1
+quote = '"'  # Used for creating quote delimited log file of speed data
 fix_msg = """
     ---------- Upgrade Instructions -----------
     To Fix Problem Run ./menubox.sh UPGRADE menu pick.
@@ -364,10 +373,10 @@ fix_msg = """
     """
 
 # Calculate conversion from camera pixel width to actual speed.
-px_to_kph_L2R = float(CAL_OBJ_MM_L2R / CAL_OBJ_PX_L2R * 0.0036)
-px_to_kph_R2L = float(CAL_OBJ_MM_R2L / CAL_OBJ_PX_R2L * 0.0036)
+px_to_kph_L2R = float(cal_obj_mm_L2R / cal_obj_px_L2R * 0.0036)
+px_to_kph_R2L = float(cal_obj_mm_R2L / cal_obj_px_R2L * 0.0036)
 
-if MO_SPEED_MPH_ON:
+if SPEED_MPH:
     speed_units = "mph"
     speed_conv_L2R = 0.621371 * px_to_kph_L2R
     speed_conv_R2L = 0.621371 * px_to_kph_R2L
@@ -376,20 +385,114 @@ else:
     speed_conv_L2R = px_to_kph_L2R
     speed_conv_R2L = px_to_kph_R2L
 # path to alignment camera image
-align_filename = os.path.join(IM_RECENT_DIR_PATH, "align_cam.jpg")
+align_filename = os.path.join(imageRecentDir, "align_cam.jpg")
+
+# ------------------------------------------------------------------------------
+def is_pi_legacy_cam():
+    '''
+    Determine if pi camera is configured for Legacy = True or Libcam = False.
+    '''
+    logging.info("Check for Legacy Pi Camera Module with command - vcgencmd get_camera")
+    camResult = subprocess.check_output("vcgencmd get_camera", shell=True)
+    camResult = camResult.decode("utf-8")
+    camResult = camResult.replace("\n", "")
+    params = camResult.split()
+    if params[0].find("=1") >= 1 and params[1].find("=1") >= 1:
+        logging.info("Pi Camera Module Found %s", camResult)
+        return True
+    else:
+        logging.error("Problem Finding Pi Legacy Camera %s", camResult)
+        logging.error('Check if Legacy pi Camera is Enabled and Camera is working.')
+        return False
 
 
 # ------------------------------------------------------------------------------
-def show_config(filename):
+def create_cam_thread(mycam):
     '''
-    Display program configuration variable settings
-    read config file and print each decoded line
+    Create the appropriate video stream thread
+    bassed on the specified camera name
+    returns vs video stream and updated camera name with source if applicable
     '''
-    print("============= %s Settings ===================" % filename)
-    with open(filename, 'rb') as f:
-        for line in f:
-            print(line.decode().strip())
-    print("=====================================================")
+    cam = None
+    if mycam == 'pilibcam':
+        # check if pi libcam
+        if not is_pi_legacy_cam():
+            if not os.path.exists('/usr/bin/libcamera-still'):
+                logging.error('libcamera not Installed')
+                logging.info('Edit config.py and Change CAMERA variable as Required.')
+                sys.exit(1)
+            if not os.path.exists('strmpilibcam.py'):
+                logging.error("strmpilibcam.py File Not Found.")
+                sys.exit(1)
+            try:
+                from strmpilibcam import PiLibCam
+            except ImportError:
+                logging.error("Failed Import of pilibcam.py")
+                sys.exit(1)
+            cam = mycam
+            vs = PiLibCam(size=(CAMERA_WIDTH, CAMERA_HEIGHT),
+                          vflip=CAMERA_VFLIP,
+                          hflip=CAMERA_HFLIP).start()
+        else:
+            logging.error('Looks like Pi Legacy Camera is Enabled')
+            logging.info('Edit config.py and Change CAMERA variable as Required.')
+            logging.info('or Disable Legacy Pi Camera using sudo raspi-config')
+            sys.exit(1)
+
+    elif mycam == 'pilegcam':
+        # Check if Pi Legacy pi Camera
+        if not is_pi_legacy_cam():
+            sys.exit(1)
+
+        if not os.path.exists('strmpilegcam.py'):
+            logging.error("strmpilegcam.py File Not Found.")
+            sys.exit(1)
+        try:  # Add this check in case running on non RPI platform using usb camera
+            from strmpilegcam import PiLegacyCam
+        except ImportError:
+            logging.error("Could Not Import pilegacycam.py")
+            sys.exit(1)
+        cam = mycam
+        vs = PiLegacyCam(size=(CAMERA_WIDTH, CAMERA_HEIGHT),
+                               framerate=CAMERA_FRAMERATE,
+                               rotation=CAMERA_ROTATION,
+                               hflip=CAMERA_HFLIP,
+                               vflip=CAMERA_VFLIP).start()
+    elif mycam == 'usbcam' or mycam == 'ipcam':
+        if mycam == 'ipcam':
+            cam_src = IPCAM_SRC
+            cam = "IPCamera " + cam_src
+        elif mycam == 'usbcam':
+            cam_src = USBCAM_SRC
+            cam = "USBCamera " + str(cam_src)
+
+        logging.info("Start Stream Thread: %s", cam)
+        if not os.path.exists('strmusbipcam.py'):
+            logging.error("Import Problem. strmusbipcam.py File Not Found.")
+            sys.exit(1)
+        try:
+            from strmusbipcam import Webcam
+        except ImportError:
+            logging.error("Import Failed for strmusbipcam.py")
+            sys.exit(1)
+        vs = Webcam(src=cam_src, size=(WEBCAM_WIDTH,WEBCAM_HEIGHT)).start()
+
+    return vs, cam
+
+
+# ------------------------------------------------------------------------------
+def validate_cam(cam, camlist):
+    ''' Make sure camera value is correct (case insensitive)
+    '''
+    camlow = cam.lower()
+    if not camlow in camlist:
+        logging.error('%s Not a Valid Camera Value', cam)
+        logging.info('Valid Values are %s', ' '.join(camlist))
+        logging.info('Edit config.py CAMERA variable.')
+        sys.exit(1)
+    else:
+        logging.info('Connecting to camera %s', camlow)
+    return camlow
 
 # ------------------------------------------------------------------------------
 def get_fps(start_time, frame_count):
@@ -410,18 +513,18 @@ def show_settings():
     """Initialize and Display program variable settings from config.py"""
     cwd = os.getcwd()
     html_path = "media/html"
-    if not os.path.isdir(IM_DIR_PATH):
-        logging.info("Creating Image Storage Folder %s", IM_DIR_PATH)
-        os.makedirs(IM_DIR_PATH)
-    os.chdir(IM_DIR_PATH)
+    if not os.path.isdir(image_path):
+        logging.info("Creating Image Storage Folder %s", image_path)
+        os.makedirs(image_path)
+    os.chdir(image_path)
     os.chdir(cwd)
-    if IM_RECENT_MAX_FILES > 0:
-        if not os.path.isdir(IM_RECENT_DIR_PATH):
-            logging.info("Create Recent Folder %s", IM_RECENT_DIR_PATH)
+    if imageRecentMax > 0:
+        if not os.path.isdir(imageRecentDir):
+            logging.info("Create Recent Folder %s", imageRecentDir)
             try:
-                os.makedirs(IM_RECENT_DIR_PATH)
+                os.makedirs(imageRecentDir)
             except OSError as err:
-                logging.error("Failed to Create Folder %s - %s", IM_RECENT_DIR_PATH, err)
+                logging.error("Failed to Create Folder %s - %s", imageRecentDir, err)
     if not os.path.isdir(search_dest_path):
         logging.info("Creating Search Folder %s", search_dest_path)
         os.makedirs(search_dest_path)
@@ -429,7 +532,7 @@ def show_settings():
         logging.info("Creating html Folder %s", html_path)
         os.makedirs(html_path)
     os.chdir(cwd)
-    if LOG_VERBOSE_ON:
+    if verbose:
         print(HORIZ_LINE)
         print("Note: To Send Full Output to File Use command")
         print("python -u ./%s | tee -a log.txt" % PROG_NAME)
@@ -440,88 +543,88 @@ def show_settings():
         print(HORIZ_LINE)
         print("")
         print(
-            "Debug Messages .. LOG_VERBOSE_ON=%s  LOG_FPS_ON=%s CALIBRATE_ON=%s"
-            % (LOG_VERBOSE_ON, LOG_FPS_ON, CALIBRATE_ON)
+            "Debug Messages .. verbose=%s  display_fps=%s calibrate=%s"
+            % (verbose, display_fps, calibrate)
         )
-        print("                  MO_LOG_OUT_RANGE_ON=%s" % MO_LOG_OUT_RANGE_ON)
+        print("                  show_out_range=%s" % show_out_range)
         print(
-            "Plugins ......... PLUGIN_ENABLE_ON=%s  PLUGIN_NAME=%s"
-            % (PLUGIN_ENABLE_ON, PLUGIN_NAME)
-        )
-        print(
-            "Calibration ..... CAL_OBJ_PX_L2R=%i px  CAL_OBJ_MM_L2R=%i mm  speed_conv_L2R=%.5f"
-            % (CAL_OBJ_PX_L2R, CAL_OBJ_MM_L2R, speed_conv_L2R)
+            "Plugins ......... pluginEnable=%s  pluginName=%s"
+            % (pluginEnable, pluginName)
         )
         print(
-            "                  CAL_OBJ_PX_R2L=%i px  CAL_OBJ_MM_R2L=%i mm  speed_conv_R2L=%.5f"
-            % (CAL_OBJ_PX_R2L, CAL_OBJ_MM_R2L, speed_conv_R2L)
+            "Calibration ..... cal_obj_px_L2R=%i px  cal_obj_mm_L2R=%i mm  speed_conv_L2R=%.5f"
+            % (cal_obj_px_L2R, cal_obj_mm_L2R, speed_conv_L2R)
         )
-        if PLUGIN_ENABLE_ON:
+        print(
+            "                  cal_obj_px_R2L=%i px  cal_obj_mm_R2L=%i mm  speed_conv_R2L=%.5f"
+            % (cal_obj_px_R2L, cal_obj_mm_R2L, speed_conv_R2L)
+        )
+        if pluginEnable:
             print("                  (Change Settings in %s)" % pluginPath)
         else:
             print("                  (Change Settings in %s)" % configFilePath)
         print(
             "Logging ......... Log_data_to_CSV=%s  log_filename=%s.csv (CSV format)"
-            % (LOG_DATA_TO_CSV, baseFileName)
+            % (log_data_to_CSV, baseFileName)
         )
         print(
-            "                  LOG_TO_FILE_ON=%s  LOG_FILE_PATH=%s"
-            % (LOG_TO_FILE_ON, LOG_FILE_PATH)
+            "                  loggingToFile=%s  logFilePath=%s"
+            % (loggingToFile, logFilePath)
         )
         print("                  SQLITE3 DB_PATH=%s  DB_TABLE=%s" % (DB_PATH, DB_TABLE))
         print(
-            "Speed Trigger ... Log only if MO_MAX_SPEED_OVER > %i %s"
-            % (MO_MAX_SPEED_OVER, speed_units)
+            "Speed Trigger ... Log only if max_speed_over > %i %s"
+            % (max_speed_over, speed_units)
         )
         print(
-            "                  and MO_TRACK_EVENT_COUNT >= %i consecutive motion events"
-            % MO_TRACK_EVENT_COUNT
+            "                  and track_counter >= %i consecutive motion events"
+            % track_counter
         )
         print(
-            "Exclude Events .. If  MO_MIN_X_DIFF_PX < %i or MO_MAX_X_DIFF_PX > %i px"
-            % (MO_MIN_X_DIFF_PX, MO_MAX_X_DIFF_PX)
+            "Exclude Events .. If  x_diff_min < %i or x_diff_max > %i px"
+            % (x_diff_min, x_diff_max)
         )
         print(
-            "                  If  MO_CROP_Y_UPPER < %i or MO_CROP_Y_LOWER > %i px" % (MO_CROP_Y_UPPER, MO_CROP_Y_LOWER)
+            "                  If  y_upper < %i or y_lower > %i px" % (y_upper, y_lower)
         )
         print(
-            "                  or  MO_CROP_X_LEFT < %i or MO_CROP_X_RIGHT > %i px" % (MO_CROP_X_LEFT, MO_CROP_X_RIGHT)
+            "                  or  x_left < %i or x_right > %i px" % (x_left, x_right)
         )
         print(
-            "                  If  MO_MAX_SPEED_OVER < %i %s"
-            % (MO_MAX_SPEED_OVER, speed_units)
+            "                  If  max_speed_over < %i %s"
+            % (max_speed_over, speed_units)
         )
         print(
-            "                  If  MO_EVENT_TIMEOUT_SEC > %.2f seconds Start New Track"
-            % (MO_EVENT_TIMEOUT_SEC)
+            "                  If  event_timeout > %.2f seconds Start New Track"
+            % (event_timeout)
         )
         print(
-            "                  MO_TRACK_TIMEOUT_SEC=%.2f sec wait after Track Ends"
-            " (avoid retrack of same object)" % (MO_TRACK_TIMEOUT_SEC)
+            "                  track_timeout=%.2f sec wait after Track Ends"
+            " (avoid retrack of same object)" % (track_timeout)
         )
         print(
-            "Speed Photo ..... Size=%ix%i px  IM_BIGGER=%.1f"
+            "Speed Photo ..... Size=%ix%i px  image_bigger=%.1f"
             "  rotation=%i  VFlip=%s  HFlip=%s "
             % (
                 image_width,
                 image_height,
-                IM_BIGGER,
-                IM_ROTATION,
-                IM_VFLIP,
-                IM_HFLIP,
+                image_bigger,
+                CAMERA_ROTATION,
+                CAMERA_VFLIP,
+                CAMERA_HFLIP,
             )
         )
         print(
-            "                  IM_DIR_PATH=%s  image_Prefix=%s"
-            % (IM_DIR_PATH, IM_PREFIX)
+            "                  image_path=%s  image_Prefix=%s"
+            % (image_path, image_prefix)
         )
         print(
-            "                  IM_FONT_SIZE_PX=%i px high  IM_SHOW_TEXT_BOTTOM_ON=%s"
-            % (IM_FONT_SIZE_PX, IM_SHOW_TEXT_BOTTOM_ON)
+            "                  image_font_size=%i px high  image_text_bottom=%s"
+            % (image_font_size, image_text_bottom)
         )
         print(
-            "                  IM_JPG_QUALITY=%s  IM_JPG_OPTIMIZE_ON=%s"
-            % (IM_JPG_QUALITY, IM_JPG_OPTIMIZE_ON)
+            "                  image_jpeg_quality=%s  image_jpeg_optimize=%s"
+            % (image_jpeg_quality, image_jpeg_optimize)
         )
         print(
             "Motion Settings . Size=%ix%i px  px_to_kph_L2R=%f  px_to_kph_R2L=%f speed_units=%s"
@@ -529,51 +632,51 @@ def show_settings():
         )
         print("                  CAM_LOCATION= %s" % CAM_LOCATION)
         print(
-            "OpenCV Settings . MO_MIN_AREA_PX=%i sq-px  BLUR_SIZE=%i"
-            "  THRESHOLD_SENSITIVITY=%i  CV_CIRCLE_SIZE_PX=%i px"
-            % (MO_MIN_AREA_PX, BLUR_SIZE, THRESHOLD_SENSITIVITY, CV_CIRCLE_SIZE_PX)
+            "OpenCV Settings . MIN_AREA=%i sq-px  BLUR_SIZE=%i"
+            "  THRESHOLD_SENSITIVITY=%i  CIRCLE_SIZE=%i px"
+            % (MIN_AREA, BLUR_SIZE, THRESHOLD_SENSITIVITY, CIRCLE_SIZE)
         )
         print(
-            "                  CV_WINDOW_BIGGER=%d GUI_WINDOW_ON=%s"
+            "                  WINDOW_BIGGER=%d gui_window_on=%s"
             " (Display OpenCV Status Windows on GUI Desktop)"
-            % (CV_WINDOW_BIGGER, GUI_WINDOW_ON)
+            % (WINDOW_BIGGER, gui_window_on)
         )
         print(
-            "                  IM_FRAMERATE=%i fps video stream speed"
-            % IM_FRAMERATE
+            "                  CAMERA_FRAMERATE=%i fps video stream speed"
+            % CAMERA_FRAMERATE
         )
         print(
-            "Sub-Directories . IM_SUBDIR_MAX_HOURS=%i (0=off)"
-            "  IM_SUBDIR_MAX_FILES=%i (0=off)"
-            % (IM_SUBDIR_MAX_HOURS, IM_SUBDIR_MAX_FILES)
+            "Sub-Directories . imageSubDirMaxHours=%i (0=off)"
+            "  imageSubDirMaxFiles=%i (0=off)"
+            % (imageSubDirMaxHours, imageSubDirMaxFiles)
         )
         print(
-            "                  IM_RECENT_DIR_PATH=%s IM_RECENT_MAX_FILES=%i (0=off)"
-            % (IM_RECENT_DIR_PATH, IM_RECENT_MAX_FILES)
+            "                  imageRecentDir=%s imageRecentMax=%i (0=off)"
+            % (imageRecentDir, imageRecentMax)
         )
-        if SPACE_TIMER_HRS > 0:  # Check if disk mgmnt is enabled
+        if spaceTimerHrs > 0:  # Check if disk mgmnt is enabled
             print(
                 "Disk Space  ..... Enabled - Manage Target Free Disk Space."
-                " Delete Oldest %s Files if Needed" % (SPACE_FILE_EXT)
+                " Delete Oldest %s Files if Needed" % (spaceFileExt)
             )
             print(
-                "                  Check Every SPACE_TIMER_HRS=%i hr(s) (0=off)"
-                "  Target SPACE_FREE_MB=%i MB  min is 100 MB)"
-                % (SPACE_TIMER_HRS, SPACE_FREE_MB)
+                "                  Check Every spaceTimerHrs=%i hr(s) (0=off)"
+                "  Target spaceFreeMB=%i MB  min is 100 MB)"
+                % (spaceTimerHrs, spaceFreeMB)
             )
             print(
-                "                  If Needed Delete Oldest SPACE_FILE_EXT=%s  SPACE_MEDIA_DIR=%s"
-                % (SPACE_FILE_EXT, SPACE_MEDIA_DIR)
+                "                  If Needed Delete Oldest spaceFileExt=%s  spaceMediaDir=%s"
+                % (spaceFileExt, spaceMediaDir)
             )
         else:
             print(
-                "Disk Space  ..... Disabled - SPACE_TIMER_HRS=%i"
+                "Disk Space  ..... Disabled - spaceTimerHrs=%i"
                 "  Manage Target Free Disk Space. Delete Oldest %s Files"
-                % (SPACE_TIMER_HRS, SPACE_FILE_EXT)
+                % (spaceTimerHrs, spaceFileExt)
             )
             print(
-                "                  SPACE_TIMER_HRS=%i (0=Off)"
-                " Target SPACE_FREE_MB=%i (min=100 MB)" % (SPACE_TIMER_HRS, SPACE_FREE_MB)
+                "                  spaceTimerHrs=%i (0=Off)"
+                " Target spaceFreeMB=%i (min=100 MB)" % (spaceTimerHrs, spaceFreeMB)
             )
         print("")
         print(HORIZ_LINE)
@@ -594,7 +697,7 @@ def take_calibration_image(speed, filename, cal_image):
     motion_win_color = cvBlue
 
     for i in range(10, image_width - 9, 10):
-        cv2.line(cal_image, (i, MO_CROP_Y_UPPER - 5), (i, MO_CROP_Y_UPPER + 30), hash_color, 1)
+        cv2.line(cal_image, (i, y_upper - 5), (i, y_upper + 30), hash_color, 1)
     # This is motion window
     cal_image = speed_image_add_lines(cal_image, motion_win_color)
 
@@ -612,22 +715,22 @@ def take_calibration_image(speed, filename, cal_image):
         "  1 - Use L2R and R2L with Same Size Reference Object, Eg. same vehicle for both directions."
     )
     print(
-        "  2 - For objects moving L2R Record CAL_OBJ_PX_L2R Value Using Red MO_CROP_Y_UPPER Hash Marks at every 10 px  Current Setting is %i px"
-        % CAL_OBJ_PX_L2R
+        "  2 - For objects moving L2R Record cal_obj_px_L2R Value Using Red y_upper Hash Marks at every 10 px  Current Setting is %i px"
+        % cal_obj_px_L2R
     )
     print(
-        "  3 - Record CAL_OBJ_MM_L2R of object. This is Actual length in mm of object above Current Setting is %i mm"
-        % CAL_OBJ_MM_L2R
+        "  3 - Record cal_obj_mm_L2R of object. This is Actual length in mm of object above Current Setting is %i mm"
+        % cal_obj_mm_L2R
     )
     print(
-        "      If Recorded Speed %.1f %s is Too Low, Increasing CAL_OBJ_MM_L2R to Adjust or Visa-Versa"
+        "      If Recorded Speed %.1f %s is Too Low, Increasing cal_obj_mm_L2R to Adjust or Visa-Versa"
         % (speed, speed_units)
     )
     print(
         "Repeat Calibration with same object moving R2L and update config.py R2L variables"
     )
-    print("CAL_OBJ_MM_R2L and CAL_OBJ_PX_R2L accordingly")
-    if PLUGIN_ENABLE_ON:
+    print("cal_obj_mm_R2L and cal_obj_px_R2L accordingly")
+    if pluginEnable:
         print("  4 - Edit %s File and Change Values for Above Variables." % pluginPath)
     else:
         print(
@@ -636,7 +739,7 @@ def take_calibration_image(speed, filename, cal_image):
         )
     print("  5 - Do a Speed Test to Confirm/Tune Settings.  You May Need to Repeat.")
     print(
-        "  6 - When Calibration is Finished, Set config.py Variable  CALIBRATE_ON = False"
+        "  6 - When Calibration is Finished, Set config.py Variable  calibrate = False"
     )
     print("      Then Restart speed-cam.py and monitor activity.")
     print("")
@@ -655,7 +758,7 @@ def take_calibration_image(speed, filename, cal_image):
 
 
 # ------------------------------------------------------------------------------
-def subdir_latest(directory):
+def subDirLatest(directory):
     """Scan for directories and return most recent"""
     dirList = [
         name
@@ -671,7 +774,7 @@ def subdir_latest(directory):
 
 
 # ------------------------------------------------------------------------------
-def subdir_create(directory, prefix):
+def subDirCreate(directory, prefix):
     """Create media subdirectories base on required naming"""
     now = datetime.datetime.now()
     # Specify folder naming
@@ -700,7 +803,7 @@ def subdir_create(directory, prefix):
 
 
 # ------------------------------------------------------------------------------
-def delete_old_files(maxFiles, dirPath, prefix):
+def deleteOldFiles(maxFiles, dirPath, prefix):
     """
     Delete Oldest files gt or
     equal to maxfiles that match filename prefix
@@ -726,7 +829,7 @@ def delete_old_files(maxFiles, dirPath, prefix):
 
 
 # ------------------------------------------------------------------------------
-def subdir_check_max_files(directory, filesMax):
+def subDirCheckMaxFiles(directory, filesMax):
     """Count number of files in a folder path"""
     fileList = glob.glob(directory + "/*")
     count = len(fileList)
@@ -739,7 +842,7 @@ def subdir_check_max_files(directory, filesMax):
 
 
 # ------------------------------------------------------------------------------
-def subdir_check_max_hrs(directory, hrsMax, prefix):
+def subDirCheckMaxHrs(directory, hrsMax, prefix):
     """extract the date-time from the directory name"""
     # Note to self need to add error checking
     dirName = os.path.split(directory)[1]  # split dir path and keep dirName
@@ -760,26 +863,26 @@ def subdir_check_max_hrs(directory, hrsMax, prefix):
 
 
 # ------------------------------------------------------------------------------
-def subdir_checks(maxHours, maxFiles, directory, prefix):
+def subDirChecks(maxHours, maxFiles, directory, prefix):
     """Check if motion SubDir needs to be created"""
     if maxHours < 1 and maxFiles < 1:  # No Checks required
         # logging.info('No sub-folders Required in %s', directory)
         subDirPath = directory
     else:
-        subDirPath = subdir_latest(directory)
+        subDirPath = subDirLatest(directory)
         if subDirPath == directory:  # No subDir Found
             logging.info("No sub folders Found in %s", directory)
-            subDirPath = subdir_create(directory, prefix)
+            subDirPath = subDirCreate(directory, prefix)
         elif maxHours > 0 and maxFiles < 1:  # Check MaxHours Folder Age Only
-            if subdir_check_max_hrs(subDirPath, maxHours, prefix):
-                subDirPath = subdir_create(directory, prefix)
+            if subDirCheckMaxHrs(subDirPath, maxHours, prefix):
+                subDirPath = subDirCreate(directory, prefix)
         elif maxHours < 1 and maxFiles > 0:  # Check Max Files Only
-            if subdir_check_max_files(subDirPath, maxFiles):
-                subDirPath = subdir_create(directory, prefix)
+            if subDirCheckMaxFiles(subDirPath, maxFiles):
+                subDirPath = subDirCreate(directory, prefix)
         elif maxHours > 0 and maxFiles > 0:  # Check both Max Files and Age
-            if subdir_check_max_hrs(subDirPath, maxHours, prefix):
-                if subdir_check_max_files(subDirPath, maxFiles):
-                    subDirPath = subdir_create(directory, prefix)
+            if subDirCheckMaxHrs(subDirPath, maxHours, prefix):
+                if subDirCheckMaxFiles(subDirPath, maxFiles):
+                    subDirPath = subDirCreate(directory, prefix)
                 else:
                     logging.info("MaxFiles Not Exceeded in %s", subDirPath)
     os.path.abspath(subDirPath)
@@ -787,7 +890,7 @@ def subdir_checks(maxHours, maxFiles, directory, prefix):
 
 
 # ------------------------------------------------------------------------------
-def files_to_delete(mediaDirPath, extension=IM_FORMAT_EXT):
+def filesToDelete(mediaDirPath, extension=image_format):
     """Return a list of files to be deleted"""
     return sorted(
         (
@@ -801,7 +904,7 @@ def files_to_delete(mediaDirPath, extension=IM_FORMAT_EXT):
     )
 
 # ------------------------------------------------------------------------------
-def make_rel_symlink(sourceFilenamePath, symDestDir):
+def makeRelSymlink(sourceFilenamePath, symDestDir):
     '''
     Creates a relative symlink in the specified symDestDir
     that points to the Target file via a relative rather than
@@ -839,16 +942,16 @@ def make_rel_symlink(sourceFilenamePath, symDestDir):
         logging.warning("Failed to Create Symlink at %s", symDestFilePath)
 
 # ------------------------------------------------------------------------------
-def save_recent(recentMax, recentDir, filepath, prefix):
+def saveRecent(recentMax, recentDir, filepath, prefix):
     """
     Create a symlink file in recent folder or file if non unix system
     or symlink creation fails.
     Delete Oldest symlink file if recentMax exceeded.
     """
     if recentMax > 0:
-        delete_old_files(recentMax, os.path.abspath(recentDir), prefix)
+        deleteOldFiles(recentMax, os.path.abspath(recentDir), prefix)
         try:
-            make_rel_symlink(filepath, recentDir)
+            makeRelSymlink(filepath, recentDir)
         except OSError as err:
             logging.error("symlink Failed: %s", err)
             try:  # Copy image file to recent folder (if no support for symlinks)
@@ -858,16 +961,16 @@ def save_recent(recentMax, recentDir, filepath, prefix):
                 logging.error("Copy Failed %s to %s - %s", filepath, recentDir, err)
 
 # ------------------------------------------------------------------------------
-def free_disk_space_upto(freeMB, mediaDir, extension=IM_FORMAT_EXT):
+def freeSpaceUpTo(freeMB, mediaDir, extension=image_format):
     """
     Walks mediaDir and deletes oldest files
-    until SPACE_FREE_MB is achieved Use with Caution
+    until spaceFreeMB is achieved Use with Caution
     """
     mediaDirPath = os.path.abspath(mediaDir)
     if os.path.isdir(mediaDirPath):
         MB2Bytes = 1048576  # Conversion from MB to Bytes
         targetFreeBytes = freeMB * MB2Bytes
-        fileList = files_to_delete(mediaDir, extension)
+        fileList = filesToDelete(mediaDir, extension)
         totFiles = len(fileList)
         delcnt = 0
         logging.info("Session Started")
@@ -905,27 +1008,27 @@ def free_disk_space_upto(freeMB, mediaDir, extension=IM_FORMAT_EXT):
 
 
 # ------------------------------------------------------------------------------
-def free_disk_space_check(lastSpaceCheck):
+def freeDiskSpaceCheck(lastSpaceCheck):
     """Free disk space by deleting some older files"""
-    if SPACE_TIMER_HRS > 0:  # Check if disk free space timer hours is enabled
+    if spaceTimerHrs > 0:  # Check if disk free space timer hours is enabled
         # See if it is time to do disk clean-up check
         if (
             datetime.datetime.now() - lastSpaceCheck
-        ).total_seconds() > SPACE_TIMER_HRS * 3600:
+        ).total_seconds() > spaceTimerHrs * 3600:
             lastSpaceCheck = datetime.datetime.now()
             # Set freeSpaceMB to reasonable value if too low
-            if SPACE_FREE_MB < 100:
+            if spaceFreeMB < 100:
                 diskFreeMB = 100
             else:
-                diskFreeMB = SPACE_FREE_MB
+                diskFreeMB = spaceFreeMB
             logging.info(
-                "SPACE_TIMER_HRS=%i  diskFreeMB=%i  SPACE_MEDIA_DIR=%s SPACE_FILE_EXT=%s",
-                SPACE_TIMER_HRS,
+                "spaceTimerHrs=%i  diskFreeMB=%i  spaceMediaDir=%s spaceFileExt=%s",
+                spaceTimerHrs,
                 diskFreeMB,
-                SPACE_MEDIA_DIR,
-                SPACE_FILE_EXT,
+                spaceMediaDir,
+                spaceFileExt,
             )
-            free_disk_space_upto(diskFreeMB, SPACE_MEDIA_DIR, SPACE_FILE_EXT)
+            freeSpaceUpTo(diskFreeMB, spaceMediaDir, spaceFileExt)
     return lastSpaceCheck
 
 
@@ -969,7 +1072,7 @@ def log_to_csv(data_to_append):
 
 
 # ------------------------------------------------------------------------------
-def is_SQLite3(filename):
+def isSQLite3(filename):
     """
     Determine if filename is in sqlite3 format
     """
@@ -1006,7 +1109,7 @@ def db_check(db_file):
     """
     Check if db_file is a sqlite3 file and connect if possible
     """
-    if is_SQLite3(db_file):
+    if isSQLite3(db_file):
         try:
             conn = sqlite3.connect(db_file, timeout=1)
         except sqlite3.Error as e:
@@ -1036,15 +1139,15 @@ def db_open(db_file):
     sql_cmd = """create table if not exists {} (idx text primary key,
                  log_timestamp text,
                  camera text,
-                 ave_speed real, speed_units text, IM_DIR_PATH text,
-                 image_w integer, image_h integer, IM_BIGGER integer,
+                 ave_speed real, speed_units text, image_path text,
+                 image_w integer, image_h integer, image_bigger integer,
                  direction text, plugin_name text,
                  cx integer, cy integer,
                  mw integer, mh integer, m_area integer,
-                 MO_CROP_X_LEFT integer, MO_CROP_X_RIGHT integer,
-                 MO_CROP_Y_UPPER integer, MO_CROP_Y_LOWER integer,
-                 MO_MAX_SPEED_OVER integer,
-                 min_area integer, MO_TRACK_EVENT_COUNT integer,
+                 x_left integer, x_right integer,
+                 y_upper integer, y_lower integer,
+                 max_speed_over integer,
+                 min_area integer, track_counter integer,
                  cal_obj_px integer, cal_obj_mm integer, status text, cam_location text)""".format(
         DB_TABLE
     )
@@ -1076,7 +1179,7 @@ def speed_get_contours(grayimage1):
         image = vs.read()  # Read image data from video steam thread instance
         # crop image to motion tracking area only
         try:
-            image_crop = image[MO_CROP_Y_UPPER:MO_CROP_Y_LOWER, MO_CROP_X_LEFT:MO_CROP_X_RIGHT]
+            image_crop = image[y_upper:y_lower, x_left:x_right]
             image_ok = True
         except (ValueError, TypeError):
             logging.error("image Stream Image is Not Complete. Cannot Crop. Retry.")
@@ -1119,30 +1222,30 @@ def speed_get_contours(grayimage1):
 
 # ------------------------------------------------------------------------------
 def speed_image_add_lines(image, color):
-    cv2.line(image, (MO_CROP_X_LEFT, MO_CROP_Y_UPPER), (MO_CROP_X_RIGHT, MO_CROP_Y_UPPER), color, 1)
-    cv2.line(image, (MO_CROP_X_LEFT, MO_CROP_Y_LOWER), (MO_CROP_X_RIGHT, MO_CROP_Y_LOWER), color, 1)
-    cv2.line(image, (MO_CROP_X_LEFT, MO_CROP_Y_UPPER), (MO_CROP_X_LEFT, MO_CROP_Y_LOWER), color, 1)
-    cv2.line(image, (MO_CROP_X_RIGHT, MO_CROP_Y_UPPER), (MO_CROP_X_RIGHT, MO_CROP_Y_LOWER), color, 1)
+    cv2.line(image, (x_left, y_upper), (x_right, y_upper), color, 1)
+    cv2.line(image, (x_left, y_lower), (x_right, y_lower), color, 1)
+    cv2.line(image, (x_left, y_upper), (x_left, y_lower), color, 1)
+    cv2.line(image, (x_right, y_upper), (x_right, y_lower), color, 1)
     return image
 
 
 # ------------------------------------------------------------------------------
 def speed_notify():
-    if PLUGIN_ENABLE_ON:
-        logging.info("Plugin Enabled per PLUGIN_NAME=%s", PLUGIN_NAME)
+    if pluginEnable:
+        logging.info("Plugin Enabled per pluginName=%s", pluginName)
     else:
-        logging.info("Plugin Disabled per PLUGIN_ENABLE_ON=%s", PLUGIN_ENABLE_ON)
+        logging.info("Plugin Disabled per pluginEnable=%s", pluginEnable)
 
-    if CALIBRATE_ON:
+    if calibrate:
         logging.warning("IMPORTANT: Camera Is In Calibration Mode ....")
-    if ALIGN_CAM_ON:
+    if align_cam_on:
         logging.warning("IMPORTANT: Camera is in Alignment Mode ....")
     else:
         if os.path.isfile(align_filename):
             os.remove(align_filename)
             logging.info("Removed camera alignment image at %s", align_filename)
-    logging.info("%s video stream size is %i x %i", CAMERA.upper(), img_width, img_height)
-    logging.info("Resized Photos after IM_BIGGER=%i is %i x %i", IM_BIGGER, image_width, image_height)
+    logging.info("%s video stream size is %i x %i", mycam, img_width, img_height)
+    logging.info("Resized Photos after image_bigger=%i is %i x %i", image_bigger, image_width, image_height)
 
 
 # ------------------------------------------------------------------------------
@@ -1160,13 +1263,13 @@ def speed_camera():
     travel_direction = None
     font = cv2.FONT_HERSHEY_SIMPLEX
     # Calculate position of text on the images
-    if IM_SHOW_TEXT_BOTTOM_ON:
+    if image_text_bottom:
         text_y = image_height - 50  # show text at bottom of image
     else:
         text_y = 10  # show text at top of image
 
     lastSpaceCheck = datetime.datetime.now()
-    speed_path = IM_DIR_PATH
+    speed_path = image_path
     db_conn = db_check(DB_PATH)
     # check and open sqlite3 db
     if db_conn is not None:
@@ -1191,7 +1294,7 @@ def speed_camera():
 
     try:
         # crop image to motion tracking area only
-        image_crop = image2[MO_CROP_Y_UPPER:MO_CROP_Y_LOWER, MO_CROP_X_LEFT:MO_CROP_X_RIGHT]
+        image_crop = image2[y_upper:y_lower, x_left:x_right]
     except:
         vs.stop()
         logging.warning("Problem Connecting To Camera Stream.")
@@ -1203,39 +1306,39 @@ def speed_camera():
     speed_list = []
     event_timer = time.time()
     still_scanning = True
-    image_sign_bg = np.zeros((IM_SIGN_RESIZE[0], IM_SIGN_RESIZE[1], 4))
-    image_sign_view = cv2.resize(image_sign_bg, (IM_SIGN_RESIZE))
+    image_sign_bg = np.zeros((image_sign_resize[0], image_sign_resize[1], 4))
+    image_sign_view = cv2.resize(image_sign_bg, (image_sign_resize))
     image_sign_view_time = time.time()
-    if LOG_VERBOSE_ON:
-        if LOG_TO_FILE_ON:
-            print("Logging to File %s (Console Messages Disabled)" % LOG_FILE_PATH)
+    if verbose:
+        if loggingToFile:
+            print("Logging to File %s (Console Messages Disabled)" % logFilePath)
         else:
-            logging.info("Logging to Console per Variable LOG_VERBOSE_ON=True")
-        if GUI_WINDOW_ON:
+            logging.info("Logging to Console per Variable verbose=True")
+        if gui_window_on:
             logging.info("Press lower case q on OpenCV GUI Window to Quit program")
             logging.info("        or ctrl-c in this terminal session to Quit")
         else:
             logging.info("Press ctrl-c in this terminal session to Quit")
     else:
-        print("Logging Messages Disabled per LOG_VERBOSE_ON=%s" % LOG_VERBOSE_ON)
+        print("Logging Messages Disabled per verbose=%s" % verbose)
     logging.info("Begin Motion Tracking .....")
     print(HORIZ_LINE)
     while still_scanning:  # process camera thread images and calculate speed
         image2, grayimage1, contours = speed_get_contours(grayimage1)
-        if GUI_WINDOW_ON or ALIGN_CAM_ON or CALIBRATE_ON:
+        if gui_window_on or align_cam_on or calibrate:
             image2_copy = image2  # make a copy of current image2 when needed
         # if contours found, find the one with biggest area
         if contours:
             total_contours = len(contours)
             motion_found = False
-            biggest_area = MO_MIN_AREA_PX
+            biggest_area = MIN_AREA
             for c in contours:
                 # get area of contour
                 found_area = cv2.contourArea(c)
                 if found_area > biggest_area:
                     (x, y, w, h) = cv2.boundingRect(c)
                     # check if object contour is completely within crop area
-                    if x > x_buf and x + w < MO_CROP_X_RIGHT - MO_CROP_X_LEFT - x_buf:
+                    if x > x_buf and x + w < x_right - x_left - x_buf:
 
                         track_x = x
                         track_y = y
@@ -1247,7 +1350,7 @@ def speed_camera():
             if motion_found:
                 # Check if last motion event timed out
                 reset_time_diff = time.time() - event_timer
-                if reset_time_diff > MO_EVENT_TIMEOUT_SEC:
+                if reset_time_diff > event_timeout:
                     # event_timer exceeded so reset for new track
                     event_timer = time.time()
                     first_event = True
@@ -1257,7 +1360,7 @@ def speed_camera():
                     logging.info(
                         "Reset- event_timer %.2f>%.2f sec Exceeded",
                         reset_time_diff,
-                        MO_EVENT_TIMEOUT_SEC,
+                        event_timeout,
                     )
                     print(HORIZ_LINE)
                 ##############################
@@ -1272,7 +1375,7 @@ def speed_camera():
                     end_pos_x = track_x
                     logging.info(
                         "New  - 0/%i xy(%i,%i) Start New Track",
-                        MO_TRACK_EVENT_COUNT,
+                        track_counter,
                         track_x,
                         track_y,
                     )
@@ -1284,17 +1387,17 @@ def speed_camera():
                     end_pos_x = track_x
                     if end_pos_x - prev_pos_x > 0:
                         travel_direction = "L2R"
-                        cal_obj_px = CAL_OBJ_PX_L2R
-                        cal_obj_mm = CAL_OBJ_MM_L2R
+                        cal_obj_px = cal_obj_px_L2R
+                        cal_obj_mm = cal_obj_mm_L2R
                     else:
                         travel_direction = "R2L"
-                        cal_obj_px = CAL_OBJ_PX_R2L
-                        cal_obj_mm = CAL_OBJ_MM_R2L
+                        cal_obj_px = cal_obj_px_R2L
+                        cal_obj_mm = cal_obj_mm_R2L
                     # check if movement is within acceptable distance
                     # range of last event
                     if (
-                        abs(end_pos_x - prev_pos_x) > MO_MIN_X_DIFF_PX
-                        and abs(end_pos_x - prev_pos_x) <= MO_MAX_X_DIFF_PX
+                        abs(end_pos_x - prev_pos_x) > x_diff_min
+                        and abs(end_pos_x - prev_pos_x) <= x_diff_max
                     ):
 
                         cur_track_dist = abs(end_pos_x - prev_pos_x)
@@ -1334,23 +1437,23 @@ def speed_camera():
 
                         prev_start_time = cur_track_time
                         event_timer = time.time()
-                        if track_count >= MO_TRACK_EVENT_COUNT:
+                        if track_count >= track_counter:
                             tot_track_dist = abs(track_x - start_pos_x)
                             tot_track_time = abs(track_start_time - cur_track_time)
 
                             # Track length exceeded so take process speed photo
-                            if ave_speed > MO_MAX_SPEED_OVER or CALIBRATE_ON:
+                            if ave_speed > max_speed_over or calibrate:
                                 logging.info(
                                     " Add - %i/%i xy(%i,%i) %3.2f %s"
                                     " D=%i/%i C=%i %ix%i=%i sqpx %s",
                                     track_count,
-                                    MO_TRACK_EVENT_COUNT,
+                                    track_counter,
                                     track_x,
                                     track_y,
                                     ave_speed,
                                     speed_units,
                                     abs(track_x - prev_pos_x),
-                                    MO_MAX_X_DIFF_PX,
+                                    x_diff_max,
                                     total_contours,
                                     track_w,
                                     track_h,
@@ -1361,27 +1464,27 @@ def speed_camera():
                                 # before saving to disk
                                 # Create a calibration image file name
                                 # There are no subdirectories to deal with
-                                if CALIBRATE_ON:
+                                if calibrate:
                                     log_time = datetime.datetime.now()
                                     filename = get_image_name(speed_path, "calib-")
                                     image2 = take_calibration_image(ave_speed, filename, image2_copy)
                                 else:
                                     # Check if subdirectories configured
                                     # and create new subdirectory if required
-                                    speed_path = subdir_checks(
-                                        IM_SUBDIR_MAX_HOURS,
-                                        IM_SUBDIR_MAX_FILES,
-                                        IM_DIR_PATH,
-                                        IM_PREFIX,
+                                    speed_path = subDirChecks(
+                                        imageSubDirMaxHours,
+                                        imageSubDirMaxFiles,
+                                        image_path,
+                                        image_prefix,
                                     )
 
                                     # Record log_time for use later in csv and sqlite
                                     log_time = datetime.datetime.now()
                                     # Create image file name
-                                    if IM_SHOW_SPEED_FILENAME_ON:
+                                    if image_filename_speed:
                                         # add ave_speed value to filename after prefix
                                         speed_prefix = (
-                                            IM_PREFIX
+                                            image_prefix
                                             + str(int(round(ave_speed)))
                                             + "-"
                                         )
@@ -1391,56 +1494,56 @@ def speed_camera():
                                     else:
                                         # create image file name path
                                         filename = get_image_name(
-                                            speed_path, IM_PREFIX
+                                            speed_path, image_prefix
                                         )
                                 # Add motion rectangle to image if required
-                                if IM_SHOW_CROP_AREA_ON:
+                                if image_show_motion_area:
                                     image2 = speed_image_add_lines(image2, cvRed)
                                     # show centre of motion if required
-                                    if CV_SHOW_CIRCLE_ON:
+                                    if SHOW_CIRCLE:
                                         cv2.circle(
                                             image2,
-                                            (track_x + MO_CROP_X_LEFT, track_y + MO_CROP_Y_UPPER),
-                                            CV_CIRCLE_SIZE_PX,
+                                            (track_x + x_left, track_y + y_upper),
+                                            CIRCLE_SIZE,
                                             cvGreen,
-                                            CV_LINE_WIDTH_PX,
+                                            LINE_THICKNESS,
                                         )
                                     else:
                                         cv2.rectangle(
                                             image2,
                                             (
-                                                int(track_x + MO_CROP_X_LEFT),
-                                                int(track_y + MO_CROP_Y_UPPER),
+                                                int(track_x + x_left),
+                                                int(track_y + y_upper),
                                             ),
                                             (
-                                                int(track_x + MO_CROP_X_LEFT + track_w),
-                                                int(track_y + MO_CROP_Y_UPPER + track_h),
+                                                int(track_x + x_left + track_w),
+                                                int(track_y + y_upper + track_h),
                                             ),
                                             cvGreen,
-                                            CV_LINE_WIDTH_PX,
+                                            LINE_THICKNESS,
                                         )
                                 big_image = cv2.resize(image2, (image_width, image_height ))
-                                if IM_SHOW_SIGN_ON:
+                                if image_sign_on:
                                     image_sign_view_time = time.time()
                                     image_sign_bg = np.zeros(
-                                        (IM_SIGN_RESIZE[0], IM_SIGN_RESIZE[1], 4)
+                                        (image_sign_resize[0], image_sign_resize[1], 4)
                                     )
                                     image_sign_view = cv2.resize(
-                                        image_sign_bg, (IM_SIGN_RESIZE)
+                                        image_sign_bg, (image_sign_resize)
                                     )
                                     image_sign_text = str(int(round(ave_speed, 0)))
                                     cv2.putText(
                                         image_sign_view,
                                         image_sign_text,
-                                        IM_SIGN_TEXT_XY,
+                                        image_sign_text_xy,
                                         font,
-                                        IM_SIGN_FONT_SCALE,
-                                        IM_SIGN_FONT_COLOR,
-                                        IM_SIGN_FONT_THICK_PX,
+                                        image_sign_font_scale,
+                                        image_sign_font_color,
+                                        image_sign_font_thickness,
                                     )
                                 # Write text on image before saving
                                 # if required.
-                                if IM_SHOW_TEXT_ON:
+                                if image_text_on:
                                     image_text = "SPEED %.1f %s - %s" % (
                                         ave_speed,
                                         speed_units,
@@ -1448,7 +1551,7 @@ def speed_camera():
                                     )
                                     text_x = int(
                                         (image_width / 2)
-                                        - (len(image_text) * IM_FONT_SIZE_PX / 3)
+                                        - (len(image_text) * image_font_size / 3)
                                     )
                                     if text_x < 2:
                                         text_x = 2
@@ -1457,19 +1560,19 @@ def speed_camera():
                                         image_text,
                                         (text_x, text_y),
                                         font,
-                                        IM_FONT_SCALE,
-                                        IM_FONT_COLOR,
-                                        IM_FONT_THICKNESS,
+                                        image_font_scale,
+                                        image_font_color,
+                                        image_font_thickness,
                                     )
                                 logging.info(" Saved %ix%i %s", image_width, image_height, filename)
                                 # Save resized image. If jpg format, user can customize image quality 1-100 (higher is better)
                                 # and/or enble/disable optimization per config.py settings.
                                 # otherwise if png, bmp, gif, etc normal image write will occur
-                                if ((IM_FORMAT_EXT.lower() == ".jpg" or IM_FORMAT_EXT.lower() == ".jpeg")
-                                     and IM_JPG_OPTIMIZE_ON):
+                                if ((image_format.lower() == ".jpg" or image_format.lower() == ".jpeg")
+                                     and image_jpeg_optimize):
                                     try:
                                         cv2.imwrite( filename, big_image,
-                                                    [ int(cv2.IMWRITE_JPEG_QUALITY), IM_JPG_QUALITY,
+                                                    [ int(cv2.IMWRITE_JPEG_QUALITY), image_jpeg_quality,
                                                       int(cv2.IMWRITE_JPEG_OPTIMIZE), 1
                                                     ]
                                                    )
@@ -1511,32 +1614,32 @@ def speed_camera():
                                     log_time.microsecond / 100000,
                                 )
                                 log_timestamp = "%s%04d-%02d-%02d %02d:%02d:%02d%s" % (
-                                    QUOTE,
+                                    quote,
                                     log_time.year,
                                     log_time.month,
                                     log_time.day,
                                     log_time.hour,
                                     log_time.minute,
                                     log_time.second,
-                                    QUOTE,
+                                    quote,
                                 )
                                 m_area = track_w * track_h
 
-                                if PLUGIN_ENABLE_ON:
-                                    plugin_name = PLUGIN_NAME
+                                if pluginEnable:
+                                    plugin_name = pluginName
                                 else:
                                     plugin_name = "None"
                                 # create the speed data list ready for db insert
                                 speed_data = (
                                     log_idx,
                                     log_timestamp,
-                                    CAMERA.upper(),
+                                    mycam,
                                     round(ave_speed, 2),
                                     speed_units,
                                     filename,
                                     image_width,
                                     image_height,
-                                    IM_BIGGER,
+                                    image_bigger,
                                     travel_direction,
                                     plugin_name,
                                     track_x,
@@ -1544,13 +1647,13 @@ def speed_camera():
                                     track_w,
                                     track_h,
                                     m_area,
-                                    MO_CROP_X_LEFT,
-                                    MO_CROP_X_RIGHT,
-                                    MO_CROP_Y_UPPER,
-                                    MO_CROP_Y_LOWER,
-                                    MO_MAX_SPEED_OVER,
-                                    MO_MIN_AREA_PX,
-                                    MO_TRACK_EVENT_COUNT,
+                                    x_left,
+                                    x_right,
+                                    y_upper,
+                                    y_lower,
+                                    max_speed_over,
+                                    MIN_AREA,
+                                    track_counter,
                                     cal_obj_px,
                                     cal_obj_mm,
                                     "",
@@ -1580,18 +1683,18 @@ def speed_camera():
                                         " SQL - Inserted Data Row into %s", DB_PATH
                                     )
                                 # Format and Save Data to CSV Log File
-                                if LOG_DATA_TO_CSV:
+                                if log_data_to_CSV:
                                     log_csv_time = (
                                         "%s%04d-%02d-%02d %02d:%02d:%02d%s"
                                         % (
-                                            QUOTE,
+                                            quote,
                                             log_time.year,
                                             log_time.month,
                                             log_time.day,
                                             log_time.hour,
                                             log_time.minute,
                                             log_time.second,
-                                            QUOTE,
+                                            quote,
                                         )
                                     )
                                     log_csv_text = (
@@ -1600,42 +1703,42 @@ def speed_camera():
                                         % (
                                             log_csv_time,
                                             ave_speed,
-                                            QUOTE,
+                                            quote,
                                             speed_units,
-                                            QUOTE,
-                                            QUOTE,
+                                            quote,
+                                            quote,
                                             filename,
-                                            QUOTE,
+                                            quote,
                                             track_x,
                                             track_y,
                                             track_w,
                                             track_h,
                                             track_w * track_h,
-                                            QUOTE,
+                                            quote,
                                             travel_direction,
-                                            QUOTE,
-                                            QUOTE,
+                                            quote,
+                                            quote,
                                             CAM_LOCATION,
-                                            QUOTE,
+                                            quote,
                                         )
                                     )
                                     log_to_csv(log_csv_text)
-                                if SPACE_TIMER_HRS > 0:
-                                    lastSpaceCheck = free_disk_space_check(lastSpaceCheck)
+                                if spaceTimerHrs > 0:
+                                    lastSpaceCheck = freeDiskSpaceCheck(lastSpaceCheck)
                                 # Manage a maximum number of files
                                 # and delete oldest if required.
-                                if IM_MAX_FILES > 0:
-                                    delete_old_files(
-                                        IM_MAX_FILES, speed_path, IM_PREFIX
+                                if image_max_files > 0:
+                                    deleteOldFiles(
+                                        image_max_files, speed_path, image_prefix
                                     )
                                 # Save most recent files
                                 # to a recent folder if required
-                                if IM_RECENT_MAX_FILES > 0 and not CALIBRATE_ON:
-                                    save_recent(
-                                        IM_RECENT_MAX_FILES,
-                                        IM_RECENT_DIR_PATH,
+                                if imageRecentMax > 0 and not calibrate:
+                                    saveRecent(
+                                        imageRecentMax,
+                                        imageRecentDir,
                                         filename,
-                                        IM_PREFIX,
+                                        image_prefix,
                                     )
                                 logging.info(
                                     "End  - %s Ave Speed %.1f %s Tracked %i px in %.3f sec Calib %ipx %imm",
@@ -1650,11 +1753,11 @@ def speed_camera():
                             else:
                                 logging.info(
                                     "End  - Skip Photo SPEED %.1f %s"
-                                    " MO_MAX_SPEED_OVER=%i  %i px in %.3f sec"
+                                    " max_speed_over=%i  %i px in %.3f sec"
                                     " C=%i A=%i sqpx",
                                     ave_speed,
                                     speed_units,
-                                    MO_MAX_SPEED_OVER,
+                                    max_speed_over,
                                     tot_track_dist,
                                     tot_track_time,
                                     total_contours,
@@ -1662,12 +1765,12 @@ def speed_camera():
                                 )
                             # Optional Wait to avoid multiple recording of same object
                             print(HORIZ_LINE)
-                            if MO_TRACK_TIMEOUT_SEC > 0:
+                            if track_timeout > 0:
                                 logging.info(
-                                    "MO_TRACK_TIMEOUT_SEC %0.2f sec Sleep to Avoid Tracking Same Object Multiple Times."
-                                    % MO_TRACK_TIMEOUT_SEC
+                                    "track_timeout %0.2f sec Sleep to Avoid Tracking Same Object Multiple Times."
+                                    % track_timeout
                                 )
-                                time.sleep(MO_TRACK_TIMEOUT_SEC)
+                                time.sleep(track_timeout)
                             # Track Ended so Reset Variables ready for
                             # next tracking sequence
                             start_pos_x = None
@@ -1680,13 +1783,13 @@ def speed_camera():
                                 " Add - %i/%i xy(%i,%i) %3.2f %s"
                                 " D=%i/%i C=%i %ix%i=%i sqpx %s",
                                 track_count,
-                                MO_TRACK_EVENT_COUNT,
+                                track_counter,
                                 track_x,
                                 track_y,
                                 ave_speed,
                                 speed_units,
                                 abs(track_x - prev_pos_x),
-                                MO_MAX_X_DIFF_PX,
+                                x_diff_max,
                                 total_contours,
                                 track_w,
                                 track_h,
@@ -1698,19 +1801,19 @@ def speed_camera():
                             event_timer = time.time()
                     # Movement was not within range parameters
                     else:
-                        if MO_LOG_OUT_RANGE_ON:
+                        if show_out_range:
                             # movements exceeds Max px movement
                             # allowed so Ignore and do not update event_timer
-                            if abs(track_x - prev_pos_x) >= MO_MAX_X_DIFF_PX:
+                            if abs(track_x - prev_pos_x) >= x_diff_max:
                                 logging.info(
                                     " Out - %i/%i xy(%i,%i) Max D=%i>=%ipx"
                                     " C=%i %ix%i=%i sqpx %s",
                                     track_count,
-                                    MO_TRACK_EVENT_COUNT,
+                                    track_counter,
                                     track_x,
                                     track_y,
                                     abs(track_x - prev_pos_x),
-                                    MO_MAX_X_DIFF_PX,
+                                    x_diff_max,
                                     total_contours,
                                     track_w,
                                     track_h,
@@ -1718,7 +1821,7 @@ def speed_camera():
                                     travel_direction,
                                 )
                                 # if track_count is over half way then do not start new track
-                                if track_count > MO_TRACK_EVENT_COUNT / 2:
+                                if track_count > track_counter / 2:
                                     pass
                                 else:
                                     first_event = True  # Too Far Away so restart Track
@@ -1729,11 +1832,11 @@ def speed_camera():
                                     " Out - %i/%i xy(%i,%i) Min D=%i<=%ipx"
                                     " C=%i %ix%i=%i sqpx %s",
                                     track_count,
-                                    MO_TRACK_EVENT_COUNT,
+                                    track_counter,
                                     track_x,
                                     track_y,
                                     abs(track_x - end_pos_x),
-                                    MO_MIN_X_DIFF_PX,
+                                    x_diff_min,
                                     total_contours,
                                     track_w,
                                     track_h,
@@ -1744,67 +1847,67 @@ def speed_camera():
                                 if track_count == 0:
                                     first_event = True
                         event_timer = time.time()  # Reset Event Timer
-                if GUI_WINDOW_ON:
+                if gui_window_on:
                     # show small circle at contour xy if required
                     # otherwise a rectangle around most recent contour
-                    if CV_SHOW_CIRCLE_ON:
+                    if SHOW_CIRCLE:
                         cv2.circle(
                             image2,
                             (
-                                int(track_x + MO_CROP_X_LEFT * CV_WINDOW_BIGGER),
-                                int(track_y + MO_CROP_Y_UPPER * CV_WINDOW_BIGGER),
+                                int(track_x + x_left * WINDOW_BIGGER),
+                                int(track_y + y_upper * WINDOW_BIGGER),
                             ),
-                            CV_CIRCLE_SIZE_PX,
+                            CIRCLE_SIZE,
                             cvGreen,
-                            CV_LINE_WIDTH_PX,
+                            LINE_THICKNESS,
                         )
                     else:
                         cv2.rectangle(
                             image2,
-                            (int(MO_CROP_X_LEFT + track_x), int(MO_CROP_Y_UPPER + track_y)),
+                            (int(x_left + track_x), int(y_upper + track_y)),
                             (
-                                int(MO_CROP_X_LEFT + track_x + track_w),
-                                int(MO_CROP_Y_UPPER + track_y + track_h),
+                                int(x_left + track_x + track_w),
+                                int(y_upper + track_y + track_h),
                             ),
                             cvGreen,
-                            CV_LINE_WIDTH_PX,
+                            LINE_THICKNESS,
                         )
-        if ALIGN_CAM_ON:
+        if align_cam_on:
             image2 = speed_image_add_lines(image2_copy, cvRed)
             image_align = cv2.resize(image2, (image_width, image_height))
             cv2.imwrite(align_filename, image_align)
             logging.info(
-                "ALIGN_CAM_ON=%s ALIGN_DELAY_SEC=%i - Browser View Cam Align Image at %s",
-                ALIGN_CAM_ON,
-                ALIGN_DELAY_SEC,
+                "align_cam_on=%s align_delay_sec=%i - Browser View Cam Align Image at %s",
+                align_cam_on,
+                align_delay_sec,
                 align_filename,
             )
-            time.sleep(ALIGN_DELAY_SEC)
-        if GUI_WINDOW_ON:
-            if GUI_THRESH_WIN_ON:
+            time.sleep(align_delay_sec)
+        if gui_window_on:
+            if show_thresh_on:
                 # resize and display motion threshold image
-                diff_size = (int(differenceimage.shape[1] * IM_BIGGER),
-                             int(differenceimage.shape[0] * IM_BIGGER))
+                diff_size = (int(differenceimage.shape[1] * image_bigger),
+                             int(differenceimage.shape[0] * image_bigger))
                 big_diff_image = cv2.resize(differenceimage, diff_size)
                 cv2.imshow("Threshold", big_diff_image)
-            if GUI_CROP_WIN_ON:
+            if show_crop_on:
                 # resize and display cropped image
-                crop_image = image2[MO_CROP_Y_UPPER + CV_LINE_WIDTH_PX:MO_CROP_Y_LOWER, MO_CROP_X_LEFT + CV_LINE_WIDTH_PX:MO_CROP_X_RIGHT]
-                crop_size = (int(crop_image.shape[1] * IM_BIGGER),
-                             int(crop_image.shape[0] * IM_BIGGER))
+                crop_image = image2[y_upper + LINE_THICKNESS:y_lower, x_left + LINE_THICKNESS:x_right]
+                crop_size = (int(crop_image.shape[1] * image_bigger),
+                             int(crop_image.shape[0] * image_bigger))
                 big_crop_image = cv2.resize(crop_image, crop_size)
                 cv2.imshow("Crop Area", big_crop_image)
-            if GUI_IMAGE_WIN_ON:
+            if gui_show_camera:
                 image2 = speed_image_add_lines(image2_copy, cvRed)
                 big_image = cv2.resize(image2, (image_width, image_height))
                 cv2.imshow("Movement (q Quits)", big_image)
-            if IM_SHOW_SIGN_ON:
-                if time.time() - image_sign_view_time > IM_SIGN_TIMEOUT_SEC:
+            if image_sign_on:
+                if time.time() - image_sign_view_time > image_sign_timeout:
                     # Cleanup the image_sign_view
                     image_sign_bg = np.zeros(
-                        (IM_SIGN_RESIZE[0], IM_SIGN_RESIZE[1], 4)
+                        (image_sign_resize[0], image_sign_resize[1], 4)
                     )
-                    image_sign_view = cv2.resize(image_sign_bg, (IM_SIGN_RESIZE))
+                    image_sign_view = cv2.resize(image_sign_bg, (image_sign_resize))
                 cv2_window_speed_sign = "Last Average Speed:"
                 cv2.namedWindow(cv2_window_speed_sign, cv2.WINDOW_NORMAL)
                 cv2.cv2.setWindowProperty(
@@ -1819,7 +1922,7 @@ def speed_camera():
                 logging.info("End Motion Tracking ......")
                 vs.stop()
                 still_scanning = False
-        if LOG_FPS_ON:  # Optionally show motion image processing loop fps
+        if display_fps:  # Optionally show motion image processing loop fps
             fps_time, frame_count = get_fps(fps_time, frame_count)
 
 
@@ -1827,54 +1930,55 @@ def speed_camera():
 if __name__ == "__main__":
 
     try:
+        mycam = validate_cam(CAMERA, CAMLIST)
+        vs, cam = create_cam_thread(mycam)
 
-        vs = strmcam()  # start video stream thread
+        logging.info("Wait ...")
+        time.sleep(3)  # Allow Camera to warm up
+
         # Get actual image size from stream.
         # Necessary for IP camera
         test_img = vs.read()
         img_height, img_width, _ = test_img.shape
         # Set width of trigger point image to save
-        image_width = int(img_width * IM_BIGGER)
+        image_width = int(img_width * image_bigger)
         # Set height of trigger point image to save
-        image_height = int(img_height * IM_BIGGER)
-        X_SCALE = 8.0
-        Y_SCALE = 4.0
+        image_height = int(img_height * image_bigger)
+        x_scale = 8.0
+        y_scale = 4.0
         # reduce motion area for larger stream sizes
         if img_width > 1000:
-            X_SCALE = 3.0
-            Y_SCALE = 3.0
+            x_scale = 3.0
+            y_scale = 3.0
         # If motion box crop settings not found in config.py then
         # Auto adjust the crop image to suit the real image size.
         # For details See comments in config.py Motion Events settings section
         try:
-            MO_CROP_X_LEFT
+            x_left
         except NameError:
-            MO_CROP_X_LEFT = int(img_width / X_SCALE)
+            x_left = int(img_width / x_scale)
         try:
-            MO_CROP_X_RIGHT
+            x_right
         except NameError:
-            MO_CROP_X_RIGHT = int(img_width - MO_CROP_X_LEFT)
+            x_right = int(img_width - x_left)
         try:
-            MO_CROP_Y_UPPER
+            y_upper
         except NameError:
-            MO_CROP_Y_UPPER = int(img_height / Y_SCALE)
+            y_upper = int(img_height / y_scale)
         try:
-            MO_CROP_Y_LOWER
+            y_lower
         except NameError:
-            MO_CROP_Y_LOWER = int(img_height - MO_CROP_Y_UPPER)
+            y_lower = int(img_height - y_upper)
         # setup buffer area to ensure contour is mostly contained in crop area
-        x_buf = int((MO_CROP_X_RIGHT - MO_CROP_X_LEFT) / MO_X_LR_SIDE_BUFF_PX)
+        x_buf = int((x_right - x_left) / x_buf_adjust)
 
-        if SHOW_SETTINGS_ON:
-            show_settings()  # Show variable settings
-        if SHOW_CAM_SETTINGS_ON:
-            show_config('configcam.py')
+        show_settings()  # Show variable settings
         speed_camera()  # run main speed camera processing loop
     except KeyboardInterrupt:
         print("")
         logging.info("User Pressed Keyboard ctrl-c")
         logging.info("%s %s Exiting Program", PROG_NAME, PROG_VER)
         vs.stop()
-        logging.info("%s Stopped Camera Stream Thread.", CAMERA.upper())
+        logging.info("%s Stopped Camera Stream Thread.", cam.upper())
         logging.info("Bye ...")
         sys.exit()

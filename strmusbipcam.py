@@ -3,32 +3,31 @@
 from threading import Thread
 import cv2
 import time
-class Webcam:
-    def __init__(self, src=0, size=(320, 240), hflip=False, vflip=False):
+
+class CamStream:
+    def __init__(self,
+                 src=0,
+                 size=(320, 240),
+                 name="WebcamVideoStream"):
         # initialize the video camera stream and read the first frame
         # from the stream
-        self.width = size[0]
-        self.height = size[1]
-        self.vflip = vflip
-        self.hflip = hflip
-        self.frame = None
         self.stream = cv2.VideoCapture(src)
-        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
-        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
-        while self.frame is None:
-            (self.grabbed, self.frame) = self.stream.read()
+        self.stream.set(3, size[0])
+        self.stream.set(4, size[1])
+        (self.grabbed, self.frame) = self.stream.read()
 
         # initialize the thread name
-        self.thread = None
+        self.name = name
 
-        # Initialize var to indicate when thread to be stopped.
+        # initialize the variable used to indicate if the thread should
+        # be stopped
         self.stopped = False
 
     def start(self):
         # start the thread to read frames from the video stream
-        self.thread = Thread(target=self.update, args=())
-        self.thread.daemon = True
-        self.thread.start()
+        t = Thread(target=self.update, name=self.name, args=())
+        t.daemon = True
+        t.start()
         return self
 
     def update(self):
@@ -36,24 +35,17 @@ class Webcam:
         while True:
             # if the thread indicator variable is set, stop the thread
             if self.stopped:
-                if self.thread is not None:
-                    self.stream.release() # close stream
-                    self.thread.join() # close thread
                 return
-            # otherwise, read the next frame from the stream
-            (self.grabbed, self.frame) = self.stream.read()
+            time.sleep(0.001)
 
     def read(self):
-        if self.vflip and self.hflip:
-            self.frame = cv2.flip(self.frame, -1)
-        elif self.vflip:
-            self.frame = cv2.flip(self.frame, 0)
-        elif self.hflip:
-            self.frame = cv2.flip(self.frame, 1)
         # return the frame most recently read
+        (self.grabbed, self.frame) = self.stream.read()
         return self.frame
 
     def stop(self):
+        # release cameera and stop thread
+        self.stream.release()
+        time.sleep(2)  # allow time for cam to shut down
+        # indicates that the thread should be stopped
         self.stopped = True
-        # indicate that the thread should be stopped
-
