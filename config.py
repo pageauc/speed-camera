@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#        Ver 13.00 speed-cam.py Variable Configuration Settings
+#        Ver 13.02 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -27,7 +27,8 @@ LOG_TO_FILE_ON = False  # True= Send logging to file False= No Logging to File
 LOG_FILE_PATH = 'speed-cam.log'  # Location of log file when LOG_TO_FILE_ON=True
 LOG_FPS_ON = False      # True= Show average frame count every 1000 loops False= Off
 
-
+# Calibration Settings
+# --------------------
 CAL_OBJ_PX_L2R = 80      # L2R Moving Objects, Length of a calibration object in pixels
 CAL_OBJ_MM_L2R = 4700    # L2R Moving Objects, Length of the calibration object in millimetres
 
@@ -50,9 +51,18 @@ PLUGIN_NAME = "picam240" # Specify filename in plugins subfolder without .py ext
 # GUI_WINDOW_ON suppresses All Windows if False
 # ----------------------------------------------
 GUI_WINDOW_ON = False     # True= Turn On All desktop GUI openCV windows. False=Don't Show (req'd for SSH) .
-GUI_IMAGE_WIN_ON = True   # True=Show the camera on gui windows. False=Don't Show (useful for image_sign)
-GUI_THRESH_WIN_ON = False # Display desktop GUI openCV cropped threshold window. True=Show, False=Don't Show
-GUI_CROP_WIN_ON = False   # Same as GUI_THRESH_WIN_ON but in color. True=Show, False=Don't Show (Default)
+GUI_IMAGE_WIN_ON = True   # True=Show the camera on a gui windows. False=Don't Show (useful for image_sign)
+GUI_THRESH_WIN_ON = False # True=Show openCV cropped BLUR, THRESHOLD grayscale image window. Used for detecting movement contours
+GUI_CROP_WIN_ON = False   # True=Show crop window. Same as GUI_THRESH_WIN_ON but in color.
+
+# OpenCV Motion Settings
+# ----------------------
+CV_SHOW_CIRCLE_ON = False     # True=circle in center of motion, False=rectangle
+CV_CIRCLE_SIZE_PX = 5         # Default= 5 Diameter circle in px if CV_SHOW_CIRCLE_ON = True
+CV_LINE_WIDTH_PX = 1          # Default= 1 Size of lines for circle or Rectangle
+CV_WINDOW_BIGGER = 1.0        # Default= 1.0 min=0.1 Resize multiplier for opencv window if GUI_WINDOW_ON=True
+BLUR_SIZE = 10                # Default= 10 OpenCV setting for Gaussian difference image blur
+THRESHOLD_SENSITIVITY = 20    # Default= 20 OpenCV setting for difference image threshold
 
 # Motion Event Settings
 # ---------------------
@@ -126,15 +136,6 @@ SPACE_TIMER_HRS = 0               # Default= 0  0=off or specify hours frequency
 SPACE_FREE_MB = 500               # Default= 500  Target Free space in MB Required.
 SPACE_MEDIA_DIR = 'media/images'  # Default= 'media/images'  Starting point for directory walk
 SPACE_FILE_EXT  = 'jpg'           # Default= 'jpg' File extension to Delete Oldest Files
-
-# OpenCV Motion Settings
-# ----------------------
-CV_SHOW_CIRCLE_ON = False     # True=circle in center of motion, False=rectangle
-CV_CIRCLE_SIZE_PX = 5         # Default= 5 Diameter circle in px if CV_SHOW_CIRCLE_ON = True
-CV_LINE_WIDTH_PX = 1          # Default= 1 Size of lines for circle or Rectangle
-CV_WINDOW_BIGGER = 1.0        # Default= 1.0 min=0.1 Resize multiplier for opencv window if GUI_WINDOW_ON=True
-BLUR_SIZE = 10                # Default= 10 OpenCV setting for Gaussian difference image blur
-THRESHOLD_SENSITIVITY = 20    # Default= 20 OpenCV setting for difference image threshold
 
 # Sqlite3 Settings
 # ----------------
