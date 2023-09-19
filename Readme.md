@@ -25,8 +25,8 @@ If you need to compile openCV see my Github Repo at [menu driven compile opencv3
 
 #### Ver 13.00 Notes
 Version 13.00 is a major speed camera revision. Camera thread code is now handled by a strmcam.py module.
-config.py variable names have changed so you will need to backup and cp config.py.new config.py (see below for details) 
-
+config.py variable names have changed so you will need to backup and cp config.py.new config.py (see below for details)    
+***NOTE*** : Plugins NOT yet converted to new variable names.
 Also the camera settings are moved to configcam.py to allow code to be more portable. 
 
 Example code to start a video stream thread is now greatly simplified. per example below
