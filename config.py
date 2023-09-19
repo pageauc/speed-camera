@@ -9,6 +9,9 @@
 #  to change resolution.
 #######################################
 
+# IMPORTANT: Camera settings are now stored in configcam.py.  
+# This was done to allow camera codeto be more portable
+
 # Calibration Settings
 # --------------------
 CALIBRATE_ON = True          # Create a calibration image file with calibration hash markers 10 px per mark
