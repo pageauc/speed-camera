@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="11.08"
+ver="13.02"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -47,7 +47,7 @@ function init_status ()
   else
      webserver_pid=$( pgrep -f webserver.py )
      myip=$( ifconfig -a | grep 'inet ' | grep -v 127.0.0 | head -n 1 | tr -s " " | cut -d " " -f 3 )
-     myport=$( grep "web_server_port" config.py | cut -d "=" -f 2 | cut -d "#" -f 1 | awk '{$1=$1};1' )
+     myport=$( grep "WEB_SERVER_PORT" config.py | cut -d "=" -f 2 | cut -d "#" -f 1 | awk '{$1=$1};1' )
      WEB_1="STOP"
      WEB_2="webserver.py - PID is $webserver_pid http://$myip:$myport"
   fi
@@ -80,7 +80,7 @@ function do_webserver ()
         whiptail --msgbox "Failed to Start webserver.py   Please Investigate Problem." 20 70
      else
        myip=$( ifconfig -a | grep 'inet ' | grep -v 127.0.0 | head -n 1 | tr -s " " | cut -d " " -f 3 )
-       myport=$( grep "web_server_port" config.py | cut -d "=" -f 2 | cut -d "#" -f 1 | awk '{$1=$1};1' )
+       myport=$( grep "WEB_SERVER_PORT" config.py | cut -d "=" -f 2 | cut -d "#" -f 1 | awk '{$1=$1};1' )
        whiptail --msgbox --title "Webserver Access" "Access speed-cam web server from another network computer web browser using url http://$myip:$myport" 15 50
      fi
   else
