@@ -724,7 +724,7 @@ function do_main_menu ()
 {
   cd $DIR
   init_status
-  temp="$(/opt/vc/bin/vcgencmd measure_temp)"
+  temp="$(/usr/bin/vcgencmd measure_temp)"
 
   cd $DIR
   SELECTION=$(whiptail --title "Speed Camera Main Menu" \
