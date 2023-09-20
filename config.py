@@ -9,8 +9,8 @@
 #  to change resolution.
 #######################################
 
-# IMPORTANT: Camera settings are now stored in configcam.py.  
-# This was done to allow camera codeto be more portable
+# IMPORTANT: Camera settings are now stored in configcam.py  
+#            This was done to allow camera code to be more portable
 
 # Calibration Settings
 # --------------------
