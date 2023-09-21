@@ -1046,15 +1046,15 @@ def db_open(db_file):
     sql_cmd = """create table if not exists {} (idx text primary key,
                  log_timestamp text,
                  camera text,
-                 ave_speed real, speed_units text, IM_DIR_PATH text,
-                 image_w integer, image_h integer, IM_BIGGER integer,
+                 ave_speed real, speed_units text, image_path text,
+                 image_w integer, image_h integer, image_bigger integer,
                  direction text, plugin_name text,
                  cx integer, cy integer,
                  mw integer, mh integer, m_area integer,
-                 MO_CROP_X_LEFT integer, MO_CROP_X_RIGHT integer,
-                 MO_CROP_Y_UPPER integer, MO_CROP_Y_LOWER integer,
-                 MO_MAX_SPEED_OVER integer,
-                 min_area integer, MO_TRACK_EVENT_COUNT integer,
+                 x_left integer, x_right integer,
+                 y_upper integer, y_lower integer,
+                 max_speed_over integer,
+                 min_area integer, track_counter integer,
                  cal_obj_px integer, cal_obj_mm integer, status text, cam_location text)""".format(
         DB_TABLE
     )
