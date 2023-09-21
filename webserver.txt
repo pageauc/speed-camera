@@ -10,9 +10,9 @@ IMPORTANT: Use browser refresh to update files list
 then select a list hyperlink.
 Default config.py webserver settings are
 
-    web_page_refresh_on = True
-    web_page_refresh_sec = "900"
-    web_page_blank = False
+    WEB_PAGE_REFRESH_ON = True
+    WEB_PAGE_REFRESH_SEC = "900"
+    WEB_PAGE_BLANK_ON = False
 
 If a folder is selected on the right pane listing
 the folder contents will appear in existing browser tab.
