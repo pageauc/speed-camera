@@ -1,11 +1,4 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#         Ver 13.02 speed-cam.py picam480 Stream Variable Configuration Settings
-
-#######################################
-#    speed-cam.py plugin settings
-#######################################
-
-# ---------------- User Configuration Settings for speed-cam.py ---------------------------------
 #         Ver 13.02 speed-cam.py picam240 Stream Variable Configuration Settings
 
 #######################################
