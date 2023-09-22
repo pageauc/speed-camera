@@ -1,5 +1,5 @@
-# ---------------- User Configuration Settings for speed-cam.py ---------------------------------
-#        Ver 13.02 speed-cam.py Variable Configuration Settings
+# ---------------- User Configuration Settings for speed-cam.py ---------------------------
+#        Ver 13.05 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -9,7 +9,7 @@
 #  to change resolution.
 #######################################
 
-# IMPORTANT: Camera settings are now stored in configcam.py  
+# IMPORTANT: Camera settings are now stored in configcam.py
 #            This was done to allow camera code to be more portable
 
 # Calibration Settings
@@ -20,7 +20,6 @@ ALIGN_CAM_ON = False         # Default=False  True Saves alignment image to help
 ALIGN_DELAY_SEC = 3          # Default=3 seconds delay between each alignment image in recent folder
 
 SHOW_SETTINGS_ON = False     # True Displays the config.py file on startup
-SHOW_CAM_SETTINGS_ON = True  # True Show Camera settings on start up.
 
 # Display and Log settings
 # ------------------------
@@ -29,6 +28,22 @@ LOG_DATA_TO_CSV = False # True= Save log data as CSV comma separated values  Fal
 LOG_TO_FILE_ON = False  # True= Send logging to file False= No Logging to File
 LOG_FILE_PATH = 'speed-cam.log'  # Location of log file when LOG_TO_FILE_ON=True
 LOG_FPS_ON = False      # True= Show average frame count every 1000 loops False= Off
+
+# Camera Settings
+# ---------------
+CAMERA = "pilibcam"    # valid values usbcam, rtspcam, pilibcam, pilegcam
+CAM_LOCATION = "Front Window"
+
+USBCAM_SRC = 0         # Device number of USB connection usually 0, 1, 2, Etc
+RTSPCAM_SRC = "rtsp://user:password@IP:554/path"  # Set per IP Cam Docs and config see example below
+                                                  # rtsp://admin:myped@192.168.1.100:554/12
+
+# Camera Image Stream Settings
+IM_SIZE = (320, 240)   # Image resolution width, height pixels
+IM_VFLIP = False       # True enables flipping image vertically
+IM_HFLIP = False       # True enables flipping image horizonally
+IM_ROTATION = 0        # Rotate camera image valid values are 0, 90, 180, 270
+IM_FRAMERATE = 30      # Legacy Picamera Framerate
 
 # Calibration Settings
 # --------------------
@@ -85,13 +100,13 @@ MO_MAX_SPEED_OVER = 0       # Exclude track if Speed less than or equal to value
 # Motion Tracking Window Crop Area Settings
 # -----------------------------------------
 # Note: Values based on 320x240 image stream size.
-# If variable is commented, value will be set automatically based on image size.
 # To see motion tracking crop area on images, Set variable IM_SHOW_CROP_AREA_ON = True
-# Set align_cam_on = True to help with adjusting settings.
-MO_CROP_X_LEFT = 50           # Default=50 comment variable for auto calculate
-MO_CROP_X_RIGHT = 250         # Default=250 comment variable for auto calculate
-MO_CROP_Y_UPPER = 90          # Default=90 comment variable for auto calculate
-MO_CROP_Y_LOWER = 150         # Default=150 comment variable for auto calculate
+# Set ALIGN_CAM_ON = True to help with adjusting settings.
+MO_CROP_AUTO_ON = False       # True enables rough Auto Calculation of Motion Crop Area
+MO_CROP_X_LEFT = 50           # Default=50
+MO_CROP_X_RIGHT = 250         # Default=250
+MO_CROP_Y_UPPER = 90          # Default=90
+MO_CROP_Y_LOWER = 150         # Default=150
 
 # Camera Image Settings
 # ---------------------
@@ -188,4 +203,4 @@ WEB_LIST_HEIGHT = WEB_IMAGE_HEIGHT # Right List - side menu height in px (link s
 WEB_LIST_BY_DATETIME_ON = True        # True=datetime False=filename
 WEB_LIST_SORT_DESC_ON = True    # reverse sort order (filename or datetime per web_list_by_datetime setting
 
-# ---------------------------------------------- End of User Variables -----------------------------------------------------
+# --------------------------------------- End of User Variables -------------------------------

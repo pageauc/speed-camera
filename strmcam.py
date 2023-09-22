@@ -1,5 +1,5 @@
 def strmcam():
-    # This is a launcher for the creating video a stream for one of various camera types 
+    # This is a launcher for creating a video stream for one of various camera types
     # per CAMLIST list below
 
     import sys
@@ -17,26 +17,68 @@ def strmcam():
     # List of valid camera values in the configcam.py file
     CAMLIST = ('usbcam', 'rtspcam', 'pilibcam', 'pilegcam')
 
-    # Import Required Variables from configcam.py
+    # Import Required Variables from config.py
     try:
-        from configcam import (CAMERA,
-                               IM_SIZE,
-                               RTSPCAM_SRC,
-                               USBCAM_SRC,
-                               IM_FRAMERATE,
-                               IM_ROTATION,
-                               IM_HFLIP,
-                               IM_VFLIP
-                              )
+        from config import (PLUGIN_ENABLE_ON,
+                            PLUGIN_NAME,
+                            CAMERA,
+                            IM_SIZE,
+                            RTSPCAM_SRC,
+                            USBCAM_SRC,
+                            IM_FRAMERATE,
+                            IM_ROTATION,
+                            IM_HFLIP,
+                            IM_VFLIP
+                           )
     except Exception as e:
         logging.error(e)
         sys.exit(1)
 
-    # fix rounding problems with picamera resolution
-    new_im_w = (IM_SIZE[0] + 31) // 32 * 32
-    new_im_h = (IM_SIZE[1] + 15) // 16 * 16
- 
-    new_im_size = (new_im_w, new_im_h)
+    if PLUGIN_ENABLE_ON:
+        mypath = os.path.abspath(__file__)  # Find the full path of this python script
+        # get the path location only (excluding script name)
+        baseDir = mypath[0 : mypath.rfind("/") + 1]
+        pluginDir = os.path.join(baseDir, "plugins")
+        pluginPath = os.path.join(pluginDir, PLUGIN_NAME + ".py")
+
+        # add plugin directory to program PATH
+        sys.path.insert(0, pluginDir)
+        logging.info("%s import %s", PLUGIN_NAME,  pluginPath)
+        # Try importing any camera plugin settings if present
+        try:
+            from plugins.current import CAMERA
+        except Exception as err_msg:
+            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        try:
+            from plugins.current import IM_SIZE
+        except Exception as err_msg:
+            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        try:
+            from plugins.current import RTSPCAM_SRC
+        except Exception as err_msg:
+            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        try:
+            from plugins.current import USBCAM_SRC
+        except Exception as err_msg:
+            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        try:
+            from plugins.current import IM_FRAMERATE
+        except Exception as err_msg:
+            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        try:
+            from plugins.current import IM_ROTATION
+        except Exception as err_msg:
+            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        try:
+            from plugins.current import IM_HFLIP
+        except Exception as err_msg:
+            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        try:
+            from plugins.current import IM_VFLIP
+        except Exception as err_msg:
+            logging.info("  %s %s", CAMERA.upper(), err_msg)
+
+    logging.info("%s Image stream size is %i x %i", CAMERA.upper(), IM_SIZE[0], IM_SIZE[1])
 
     # ------------------------------------------------------------------------------
     def is_pi_legacy_cam():
@@ -89,7 +131,7 @@ def strmcam():
                     logging.error("import Failed. from strmpilibcam import PiLibCamStream")
                     sys.exit(1)
                 cam_title = cam_name
-                vs = CamStream(size=new_im_size,
+                vs = CamStream(size=IM_SIZE,
                                vflip=IM_VFLIP,
                                hflip=IM_HFLIP).start()
 
@@ -118,7 +160,7 @@ def strmcam():
             cam_title = cam_name
 
             # Create Legacy Pi Camera Video Stream Thread
-            vs = CamStream(size=new_im_size,
+            vs = CamStream(size=IM_SIZE,
                            framerate=IM_FRAMERATE,
                            rotation=IM_ROTATION,
                            hflip=IM_HFLIP,
@@ -139,9 +181,9 @@ def strmcam():
             except ImportError:
                 logging.error("Could Not Import Webcam from strmusbipcam.py")
                 sys.exit(1)
-            vs = CamStream(src=cam_src, size=new_im_size).start()
+            vs = CamStream(src=cam_src, size=IM_SIZE).start()
 
-        logging.info("%s Started Video Stream Thread.", cam_title.upper())
+        logging.info("%s Started Video Stream Thread %i x %i", cam_title.upper(), IM_SIZE[0], IM_SIZE[1])
         return vs
 
     vs = create_cam_thread(CAMERA)
