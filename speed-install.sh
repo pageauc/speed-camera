@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="13.00"
+ver="13.05"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
 rclone_cur_ver="rclone v1.64.0"
@@ -59,13 +59,6 @@ if [ -f config.py ]; then     # check if local file exists.
 else
     wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
 fi
-
-if [ -f configcam.py ]; then     # check if local file exists.
-    wget -O configcam.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/configcam.py
-else
-    wget -O configcam.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/configcam.py
-fi
-
 
 if [ ! -f remote-run.sh ] ; then
     wget -O watch-app.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/watch-app.sh

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from __future__ import print_function
-PROG_VER = "13.02"  # current version of this python script
+PROG_VER = "13.05"  # current version of this python script
 '''
 speed-cam.py written by Claude Pageau
 Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking
@@ -56,6 +56,7 @@ import logging
 import sqlite3
 import numpy as np
 
+# import the main strmcam launch module
 try:
     from strmcam import strmcam
 except Exception as err_msg:
@@ -91,7 +92,6 @@ default_settings = {
     "ALIGN_CAM_ON": False,
     "ALIGN_DELAY_SEC": 2,
     "SHOW_SETTINGS_ON": False,
-    "SHOW_CAM_SETTINGS_ON": True,
     "CAL_OBJ_PX_L2R": 90,
     "CAL_OBJ_MM_L2R": 4700.0,
     "CAL_OBJ_PX_R2L": 95,
@@ -116,6 +116,20 @@ default_settings = {
     "MO_TRACK_TIMEOUT_SEC": 0.5,
     "MO_EVENT_TIMEOUT_SEC": 0.3,
     "MO_MAX_SPEED_OVER": 0,
+    "MO_CROP_AUTO_ON": False,
+    "MO_CROP_X_LEFT": 50,
+    "MO_CROP_X_RIGHT": 250,
+    "MO_CROP_Y_UPPER": 90,
+    "MO_CROP_Y_LOWER": 150,
+    "CAMERA": "pilibcam",
+    "CAM_LOCATION": "Front Window",
+    "USBCAM_SRC": 0,
+    "RTSPCAM_SRC": "rtsp://user:password@IP:554/path",
+    "IM_SIZE": (320, 240),
+    "IM_VFLIP": False,
+    "IM_HFLIP": False,
+    "IM_ROTATION": 0,
+    "IM_FRAMERATE": 30,
     "IM_DIR_PATH": "media/images",
     "IM_PREFIX": "speed-",
     "IM_FORMAT_EXT": ".jpg",
@@ -213,17 +227,6 @@ for key, val in default_settings.items():
         print("WARN : config.py Variable Not Found. Setting " + key + " = " + str(val))
         exec(key + "=val")
 
-# import variables from configcam.py
-try:
-    from configcam import *
-except Exception as err_msg:
-    print("ERROR: %s" % err_msg)
-    sys.exit(1)
-
-# fix rounding problems with picamera resolution
-CAMERA_WIDTH = (IM_SIZE[0] + 31) // 32 * 32
-CAMERA_HEIGHT = (IM_SIZE[1] + 15) // 16 * 16
-
 # Now that variables are imported from config.py Setup Logging since we have LOG_FILE_PATH
 if LOG_TO_FILE_ON:
     logging.basicConfig(
@@ -279,7 +282,7 @@ if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
     if PLUGIN_NAME.endswith(".py"):
         PLUGIN_NAME = PLUGIN_NAME[:-3]  # Remove .py extensiion
     pluginPath = os.path.join(pluginDir, PLUGIN_NAME + ".py")
-    logging.info("pluginEnabled - loading PLUGIN_NAME %s", pluginPath)
+    logging.info("pluginEnabled - loading %s", pluginPath)
     if not os.path.isdir(pluginDir):
         logging.error("plugin Directory Not Found at %s", pluginDir)
         logging.info("Rerun github curl install script to install plugins")
@@ -288,7 +291,7 @@ if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
         logging.warning("%s %s Exiting Due to Error", PROG_NAME, PROG_VER)
         sys.exit(1)
     elif not os.path.exists(pluginPath):
-        logging.error("File Not Found PLUGIN_NAME %s", pluginPath)
+        logging.error("Plugin File Not Found %s", pluginPath)
         logging.info("Check Spelling of PLUGIN_NAME Value in %s", configFilePath)
         logging.info("------- Valid Names -------")
         validPlugin = glob.glob(pluginDir + "/*py")
@@ -311,27 +314,19 @@ if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
             logging.info("Copy %s to %s", pluginPath, pluginCurrent)
             shutil.copy(pluginPath, pluginCurrent)
         except OSError as err:
-            logging.error(
-                "Copy Failed from %s to %s - %s", pluginPath, pluginCurrent, err
-            )
+            logging.error("Copy Failed %s to %s - %s", pluginPath, pluginCurrent, err)
             logging.info("Check permissions, disk space, Etc.")
             logging.warning("%s %s Exiting Due to Error", PROG_NAME, PROG_VER)
             sys.exit(1)
-        logging.info("Import Plugin %s", pluginPath)
         # add plugin directory to program PATH
         sys.path.insert(0, pluginDir)
         try:
             from plugins.current import *
         except Exception as err_msg:
-            logging.warn("%s" % err_msg)
-        try:
-            if os.path.exists(pluginCurrent):
-                os.remove(pluginCurrent)
-            pluginCurrentpyc = os.path.join(pluginDir, "current.pyc")
-            if os.path.exists(pluginCurrentpyc):
-                os.remove(pluginCurrentpyc)
-        except OSError as err_msg:
-            logging.warning("Failed To Remove File %s - %s", pluginCurrentpyc, err_msg)
+            logging.warning("%s" % err_msg)
+            
+CAMERA_WIDTH, CAMERA_HEIGHT = IM_SIZE
+
 # import the necessary packages
 # -----------------------------
 
@@ -389,11 +384,14 @@ def show_config(filename):
     Display program configuration variable settings
     read config file and print each decoded line
     '''
-    print("============= %s Settings ===================" % filename)
+    print("")
+    logging.info("Reading settings per %s", configFilePath)
     with open(filename, 'rb') as f:
         for line in f:
             print(line.decode().strip())
-    print("=====================================================")
+    if PLUGIN_ENABLE_ON:
+        logging.warning("Some Settings Above will be changed by Plugin %s", PLUGIN_NAME)
+
 
 # ------------------------------------------------------------------------------
 def get_fps(start_time, frame_count):
@@ -408,6 +406,8 @@ def get_fps(start_time, frame_count):
         frame_count += 1
     return start_time, frame_count
 
+
+# ------------------------------------------------------------------------------
 def make_media_dirs():
     """
     Create media default folders per config.py settings.
@@ -1152,12 +1152,16 @@ def speed_notify():
             os.remove(align_filename)
             logging.info("Removed camera alignment image at %s", align_filename)
     logging.info("%s video stream size is %i x %i", CAMERA.upper(), img_width, img_height)
-    logging.info("Resized Photos after IM_BIGGER=%i is %i x %i", IM_BIGGER, image_width, image_height)
+    logging.info("Resized Photos after IM_BIGGER=%.2f is %i x %i", IM_BIGGER, image_width, image_height)
 
 
 # ------------------------------------------------------------------------------
 def speed_camera():
     """Main speed camera processing function"""
+    if SHOW_SETTINGS_ON:
+       show_config(configFilePath)
+       # show_settings()  # Show variable settings
+
     ave_speed = 0.0
     # initialize variables
     frame_count = 0
@@ -1484,7 +1488,7 @@ def speed_camera():
                                                     ]
                                                    )
                                     except:  # sometimes issue with IP camera so default to non optimized imwrite
-                                        logging.warn('Problem writing optimized. Saving Normal %s', filename)
+                                        logging.warning('Problem writing optimized. Saving Normal %s', filename)
                                         cv2.imwrite(filename, big_image)
                                 else:
                                     cv2.imwrite(filename, big_image)
@@ -1836,17 +1840,23 @@ def speed_camera():
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
 
+    vs = strmcam()  # start video stream thread
+    # Get actual image size from stream.
+    # Necessary for IP camera  
+    image1 = vs.read()        
     try:
-
-        vs = strmcam()  # start video stream thread
-        # Get actual image size from stream.
-        # Necessary for IP camera
-        test_img = vs.read()
-        img_height, img_width, _ = test_img.shape
-        # Set width of trigger point image to save
-        image_width = int(img_width * IM_BIGGER)
-        # Set height of trigger point image to save
-        image_height = int(img_height * IM_BIGGER)
+        grayimage1 = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
+    except cv2.error as err_msg:
+        logging.error('%s Problem Connecting Camera. Review Log Messages and Correct', CAMERA.upper())
+        logging.error(err_msg)
+        logging.error('Check camera connection settings and Hardware')
+        sys.exit(1)
+    img_height, img_width, _ = image1.shape      
+    image_width = int(img_width * IM_BIGGER)
+    # Set height of trigger point image to save
+    image_height = int(img_height * IM_BIGGER)
+    # Auto Calculate motion crop area settings
+    if MO_CROP_AUTO_ON:
         X_SCALE = 8.0
         Y_SCALE = 4.0
         # reduce motion area for larger stream sizes
@@ -1856,36 +1866,33 @@ if __name__ == "__main__":
         # If motion box crop settings not found in config.py then
         # Auto adjust the crop image to suit the real image size.
         # For details See comments in config.py Motion Events settings section
-        try:
-            MO_CROP_X_LEFT
-        except NameError:
-            MO_CROP_X_LEFT = int(img_width / X_SCALE)
-        try:
-            MO_CROP_X_RIGHT
-        except NameError:
-            MO_CROP_X_RIGHT = int(img_width - MO_CROP_X_LEFT)
-        try:
-            MO_CROP_Y_UPPER
-        except NameError:
-            MO_CROP_Y_UPPER = int(img_height / Y_SCALE)
-        try:
-            MO_CROP_Y_LOWER
-        except NameError:
-            MO_CROP_Y_LOWER = int(img_height - MO_CROP_Y_UPPER)
-        # setup buffer area to ensure contour is mostly contained in crop area
-        x_buf = int((MO_CROP_X_RIGHT - MO_CROP_X_LEFT) / MO_X_LR_SIDE_BUFF_PX)
-
-        make_media_dirs()
-        if SHOW_SETTINGS_ON:
-            show_settings()  # Show variable settings
-        if SHOW_CAM_SETTINGS_ON:
-            show_config('configcam.py')
+        MO_CROP_X_LEFT = int(img_width / X_SCALE)
+        MO_CROP_X_RIGHT = int(img_width - MO_CROP_X_LEFT)
+        MO_CROP_Y_UPPER = int(img_height / Y_SCALE)
+        MO_CROP_Y_LOWER = int(img_height - MO_CROP_Y_UPPER)
+    # setup buffer area to ensure contour is mostly contained in crop area
+    x_buf = int((MO_CROP_X_RIGHT - MO_CROP_X_LEFT) / MO_X_LR_SIDE_BUFF_PX)
+    make_media_dirs()
+    try:    
         speed_camera()  # run main speed camera processing loop
     except KeyboardInterrupt:
         print("")
         logging.info("User Pressed Keyboard ctrl-c")
         logging.info("%s %s Exiting Program", PROG_NAME, PROG_VER)
+        # Remove temporary plugin configuration file if it exists.  plugins/current.py
+        if PLUGIN_ENABLE_ON:
+            logging.info("Remove Temporary plugin config Files")
+            try:
+                if os.path.exists(pluginCurrent):
+                    logging.info("Delete %s", pluginCurrent)
+                    os.remove(pluginCurrent)
+                pluginCurrentpyc = os.path.join(pluginDir, "current.pyc")
+                if os.path.exists(pluginCurrentpyc):
+                    logging.info("Delete %s", pluginCurrentpyc)
+                    os.remove(pluginCurrentpyc)
+            except OSError as err_msg:
+                logging.warning("Failed To Remove File %s - %s", pluginCurrentpyc, err_msg)
+        logging.info("%s Stop Camera Stream Thread.", CAMERA.upper())
         vs.stop()
-        logging.info("%s Stopped Camera Stream Thread.", CAMERA.upper())
         logging.info("Bye ...")
         sys.exit()

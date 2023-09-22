@@ -24,24 +24,11 @@ This will download and run the **speed-install.sh** script. If running under pyt
 If you need to compile openCV see my Github Repo at [menu driven compile opencv3 from source](https://github.com/pageauc/opencv3-setup) project
 
 #### Ver 13.00 Notes
-Version 13.00 is a major speed camera revision. Camera thread code is now handled by a strmcam.py module.
+Version 13.05 is a major speed camera revision. Camera thread code is now handled by a strmcam.py module.
 config.py variable names have changed so you will need to backup and cp config.py.new config.py (see below for details)    
-***IMPORTANT*** : Plugins NOT yet converted to new variable names.
-Also the camera settings are moved to configcam.py to allow code to be more portable. 
-
-Example code to start a video stream thread is now greatly simplified. per example below
-
-    # The following files need to be in the same folder as the script
-    # configcam.py, strmcam.py, strmpilegcam.py, strmpilibcam.py and strmusbipcam.py
-    
-    from strmcam import strmcam   # import camera stream function
-    
-    vs = strmcam()      # start video stream thread per configcam.py settings using appropriate strm.....py file
-    
-    # example implementation
-    image1 = vs.read()  # read video stream image frame into variable
-    # your code here
-    vs.stop()           # Stop Camera Thread
+***IMPORTANT*** : All settings are in config.py.  You can delete configcam.py once you upgrade to ver 13.05
+plugins now work.  You can customize plugin files to suit you needs or create your own.  If you are upgrading you should delete, move
+old plugins so new ones will be downloaded during UPGRADE.  Please post GitHub issue if you find a bug or problem.  Claude 
 
 
 ***IMPORTANT*** speed-cam.py ver 8.x or greater Requires Updated config.py and plugins.
