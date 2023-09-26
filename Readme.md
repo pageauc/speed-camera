@@ -26,7 +26,7 @@ If you need to compile openCV see my Github Repo at [menu driven compile opencv3
 #### Ver 13.00 Notes
 Version 13.05 is a major speed camera revision. Camera thread code is now handled by a strmcam.py module.
 config.py variable names have changed so you will need to backup and cp config.py.new config.py (see below for details)    
-***IMPORTANT*** : All settings are in config.py.  You can delete configcam.py once you upgrade to ver 13.05
+***IMPORTANT*** : All settings are in config.py.  You can delete configcam.py if it exists, once you upgrade to ver 13.05 or greater.
 plugins now work.  You can customize plugin files to suit you needs or create your own.  If you are upgrading you should delete, move
 old plugins so new ones will be downloaded during UPGRADE.  Please post GitHub issue if you find a bug or problem.  Claude 
 
@@ -55,15 +55,15 @@ It is written in python and uses openCV to detect and track the x,y coordinates 
 largest moving object in the camera view above a minimum pixel area.
 
 User variables are stored in the [***config.py***](https://github.com/pageauc/speed-camera/blob/master/config.py) file.
-Motion detection is restricted between ***y_upper***, ***y_lower***, ***x_left***, ***x_right*** variables  (road or area of interest).
+Motion detection is restricted between ***MO_CROP_Y_UPPER***, ***MO_CROP_Y_LOWER***, ***MO_CROP_X_LEFT***, ***MO_CROP_X_RIGHT*** variables  (road or area of interest).
 Auto calculated but can be overridden in config.py by uncommenting desired variable settings.
-Motion Tracking is controlled by the ***track_counter*** variable in config.py.  This sets the number of track events and 
+Motion Tracking is controlled by the ***MO_TRACK_EVENT_COUNT*** variable in config.py.  This sets the number of track events and 
 the track length in pixels.  This may need to be tuned for camera view, cpu speed, etc. 
-Speed is calculated based on ***cal_obj_px*** and ***cal_obj_mm*** variables for L2R and R2L motion direction. A video stream frame image will be
-captured and saved in ***media/images*** dated subfolders (optional) per variable ***imageSubDirMaxFiles*** = ***2000*** 
+Speed is calculated based on ***CAL_OBJ_PX_*** and ***CAL_OBJ_MM_*** variables for L2R and R2L motion direction. A video stream frame image will be
+captured and saved in ***media/images*** dated subfolders (optional) per variable ***IM_SUBDIR_MAX_FILES*** = ***2000*** 
 For variable settings details see [config.py file](https://github.com/pageauc/speed-camera/blob/master/config.py). 
 
-If ***log_data_to_CSV*** = ***True*** then a ***speed-cam.csv*** file will be created/updated with event data stored in
+If ***LOG_DATA_TO_CSV*** = ***True*** then a ***speed-cam.csv*** file will be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc program for further processing.
 Release 8.9 adds a **sqlite3** database to store speed data. Default is ***data/speed_cam.db*** with data in the ***speed*** table.
 Database setting can be managed from config.py.  Database is automatically created from config.py settings. For more
@@ -164,9 +164,9 @@ From logged in RPI SSH session or console terminal perform the following. Allows
     
 See [***How to Run***](https://github.com/pageauc/speed-camera/wiki/How-to-Run) speed-cam.py wiki section
 
-***IMPORTANT*** Speed Camera will start in ***calibrate*** = ***True*** Mode.    
+***IMPORTANT*** Speed Camera will start in ***CALIBRATE_ON*** = ***True*** Mode.    
 Review settings in ***config.py*** file and edit variables with nano as required.
-You will need to perform a calibration to set the correct value for config.py ***cal_obj_px*** and ***cal_obj_mm*** for
+You will need to perform a calibration to set the correct value for config.py ***CAL_OBJ_PX_*** and ***CAL_OBJ_MM_*** for
 L2R and R2L directions. The variables are based on the distance from camera to objects being measured for speed.
 See [***Calibration Procedure***](https://github.com/pageauc/speed-camera/wiki/Calibrate-Camera-for-Distance) for more details.     
 
