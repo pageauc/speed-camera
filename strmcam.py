@@ -95,7 +95,7 @@ def strmcam():
             return True
         else:
             logging.warn("Problem Finding Pi Legacy Camera %s", camResult)
-            logging.warn('Check Camera Connections and Legacy Pi Cam is Enabled per command sudo raspi=config')
+            logging.warn('Check Camera Connections and Legacy Pi Cam is Enabled per command sudo raspi-config')
             return False
 
 

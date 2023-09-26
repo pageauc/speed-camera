@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from __future__ import print_function
-PROG_VER = "13.05"  # current version of this python script
+PROG_VER = "13.06"  # current version of this python script
 '''
 speed-cam.py written by Claude Pageau
 Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking
@@ -324,7 +324,7 @@ if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
             from plugins.current import *
         except Exception as err_msg:
             logging.warning("%s" % err_msg)
-            
+
 CAMERA_WIDTH, CAMERA_HEIGHT = IM_SIZE
 
 # import the necessary packages
@@ -1842,8 +1842,8 @@ if __name__ == "__main__":
 
     vs = strmcam()  # start video stream thread
     # Get actual image size from stream.
-    # Necessary for IP camera  
-    image1 = vs.read()        
+    # Necessary for IP camera
+    image1 = vs.read()
     try:
         grayimage1 = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
     except cv2.error as err_msg:
@@ -1851,7 +1851,7 @@ if __name__ == "__main__":
         logging.error(err_msg)
         logging.error('Check camera connection settings and Hardware')
         sys.exit(1)
-    img_height, img_width, _ = image1.shape      
+    img_height, img_width, _ = image1.shape
     image_width = int(img_width * IM_BIGGER)
     # Set height of trigger point image to save
     image_height = int(img_height * IM_BIGGER)
@@ -1873,12 +1873,11 @@ if __name__ == "__main__":
     # setup buffer area to ensure contour is mostly contained in crop area
     x_buf = int((MO_CROP_X_RIGHT - MO_CROP_X_LEFT) / MO_X_LR_SIDE_BUFF_PX)
     make_media_dirs()
-    try:    
+    try:
         speed_camera()  # run main speed camera processing loop
     except KeyboardInterrupt:
         print("")
         logging.info("User Pressed Keyboard ctrl-c")
-        logging.info("%s %s Exiting Program", PROG_NAME, PROG_VER)
         # Remove temporary plugin configuration file if it exists.  plugins/current.py
         if PLUGIN_ENABLE_ON:
             logging.info("Remove Temporary plugin config Files")
@@ -1894,5 +1893,6 @@ if __name__ == "__main__":
                 logging.warning("Failed To Remove File %s - %s", pluginCurrentpyc, err_msg)
         logging.info("%s Stop Camera Stream Thread.", CAMERA.upper())
         vs.stop()
+        logging.info("%s %s Exiting Program", PROG_NAME, PROG_VER)
         logging.info("Bye ...")
         sys.exit()

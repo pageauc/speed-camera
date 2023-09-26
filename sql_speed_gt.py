@@ -171,7 +171,7 @@ def make_html_report_list():
                         os.path.abspath(os.path.dirname(image_path)),
                         os.path.abspath(REPORTS_DIR)),
                         image_filename)
-        table_row = ('<tr><td>%s</td><td>%s %s</td><td>%s</td><td><a href="%s">%s</a></td></tr>' %
+        table_row = ('<tr><td>%s</td><td>%s %s</td><td>%s</td><td><a href="../%s">%s</a></td></tr>' %
                     (log_date,
                      ave_speed,
                      speed_units,
