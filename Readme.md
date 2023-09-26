@@ -56,7 +56,7 @@ largest moving object in the camera view above a minimum pixel area.
 
 User variables are stored in the [***config.py***](https://github.com/pageauc/speed-camera/blob/master/config.py) file.
 Motion detection is restricted between ***MO_CROP_Y_UPPER***, ***MO_CROP_Y_LOWER***, ***MO_CROP_X_LEFT***, ***MO_CROP_X_RIGHT*** variables  (road or area of interest).
-Auto calculated but can be overridden in config.py by uncommenting desired variable settings.
+***MO_CROP_AUTO_ON*** = ***True*** overrides manual settings and will Auto calculate a rough crop area based on image size.
 Motion Tracking is controlled by the ***MO_TRACK_EVENT_COUNT*** variable in config.py.  This sets the number of track events and 
 the track length in pixels.  This may need to be tuned for camera view, cpu speed, etc. 
 Speed is calculated based on ***CAL_OBJ_PX_*** and ***CAL_OBJ_MM_*** variables for L2R and R2L motion direction. A video stream frame image will be
