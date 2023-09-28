@@ -36,7 +36,7 @@ CAM_LOCATION = "Front Window"
 
 USBCAM_SRC = 0         # Device number of USB connection usually 0, 1, 2, Etc
 RTSPCAM_SRC = "rtsp://user:password@IP:554/path"  # Set per IP Cam Docs and config see example below
-                                                  # rtsp://admin:myped@192.168.1.100:554/12
+                                                  # rtsp://admin:mypwd@192.168.1.100:554/12
 
 # Camera Image Stream Settings
 IM_SIZE = (320, 240)   # Image resolution width, height pixels

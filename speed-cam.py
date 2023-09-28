@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from __future__ import print_function
-PROG_VER = "13.06"  # current version of this python script
+PROG_VER = "13.07"  # current version of this python script
 '''
 speed-cam.py written by Claude Pageau
 Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking
@@ -282,7 +282,7 @@ if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
     if PLUGIN_NAME.endswith(".py"):
         PLUGIN_NAME = PLUGIN_NAME[:-3]  # Remove .py extensiion
     pluginPath = os.path.join(pluginDir, PLUGIN_NAME + ".py")
-    logging.info("pluginEnabled - loading %s", pluginPath)
+    logging.info("pluginEnabled %s", pluginPath)
     if not os.path.isdir(pluginDir):
         logging.error("plugin Directory Not Found at %s", pluginDir)
         logging.info("Rerun github curl install script to install plugins")

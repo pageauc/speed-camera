@@ -8,6 +8,8 @@ def strmcam():
     import subprocess
     import logging
 
+    PROG_VER="13.07"   # version of this module
+    CAM_WARMUP_SEC = 3
     # Setup logging
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s",
@@ -30,9 +32,10 @@ def strmcam():
                             IM_HFLIP,
                             IM_VFLIP
                            )
-    except Exception as e:
-        logging.error(e)
+    except Exception as err_msg:
+        logging.error(err_msg)
         sys.exit(1)
+    logging.info("Imported Required Camera Stream Settings from config.py")
 
     if PLUGIN_ENABLE_ON:
         mypath = os.path.abspath(__file__)  # Find the full path of this python script
@@ -43,42 +46,40 @@ def strmcam():
 
         # add plugin directory to program PATH
         sys.path.insert(0, pluginDir)
-        logging.info("%s import %s", PLUGIN_NAME,  pluginPath)
         # Try importing any camera plugin settings if present
         try:
             from plugins.current import CAMERA
-        except Exception as err_msg:
-            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        except ImportError:
+            pass
         try:
             from plugins.current import IM_SIZE
-        except Exception as err_msg:
-            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        except ImportError:
+            pass
         try:
             from plugins.current import RTSPCAM_SRC
-        except Exception as err_msg:
-            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        except ImportError:
+            pass
         try:
             from plugins.current import USBCAM_SRC
-        except Exception as err_msg:
-            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        except ImportError:
+            pass
         try:
             from plugins.current import IM_FRAMERATE
-        except Exception as err_msg:
-            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        except ImportError:
+            pass
         try:
             from plugins.current import IM_ROTATION
-        except Exception as err_msg:
-            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        except ImportError:
+            pass
         try:
             from plugins.current import IM_HFLIP
-        except Exception as err_msg:
-            logging.info("  %s %s", CAMERA.upper(), err_msg)
+        except ImportError:
+            pass
         try:
             from plugins.current import IM_VFLIP
-        except Exception as err_msg:
-            logging.info("  %s %s", CAMERA.upper(), err_msg)
-
-    logging.info("%s Image stream size is %i x %i", CAMERA.upper(), IM_SIZE[0], IM_SIZE[1])
+        except ImportError:
+            pass
+        logging.info("%s Imported New Camera Stream Settings from plugin %s", CAMERA.upper(), PLUGIN_NAME)
 
     # ------------------------------------------------------------------------------
     def is_pi_legacy_cam():
@@ -157,7 +158,7 @@ def strmcam():
             except ImportError:
                 logging.error("Import Failed. from strmpilegcam import CamStream")
                 sys.exit(1)
-            cam_title = cam_name
+            cam_title = cam_name.upper()
 
             # Create Legacy Pi Camera Video Stream Thread
             vs = CamStream(size=IM_SIZE,
@@ -168,10 +169,10 @@ def strmcam():
         elif cam_name == 'usbcam' or cam_name == 'rtspcam':
             if cam_name == 'rtspcam':
                 cam_src = RTSPCAM_SRC
-                cam_title = cam_name + ' src=  ' + cam_src
+                cam_title = cam_name.upper() + ' src=' + cam_src
             elif cam_name == 'usbcam':
                 cam_src = USBCAM_SRC
-                cam_title = cam_name + ' src= ' + str(cam_src)
+                cam_title = cam_name.upper() + ' src=' + str(cam_src)
 
             if not os.path.exists('strmusbipcam.py'):
                 logging.error("File Not Found. Could Not Import strmusbipcam.py")
@@ -183,10 +184,10 @@ def strmcam():
                 sys.exit(1)
             vs = CamStream(src=cam_src, size=IM_SIZE).start()
 
-        logging.info("%s Started Video Stream Thread %i x %i", cam_title.upper(), IM_SIZE[0], IM_SIZE[1])
+        logging.info("%s", cam_title)
         return vs
 
     vs = create_cam_thread(CAMERA)
-    logging.info("Warming Up Camera.")
-    time.sleep(3)  # Allow Camera to warm up
+    logging.info("ver %s Warming Up Camera %i sec ...", PROG_VER, CAM_WARMUP_SEC)
+    time.sleep(CAM_WARMUP_SEC)  # Allow Camera to warm up
     return vs
