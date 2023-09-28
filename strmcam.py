@@ -9,15 +9,15 @@ def strmcam():
     import logging
 
     PROG_VER="13.07"   # version of this module
-    CAM_WARMUP_SEC = 3
+    CAM_WARMUP_SEC = 3   
+    # List of valid camera values in the configcam.py file
+    CAMLIST = ('usbcam', 'rtspcam', 'pilibcam', 'pilegcam')
+    
     # Setup logging
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s",
                         datefmt="%Y-%m-%d %H:%M:%S"
                        )
-
-    # List of valid camera values in the configcam.py file
-    CAMLIST = ('usbcam', 'rtspcam', 'pilibcam', 'pilegcam')
 
     # Import Required Variables from config.py
     try:
