@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="13.05"
+ver="13.08"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
 rclone_cur_ver="rclone v1.64.0"
@@ -76,7 +76,7 @@ fi
 echo "INFO  : $STATUS Check/Install pi-timolo/plugins    Wait ..."
 PLUGINS_DIR='plugins'  # Default folder install location
 # List of plugin Files to Check
-pluginFiles=("__init__.py" "picam240.py" "webcam240.py" "picam480.py" "webcam480.py" \
+pluginFiles=("__init__.py" "picam240.py" "webcam240.py" "picam480.py" "webcam480.py" "rtsp352.py" \
 "picam720.py" "webcam720.py" "picam1080.py" "secpicam480.py" "secwebcam480.py")
 
 mkdir -p $PLUGINS_DIR

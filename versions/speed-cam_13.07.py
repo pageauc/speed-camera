@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from __future__ import print_function
-PROG_VER = "13.08"  # current version of this python script
+PROG_VER = "13.07"  # current version of this python script
 '''
 speed-cam.py written by Claude Pageau
 Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking
@@ -405,19 +405,6 @@ def get_fps(start_time, frame_count):
     else:
         frame_count += 1
     return start_time, frame_count
-
-
-# ------------------------------------------------------------------------------
-def timer_is_on(sched_time):
-    """
-    Based on schedule date setting see if current
-    datetime is past and return boolean
-    to indicate timer is off
-    """
-    is_on = True
-    if sched_time <= datetime.datetime.now():
-        is_on = False  # sched date/time has passed so start sequence
-    return is_on
 
 
 # ------------------------------------------------------------------------------
@@ -1172,15 +1159,15 @@ def speed_notify():
 def speed_camera():
     """Main speed camera processing function"""
     if SHOW_SETTINGS_ON:
-       # show_config(configFilePath)
-       show_settings()  # Show variable settings
+       show_config(configFilePath)
+       # show_settings()  # Show variable settings
 
-    # initialize variables and settings
     ave_speed = 0.0
     # initialize variables
     frame_count = 0
     fps_time = time.time()
     first_event = True  # Start a New Motion Track
+    event_timer = time.time()
     start_pos_x = None
     end_pos_x = None
     prev_pos_x = None
@@ -1213,9 +1200,9 @@ def speed_camera():
         pass
     db_conn.close()
     speed_notify()
-
     # initialize a cropped grayimage1 image
     image2 = vs.read()  # Get image from VideoSteam thread instance
+
     try:
         # crop image to motion tracking area only
         image_crop = image2[MO_CROP_Y_UPPER:MO_CROP_Y_LOWER, MO_CROP_X_LEFT:MO_CROP_X_RIGHT]
@@ -1229,6 +1216,7 @@ def speed_camera():
     track_count = 0
     speed_list = []
     event_timer = time.time()
+    still_scanning = True
     image_sign_bg = np.zeros((IM_SIGN_RESIZE[0], IM_SIGN_RESIZE[1], 4))
     image_sign_view = cv2.resize(image_sign_bg, (IM_SIGN_RESIZE))
     image_sign_view_time = time.time()
@@ -1246,14 +1234,8 @@ def speed_camera():
         print("Logging Messages Disabled per LOG_VERBOSE_ON=%s" % LOG_VERBOSE_ON)
     logging.info("Begin Motion Tracking .....")
     print(HORIZ_LINE)
-    off_time = datetime.datetime.now()
-    still_scanning = True
-    # Start main speed camera loop
-    while still_scanning:
+    while still_scanning:  # process camera thread images and calculate speed
         image2, grayimage1, contours = speed_get_contours(grayimage1)
-        # Keep camera running while waiting for timer to expire per MO_TRACK_TIMEOUT_SEC
-        if timer_is_on(off_time):
-            continue
         if GUI_WINDOW_ON or ALIGN_CAM_ON or CALIBRATE_ON:
             image2_copy = image2  # make a copy of current image2 when needed
         # if contours found, find the one with biggest area
@@ -1268,6 +1250,7 @@ def speed_camera():
                     (x, y, w, h) = cv2.boundingRect(c)
                     # check if object contour is completely within crop area
                     if x > x_buf and x + w < MO_CROP_X_RIGHT - MO_CROP_X_LEFT - x_buf:
+
                         track_x = x
                         track_y = y
                         track_w = w  # movement width of object contour
@@ -1276,6 +1259,21 @@ def speed_camera():
                         biggest_area = found_area
                         cur_track_time = time.time()  # record cur track time
             if motion_found:
+                # Check if last motion event timed out
+                reset_time_diff = time.time() - event_timer
+                if reset_time_diff > MO_EVENT_TIMEOUT_SEC:
+                    # event_timer exceeded so reset for new track
+                    event_timer = time.time()
+                    first_event = True
+                    start_pos_x = None
+                    prev_pos_x = None
+                    end_pos_x = None
+                    logging.info(
+                        "Reset- event_timer %.2f>%.2f sec Exceeded",
+                        reset_time_diff,
+                        MO_EVENT_TIMEOUT_SEC,
+                    )
+                    print(HORIZ_LINE)
                 ##############################
                 # Process motion events and track object movement
                 ##############################
@@ -1295,21 +1293,7 @@ def speed_camera():
                     event_timer = time.time()  # Reset event timeout
                     track_count = 0
                     speed_list = []
-                    continue
                 else:
-                    # Check if last motion event timed out
-                    reset_time_diff = time.time() - event_timer
-                    if reset_time_diff >= MO_EVENT_TIMEOUT_SEC:
-                        # event_timer exceeded so reset for new track
-                        event_timer = time.time()
-                        first_event = True
-                        logging.info(
-                            "Reset- event_timer %.2f>%.2f sec Exceeded",
-                            reset_time_diff,
-                            MO_EVENT_TIMEOUT_SEC,
-                        )
-                        print(HORIZ_LINE)
-                        continue
                     prev_pos_x = end_pos_x
                     end_pos_x = track_x
                     if end_pos_x - prev_pos_x > 0:
@@ -1697,11 +1681,14 @@ def speed_camera():
                                     "MO_TRACK_TIMEOUT_SEC %0.2f sec Sleep to Avoid Tracking Same Object Multiple Times."
                                     % MO_TRACK_TIMEOUT_SEC
                                 )
-                                first_event = True  # Reset Track
-                                # Set track timeout time
-                                off_time = datetime.datetime.now() + datetime.timedelta(seconds=MO_TRACK_TIMEOUT_SEC)
-                                continue  # go back to start of speed loop to idle camera
-                            first_event = True
+                                time.sleep(MO_TRACK_TIMEOUT_SEC)
+                            # Track Ended so Reset Variables ready for
+                            # next tracking sequence
+                            start_pos_x = None
+                            end_pos_x = None
+                            first_event = True  # Reset Track
+                            track_count = 0
+                            event_timer = time.time()
                         else:
                             logging.info(
                                 " Add - %i/%i xy(%i,%i) %3.2f %s"
@@ -1725,10 +1712,10 @@ def speed_camera():
                             event_timer = time.time()
                     # Movement was not within range parameters
                     else:
-                        # Check if Max px distance from prev position is greater
-                        # than the MO_MAX_X_DIFF_PX setting
-                        if abs(track_x - prev_pos_x) >= MO_MAX_X_DIFF_PX:
-                            if MO_LOG_OUT_RANGE_ON:  # Log event if True
+                        if MO_LOG_OUT_RANGE_ON:
+                            # movements exceeds Max px movement
+                            # allowed so Ignore and do not update event_timer
+                            if abs(track_x - prev_pos_x) >= MO_MAX_X_DIFF_PX:
                                 logging.info(
                                     " Out - %i/%i xy(%i,%i) Max D=%i>=%ipx"
                                     " C=%i %ix%i=%i sqpx %s",
@@ -1744,13 +1731,33 @@ def speed_camera():
                                     biggest_area,
                                     travel_direction,
                                 )
-                            # if track_count is LT or EQ to half MO_TRACK_EVENT_COUNT
-                            if track_count <= MO_TRACK_EVENT_COUNT / 2:
-                                event_timer = time.time()  # Reset Event Timer
+                                # if track_count is over half way then do not start new track
+                                if track_count > MO_TRACK_EVENT_COUNT / 2:
+                                    pass
+                                else:
+                                    first_event = True  # Too Far Away so restart Track
+                            # Did not move much so update event_timer
+                            # and wait for next valid movement.
                             else:
-                                first_event = True  # start new track
-                            continue  # go back to start of loop
-
+                                logging.info(
+                                    " Out - %i/%i xy(%i,%i) Min D=%i<=%ipx"
+                                    " C=%i %ix%i=%i sqpx %s",
+                                    track_count,
+                                    MO_TRACK_EVENT_COUNT,
+                                    track_x,
+                                    track_y,
+                                    abs(track_x - end_pos_x),
+                                    MO_MIN_X_DIFF_PX,
+                                    total_contours,
+                                    track_w,
+                                    track_h,
+                                    biggest_area,
+                                    travel_direction,
+                                )
+                                # Restart Track if first event otherwise continue
+                                if track_count == 0:
+                                    first_event = True
+                        event_timer = time.time()  # Reset Event Timer
                 if GUI_WINDOW_ON:
                     # show small circle at contour xy if required
                     # otherwise a rectangle around most recent contour
