@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------
-#        Ver 13.05 speed-cam.py Variable Configuration Settings
+#        Ver 13.08 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -61,7 +61,7 @@ CAL_OBJ_MM_R2L = 4700    # R2L Moving Objects, Length of the calibration object 
 PLUGIN_ENABLE_ON = False # True enables import of the specified PLUGIN_NAME
 PLUGIN_NAME = "picam240" # Specify filename in plugins subfolder without .py extension per below
                          # picam240, webcam240 (Recommended for RPI2 or greater)
-                         # picam480, webcam480, picam720, webcam720  (can use RPI3 but Test)
+                         # picam480, webcam480, rtsp352, picam720, webcam720  (can use RPI3 but Test)
                          # picam1080   (Experimental Not Recommended)
                          # secpicam480, secwebcam480 (Experimental no CSV entries)
 
