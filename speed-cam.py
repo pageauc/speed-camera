@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from __future__ import print_function
-PROG_VER = "13.08"  # current version of this python script
+PROG_VER = "13.09"  # current version of this python script
 '''
 speed-cam.py written by Claude Pageau
 Windows, Unix, Raspberry (Pi) - python opencv2 Speed tracking
@@ -1126,18 +1126,16 @@ def speed_get_contours(grayimage1):
         differenceimage, THRESHOLD_SENSITIVITY, 255, cv2.THRESH_BINARY
     )
     try:
-        # opencv 2 syntax default
+        # opencv 3 syntax default
         contours, hierarchy = cv2.findContours(
             thresholdimage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
     except ValueError:
-        # opencv 3 syntax
+        # opencv 2 syntax
         thresholdimage, contours, hierarchy = cv2.findContours(
             thresholdimage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
-    # Update grayimage1 to grayimage2 ready for next image2
-    grayimage1 = grayimage2
-    return image, grayimage1, contours
+    return image, grayimage2, contours
 
 
 # ------------------------------------------------------------------------------
