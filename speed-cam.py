@@ -8,8 +8,8 @@ Post issue to Github.
 
 This is a python openCV object speed tracking demonstration program.
 It will detect speed in the field of view and use openCV to calculate the
-largest contour and return its x,y coordinate.  The image is tracked for
-a specified pixel length and the final speed is calculated.
+largest contour and return its x,y center coordinate.  The image is tracked for
+a specified loop count and the final speed is calculated.
 Note: Variables for this program are stored in config.py
 
 Some of this code is based on a YouTube tutorial by
@@ -25,12 +25,12 @@ and a fun speed lapse video https://youtu.be/-xdB_x_CbC8
 
 Installation
 ------------
-Requires a Raspberry Pi with a RPI camera module or Web Cam installed and working
-or Windows, Unix Distro computer with a USB Web Cam.  See github wiki for
-more detail https://github.com/pageauc/speed-camera/wiki
+Requires a Raspberry Pi, Window, Unix PC or Mac PC with webcam or RTSP IP Csmera.
+Works with RPI camera module using picamer or libpicamer2 python module.
+See github wiki for detail https://github.com/pageauc/speed-camera/wiki
 
-Install from a logged in SSH session per commands below.
-Code should run on a non RPI platform using a Web Cam
+Install from a GitHub download, Docker or using Curl install from logged in SSH session per commands below.
+Code should run on a non RPI platform using a Web Cam or RTSP ip cam
 
     curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash
 or
@@ -43,7 +43,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 """
 from __future__ import print_function
-PROG_VER = "13.11"  # current version of this python script
+PROG_VER = "13.12"  # current version of this python script
 print('Loading Wait...')
 import os
 import sys
@@ -69,14 +69,12 @@ mypath = os.path.abspath(__file__)  # Find the full path of this python script
 baseDir = mypath[0 : mypath.rfind("/") + 1]
 baseFileName = mypath[mypath.rfind("/") + 1 : mypath.rfind(".")]
 PROG_NAME = os.path.basename(__file__)
-CAMLIST = ('usbcam', 'ipcam', 'pilibcam', 'pilegcam')
 
 HORIZ_LINE = "----------------------------------------------------------------------"
 print(HORIZ_LINE)
 print("%s %s  written by Claude Pageau" % (PROG_NAME, PROG_VER))
 print("Motion Track Largest Moving Object and Calculate Speed per Calibration.")
 print(HORIZ_LINE)
-
 
 # This is a dictionary of the default settings for speed-cam.py
 # If you don't want to use a config.py file these will create the required
