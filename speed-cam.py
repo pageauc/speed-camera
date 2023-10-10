@@ -43,7 +43,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 """
 from __future__ import print_function
-PROG_VER = "13.10"  # current version of this python script
+PROG_VER = "13.11"  # current version of this python script
 print('Loading Wait...')
 import os
 import sys
@@ -77,15 +77,14 @@ print("%s %s  written by Claude Pageau" % (PROG_NAME, PROG_VER))
 print("Motion Track Largest Moving Object and Calculate Speed per Calibration.")
 print(HORIZ_LINE)
 
-'''
-This is a dictionary of the default settings for speed-cam.py
-If you don't want to use a config.py file these will create the required
-variables with default values.  Change dictionary values if you want different
-variable default values.
-A message will be displayed if a variable is Not imported from config.py.
-Note: plugins can override default and config.py values if plugins are
-      enabled.  This happens after config.py variables are imported
-'''
+
+# This is a dictionary of the default settings for speed-cam.py
+# If you don't want to use a config.py file these will create the required
+# variables with default values.  Change dictionary values if you want different
+# variable default values.
+# A message will be displayed if a variable is Not imported from config.py.
+# Note: plugins can override default and config.py values if plugins are
+#       enabled.  This happens after config.py variables are imported
 default_settings = {
     "CALIBRATE_ON": True,
     "ALIGN_CAM_ON": False,
@@ -200,12 +199,28 @@ cvBlue = (255, 0, 0)
 cvGreen = (0, 255, 0)
 cvRed = (0, 0, 255)
 
-'''
-Check for config.py variable file to import and warn if not Found.
-Logging is not used since the LOG_FILE_PATH variable is needed before
-setting up logging
-'''
+QUOTE = '"'  # Used for creating QUOTE delimited log file of speed data
+FIX_MSG = """
+    ---------- Upgrade Instructions -----------
+    To Fix Problem Run ./menubox.sh UPGRADE menu pick.
+    After upgrade newest config.py will be named config.py.new
+    In SSH or terminal perform the following commands
+    to update to latest config.py
 
+        cd ~/speed-camera
+        cp config.py config.py.bak
+        cp config.py.new config.py
+
+    Then Edit nsno config.py and transfer any customized settings
+    from config.py.bak File to config.py
+    -------------------------------------------
+    Wait 5 sec ....
+
+    """
+
+# Check for config.py variable file and import. Warn if file not Found.
+# Logging is not used since the LOG_FILE_PATH variable is needed before
+# setting up logging
 configFilePath = os.path.join(baseDir, "config.py")
 if os.path.exists(configFilePath):
     # Read Configuration variables from config.py file
@@ -215,16 +230,20 @@ if os.path.exists(configFilePath):
         print("WARN : %s" % err_msg)
 else:
     print("WARN  : Missing config.py file - File Not Found %s" % configFilePath)
-"""
-Check if variables were imported from config.py. If not create variable using
-the values in the default_settings dictionary above.
-"""
+
+# Check if variables were imported from config.py. If not create variable using
+# the values in the default_settings dictionary above.
+warn_msg = False
 for key, val in default_settings.items():
     try:
         exec(key)
     except NameError:
         print("WARN : config.py Variable Not Found. Setting " + key + " = " + str(val))
         exec(key + "=val")
+        warn_msg = True
+if warn_msg:
+    print(FIX_MSG)
+    time.sleep(5)
 
 # Now that variables are imported from config.py Setup Logging since we have LOG_FILE_PATH
 if LOG_TO_FILE_ON:
@@ -247,6 +266,7 @@ else:
         format="%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+
 # Do a quick check to see if the sqlite database directory path exists
 DB_DIR_PATH = os.path.join(baseDir, DB_DIR)
 if not os.path.exists(DB_DIR_PATH):  # Check if database directory exists
@@ -261,19 +281,21 @@ except ImportError:
     search_dest_path = "media/search"
     logging.warning("Problem importing search_dest_path variable")
     logging.info("Setting default value search_dest_path = %s", search_dest_path)
+
 # Check for user_motion_code.py file to import and error out if not found.
 userMotionFilePath = os.path.join(baseDir, "user_motion_code.py")
-MOTION_CODE = False
+USER_MOTION_CODE_ON = True     # Set Flag to run user_motion_code.py
 if os.path.isfile(userMotionFilePath):
     try:
-        MOTION_CODE = True
         import user_motion_code
     except Exception as err_msg:
         print("WARN: %s" % err_msg)
-        MOTION_CODE = False
+        # set flag to ignore running user motion code after succsessful track.
+        USER_MOTION_CODE_ON = False
 else:
-    print("WARN : import Failed. File Not Found %s" % userMotionFilePath
-    )
+    print("WARN : import Failed. File Not Found %s" % userMotionFilePath)
+    USER_MOTION_CODE_ON = False
+
 # Import Settings from specified plugin if PLUGIN_ENABLE_ON=True
 if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
     pluginDir = os.path.join(baseDir, "plugins")
@@ -347,32 +369,21 @@ if CV_WINDOW_BIGGER < 0.1:
     CV_WINDOW_BIGGER = 0.1
 if IM_BIGGER < 0.1:
     IM_BIGGER = 0.1
-QUOTE = '"'  # Used for creating QUOTE delimited log file of speed data
-fix_msg = """
-    ---------- Upgrade Instructions -----------
-    To Fix Problem Run ./menubox.sh UPGRADE menu pick.
-    After upgrade newest config.py will be named config.py.new
-    In SSH or terminal perform the following commands to update to latest config.py
-
-        cd ~/speed-camera
-        cp config.py config.py.bak
-        cp config.py.new config.py
-
-    Then Edit config.py and transfer any customized settings from config.py.bak File
-    """
 
 # Calculate conversion from camera pixel width to actual speed.
-px_to_kph_L2R = float(CAL_OBJ_MM_L2R / CAL_OBJ_PX_L2R * 0.0036)
-px_to_kph_R2L = float(CAL_OBJ_MM_R2L / CAL_OBJ_PX_R2L * 0.0036)
-
+CONV_KPH_2_MPH = 0.621371       # conversion for KPH to MPH
+CONV_MM_PER_SEC_2_KPH = 0.0036  # conversion for MM/sec to KPH
+px_to_kph_L2R = float(CAL_OBJ_MM_L2R / CAL_OBJ_PX_L2R * CONV_MM_PER_SEC_2_KPH)
+px_to_kph_R2L = float(CAL_OBJ_MM_R2L / CAL_OBJ_PX_R2L * CONV_MM_PER_SEC_2_KPH)
 if MO_SPEED_MPH_ON:
     speed_units = "mph"
-    speed_conv_L2R = 0.621371 * px_to_kph_L2R
-    speed_conv_R2L = 0.621371 * px_to_kph_R2L
+    speed_conv_L2R = CONV_KPH_2_MPH * px_to_kph_L2R
+    speed_conv_R2L = CONV_KPH_2_MPH * px_to_kph_R2L
 else:
     speed_units = "kph"
     speed_conv_L2R = px_to_kph_L2R
     speed_conv_R2L = px_to_kph_R2L
+
 # path to alignment camera image
 align_filename = os.path.join(IM_RECENT_DIR_PATH, "align_cam.jpg")
 
@@ -1296,17 +1307,18 @@ def speed_camera():
             logging.info("Press ctrl-c in this terminal session to Quit")
     else:
         print("Logging Messages Disabled per LOG_VERBOSE_ON=%s" % LOG_VERBOSE_ON)
-    logging.info("Begin Motion Tracking .....")
-    print(HORIZ_LINE)
+
     off_time = datetime.datetime.now()
-    still_scanning = True
+    print(HORIZ_LINE)
+    logging.info("Begin Motion Tracking .....")
     # Start main speed camera loop
+    still_scanning = True
     while still_scanning:
-        cur_track_time = time.time()
-        # Detect motion snd if found return latest image, cropped greyscale and
+        cur_track_time = time.time() # record event time.  Used for speed calc
+        # Detect motion snd return latest image, cropped greyscale and
         # All motion contours
         image2, grayimage1, contours = get_motion_contours(grayimage1)
-        # If contours found, return the one with biggest area GT MO_MIN_AREA_PX
+        # If contours found, returns the one with biggest area GT MO_MIN_AREA_PX
         motion_found, big_contour = get_biggest_contour(contours)
 
         # Keep camera running while waiting for timer to expire per MO_TRACK_TIMEOUT_SEC
@@ -1355,6 +1367,7 @@ def speed_camera():
                     continue
                 prev_pos_x = end_pos_x
                 end_pos_x = track_x
+                # set calibration for direction of travel
                 if end_pos_x - prev_pos_x > 0:
                     travel_direction = "L2R"
                     cal_obj_px = CAL_OBJ_PX_L2R
@@ -1382,17 +1395,18 @@ def speed_camera():
                         logging.warning(
                             "Division by Zero Error. Aborting this track event."
                         )
+                        event_timer = time.time() # reset event timer
                         continue
                     track_count += 1  # increment track counter
                     speed_list.append(cur_ave_speed)
                     ave_speed = np.median(speed_list)  # Cslculate the median ave speed
                     prev_start_time = cur_track_time
                     event_timer = time.time()
+                    # check if trscking is complete
                     if track_count >= MO_TRACK_EVENT_COUNT:
                         tot_track_dist = abs(track_x - start_pos_x)
                         tot_track_time = abs(track_start_time - cur_track_time)
 
-                        # Track length exceeded so take process speed photo
                         if ave_speed > MO_MAX_SPEED_OVER or CALIBRATE_ON:
                             logging.info(
                                 " Add - %i/%i xy(%i,%i) %3.2f %s"
@@ -1532,7 +1546,7 @@ def speed_camera():
                                     cv2.imwrite(filename, big_image)
                             else:
                                 cv2.imwrite(filename, big_image)
-                            if MOTION_CODE:
+                            if USER_MOTION_CODE_ON:
                                 # ===========================================
                                 # Put your user code in userMotionCode() function
                                 # In the File user_motion_code.py
