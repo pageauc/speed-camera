@@ -14,7 +14,7 @@ class CamStream:
         self.stream = cv2.VideoCapture(src)
         self.stream.set(3, size[0])
         self.stream.set(4, size[1])
-        self.framerate = 25.0  # set ip csm to CBR (constant bitrate)
+        self.framerate = 30.0  # set ip csm to CBR (constant bitrate)
         self.cam_delay = float(1.0 / self.framerate)
         (self.grabbed, self.frame) = self.stream.read()
 
