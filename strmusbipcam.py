@@ -14,6 +14,8 @@ class CamStream:
         self.stream = cv2.VideoCapture(src)
         self.stream.set(3, size[0])
         self.stream.set(4, size[1])
+        self.framerate = 25  # set ip csm to CBR (constant bitrate)
+        self.cam_delay = int(1 / self.framerate)
         (self.grabbed, self.frame) = self.stream.read()
 
         # initialize the thread name
@@ -36,7 +38,7 @@ class CamStream:
             # if the thread indicator variable is set, stop the thread
             if self.stopped:
                 return
-            time.sleep(0.001)
+            time.sleep(self.cam_delay)
 
     def read(self):
         # return the frame most recently read
