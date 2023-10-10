@@ -25,7 +25,8 @@ and a fun speed lapse video https://youtu.be/-xdB_x_CbC8
 
 Installation
 ------------
-Requires a Raspberry Pi, Window, Unix PC or Mac PC with webcam or RTSP IP Csmera.
+Requires a Raspberry Pi or compatible, Windows, Unix PC or Mac with webcam or RTSP IP Csmera.
+or a virtual machine unix distro eg Debian. Runs best under python3 but code is compatible with python2.
 Works with RPI camera module using picamer or libpicamer2 python module.
 See github wiki for detail https://github.com/pageauc/speed-camera/wiki
 
