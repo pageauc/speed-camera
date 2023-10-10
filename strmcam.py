@@ -1,6 +1,6 @@
 def strmcam():
     # This is a launcher for creating a video stream for one of various camera types
-    # per CAMLIST list below
+    # per CAMLIST variable list below
 
     import sys
     import os
@@ -112,7 +112,7 @@ def strmcam():
         if not cam_name in CAMLIST:
             logging.error('%s Not a Valid Camera Value', cam_name)
             logging.info('Valid Values are %s', ' '.join(CAMLIST))
-            logging.info('Edit configcam.py CAMERA variable.')
+            logging.info('Edit config.py CAMERA variable.')
             sys.exit(1)
 
         cam_title = None
