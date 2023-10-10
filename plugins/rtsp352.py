@@ -36,7 +36,7 @@ MO_LOG_OUT_RANGE_ON = True  # Default= True Show Out of Range Events per x_diff 
 MO_MAX_X_DIFF_PX = 26       # Default= 20 Exclude if max px away >= last motion event x position
 MO_MIN_X_DIFF_PX = 1        # Default= 1 Exclude if min px away <= last event x position
 MO_X_LR_SIDE_BUFF_PX = 10   # Default= 10 Divides motion Rect x for L&R Buffer Space to Ensure contours are in
-MO_TRACK_TIMEOUT_SEC = 2.0  # Default= 0.5 Optional seconds to wait after track End (Avoids dual tracking)
+MO_TRACK_TIMEOUT_SEC = 0.5  # Default= 0.5 Optional seconds to wait after track End (Avoids dual tracking)
 MO_EVENT_TIMEOUT_SEC = 0.3  # Default= 0.3 seconds to wait for next motion event before starting new track
 MO_MAX_SPEED_OVER = 0       # Exclude track if Speed less than or equal to value specified 0=All
                             # Can be useful to exclude pedestrians and/or bikes, Etc or track only fast objects

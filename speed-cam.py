@@ -1732,7 +1732,7 @@ def speed_camera():
                         print(HORIZ_LINE)
                         if MO_TRACK_TIMEOUT_SEC > 0:
                             logging.info(
-                                "MO_TRACK_TIMEOUT_SEC %0.2f sec Sleep to Avoid Tracking Same Object Multiple Times."
+                                "MO_TRACK_TIMEOUT_SEC %0.2f sec Delay to Avoid Tracking Same Object Multiple Times."
                                 % MO_TRACK_TIMEOUT_SEC
                             )
                             first_event = True  # Reset Track
