@@ -10,7 +10,7 @@ def strmcam():
 
     PROG_VER="13.07"   # version of this module
     CAM_WARMUP_SEC = 3   
-    # List of valid camera values in the configcam.py file
+    # List of valid camera values in the config.py file
     CAMLIST = ('usbcam', 'rtspcam', 'pilibcam', 'pilegcam')
     
     # Setup logging
