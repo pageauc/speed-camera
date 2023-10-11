@@ -272,7 +272,7 @@ if not os.path.exists(DB_DIR_PATH):  # Check if database directory exists
     os.makedirs(DB_DIR_PATH)  # make directory if Not Found
 DB_PATH = os.path.join(DB_DIR_PATH, DB_NAME)  # Create path to db file
 
-# import a single variable from the search_config.py file
+# Import a single variable from the search_config.py file
 # This is done to auto create a media/search directory
 try:
     from search_config import search_dest_path
@@ -363,6 +363,7 @@ except ImportError:
         logging.error("Try RPI Install per command")
         logging.error("%s %s Exiting Due to Error", PROG_NAME, PROG_VER)
     sys.exit(1)
+
 # fix possible invalid values when resizing
 if CV_WINDOW_BIGGER < 0.1:
     CV_WINDOW_BIGGER = 0.1
@@ -370,8 +371,8 @@ if IM_BIGGER < 0.1:
     IM_BIGGER = 0.1
 
 # Calculate conversion from camera pixel width to actual speed.
-CONV_KPH_2_MPH = 0.621371       # conversion for KPH to MPH
-CONV_MM_PER_SEC_2_KPH = 0.0036  # conversion for MM/sec to KPH
+CONV_KPH_2_MPH = 0.621371       # conversion from KPH to MPH
+CONV_MM_PER_SEC_2_KPH = 0.0036  # conversion from MM/sec to KPH
 px_to_kph_L2R = float(CAL_OBJ_MM_L2R / CAL_OBJ_PX_L2R * CONV_MM_PER_SEC_2_KPH)
 px_to_kph_R2L = float(CAL_OBJ_MM_R2L / CAL_OBJ_PX_R2L * CONV_MM_PER_SEC_2_KPH)
 if MO_SPEED_MPH_ON:
@@ -847,6 +848,7 @@ def files_to_delete(mediaDirPath, extension=IM_FORMAT_EXT):
         reverse=True,
     )
 
+
 # ------------------------------------------------------------------------------
 def make_rel_symlink(sourceFilenamePath, symDestDir):
     '''
@@ -884,6 +886,7 @@ def make_rel_symlink(sourceFilenamePath, symDestDir):
     else:
         logging.warning("Failed to Create Symlink at %s", symDestFilePath)
 
+
 # ------------------------------------------------------------------------------
 def save_recent(recentMax, recentDir, filepath, prefix):
     """
@@ -902,6 +905,7 @@ def save_recent(recentMax, recentDir, filepath, prefix):
                 logging.info("Saved %s to %s", filepath, recentDir)
             except OSError as err:
                 logging.error("Copy Failed %s to %s - %s", filepath, recentDir, err)
+
 
 # ------------------------------------------------------------------------------
 def free_disk_space_upto(freeMB, mediaDir, extension=IM_FORMAT_EXT):
@@ -1115,10 +1119,11 @@ def db_open(db_file):
 # ------------------------------------------------------------------------------
 def get_motion_contours(grayimage1):
     """
-    Read a Camera a stream image frame, crop and
+    Read a Camera stream image frame, crop and
     get diff of two cropped greyscale images.
-    use opencv to detect motion contours.
+    Use opencv to detect motion contours.
     Added timeout in case camera has a problem.
+    Eg. Network problem with RTSP cam
     """
     image_ok = False
     start_time = time.time()
@@ -1248,6 +1253,7 @@ def speed_camera():
     prev_pos_x = None
     travel_direction = None
     font = cv2.FONT_HERSHEY_SIMPLEX
+
     # Calculate position of text on the images
     if IM_SHOW_TEXT_BOTTOM_ON:
         text_y = image_height - 50  # show text at bottom of image
@@ -1256,8 +1262,9 @@ def speed_camera():
 
     lastSpaceCheck = datetime.datetime.now()
     speed_path = IM_DIR_PATH
-    db_conn = db_check(DB_PATH)
+
     # check and open sqlite3 db
+    db_conn = db_check(DB_PATH)
     if db_conn is not None:
         db_conn = db_open(DB_PATH)
         if db_conn is None:
@@ -1287,6 +1294,7 @@ def speed_camera():
         logging.warning("Restarting Camera.  One Moment Please ...")
         time.sleep(4)
         return
+
     grayimage1 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
     track_count = 0
     speed_list = []
@@ -1294,6 +1302,7 @@ def speed_camera():
     image_sign_bg = np.zeros((IM_SIGN_RESIZE[0], IM_SIGN_RESIZE[1], 4))
     image_sign_view = cv2.resize(image_sign_bg, (IM_SIGN_RESIZE))
     image_sign_view_time = time.time()
+
     if LOG_VERBOSE_ON:
         if LOG_TO_FILE_ON:
             print("Logging to File %s (Console Messages Disabled)" % LOG_FILE_PATH)
@@ -1323,6 +1332,7 @@ def speed_camera():
         # Keep camera running while waiting for timer to expire per MO_TRACK_TIMEOUT_SEC
         if timer_is_on(off_time):
             continue
+
         if GUI_WINDOW_ON or ALIGN_CAM_ON or CALIBRATE_ON:
             image2_copy = image2  # make a copy of current image2 when needed
 
@@ -1375,11 +1385,11 @@ def speed_camera():
                     travel_direction = "R2L"
                     cal_obj_px = CAL_OBJ_PX_R2L
                     cal_obj_mm = CAL_OBJ_MM_R2L
+
                 # check if movement is within acceptable distance
                 # range of last event
                 if (abs(end_pos_x - prev_pos_x) >= MO_MIN_X_DIFF_PX and
                     abs(end_pos_x - prev_pos_x) <= MO_MAX_X_DIFF_PX):
-
                     cur_track_dist = abs(end_pos_x - prev_pos_x)
                     try:
                         if travel_direction == "L2R":
@@ -1401,6 +1411,7 @@ def speed_camera():
                     ave_speed = np.median(speed_list)  # Cslculate the median ave speed
                     prev_start_time = cur_track_time
                     event_timer = time.time()
+
                     # check if trscking is complete
                     if track_count >= MO_TRACK_EVENT_COUNT:
                         tot_track_dist = abs(track_x - start_pos_x)
@@ -1460,6 +1471,7 @@ def speed_camera():
                                     filename = get_image_name(
                                         speed_path, IM_PREFIX
                                     )
+
                             # Add motion rectangle to image if required
                             if IM_SHOW_CROP_AREA_ON:
                                 image2 = speed_image_add_lines(image2, cvRed)
@@ -1505,6 +1517,7 @@ def speed_camera():
                                     IM_SIGN_FONT_COLOR,
                                     IM_SIGN_FONT_THICK_PX,
                                 )
+
                             # Write text on image before saving
                             # if required.
                             if IM_SHOW_TEXT_ON:
@@ -1528,10 +1541,11 @@ def speed_camera():
                                     IM_FONT_COLOR,
                                     IM_FONT_THICKNESS,
                                 )
-                            logging.info(" Saved %ix%i %s", image_width, image_height, filename)
+
                             # Save resized image. If jpg format, user can customize image quality 1-100 (higher is better)
                             # and/or enble/disable optimization per config.py settings.
                             # otherwise if png, bmp, gif, etc normal image write will occur
+                            logging.info(" Saved %ix%i %s", image_width, image_height, filename)
                             if ((IM_FORMAT_EXT.lower() == ".jpg" or IM_FORMAT_EXT.lower() == ".jpeg")
                                  and IM_JPG_OPTIMIZE_ON):
                                 try:
@@ -1545,6 +1559,7 @@ def speed_camera():
                                     cv2.imwrite(filename, big_image)
                             else:
                                 cv2.imwrite(filename, big_image)
+
                             if USER_MOTION_CODE_ON:
                                 # ===========================================
                                 # Put your user code in userMotionCode() function
@@ -1593,6 +1608,7 @@ def speed_camera():
                                 plugin_name = PLUGIN_NAME
                             else:
                                 plugin_name = "None"
+
                             # create the speed data list ready for db insert
                             speed_data = (
                                 log_idx,
@@ -1646,6 +1662,7 @@ def speed_camera():
                                 logging.info(
                                     " SQL - Inserted Data Row into %s", DB_PATH
                                 )
+
                             # Format and Save Data to CSV Log File
                             if LOG_DATA_TO_CSV:
                                 log_csv_time = (
@@ -1687,14 +1704,17 @@ def speed_camera():
                                     )
                                 )
                                 log_to_csv(log_csv_text)
+
                             if SPACE_TIMER_HRS > 0:
                                 lastSpaceCheck = free_disk_space_check(lastSpaceCheck)
+
                             # Manage a maximum number of files
                             # and delete oldest if required.
                             if IM_MAX_FILES > 0:
                                 delete_old_files(
                                     IM_MAX_FILES, speed_path, IM_PREFIX
                                 )
+
                             # Save most recent files
                             # to a recent folder if required
                             if IM_RECENT_MAX_FILES > 0 and not CALIBRATE_ON:
@@ -1814,7 +1834,6 @@ def speed_camera():
                         CV_LINE_WIDTH_PX,
                     )
 
-
     if ALIGN_CAM_ON:
         image2 = speed_image_add_lines(image2_copy, cvRed)
         image_align = cv2.resize(image2, (image_width, image_height))
@@ -1888,6 +1907,7 @@ if __name__ == "__main__":
         logging.error(err_msg)
         logging.error('Check camera connection settings and Hardware')
         sys.exit(1)
+
     # Get actual image size (shape) from video stream.
     # Necessary for IP camera
     img_height, img_width, _ = image1.shape
@@ -1895,6 +1915,7 @@ if __name__ == "__main__":
     # Set height of trigger point image to save
     image_height = int(img_height * IM_BIGGER)
     # Auto Calculate motion crop area settings
+
     if MO_CROP_AUTO_ON:
         X_SCALE = 8.0
         Y_SCALE = 4.0
@@ -1912,6 +1933,7 @@ if __name__ == "__main__":
     # setup buffer area to ensure contour is mostly contained in crop area
     x_buf = int((MO_CROP_X_RIGHT - MO_CROP_X_LEFT) / MO_X_LR_SIDE_BUFF_PX)
     make_media_dirs()
+
     try:
         speed_camera()  # run main speed camera processing loop
     except KeyboardInterrupt:
