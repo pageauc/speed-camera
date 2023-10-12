@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 """
 from __future__ import print_function
-PROG_VER = "13.12"  # current version of this python script
+PROG_VER = "13.13"  # current version of this python script
 print('Loading Wait...')
 import os
 import sys
@@ -132,6 +132,11 @@ default_settings = {
     "IM_FORMAT_EXT": ".jpg",
     "IM_JPG_QUALITY": 95,
     "IM_JPG_OPTIMIZE_ON": False,
+    "IM_SAVE_4AI_ON": False,
+    "IM_SAVE_4AI_POS_DIR": "media/ai/pos",
+    "IM_SAVE_4AI_NEG_DIR": "media/ai/pos",
+    "IM_SAVE_4AI_NEG_TIMER_SEC": 60 * 60 * 24,
+    "IM_FIRST_AND_LAST_ON": False,
     "IM_SHOW_CROP_AREA_ON": True,
     "IM_SHOW_SPEED_FILENAME_ON": False,
     "IM_SHOW_TEXT_ON": True,
@@ -457,6 +462,10 @@ def make_media_dirs():
     if not os.path.isdir(html_path):
         logging.info("Creating html Folder %s", html_path)
         os.makedirs(html_path)
+    if IM_SAVE_4AI_ON and not os.path.isdir(IM_SAVE_4AI_POS_DIR):
+        os.makedirs(IM_SAVE_4AI_POS_DIR)
+    if IM_SAVE_4AI_ON and not os.path.isdir(IM_SAVE_4AI_NEG_DIR):
+        os.makedirs(IM_SAVE_4AI_NEG_DIR)
     os.chdir(cwd)
 
 
@@ -1316,7 +1325,8 @@ def speed_camera():
     else:
         print("Logging Messages Disabled per LOG_VERBOSE_ON=%s" % LOG_VERBOSE_ON)
 
-    off_time = datetime.datetime.now()
+    mo_track_timeout = datetime.datetime.now()
+    ai_neg_time = datetime.datetime.now()
     print(HORIZ_LINE)
     logging.info("Begin Motion Tracking .....")
     # Start main speed camera loop
@@ -1330,13 +1340,21 @@ def speed_camera():
         motion_found, big_contour = get_biggest_contour(contours)
 
         # Keep camera running while waiting for timer to expire per MO_TRACK_TIMEOUT_SEC
-        if timer_is_on(off_time):
+        if timer_is_on(mo_track_timeout):
             continue
 
         if GUI_WINDOW_ON or ALIGN_CAM_ON or CALIBRATE_ON:
             image2_copy = image2  # make a copy of current image2 when needed
 
-        if motion_found:
+        if not motion_found:
+            if IM_SAVE_4AI_ON and not timer_is_on(ai_neg_time):
+                AI_neg_filename = get_image_name(IM_SAVE_4AI_NEG_DIR, IM_PREFIX)
+                logging.info("Save neg %s", AI_neg_filename)
+                cv2.imwrite(AI_neg_filename, image2)
+                ai_neg_time = (datetime.datetime.now() +
+                               datetime.timedelta(seconds=IM_SAVE_4AI_NEG_TIMER_SEC))
+                logging.info("Next AI neg image in %.2f hours", float(IM_SAVE_4AI_NEG_TIMER_SEC / 3600))
+        else:   # Motion Found
             (track_x, track_y, track_w, track_h) = big_contour
             total_contours = len(contours)
             biggest_area = int(track_w * track_h)
@@ -1359,6 +1377,8 @@ def speed_camera():
                 event_timer = time.time()  # Reset event timeout
                 track_count = 0
                 speed_list = []
+                if IM_FIRST_AND_LAST_ON:
+                    mo_im_first = image2
                 continue
             else:
                 # Check if last motion event timed out
@@ -1416,7 +1436,8 @@ def speed_camera():
                     if track_count >= MO_TRACK_EVENT_COUNT:
                         tot_track_dist = abs(track_x - start_pos_x)
                         tot_track_time = abs(track_start_time - cur_track_time)
-
+                        if IM_FIRST_AND_LAST_ON or IM_SAVE_4AI_ON:
+                            mo_im_last = image2
                         if ave_speed > MO_MAX_SPEED_OVER or CALIBRATE_ON:
                             logging.info(
                                 " Add - %i/%i xy(%i,%i) %3.2f %s"
@@ -1549,7 +1570,7 @@ def speed_camera():
                             if ((IM_FORMAT_EXT.lower() == ".jpg" or IM_FORMAT_EXT.lower() == ".jpeg")
                                  and IM_JPG_OPTIMIZE_ON):
                                 try:
-                                    cv2.imwrite( filename, big_image,
+                                    cv2.imwrite(filename, big_image,
                                                 [ int(cv2.IMWRITE_JPEG_QUALITY), IM_JPG_QUALITY,
                                                   int(cv2.IMWRITE_JPEG_OPTIMIZE), 1
                                                 ]
@@ -1559,6 +1580,21 @@ def speed_camera():
                                     cv2.imwrite(filename, big_image)
                             else:
                                 cv2.imwrite(filename, big_image)
+
+                            if IM_SAVE_4AI_ON:
+                                AI_pos_filename = get_image_name(IM_SAVE_4AI_POS_DIR, IM_PREFIX)
+                                logging.info("Save pos %s", AI_pos_filename)
+                                cv2.imwrite(AI_pos_filename, mo_im_last)
+
+                            if IM_FIRST_AND_LAST_ON:
+                                # Save first and last image for later AI processing
+                                fn_split = os.path.splitext(filename)
+                                filename_first = fn_split[0] + "_1" + fn_split[1]
+                                filename_last = fn_split[0] + "_2" + fn_split[1]
+                                logging.info("Saving first %s", filename_first)
+                                cv2.imwrite(filename_first, mo_im_first)
+                                logging.info("Saving last %s", filename_last)
+                                cv2.imwrite(filename_last, mo_im_last)
 
                             if USER_MOTION_CODE_ON:
                                 # ===========================================
@@ -1756,7 +1792,8 @@ def speed_camera():
                             )
                             first_event = True  # Reset Track
                             # Set track timeout time
-                            off_time = datetime.datetime.now() + datetime.timedelta(seconds=MO_TRACK_TIMEOUT_SEC)
+                            mo_track_timeout = (datetime.datetime.now() +
+                                                datetime.timedelta(seconds=MO_TRACK_TIMEOUT_SEC))
                             continue  # go back to start of speed loop to idle camera
                         first_event = True
                     else:
