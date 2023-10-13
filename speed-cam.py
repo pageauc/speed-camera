@@ -135,7 +135,7 @@ default_settings = {
     "IM_SAVE_4AI_ON": False,
     "IM_SAVE_4AI_POS_DIR": "media/ai/pos",
     "IM_SAVE_4AI_NEG_DIR": "media/ai/pos",
-    "IM_SAVE_4AI_NEG_TIMER_SEC": 60 * 60 * 24,
+    "IM_SAVE_4AI_NEG_TIMER_SEC": 60 * 60 * 6,
     "IM_FIRST_AND_LAST_ON": False,
     "IM_SHOW_CROP_AREA_ON": True,
     "IM_SHOW_SPEED_FILENAME_ON": False,

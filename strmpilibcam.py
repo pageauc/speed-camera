@@ -6,7 +6,7 @@ import time
 from threading import Thread
 
 class CamStream:
-    '''
+    """
     Create a picamera2 libcamera in memory image stream that
     runs in a Thread (Bullseye or later)
     returns image array when read() called
@@ -20,12 +20,14 @@ class CamStream:
     while True:
         frame = vs.read()  # frame will be array that opencv can process.
         # add code to process stream image arrays.
-    '''
+    """
 
     def __init__(self, size=(320, 248), vflip=False, hflip=False):
         self.size = size
         self.vflip = vflip
         self.hflip = hflip
+        self.framerate = 40.0  # set a reasonable fps for pilibcamera
+        self.cam_delay = float(1.0 / self.framerate)
 
         # initialize the camera and stream
         self.picam2 = Picamera2()
@@ -58,11 +60,11 @@ class CamStream:
             # release camera resources and stop the thread
             if self.stopped:
                 return
-            self.frame = self.picam2.capture_array("main")    
-            time.sleep(0.01) # Slow down loop a little
+            time.sleep(self.cam_delay) # Slow down loop
 
     def read(self):
         '''return the frame array data'''
+        self.frame = self.picam2.capture_array("main")
         return self.frame
 
     def stop(self):
