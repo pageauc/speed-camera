@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 """
 from __future__ import print_function
-PROG_VER = "13.13"  # current version of this python script
+PROG_VER = "13.14"  # current version of this python script
 print('Loading Wait...')
 import os
 import sys
@@ -1396,8 +1396,9 @@ def speed_camera():
                     continue
                 prev_pos_x = end_pos_x
                 end_pos_x = track_x
+
                 # set calibration for direction of travel
-                if end_pos_x - prev_pos_x > 0:
+                if end_pos_x - start_pos_x > 0:
                     travel_direction = "L2R"
                     cal_obj_px = CAL_OBJ_PX_L2R
                     cal_obj_mm = CAL_OBJ_MM_L2R
