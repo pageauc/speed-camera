@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 """
 from __future__ import print_function
-PROG_VER = "13.14"  # current version of this python script
+PROG_VER = "13.15"  # current version of this python script
 print('Loading Wait...')
 import os
 import sys
@@ -391,7 +391,8 @@ else:
 
 # path to alignment camera image
 align_filename = os.path.join(IM_RECENT_DIR_PATH, "align_cam.jpg")
-
+speed_CSV_filepath = os.path.join(baseDir, baseFileName + ".csv")
+AI_CSV_filepath = os.path.join(baseDir, "ai_pos_data.csv")
 
 # ------------------------------------------------------------------------------
 def show_config(filename):
@@ -1012,25 +1013,20 @@ def get_image_name(path, prefix):
 
 
 # ------------------------------------------------------------------------------
-def log_to_csv(data_to_append):
+def log_to_csv(csv_file_path, data_to_append):
     """
     Store date to a comma separated value file
     """
-    log_file_path = baseDir + baseFileName + ".csv"
-    if not os.path.exists(log_file_path):
-        open(log_file_path, "w").close()
-        f = open(log_file_path, "ab")
-        # header_text = ('"YYYY-MM-DD HH:MM:SS","Speed","Unit",
-        #                  "    Speed Photo Path            ",
-        #                  "X","Y","W","H","Area","Direction"' + "\n")
-        # f.write( header_text )
+    if not os.path.exists(csv_file_path):
+        open(csv_file_path, "w").close()
+        f = open(csv_file_path, "ab")
         f.close()
-        logging.info("Create New Data Log File %s", log_file_path)
+        logging.info("Create New Data Log File %s", csv_file_path)
     filecontents = data_to_append + "\n"
-    f = open(log_file_path, "a+")
+    f = open(csv_file_path, "a+")
     f.write(filecontents)
     f.close()
-    logging.info("   CSV - Appended Data into %s", log_file_path)
+    logging.info("   CSV - Appended Data into %s", csv_file_path)
     return
 
 
@@ -1586,6 +1582,12 @@ def speed_camera():
                                 AI_pos_filename = get_image_name(IM_SAVE_4AI_POS_DIR, IM_PREFIX)
                                 logging.info("Save pos %s", AI_pos_filename)
                                 cv2.imwrite(AI_pos_filename, mo_im_last)
+                                ai_data = ("%s, %i, %i, %i, %i" %
+                                           (QUOTE + AI_pos_filename + QUOTE,
+                                           MO_CROP_X_LEFT + track_x,
+                                           MO_CROP_Y_UPPER + track_y,
+                                           track_w, track_h))
+                                log_to_csv(AI_CSV_filepath, ai_data)
 
                             if IM_FIRST_AND_LAST_ON:
                                 # Save first and last image for later AI processing
@@ -1740,7 +1742,7 @@ def speed_camera():
                                         QUOTE,
                                     )
                                 )
-                                log_to_csv(log_csv_text)
+                                log_to_csv(speed_CSV_filepath, log_csv_text)
 
                             if SPACE_TIMER_HRS > 0:
                                 lastSpaceCheck = free_disk_space_check(lastSpaceCheck)
