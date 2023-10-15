@@ -1580,7 +1580,7 @@ def speed_camera():
 
                             if IM_SAVE_4AI_ON:
                                 AI_pos_filename = get_image_name(IM_SAVE_4AI_POS_DIR, IM_PREFIX)
-                                logging.info("Save pos %s", AI_pos_filename)
+                                logging.info(" Saved %s", AI_pos_filename)
                                 cv2.imwrite(AI_pos_filename, mo_im_last)
                                 ai_data = ("%s, %i, %i, %i, %i" %
                                            (QUOTE + AI_pos_filename + QUOTE,
