@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 """
 from __future__ import print_function
-PROG_VER = "13.16"  # current version of this python script
+PROG_VER = "13.17"  # current version of this python script
 print('Loading Wait...')
 import os
 import sys
@@ -278,6 +278,20 @@ if not os.path.exists(DB_DIR_PATH):  # Check if database directory exists
     os.makedirs(DB_DIR_PATH)  # make directory if Not Found
 DB_PATH = os.path.join(DB_DIR_PATH, DB_NAME)  # Create path to db file
 
+try:  # Check to see if opencv is installed
+    import cv2
+except ImportError:
+    logging.error("Could Not import cv2 library")
+    if sys.version_info > (2, 9):
+        logging.error("python3 failed to import cv2")
+        logging.error("Try installing opencv for python3")
+        logging.error("For RPI See https://github.com/pageauc/opencv3-setup")
+    else:
+        logging.error("python2 failed to import cv2")
+        logging.error("Try running menubox.sh then UPGRADE menu pick.")
+    logging.error("%s %s Exiting Due to Error", PROG_NAME, PROG_VER)
+    sys.exit(1)
+
 # Import a single variable from the search_config.py file
 # This is done to auto create a media/search directory
 try:
@@ -352,24 +366,6 @@ if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
             logging.warning("%s" % err_msg)
 
 CAMERA_WIDTH, CAMERA_HEIGHT = IM_SIZE
-
-# import the necessary packages
-# -----------------------------
-
-try:  # Check to see if opencv is installed
-    import cv2
-except ImportError:
-    logging.error("Could Not import cv2 library")
-    if sys.version_info > (2, 9):
-        logging.error("python3 failed to import cv2")
-        logging.error("Try installing opencv for python3")
-        logging.error("For RPI See https://github.com/pageauc/opencv3-setup")
-    else:
-        logging.error("python2 failed to import cv2")
-        logging.error("Try RPI Install per command")
-        logging.error("%s %s Exiting Due to Error", PROG_NAME, PROG_VER)
-    sys.exit(1)
-
 # fix possible invalid values when resizing
 if CV_WINDOW_BIGGER < 0.1:
     CV_WINDOW_BIGGER = 0.1
