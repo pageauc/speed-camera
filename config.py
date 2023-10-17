@@ -1,5 +1,5 @@
 # ---------------- User Configuration Settings for speed-cam.py ---------------------------
-#        Ver 13.13 speed-cam.py Variable Configuration Settings
+#        Ver 13.16 speed-cam.py Variable Configuration Settings
 
 #######################################
 #  speed-cam.py Variable Settings
@@ -69,6 +69,7 @@ IM_MAX_FILES = 0                 # 0=off or specify MaxFiles to maintain then ol
 # AI Settings
 # ------------
 IM_SAVE_4AI_ON = False                # will save small colour image for later AI processing
+IM_SAVE_4AI_DAY_THRESH = 10           # Default = 10 Set mean px value to indicate day/night threshold. higher is day
 IM_SAVE_4AI_POS_DIR = "media/ai/pos"  # Save positive ai images after tracking completed
 IM_SAVE_4AI_NEG_DIR = "media/ai/neg"  # Save negative ai images (no motion detected)
 IM_SAVE_4AI_NEG_TIMER_SEC = 60 * 60 * 6  # Save a non positive image every specified seconds

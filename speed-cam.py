@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 """
 from __future__ import print_function
-PROG_VER = "13.15"  # current version of this python script
+PROG_VER = "13.16"  # current version of this python script
 print('Loading Wait...')
 import os
 import sys
@@ -135,6 +135,7 @@ default_settings = {
     "IM_SAVE_4AI_ON": False,
     "IM_SAVE_4AI_POS_DIR": "media/ai/pos",
     "IM_SAVE_4AI_NEG_DIR": "media/ai/pos",
+    "IM_SAVE_4AI_DAY_THRESH": 10,
     "IM_SAVE_4AI_NEG_TIMER_SEC": 60 * 60 * 6,
     "IM_FIRST_AND_LAST_ON": False,
     "IM_SHOW_CROP_AREA_ON": True,
@@ -423,6 +424,20 @@ def get_fps(start_time, frame_count):
     else:
         frame_count += 1
     return start_time, frame_count
+
+
+# ------------------------------------------------------------------------------
+def is_daytime(image, threshold):
+    """
+    Calculate the mean pixel average value for a grayimage
+    used for determining if it is day or night. Bright enough to save image.
+    """
+    day = False
+    grayimage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    pix_ave = int(np.mean(grayimage))
+    if pix_ave >= threshold:
+        day = True
+    return day
 
 
 # ------------------------------------------------------------------------------
@@ -1322,7 +1337,7 @@ def speed_camera():
         print("Logging Messages Disabled per LOG_VERBOSE_ON=%s" % LOG_VERBOSE_ON)
 
     mo_track_timeout = datetime.datetime.now()
-    ai_neg_time = datetime.datetime.now()
+    ai_neg_time_on = datetime.datetime.now()
     print(HORIZ_LINE)
     logging.info("Begin Motion Tracking .....")
     # Start main speed camera loop
@@ -1343,13 +1358,19 @@ def speed_camera():
             image2_copy = image2  # make a copy of current image2 when needed
 
         if not motion_found:
-            if IM_SAVE_4AI_ON and not timer_is_on(ai_neg_time):
-                AI_neg_filename = get_image_name(IM_SAVE_4AI_NEG_DIR, IM_PREFIX)
-                logging.info("Save neg %s", AI_neg_filename)
-                cv2.imwrite(AI_neg_filename, image2)
-                ai_neg_time = (datetime.datetime.now() +
-                               datetime.timedelta(seconds=IM_SAVE_4AI_NEG_TIMER_SEC))
-                logging.info("Next AI neg image in %.2f hours", float(IM_SAVE_4AI_NEG_TIMER_SEC / 3600))
+            if IM_SAVE_4AI_ON and not timer_is_on(ai_neg_time_on):
+                if is_daytime(image2, IM_SAVE_4AI_DAY_THRESH):
+                    AI_neg_filename = get_image_name(IM_SAVE_4AI_NEG_DIR, IM_PREFIX)
+                    logging.info(" Saved neg %s", AI_neg_filename)
+                    cv2.imwrite(AI_neg_filename, image2)
+                else:
+                    logging.info(' Low Light - AI neg Image Not Saved IM_SAVE_4AI_DAY_THRESH = %i'
+                                 % IM_SAVE_4AI_DAY_THRESH)
+                ai_neg_time_on = (datetime.datetime.now() +
+                                  datetime.timedelta(seconds=IM_SAVE_4AI_NEG_TIMER_SEC))
+                logging.info(" Next AI neg image in %.2f hours",
+                              float(IM_SAVE_4AI_NEG_TIMER_SEC / 3600))
+
         else:   # Motion Found
             (track_x, track_y, track_w, track_h) = big_contour
             total_contours = len(contours)
@@ -1578,16 +1599,22 @@ def speed_camera():
                             else:
                                 cv2.imwrite(filename, big_image)
 
+                            # Save a positive AI motion image for later processing
+                            # make sure there is enough light for a clear image.
                             if IM_SAVE_4AI_ON:
-                                AI_pos_filename = get_image_name(IM_SAVE_4AI_POS_DIR, IM_PREFIX)
-                                logging.info(" Saved %s", AI_pos_filename)
-                                cv2.imwrite(AI_pos_filename, mo_im_last)
-                                ai_data = ("%s, %i, %i, %i, %i" %
-                                           (QUOTE + AI_pos_filename + QUOTE,
-                                           MO_CROP_X_LEFT + track_x,
-                                           MO_CROP_Y_UPPER + track_y,
-                                           track_w, track_h))
-                                log_to_csv(AI_CSV_filepath, ai_data)
+                                if is_daytime(mo_im_last, IM_SAVE_4AI_DAY_THRESH):
+                                    AI_pos_filename = get_image_name(IM_SAVE_4AI_POS_DIR, IM_PREFIX)
+                                    logging.info(" Saved %s", AI_pos_filename)
+                                    cv2.imwrite(AI_pos_filename, mo_im_last)
+                                    ai_data = ("%s, %i, %i, %i, %i" %
+                                               (QUOTE + AI_pos_filename + QUOTE,
+                                               MO_CROP_X_LEFT + track_x,
+                                               MO_CROP_Y_UPPER + track_y,
+                                               track_w, track_h))
+                                    log_to_csv(AI_CSV_filepath, ai_data)
+                                else:
+                                    logging.info(' Low Light - AI pos Image Not Saved IM_SAVE_4AI_DAY_THRESH = %i'
+                                                 % IM_SAVE_4AI_DAY_THRESH)
 
                             if IM_FIRST_AND_LAST_ON:
                                 # Save first and last image for later AI processing
