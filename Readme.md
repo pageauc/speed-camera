@@ -190,7 +190,7 @@ from Menubox.sh menu pick or by running scripts from console or via crontab sche
 ![Speed Camera HTML Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_html.png)    
 
 You can view recent or historical images directly from the speed web browser page.  These are dynamically created
-and show up-to-date images.  Press the web page refesh button to update display 
+and show up-to-date images.  Press the web page refresh button to update display 
 ![Speed Camera RECENT Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_recent.png)   
 ![Speed Camera IMAGES Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_images.png)   
 
