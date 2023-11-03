@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 """
 from __future__ import print_function
-PROG_VER = "13.17"  # current version of this python script
+PROG_VER = "13.2"  # current version of this python script
 print('Loading Wait...')
 import os
 import sys
@@ -1897,54 +1897,54 @@ def speed_camera():
                         CV_LINE_WIDTH_PX,
                     )
 
-    if ALIGN_CAM_ON:
-        image2 = speed_image_add_lines(image2_copy, cvRed)
-        image_align = cv2.resize(image2, (image_width, image_height))
-        cv2.imwrite(align_filename, image_align)
-        logging.info(
-            "ALIGN_CAM_ON=%s ALIGN_DELAY_SEC=%i - Browser View Cam Align Image at %s",
-            ALIGN_CAM_ON,
-            ALIGN_DELAY_SEC,
-            align_filename,
-        )
-        time.sleep(ALIGN_DELAY_SEC)
-
-    if GUI_WINDOW_ON:
-        if GUI_IMAGE_WIN_ON:
+        if ALIGN_CAM_ON:
             image2 = speed_image_add_lines(image2_copy, cvRed)
-            big_image = cv2.resize(image2, (image_width, image_height))
-            cv2.imshow("Movement (q Quits)", big_image)
-
-        if GUI_THRESH_WIN_ON:
-            # resize and display motion threshold image
-            diff_size = (int(differenceimage.shape[1] * IM_BIGGER),
-                         int(differenceimage.shape[0] * IM_BIGGER))
-            big_diff_image = cv2.resize(differenceimage, diff_size)
-            cv2.imshow("Threshold", big_diff_image)
-
-        if GUI_CROP_WIN_ON:
-            # resize and display cropped image
-            crop_image = image2[MO_CROP_Y_UPPER + CV_LINE_WIDTH_PX:MO_CROP_Y_LOWER, MO_CROP_X_LEFT + CV_LINE_WIDTH_PX:MO_CROP_X_RIGHT]
-            crop_size = (int(crop_image.shape[1] * IM_BIGGER),
-                         int(crop_image.shape[0] * IM_BIGGER))
-            big_crop_image = cv2.resize(crop_image, crop_size)
-            cv2.imshow("Crop Area", big_crop_image)
-
-        if IM_SHOW_SIGN_ON:
-            if time.time() - image_sign_view_time > IM_SIGN_TIMEOUT_SEC:
-                # Cleanup the image_sign_view
-                image_sign_bg = np.zeros(
-                    (IM_SIGN_RESIZE[0], IM_SIGN_RESIZE[1], 4)
-                )
-                image_sign_view = cv2.resize(image_sign_bg, (IM_SIGN_RESIZE))
-            cv2_window_speed_sign = "Last Average Speed:"
-            cv2.namedWindow(cv2_window_speed_sign, cv2.WINDOW_NORMAL)
-            cv2.setWindowProperty(
-                cv2_window_speed_sign,
-                cv2.WND_PROP_FULLSCREEN,
-                cv2.WINDOW_FULLSCREEN,
+            image_align = cv2.resize(image2, (image_width, image_height))
+            cv2.imwrite(align_filename, image_align)
+            logging.info(
+                "ALIGN_CAM_ON=%s ALIGN_DELAY_SEC=%i - Browser View Cam Align Image at %s",
+                ALIGN_CAM_ON,
+                ALIGN_DELAY_SEC,
+                align_filename,
             )
-            cv2.imshow(cv2_window_speed_sign, image_sign_view)
+            time.sleep(ALIGN_DELAY_SEC)
+
+        if GUI_WINDOW_ON:
+            if GUI_IMAGE_WIN_ON:
+                image2 = speed_image_add_lines(image2_copy, cvRed)
+                big_image = cv2.resize(image2, (image_width, image_height))
+                cv2.imshow("Movement (q Quits)", big_image)
+
+            if GUI_THRESH_WIN_ON:
+                # resize and display motion threshold image
+                diff_size = (int(differenceimage.shape[1] * IM_BIGGER),
+                             int(differenceimage.shape[0] * IM_BIGGER))
+                big_diff_image = cv2.resize(differenceimage, diff_size)
+                cv2.imshow("Threshold", big_diff_image)
+
+            if GUI_CROP_WIN_ON:
+                # resize and display cropped image
+                crop_image = image2[MO_CROP_Y_UPPER + CV_LINE_WIDTH_PX:MO_CROP_Y_LOWER, MO_CROP_X_LEFT + CV_LINE_WIDTH_PX:MO_CROP_X_RIGHT]
+                crop_size = (int(crop_image.shape[1] * IM_BIGGER),
+                             int(crop_image.shape[0] * IM_BIGGER))
+                big_crop_image = cv2.resize(crop_image, crop_size)
+                cv2.imshow("Crop Area", big_crop_image)
+
+            if IM_SHOW_SIGN_ON:
+                if time.time() - image_sign_view_time > IM_SIGN_TIMEOUT_SEC:
+                    # Cleanup the image_sign_view
+                    image_sign_bg = np.zeros(
+                        (IM_SIGN_RESIZE[0], IM_SIGN_RESIZE[1], 4)
+                    )
+                    image_sign_view = cv2.resize(image_sign_bg, (IM_SIGN_RESIZE))
+                cv2_window_speed_sign = "Last Average Speed:"
+                cv2.namedWindow(cv2_window_speed_sign, cv2.WINDOW_NORMAL)
+                cv2.setWindowProperty(
+                    cv2_window_speed_sign,
+                    cv2.WND_PROP_FULLSCREEN,
+                    cv2.WINDOW_FULLSCREEN,
+                )
+                cv2.imshow(cv2_window_speed_sign, image_sign_view)
 
         # Close Window if q pressed
         if cv2.waitKey(1) & 0xFF == ord("q"):
@@ -1953,9 +1953,9 @@ def speed_camera():
             vs.stop()
             still_scanning = False
 
-    # Optionally show fps motion image processing every 1000 loops
-    if LOG_FPS_ON:
-        fps_time, frame_count = get_fps(fps_time, frame_count)
+        # Optionally show fps motion image processing every 1000 loops
+        if LOG_FPS_ON:
+            fps_time, frame_count = get_fps(fps_time, frame_count)
 
 
 # ------------------------------------------------------------------------------
