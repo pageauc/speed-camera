@@ -118,6 +118,9 @@ default_settings = {
     "MO_CROP_X_RIGHT": 250,
     "MO_CROP_Y_UPPER": 90,
     "MO_CROP_Y_LOWER": 150,
+    "MO_WARP_ON": False,
+    "MO_WARP_INPUT_PTS": [1,2,3,4],
+    "MO_WARP_OUTPUT_PTS": [1,2,3,4],
     "CAMERA": "pilibcam",
     "CAM_LOCATION": "Front Window",
     "USBCAM_SRC": 0,
@@ -1151,6 +1154,9 @@ def get_motion_contours(grayimage1):
         image = vs.read()  # Read image data from video steam thread instance
         # crop image to motion tracking area only
         try:
+            if MO_WARP_ON:
+                M = cv2.getPerspectiveTransform(np.float32(MO_WARP_INPUT_PTS),np.float32(MO_WARP_OUTPUT_PTS))
+                image = cv2.warpPerspective(image,M,(image.shape[1], image.shape[0]),flags=cv2.INTER_NEAREST)
             image_crop = image[MO_CROP_Y_UPPER:MO_CROP_Y_LOWER, MO_CROP_X_LEFT:MO_CROP_X_RIGHT]
             image_ok = True
         except (ValueError, TypeError):
@@ -1302,6 +1308,9 @@ def speed_camera():
     # initialize a cropped grayimage1 image
     image2 = vs.read()  # Get image from VideoSteam thread instance
     try:
+        if MO_WARP_ON:
+            M = cv2.getPerspectiveTransform(np.float32(MO_WARP_INPUT_PTS), np.float32(MO_WARP_OUTPUT_PTS))
+            image2 = cv2.warpPerspective(image2,M,(image2.shape[1], image2.shape[0]),flags=cv2.INTER_NEAREST)
         # crop image to motion tracking area only
         image_crop = image2[MO_CROP_Y_UPPER:MO_CROP_Y_LOWER, MO_CROP_X_LEFT:MO_CROP_X_RIGHT]
     except:
