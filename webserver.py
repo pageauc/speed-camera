@@ -129,6 +129,29 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
         tpath, cur_folder = os.path.split(self.path)
         f.write(b"<html><title>%s %s</title>" % (WEB_PAGE_TITLE.encode('utf-8'), self.path.encode('utf-8')))
         f.write(b"<body>")
+        f.write(b"""
+                <script>
+
+document.onkeydown = checkKey;
+
+function checkKey(e) {
+
+    e = e || window.event;
+
+    var indexOfCurrentImg = Math.max(0, Array.from(document.querySelectorAll('a[target="imgbox"')).map((a) => a.href).indexOf(document.getElementsByTagName("iframe")[0].contentDocument.URL ))
+    var nextA = Array.from(document.querySelectorAll('a[target="imgbox"'))[indexOfCurrentImg-1]
+    var prevA = Array.from(document.querySelectorAll('a[target="imgbox"'))[indexOfCurrentImg+1]
+
+    if (e.keyCode == '37') { // left arrow
+       prevA.click()
+    }
+    else if (e.keyCode == '39') {  // right arrow
+      nextA.click()
+    }
+
+}
+                </script>
+                """)
         # Start Left iframe Image Panel
         f.write(b'<iframe width="%s" height="%s" align="left"'
                 % (WEB_IFRAME_WIDTH_PERCENT.encode('utf-8'), WEB_IMAGE_HEIGHT.encode('utf-8')))
