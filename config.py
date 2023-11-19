@@ -8,6 +8,11 @@
 #  auto configured so you may not need to use a plugin
 #  to change resolution.
 #######################################
+import os
+from dotenv import load_dotenv
+
+# Load sensitive variables from .env
+load_dotenv()
 
 # Calibration Settings
 # --------------------
@@ -34,7 +39,7 @@ LOG_FPS_ON = False      # True= Show average frame count every 1000 loops False=
 
 # Camera Settings
 # ---------------
-CAMERA = "pilibcam"    # valid values usbcam, rtspcam, pilibcam, pilegcam
+CAMERA = "usbcam"    # valid values usbcam, rtspcam, pilibcam, pilegcam
 CAM_LOCATION = "Front Window"
 USBCAM_SRC = 0         # Device number of USB connection usually 0, 1, 2, Etc
 RTSPCAM_SRC = "rtsp://user:password@IP:554/path"  # Set per IP Cam Docs and config see example below
@@ -153,8 +158,14 @@ SPACE_FILE_EXT  = 'jpg'           # Default= 'jpg' File extension to Delete Olde
 # Sqlite3 Settings
 # ----------------
 DB_DIR   = "data"
-DB_NAME  = "speed_cam.db"
+DB_NAME  = "speed_cam"  # "speed_cam.db"
 DB_TABLE = "speed"
+
+DB_TYPE = "postgres"  # sqlite3 or postgres
+DB_HOST = '192.168.1.159'
+DB_USER = os.getenv('PG_USER') # Should set these in the .env
+DB_PASSWORD = os.getenv('PG_PASSWORD')
+DB_PORT = 5432
 
 # matplotlib graph image settings
 # -------------------------------

@@ -54,7 +54,10 @@ import glob
 import shutil
 import logging
 import sqlite3
+import psycopg2
 import numpy as np
+from db_conn import db_check, db_open
+from db_conn import DB_DIR_PATH, DB_CONN
 
 # import the main strmcam launch module
 try:
@@ -162,6 +165,7 @@ default_settings = {
     "CV_WINDOW_BIGGER": 1.0,
     "BLUR_SIZE": 10,
     "THRESHOLD_SENSITIVITY": 20,
+    "DB_TYPE": "sqlite3",  # sqlite3 or postgres
     "DB_DIR": "data",
     "DB_NAME": "speed_cam.db",
     "DB_TABLE": "speed",
@@ -271,12 +275,6 @@ else:
         format="%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-
-# Do a quick check to see if the sqlite database directory path exists
-DB_DIR_PATH = os.path.join(baseDir, DB_DIR)
-if not os.path.exists(DB_DIR_PATH):  # Check if database directory exists
-    os.makedirs(DB_DIR_PATH)  # make directory if Not Found
-DB_PATH = os.path.join(DB_DIR_PATH, DB_NAME)  # Create path to db file
 
 try:  # Check to see if opencv is installed
     import cv2
@@ -525,7 +523,12 @@ def show_settings():
             "                  LOG_TO_FILE_ON=%s  LOG_FILE_PATH=%s"
             % (LOG_TO_FILE_ON, LOG_FILE_PATH)
         )
-        print("                  SQLITE3 DB_PATH=%s  DB_TABLE=%s" % (DB_PATH, DB_TABLE))
+
+        if DB_TYPE == 'sqlite3':
+            print("                  SQLITE3 DB_PATH=%s  DB_TABLE=%s" % (DB_DIR_PATH, DB_TABLE))
+        elif DB_TYPE == 'postgres':
+            print("                  POSTGRES DB_HOST=%s  DB_NAME=%s  DB_TABLE=%s" % (DB_HOST, DB_NAME, DB_TABLE))
+
         print(
             "Speed Trigger ... Log only if MO_MAX_SPEED_OVER > %i %s"
             % (MO_MAX_SPEED_OVER, speed_units)
@@ -1042,97 +1045,6 @@ def log_to_csv(csv_file_path, data_to_append):
 
 
 # ------------------------------------------------------------------------------
-def is_SQLite3(filename):
-    """
-    Determine if filename is in sqlite3 format
-    """
-    if os.path.isfile(filename):
-        if os.path.getsize(filename) < 100:  # SQLite database file header is 100 bytes
-            size = os.path.getsize(filename)
-            logging.error("%s %d is Less than 100 bytes", filename, size)
-            return False
-        with open(filename, "rb") as fd:
-            header = fd.read(100)
-            if header.startswith(b"SQLite format 3"):
-                logging.info("Success: File is sqlite3 Format %s", filename)
-                return True
-            else:
-                logging.error("Failed: File NOT sqlite3 Header Format %s", filename)
-                return False
-    else:
-        logging.warning("File Not Found %s", filename)
-        logging.info("Create sqlite3 database File %s", filename)
-        try:
-            conn = sqlite3.connect(filename)
-        except sqlite3.Error as e:
-            logging.error("Failed: Create Database %s.", filename)
-            logging.error("Error Msg: %s", e)
-            return False
-        conn.commit()
-        conn.close()
-        logging.info("Success: Created sqlite3 Database %s", filename)
-        return True
-
-
-# ------------------------------------------------------------------------------
-def db_check(db_file):
-    """
-    Check if db_file is a sqlite3 file and connect if possible
-    """
-    if is_SQLite3(db_file):
-        try:
-            conn = sqlite3.connect(db_file, timeout=1)
-        except sqlite3.Error as e:
-            logging.error("Failed: sqlite3 Connect to DB %s", db_file)
-            logging.error("Error Msg: %s", e)
-            return None
-    else:
-        logging.error("Failed: sqlite3 Not DB Format %s", db_file)
-        return None
-    conn.commit()
-    logging.info("Success: sqlite3 Connected to DB %s", db_file)
-    return conn
-
-
-# ------------------------------------------------------------------------------
-def db_open(db_file):
-    """
-    Insert speed data into database table
-    """
-    try:
-        db_conn = sqlite3.connect(db_file)
-        cursor = db_conn.cursor()
-    except sqlite3.Error as e:
-        logging.error("Failed: sqlite3 Connect to DB %s", db_file)
-        logging.error("Error Msg: %s", e)
-        return None
-    sql_cmd = """create table if not exists {} (idx text primary key,
-                 log_timestamp text,
-                 camera text,
-                 ave_speed real, speed_units text, image_path text,
-                 image_w integer, image_h integer, image_bigger integer,
-                 direction text, plugin_name text,
-                 cx integer, cy integer,
-                 mw integer, mh integer, m_area integer,
-                 x_left integer, x_right integer,
-                 y_upper integer, y_lower integer,
-                 max_speed_over integer,
-                 min_area integer, track_counter integer,
-                 cal_obj_px integer, cal_obj_mm integer, status text, cam_location text)""".format(
-        DB_TABLE
-    )
-    try:
-        db_conn.execute(sql_cmd)
-    except sqlite3.Error as e:
-        logging.error("Failed: To Create Table %s on sqlite3 DB %s", DB_TABLE, db_file)
-        logging.error("Error Msg: %s", e)
-        return None
-    else:
-        db_conn.commit()
-    return db_conn
-
-
-# ------------------------------------------------------------------------------
 def get_motion_contours(grayimage1):
     """
     Read a Camera stream image frame, crop and
@@ -1280,22 +1192,29 @@ def speed_camera():
     speed_path = IM_DIR_PATH
 
     # check and open sqlite3 db
-    db_conn = db_check(DB_PATH)
+    db_conn = db_check(DB_CONN)
     if db_conn is not None:
-        db_conn = db_open(DB_PATH)
+        db_conn = db_open(DB_CONN)
         if db_conn is None:
-            logging.error("Failed: Connect to sqlite3 DB %s", DB_PATH)
+            logging.error("Failed: Connect to DB %s", DB_TYPE)
         else:
-            logging.info("sqlite3 DB is Open %s", DB_PATH)
+            logging.info("%s DB is Open", DB_TYPE)
             db_cur = db_conn.cursor()  # Set cursor position
     # insert status column into speed table.  Can be used for
     # alpr (automatic license plate reader) processing to indicate
     # images to be processed eg null field entry.
     try:
-        db_conn.execute("alter table speed add status text")
-        db_conn.execute("alter table speed add cam_location text")
-    except sqlite3.OperationalError:
+        if DB_TYPE == 'sqlite3':
+            db_conn.execute("alter table speed add status text")
+            db_conn.execute("alter table speed add cam_location text")
+
+        if DB_TYPE == 'postgres':
+            db_cur.execute("alter table speed add status text")
+            db_cur.execute("alter table speed add cam_location text")
+
+    except (sqlite3.OperationalError, psycopg2.errors.DuplicateColumn):
         pass
+
     db_conn.close()
     speed_notify()
 
@@ -1709,20 +1628,28 @@ def speed_camera():
                                 sql_cmd = """insert into {} values {}""".format(
                                     DB_TABLE, speed_data
                                 )
-                                db_conn = db_check(DB_PATH)
-                                db_conn.execute(sql_cmd)
+                                db_conn = db_check(DB_CONN)
+                                db_cur = db_conn.cursor()
+
+                                if DB_TYPE == 'sqlite3':
+                                    db_conn.execute(sql_cmd)
+                                if DB_TYPE == 'postgres':
+                                    db_cur.execute(sql_cmd)
+
                                 db_conn.commit()
                                 db_conn.close()
-                            except sqlite3.Error as e:
-                                logging.error("sqlite3 DB %s", DB_PATH)
+
+                            except (sqlite3.Error, psycopg2.Error) as e:
+                                logging.error("%s DB", DB_TYPE)
                                 logging.error(
                                     "Failed: To INSERT Speed Data into TABLE %s",
                                     DB_TABLE,
                                 )
                                 logging.error("Err Msg: %s", e)
+
                             else:
                                 logging.info(
-                                    " SQL - Inserted Data Row into %s", DB_PATH
+                                    " SQL - Inserted Data Row into %s", DB_TYPE
                                 )
 
                             # Format and Save Data to CSV Log File

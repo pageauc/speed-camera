@@ -39,12 +39,15 @@ logging.getLogger('matplotlib.font_manager').disabled = True
 # Import Variable constants from config.py
 from config import DB_DIR
 from config import DB_NAME
-from config import DB_TABLE
 from config import MO_SPEED_MPH_ON
 from config import GRAPH_PATH
 from config import GRAPH_ADD_DATE_TO_FILENAME   # Prefix graph image filename with datetime for uniqueness.
 from config import GRAPH_RUN_TIMER_HOURS
 from config import GRAPH_RUN_LIST
+from config import DB_TYPE
+from db_conn import DB_CONN
+from db_conn import db_connect, get_query_str
+
 
 if not os.path.exists(GRAPH_PATH):  # Check if grpahs directory exists
     os.makedirs(GRAPH_PATH)         # make directory if Not Found
@@ -119,26 +122,6 @@ def is_int(var):
     return True
 
 #----------------------------------------------------------------------------------------
-def get_timestamp_substr(total_by):
-    '''
-    Convert hour, day or month string to required
-    values for changing the log_timestamp to an appropriate
-    substring value.
-    '''
-    total_by = total_by.upper()
-    if total_by == 'HOUR':
-        timestamp_subst = '2, 13'
-    elif total_by == 'DAY':
-        timestamp_subst = '2, 10'
-    elif total_by == 'MONTH':
-        timestamp_subst = '2, 7'
-    else:
-        logging.info("total_by variable must be string. Valid values are hour, day, month")
-        logging.warning("Defaulting to hour")
-        timestamp_subst = '2, 13'
-    return timestamp_subst
-
-#----------------------------------------------------------------------------------------
 def get_speed_units_str():
     '''
     Convert config.py MO_SPEED_MPH_ON boolean to a string.
@@ -147,26 +130,6 @@ def get_speed_units_str():
     if MO_SPEED_MPH_ON:
         speed_unit  = 'mph'
     return speed_unit
-
-#----------------------------------------------------------------------------------------
-def get_query_str(total_by, days_prev, speed_over):
-    ''' Create Sqlite3 Query to Get Totals for specified days previous and speeds over
-    '''
-    timestamp_subst = get_timestamp_substr(total_by)
-    sql_query_by_count = ('''
-    select
-        substr(log_timestamp, %s) log_date,
-        count(*) count_totals
-    from %s
-    where
-        ave_speed >= %s and
-        substr(log_timestamp, 2, 11) >= DATE('now', '-%i days')  and
-        substr(log_timestamp, 2, 11) <= DATE('now', '+1 day')
-    group by
-        log_date
-    ''' % (timestamp_subst, DB_TABLE, speed_over, int(days_prev)))
-
-    return sql_query_by_count
 
 #----------------------------------------------------------------------------------------
 def make_graph_image(total_by, days_prev, speed_over):
@@ -183,7 +146,7 @@ def make_graph_image(total_by, days_prev, speed_over):
     speed_units = get_speed_units_str()
     total_by = total_by.upper()
     db_path = os.path.join(DB_DIR, DB_NAME)
-    count_sql_query = get_query_str(total_by, days_prev, speed_over)
+    count_sql_query = get_query_str('count', total_by, days_prev, speed_over)
     right_now = dt.datetime.now()
     now = ("%02d-%02d-%02d-%02d:%02d" % (right_now.year,
                                          right_now.month,
@@ -207,9 +170,14 @@ def make_graph_image(total_by, days_prev, speed_over):
     if DEBUG:
         logging.info("Running: %s", graph_title)
         logging.info("Connect to Database %s", db_path)
-    connection = sqlite3.connect(db_path)
-    connection.row_factory = sqlite3.Row
+    # connection = sqlite3.connect(db_path)
+    connection = db_connect(DB_CONN)
+
+    if DB_TYPE == 'sqlite3':
+        connection.row_factory = sqlite3.Row
+
     cursor = connection.cursor()
+
     if DEBUG:
         logging.info('Executing Query \n %s', count_sql_query)
     cursor.execute(count_sql_query)
@@ -255,6 +223,7 @@ def graph_from_list():
     total_graphs = len(GRAPH_RUN_LIST)
     logging.info("--- Start Generating %i Graph Images from config.py GRAPH_RUN_LIST Variable", total_graphs)
     start_time = time.time() # Start timer for processing duration
+
     for graph_data in GRAPH_RUN_LIST:
         run_cntr +=1
         total_by = graph_data[0]
