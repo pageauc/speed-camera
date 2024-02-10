@@ -44,7 +44,7 @@ Note to Self - Look at eliminating python variable camel case and use all snake 
 
 """
 from __future__ import print_function
-PROG_VER = "13.20"  # current version of this python script
+PROG_VER = "13.2"  # current version of this python script
 print('Loading Wait...')
 import os
 import sys

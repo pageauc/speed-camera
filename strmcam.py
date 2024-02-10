@@ -8,11 +8,11 @@ def strmcam():
     import subprocess
     import logging
 
-    PROG_VER="13.07"   # version of this module
-    CAM_WARMUP_SEC = 3   
+    PROG_VER="13.08"   # version of this module
+    CAM_WARMUP_SEC = 3
     # List of valid camera values in the config.py file
     CAMLIST = ('usbcam', 'rtspcam', 'pilibcam', 'pilegcam')
-    
+
     # Setup logging
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s %(levelname)-8s %(funcName)-10s %(message)s",
@@ -48,37 +48,10 @@ def strmcam():
         sys.path.insert(0, pluginDir)
         # Try importing any camera plugin settings if present
         try:
-            from plugins.current import CAMERA
-        except ImportError:
-            pass
-        try:
-            from plugins.current import IM_SIZE
-        except ImportError:
-            pass
-        try:
-            from plugins.current import RTSPCAM_SRC
-        except ImportError:
-            pass
-        try:
-            from plugins.current import USBCAM_SRC
-        except ImportError:
-            pass
-        try:
-            from plugins.current import IM_FRAMERATE
-        except ImportError:
-            pass
-        try:
-            from plugins.current import IM_ROTATION
-        except ImportError:
-            pass
-        try:
-            from plugins.current import IM_HFLIP
-        except ImportError:
-            pass
-        try:
-            from plugins.current import IM_VFLIP
-        except ImportError:
-            pass
+            from plugins.current import (CAMERA, IM_SIZE, RTSPCAM_SRC, USBCAM_SRC,
+                                         IM_FRAMERATE, IM_ROTATION, IM_HFLIP, IM_VFLIP)
+        except Exception as err_msg:
+            logging.warning("%s", err_msg)
         logging.info("%s Imported New Camera Stream Settings from plugin %s", CAMERA.upper(), PLUGIN_NAME)
 
     # ------------------------------------------------------------------------------
@@ -87,16 +60,21 @@ def strmcam():
         Determine if pi camera is configured for Legacy = True or Libcam = False.
         '''
         logging.info("Check for Legacy Pi Camera Module with command - vcgencmd get_camera")
-        camResult = subprocess.check_output("vcgencmd get_camera", shell=True)
-        camResult = camResult.decode("utf-8")
-        camResult = camResult.replace("\n", "")
-        params = camResult.split()
+        try:
+            camResult = subprocess.check_output("vcgencmd get_camera", shell=True)
+            camResult = camResult.decode("utf-8")
+            camResult = camResult.replace("\n", "")
+            params = camResult.split()
+        except Exception as err_msg:
+            logging.warning(err_msg)
+            return False
+
         if params[0].find("=1") >= 1 and params[1].find("=1") >= 1:
             logging.info("Pi Camera Module Found %s", camResult)
             return True
         else:
-            logging.warn("Problem Finding Pi Legacy Camera %s", camResult)
-            logging.warn('Check Camera Connections and Legacy Pi Cam is Enabled per command sudo raspi-config')
+            logging.warning("Problem Finding Pi Legacy Camera %s", camResult)
+            logging.warning('Check Camera Connections and Legacy Pi Cam is Enabled per command sudo raspi-config')
             return False
 
 

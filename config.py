@@ -11,26 +11,36 @@
 
 # Calibration Settings
 # --------------------
-CALIBRATE_ON = True      # Create a calibration image file with calibration hash markers 10 px per mark
-CAL_OBJ_PX_L2R = 80      # L2R Moving Objects, Length of a calibration object in pixels
-CAL_OBJ_MM_L2R = 4700    # L2R Moving Objects, Length of the calibration object in millimetres
-CAL_OBJ_PX_R2L = 85      # R2L Moving Objects, Length of a calibration object in pixels
-CAL_OBJ_MM_R2L = 4700    # R2L Moving Objects, Length of the calibration object in millimetres
+CALIBRATE_ON = True       # Create a calibration image file with calibration hash markers 10 px per mark
+CAL_OBJ_PX_L2R = 80       # L2R Moving Objects, Length of a calibration object in pixels
+CAL_OBJ_MM_L2R = 4700     # L2R Moving Objects, Length of the calibration object in millimetres
+CAL_OBJ_PX_R2L = 85       # R2L Moving Objects, Length of a calibration object in pixels
+CAL_OBJ_MM_R2L = 4700     # R2L Moving Objects, Length of the calibration object in millimetres
 # Note if tested speed is too low increase appropriate cal_obj_mm  value and redo speed test for desired direction.
 # IMPORTANT - If plugins Enabled Edit Settings in specified plugin file located in plugins folder.
 
 # Align Camera Settings
-ALIGN_CAM_ON = False         # Default=False  True Saves alignment image to help with camera pointing
-ALIGN_DELAY_SEC = 3          # Default=3 seconds delay between each alignment image in recent folder
+# ---------------------
+ALIGN_CAM_ON = False      # Default=False  True Saves alignment image to help with camera pointing
+ALIGN_DELAY_SEC = 3       # Default=3 seconds delay between each alignment image in recent folder
+
+# Plugins override specified config.py variable settings
+# ----------------------------------------------------------
+PLUGIN_ENABLE_ON = False  # True enables import of the specified PLUGIN_NAME
+PLUGIN_NAME = "picam240"  # Specify filename in plugins subfolder without .py extension per below
+                          # picam240, webcam240 (Recommended for RPI2 or greater)
+                          # picam480, webcam480, rtsp352, picam720, webcam720  (can use RPI3 but Test)
+                          # picam1080   (Experimental Not Recommended)
+                          # secpicam480, secwebcam480 (Experimental no CSV entries)
 
 # Display and Log settings
 # ------------------------
-SHOW_SETTINGS_ON = False     # True Displays the config.py file on startup
-LOG_VERBOSE_ON = True   # True= Display basic status information on console False= Off
-LOG_DATA_TO_CSV = False # True= Save log data as CSV comma separated values  False= Off
-LOG_TO_FILE_ON = False  # True= Send logging to file False= No Logging to File
+SHOW_SETTINGS_ON = False  # True Displays the config.py file on startup
+LOG_VERBOSE_ON = True     # True= Display basic status information on console False= Off
+LOG_DATA_TO_CSV = False   # True= Save log data as CSV comma separated values  False= Off
+LOG_TO_FILE_ON = False    # True= Send logging to file False= No Logging to File
 LOG_FILE_PATH = 'speed-cam.log'  # Location of log file when LOG_TO_FILE_ON=True
-LOG_FPS_ON = False      # True= Show average frame count every 1000 loops False= Off
+LOG_FPS_ON = False        # True= Show average frame count every 1000 loops False= Off
 
 # Camera Settings
 # ---------------
@@ -40,11 +50,11 @@ USBCAM_SRC = 0         # Device number of USB connection usually 0, 1, 2, Etc
 RTSPCAM_SRC = "rtsp://user:password@IP:554/path"  # Set per IP Cam Docs and config see example below
                                                   # rtsp://admin:mypwd@192.168.1.100:554/12
 # Camera Image Stream Settings
-IM_SIZE = (320, 240)   # Image resolution width, height pixels
-IM_VFLIP = False       # True enables flipping image vertically
-IM_HFLIP = False       # True enables flipping image horizonally
-IM_ROTATION = 0        # Rotate camera image valid values are 0, 90, 180, 270
-IM_FRAMERATE = 30      # Legacy Picamera Framerate
+IM_SIZE = (320, 240)     # Image resolution width, height pixels
+IM_VFLIP = False         # True enables flipping image vertically
+IM_HFLIP = False         # True enables flipping image horizonally
+IM_ROTATION = 0          # Rotate camera image valid values are 0, 90, 180, 270
+IM_FRAMERATE = 30        # Legacy Picamera Framerate
 
 # Image Settings
 # --------------
@@ -109,15 +119,6 @@ MO_CROP_X_LEFT = 50           # Default=50
 MO_CROP_X_RIGHT = 250         # Default=250
 MO_CROP_Y_UPPER = 90          # Default=90
 MO_CROP_Y_LOWER = 150         # Default=150
-
-# Plugins override the specified config.py variable settings
-# ----------------------------------------------------------
-PLUGIN_ENABLE_ON = False # True enables import of the specified PLUGIN_NAME
-PLUGIN_NAME = "picam240" # Specify filename in plugins subfolder without .py extension per below
-                         # picam240, webcam240 (Recommended for RPI2 or greater)
-                         # picam480, webcam480, rtsp352, picam720, webcam720  (can use RPI3 but Test)
-                         # picam1080   (Experimental Not Recommended)
-                         # secpicam480, secwebcam480 (Experimental no CSV entries)
 
 # Display opencv windows on GUI desktop
 # GUI_WINDOW_ON suppresses All Windows if False
