@@ -4,12 +4,12 @@
 # Add the following command to the /etc/rc.local
 # /home/pi/speed-camera/speed-cam.sh start
 
-progpath="/home/pi/speed-camera"
+progpath="$HOME/speed-camera"
 progname="speed-cam.py"
 
 echo "$0 ver 6.00 written by Claude Pageau"
 echo "-----------------------------------------------"
-cd $progpath
+cd "$progpath"
 
 # Check if progname exists
 if [ ! -e $progname ] ; then
