@@ -18,7 +18,7 @@ import urllib
 from http.server import SimpleHTTPRequestHandler
 from io import BytesIO
 
-PROG_VER = "ver 13.00 written by Claude Pageau modified by Alexandre Strube for python3 compatibility"
+PROG_VER = "ver 13.1 written by Claude Pageau modified by Alexandre Strube for python3 compatibility"
 
 SCRIPT_PATH = os.path.abspath(__file__)   # Find the full path of this python script
 BASE_DIR = os.path.dirname(SCRIPT_PATH)   # Get the path location only (excluding script name)
@@ -207,7 +207,7 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
         f.write(b'<div style="text-align: center;">%s</div>' % WEB_PAGE_TITLE.encode('utf-8'))
 
         if WEB_PAGE_REFRESH_ON:
-            f.write(b'<div style="float: left; padding-left: 40px;">Auto Refresh = %s sec</div>' % WEB_PAGE_REFRESH_SEC.encode('utf-8'))
+            f.write(b'<div style="float: left; padding-left: 40px;">Auto Refresh = %s sec  (Scroll List with Left and Right arrow keys)</div>' % WEB_PAGE_REFRESH_SEC.encode('utf-8'))
 
         if WEB_MAX_LIST_ENTRIES > 1:
             f.write(b'<div style="text-align: right; padding-right: 40px;">Listing Only %i of %i Files in %s</div>'
