@@ -22,6 +22,9 @@ be displayed when in web server root folder.
 Use browser refresh button to update web page and
 display most recent data.
 
+Optionally Use < Left or Right > Keyboared arrow keys
+to scroll through directory list.
+
 This web server can display other types of content.
 Web pages with javascript, css Etc will run.
 If a folder has an index.html it will take over
