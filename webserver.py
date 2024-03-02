@@ -18,7 +18,7 @@ import urllib
 from http.server import SimpleHTTPRequestHandler
 from io import BytesIO
 
-PROG_VER = "ver 13.2 written by Claude Pageau modified by Alexandre Strube for python3 compatibility"
+PROG_VER = "ver 13.3 written by Claude Pageau modified by Alexandre Strube for python3 compatibility"
 
 SCRIPT_PATH = os.path.abspath(__file__)   # Find the full path of this python script
 BASE_DIR = os.path.dirname(SCRIPT_PATH)   # Get the path location only (excluding script name)
@@ -80,7 +80,7 @@ def df(drive_mnt):
         df = subprocess.Popen(["df", "-h", drive_mnt], stdout=subprocess.PIPE)
         output = df.communicate()[0].decode('utf-8')
         device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
-        drive_status = ("Drive [ %s ] Mount_Point [ %s ] Space_Used [ %s %s of %s ] Space_Avail [ %s ]" %
+        drive_status = ("Drive %s at %s [Space %s Used %s of %s Avail %s]" %
                         (device, mountpoint, percent, used, size, available))
     except:
         drive_status = "df command Error. No drive status avail"
@@ -115,7 +115,6 @@ class DirectoryHandler(SimpleHTTPRequestHandler):
                 file_found = True
                 break
             cnt += 1
-        print("here")
         # Start HTML formatting code
         f.write(b'<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">')
         f.write(b'<head>')
@@ -152,12 +151,17 @@ function checkKey(e) {
 }
                 </script>
                 """)
+                
+        # display top web page title
+        f.write(b'<center><b>%s &nbsp &nbsp &nbsp</b>' % WEB_PAGE_TITLE.encode('utf-8'))
+        f.write(b'<em>Note: Left/Right Arrow Keys Scroll File List</em></div></center>') 
+        
         # Start Left iframe Image Panel
         f.write(b'<iframe width="%s" height="%s" align="left"'
                 % (WEB_IFRAME_WIDTH_PERCENT.encode('utf-8'), WEB_IMAGE_HEIGHT.encode('utf-8')))
-        if file_found:  # file was display it in left pane
+        if file_found:  # Display file in left pane
             f.write(b'src="%s" name="imgbox" id="imgbox" alt="%s">'
-                    % (list[cnt].encode('utf-8'), WEB_PAGE_TITLE.encode('utf-8')))
+                    % (list[cnt].encode('utf-8'), WEB_PAGE_TITLE.encode('utf-8')))     
         else:  # No files found so blank left pane
             f.write(b'src="%s" name="imgbox" id="imgbox" alt="%s">'
                     % (b"about:blank", WEB_PAGE_TITLE.encode('utf-8')))
@@ -197,17 +201,14 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
             else:
                 f.write(b'<li><a href="%s" target="imgbox">%s</a> - %s</li>\n'
                         % (urllib.parse.quote(linkname).encode('utf-8'), html.escape(displayname).encode('utf-8'), date_modified.encode('utf-8')))
-
         if (self.path != "/") and display_entries > 35:   # Display folder Back arrow navigation if not in web root
             f.write(b'<li><a href="%s" >%s</a></li>\n' % (urllib.parse.quote("..").encode('utf-8'), html.escape("< BACK").encode('utf-8')))
         f.write(b'</ul></div><p><b>')
         drive_status = df(MNT_POINT)
-        f.write(b'<div style="float: left; padding-left: 40px;">Web Root is [ %s ]  %s</div>' %
+        f.write(b'<div style="float: left; padding-left: 5px;">WebDir=%s %s</div>' %
                 (WEB_SERVER_ROOT.encode('utf-8'), drive_status.encode('utf-8')))
-        f.write(b'<div style="text-align: center;">%s</div>' % WEB_PAGE_TITLE.encode('utf-8'))
-
-        if WEB_PAGE_REFRESH_ON:
-            f.write(b'<div style="float: left; padding-left: 40px;">Auto Refresh = %s sec  (Scroll List with Left and Right arrow keys)</div>' % WEB_PAGE_REFRESH_SEC.encode('utf-8'))
+        if WEB_PAGE_REFRESH_ON:  # Display web refresh info only if setting is turned on
+            f.write(b'<div style="float: left; padding-left: 10px;">Refresh=%ssec</div>' % WEB_PAGE_REFRESH_SEC.encode('utf-8'))
 
         if WEB_MAX_LIST_ENTRIES > 1:
             f.write(b'<div style="text-align: right; padding-right: 40px;">Listing Only %i of %i Files in %s</div>'
@@ -215,7 +216,7 @@ VALUE="Refresh">&nbsp;&nbsp;<b>%s</b></FORM>''' % list_title)
         else:
             f.write(b'<div style="text-align: right; padding-right: 50px;">Listing All %i Files in %s</div>'
                     % (all_entries, self.path.encode('utf-8')))
-        # Display web refresh info only if setting is turned on
+
         f.write(b'</b></p>')
         length = f.tell()
         f.seek(0)
