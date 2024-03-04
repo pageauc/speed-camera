@@ -9,11 +9,12 @@ from __future__ import print_function
 prog_ver = '13_02'
 DEBUG = False
 print('Loading ver %s DEBUG= %s ... ' % (prog_ver, DEBUG))
-import sqlite3
 import os
 import time
+import sqlite3
 import datetime as dt
 import sys
+
 try:
     import matplotlib
 except ImportError:
@@ -39,12 +40,14 @@ logging.getLogger('matplotlib.font_manager').disabled = True
 # Import Variable constants from config.py
 from config import DB_DIR
 from config import DB_NAME
-from config import DB_TABLE
 from config import MO_SPEED_MPH_ON
 from config import GRAPH_PATH
 from config import GRAPH_ADD_DATE_TO_FILENAME   # Prefix graph image filename with datetime for uniqueness.
 from config import GRAPH_RUN_TIMER_HOURS
 from config import GRAPH_RUN_LIST
+from config import DB_TYPE
+from db_conn import DB_CONN
+from db_conn import db_connect, get_query_str
 
 if not os.path.exists(GRAPH_PATH):  # Check if grpahs directory exists
     os.makedirs(GRAPH_PATH)         # make directory if Not Found
@@ -108,6 +111,7 @@ if len(sys.argv) > 1:
     days_prev = args.days
     total_by = args.totals
 
+
 #----------------------------------------------------------------------------------------
 def is_int(var):
     ''' Check if variable string can successfully be converted to an integer.
@@ -119,26 +123,6 @@ def is_int(var):
     return True
 
 #----------------------------------------------------------------------------------------
-def get_timestamp_substr(total_by):
-    '''
-    Convert hour, day or month string to required
-    values for changing the log_timestamp to
-    an appropriate substring value
-    '''
-    total_by = total_by.upper()
-    if total_by == 'HOUR':
-        timestamp_subst = '2, 13'
-    elif total_by == 'DAY':
-        timestamp_subst = '2, 10'
-    elif total_by == 'MONTH':
-        timestamp_subst = '2, 7'
-    else:
-        logging.info("total_by variable must be string. Valid values are hour, day, month")
-        logging.warning("Defaulting to hour")
-        timestamp_subst = '2, 13'
-    return timestamp_subst
-
-#----------------------------------------------------------------------------------------
 def get_speed_units_str():
     '''
     Convert config.py MO_SPEED_MPH_ON boolean to a string.
@@ -147,27 +131,6 @@ def get_speed_units_str():
     if MO_SPEED_MPH_ON:
         speed_unit  = 'mph'
     return speed_unit
-
-#----------------------------------------------------------------------------------------
-def get_query_str(total_by, days_prev, speed_over):
-    ''' Create Sqlite3 Query to Get Speed Averages for
-        specified days previous and speeds over
-    '''
-    timestamp_subst = get_timestamp_substr(total_by)
-    sql_query_speed_ave = ('''
-    select
-        substr(log_timestamp, %s) log_date,
-        round(avg(ave_speed), 1) speed_ave
-    from %s
-    where
-        ave_speed >= %s and
-        substr(log_timestamp, 2, 11) >= DATE('now', '-%i days')  and
-        substr(log_timestamp, 2, 11) <= DATE('now', '+1 day')
-    group by
-        log_date
-    ''' % (timestamp_subst, DB_TABLE, speed_over, int(days_prev)))
-
-    return sql_query_speed_ave
 
 #----------------------------------------------------------------------------------------
 def make_graph_image(total_by, days_prev, speed_over):
@@ -184,7 +147,7 @@ def make_graph_image(total_by, days_prev, speed_over):
     speed_units = get_speed_units_str()
     total_by = total_by.upper()
     db_path = os.path.join(DB_DIR, DB_NAME)
-    count_sql_query = get_query_str(total_by, days_prev, speed_over)
+    count_sql_query = get_query_str('ave_speed', total_by, days_prev, speed_over)
     right_now = dt.datetime.now()
     now = ("%02d-%02d-%02d-%02d:%02d" % (right_now.year,
                                          right_now.month,
@@ -208,9 +171,14 @@ def make_graph_image(total_by, days_prev, speed_over):
     if DEBUG:
         logging.info("Running: %s", graph_title)
         logging.info("Connect to Database %s", db_path)
-    connection = sqlite3.connect(db_path)
-    connection.row_factory = sqlite3.Row
+
+    connection = db_connect(DB_CONN)
+    # connection = sqlite3.connect(db_path)
+    if DB_TYPE == 'sqlite3':
+        connection.row_factory = sqlite3.Row
+
     cursor = connection.cursor()
+
     if DEBUG:
         logging.info('Executing Query \n %s', count_sql_query)
     cursor.execute(count_sql_query)
