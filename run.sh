@@ -1,6 +1,6 @@
 #!/bin/bash
 # run.sh is a systemctl script to control webserver.py and writer.py
-# written by Claude Pageau  https://github.com/pageauc/enviro-p
+# written by Claude Pageau  https://github.com/pageauc/speed-camera
 version="2.0"
 programs="speed-cam.py webserver.py"
 params="start, stop, restart, status, install, uninstall"
@@ -36,8 +36,8 @@ elif [ "$1" = "install" ]; then
     exit 0
 elif [ "$1" = "uninstall" ]; then
     echo "Uninstall supervisorctl for $programs"
-    sudo supervisorctl stop enviro-pi enviro-web
-    sudo rm /etc/supervisor/conf.d/enviro-pi.conf /etc/supervisor/conf.d/enviro-web.conf
+    sudo supervisorctl stop speed-cam speed-web
+    sudo rm /etc/supervisor/conf.d/speed-cam.conf /etc/supervisor/conf.d/speed-web.conf
     exit 0
 
 elif [ "$1" = "upgrade" ]; then
