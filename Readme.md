@@ -78,8 +78,7 @@ This bash script uses supervisorctl to manage start, stop, status of speed-cam.p
 See conf files in supervisor folder for details. Note: you must run ***./run.sh*** ***install*** to initialize symbolic links to /etc/supervisor/conf.d folder. 
 Stop running any speed-cam and/or websever processes before running ***./run.sh*** ***start*** 
 * [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
-Allows viewing images and/or data from a web browser (see config.py for webserver settings)
-To implement webserver3.py copy webserver3.py to webserver.py  Note and update will undo this change.   
+Allows viewing images and/or data from a web browser (see config.py for webserver settings)   
 * [***rclone***](https://github.com/pageauc/speed-camera/wiki/Manage-rclone-Remote-Storage-File-Transfer)
 Manage settings and setup for optional remote file sync to a remote storage service like google drive, DropBox and many others.   
 * [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)
