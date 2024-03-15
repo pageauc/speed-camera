@@ -1,7 +1,7 @@
 #!/bin/bash
 # speed-install.sh script written by Claude Pageau 1-Jul-2016
 
-ver="13.17"
+ver="13.18"
 SPEED_DIR='speed-camera'  # Default folder install location
 # Make sure ver below matches latest rclone ver on https://downloads.rclone.org/rclone-current-linux-arm.zip
 rclone_cur_ver="rclone v1.66.0"
@@ -32,14 +32,14 @@ if $is_upgrade ; then
     speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py run.sh" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
 "webserver.sh" "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" \
-"supervisor/enviro-web.conf" "supervisor/enviro-pi.conf" \
+"supervisor/speed-cam.conf" "supervisor/speed-web.conf" \
 "strmcam.py" "strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
 else
     speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py run.sh" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
 "webserver.sh" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
 "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" "user_motion_code.py" \
-"supervisor/enviro-web.conf" "supervisor/enviro-pi.conf" \
+"supervisor/speed-cam.conf" "supervisor/speed-web.conf" \
 "strmcam.py" "strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
 fi
 
