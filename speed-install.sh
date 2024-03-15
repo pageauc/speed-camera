@@ -30,13 +30,13 @@ echo "-----------------------------------------------"
 echo "$STATUS Download GitHub Files"
 if $is_upgrade ; then
     echo "Note: config.py will not be overwritten. Updated settings are in config.py.new"
-    speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py run.sh" \
+    speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py" "run.sh" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
 "webserver.sh" "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" \
 "supervisor/speed-cam.conf" "supervisor/speed-web.conf" \
 "strmcam.py" "strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
 else
-    speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py run.sh" \
+    speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py" "run.sh" \
 "speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
 "webserver.sh" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
 "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" "user_motion_code.py" \
