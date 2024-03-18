@@ -16,6 +16,7 @@ if [ "$1" = "start" ]; then
     sudo supervisorctl start speed-cam speed-web
     echo "Wait 10 seconds for supervisor services to start $programs"
     sleep 10
+    sudo supervisorctl status all
 elif [ "$1" = "stop" ]; then
     echo "STOP: sudo supervisorctl stop $programs"
     sudo supervisorctl stop speed-cam speed-web
