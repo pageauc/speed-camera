@@ -73,7 +73,7 @@ details see [How to Manage Sqlite3 Database](https://github.com/pageauc/speed-ca
   
 * [***menubox.sh***](https://github.com/pageauc/speed-camera/wiki/Admin-and-Settings#manage-settings-using-menuboxsh)
 script is a whiptail menu system to allow easier management of program settings and operation.    
-* [***run.sh***](https://github.com/pageauc/speed-camera/wiki/How-to-Run#how-to-run)
+* [***run.sh***](https://github.com/pageauc/speed-camera/wiki/How-to-use-run.sh)
 This bash script uses supervisorctl to manage start, stop, status of speed-cam.py and webserver.py. Configured to autostart eg due to interruption of RTSP stream. 
 See conf files in supervisor folder for details. Note: you must run ***./run.sh*** ***install*** to initialize symbolic links to /etc/supervisor/conf.d folder. 
 Stop running any speed-cam and/or websever processes before running ***./run.sh*** ***start*** 
