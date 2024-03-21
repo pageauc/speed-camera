@@ -119,6 +119,10 @@ MO_CROP_X_LEFT = 50           # Default=50
 MO_CROP_X_RIGHT = 250         # Default=250
 MO_CROP_Y_UPPER = 90          # Default=90
 MO_CROP_Y_LOWER = 150         # Default=150
+MO_WARP_ON = False             # Default False; cv2.warpPerspective using 4+ control points defined below.
+                              # on my 4gb Rpi 4, this costs ~0.17 fps
+MO_WARP_INPUT_PTS =  [[188,345], [179,411], [489,436], [489,363]]
+MO_WARP_OUTPUT_PTS = [[179,363],[179,436],  [489,436], [489,363]]
 
 # Display opencv windows on GUI desktop
 # GUI_WINDOW_ON suppresses All Windows if False
