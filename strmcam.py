@@ -8,7 +8,7 @@ def strmcam():
     import subprocess
     import logging
 
-    PROG_VER="13.08"   # version of this module
+    PROG_VER="13.1"   # version of this module
     CAM_WARMUP_SEC = 3
     # List of valid camera values in the config.py file
     CAMLIST = ('usbcam', 'rtspcam', 'pilibcam', 'pilegcam')
@@ -99,7 +99,7 @@ def strmcam():
             if not is_pi_legacy_cam():
                 if not os.path.exists('/usr/bin/libcamera-still'):
                     logging.error('libcamera not Installed')
-                    logging.info('Edit configcam.py and Change CAMERA variable as Required.')
+                    logging.info('Edit config.py and Change CAMERA variable as Required.')
                     sys.exit(1)
                 if not os.path.exists('strmpilibcam.py'):
                     logging.error("strmpilibcam.py File Not Found.")
@@ -116,7 +116,7 @@ def strmcam():
 
             else:
                 logging.error('Looks like Pi Legacy Camera is Enabled')
-                logging.info('Edit configcam.py and Change CAMERA variable as Required.')
+                logging.info('Edit config.py and Change CAMERA variable as Required.')
                 logging.info('or Disable Legacy Pi Camera using command sudo raspi-config')
                 sys.exit(1)
 
