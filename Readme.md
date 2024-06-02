@@ -101,6 +101,7 @@ License plate reader. Output is saved to media/alpr folder. For installation, Se
 [ALPR Wiki Documentaion](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)       
 
 ## Reference Links
+* YouTube Tutorial Video https://www.youtube.com/watch?v=n2WT3Qb0SIU
 * YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
 * YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
 * YouTube motion-track video https://youtu.be/09JS7twPBsQ  
