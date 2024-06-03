@@ -69,6 +69,8 @@ IM_SHOW_SPEED_FILENAME_ON = True # True= Include speed value in filename
 IM_SHOW_CROP_AREA_ON = False     # True= Display motion detection rectangle area on saved images
 IM_BIGGER = 3.0                  # Default= 3.0 min=0.1 Resize saved speed image by specified multiplier value
 IM_SHOW_TEXT_ON = True           # True= Show Text on speed images   False= No Text on images
+IM_TEXT_FORMAT = "filename"      # filename= Show the filename (current behavior). date= Show the date on the image
+IM_TEXT_DATE_FORMAT = "%c"       # the date format to apply if IM_TEXT_FORMAT = "date" (https://strftime.org/)
 IM_SHOW_TEXT_BOTTOM_ON = True    # True= Show image text at bottom otherwise at top
 IM_FONT_SIZE_PX = 12             # Default= 12 Font text height in px for text on images
 IM_FONT_SCALE = 0.5              # Default= 0.5 Font scale factor that is multiplied by the font-specific base size.

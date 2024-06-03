@@ -141,6 +141,8 @@ default_settings = {
     "IM_SHOW_CROP_AREA_ON": True,
     "IM_SHOW_SPEED_FILENAME_ON": False,
     "IM_SHOW_TEXT_ON": True,
+    "IM_TEXT_DATE_FORMAT": "%c",
+    "IM_TEXT_FORMAT": "filename",
     "IM_SHOW_TEXT_BOTTOM_ON": True,
     "IM_FONT_SIZE_PX": 12,
     "IM_FONT_THICKNESS": 2,
@@ -1561,10 +1563,19 @@ def speed_camera():
                                     speed_units,
                                     filename,
                                 )
+
+                                if IM_TEXT_FORMAT == "date":
+                                    image_text = "SPEED %.1f %s - %s" % (
+                                        ave_speed,
+                                        speed_units,
+                                        log_time.strftime(IM_TEXT_DATE_FORMAT),
+                                    )
+
                                 text_x = int(
                                     (image_width / 2)
                                     - (len(image_text) * IM_FONT_SIZE_PX / 3)
                                 )
+
                                 if text_x < 2:
                                     text_x = 2
                                 cv2.putText(
