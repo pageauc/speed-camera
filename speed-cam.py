@@ -1551,6 +1551,7 @@ def speed_camera():
                                     IM_SIGN_FONT_SCALE,
                                     IM_SIGN_FONT_COLOR,
                                     IM_SIGN_FONT_THICK_PX,
+                                    cv2.LINE_AA,
                                 )
 
                             # Write text on image before saving
@@ -1565,6 +1566,7 @@ def speed_camera():
                                     (image_width / 2)
                                     - (len(image_text) * IM_FONT_SIZE_PX / 3)
                                 )
+
                                 if text_x < 2:
                                     text_x = 2
                                 cv2.putText(
@@ -1575,6 +1577,7 @@ def speed_camera():
                                     IM_FONT_SCALE,
                                     IM_FONT_COLOR,
                                     IM_FONT_THICKNESS,
+                                    cv2.LINE_AA,
                                 )
 
                             # Save resized image. If jpg format, user can customize image quality 1-100 (higher is better)
