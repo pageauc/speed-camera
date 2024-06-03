@@ -315,6 +315,20 @@ else:
     print("WARN : import Failed. File Not Found %s" % userMotionFilePath)
     USER_MOTION_CODE_ON = False
 
+# Check for user_reporting_code.py file to import and error out if not found.
+userReportingFilePath = os.path.join(baseDir, "user_reporting_code.py")
+USER_REPORTING_CODE_ON = True     # Set Flag to run user_reporting_code.py
+if os.path.isfile(userReportingFilePath):
+    try:
+        import user_reporting_code
+    except Exception as err_msg:
+        print("WARN: %s" % err_msg)
+        # set flag to ignore running user reporting code after succsessful track.
+        USER_REPORTING_CODE_ON = False
+else:
+    print("WARN : import Failed. File Not Found %s" % userReportingFilePath)
+    USER_REPORTING_CODE_ON = False
+
 # Import Settings from specified plugin if PLUGIN_ENABLE_ON=True
 if PLUGIN_ENABLE_ON:  # Check and verify plugin and load variable overlay
     pluginDir = os.path.join(baseDir, "plugins")
@@ -1565,6 +1579,7 @@ def speed_camera():
                                     (image_width / 2)
                                     - (len(image_text) * IM_FONT_SIZE_PX / 3)
                                 )
+
                                 if text_x < 2:
                                     text_x = 2
                                 cv2.putText(
@@ -1724,6 +1739,55 @@ def speed_camera():
                                 logging.info(
                                     " SQL - Inserted Data Row into %s", DB_PATH
                                 )
+
+                            if USER_REPORTING_CODE_ON:
+                                # ===========================================
+                                # Put your user code in userReportingCode() function
+                                # In the File user_reporting_code.py
+                                # ===========================================
+                                try:
+                                    reporting_fields = {
+                                        "log_time": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                                        "camera": CAMERA.upper(),
+                                        "ave_speed": ave_speed,
+                                        "speed_units": speed_units,
+                                        "filename": filename,
+                                        "image_width": image_width,
+                                        "image_height": image_height,
+                                        "image_multiplier": IM_BIGGER,
+                                        "travel_direction": travel_direction,
+                                        "plugin_name": plugin_name,
+                                        "track_x": track_x,
+                                        "track_y": track_y,
+                                        "track_w": track_w,
+                                        "track_h": track_h,
+                                        "m_area": m_area,
+                                        "mo_crop_x_left": MO_CROP_X_LEFT,
+                                        "mo_crop_x_right": MO_CROP_X_RIGHT,
+                                        "mo_crop_y_upper": MO_CROP_Y_UPPER,
+                                        "mo_crop_y_lower": MO_CROP_Y_LOWER,
+                                        "mo_max_speed_over": MO_MAX_SPEED_OVER,
+                                        "mo_min_area_px": MO_MIN_AREA_PX,
+                                        "mo_track_event_count": MO_TRACK_EVENT_COUNT,
+                                        "cal_obj_px": cal_obj_px,
+                                        "cal_obj_mm": cal_obj_mm,
+                                        "cam_location": CAM_LOCATION
+                                    }
+
+                                    user_reporting_code.userReportingCode(reporting_fields, vs, filename)
+                                except ValueError:
+                                    logging.error(
+                                        "Problem running userReportingCode function from File %s",
+                                        userReportingFilePath,
+                                    )
+                                except TypeError as err:
+                                    logging.error(
+                                        "Problem with file user_reporting_code.py Possibly out of date"
+                                    )
+                                    logging.error("Err Msg: %s", err)
+                                    logging.error(
+                                        "Suggest you delete/rename file and perform menubox UPGRADE"
+                                    )
 
                             # Format and Save Data to CSV Log File
                             if LOG_DATA_TO_CSV:
