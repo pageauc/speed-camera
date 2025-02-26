@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  speed-camera:
+    container_name: speed-camera
+    image: randallkent/speed-camera
+    tty: true
+    ports:
+      - "8080:8080/tcp"
+    volumes:
+      - './config/:/root/speed-camera/config/'
+      - './media/:/root/speed-camera/media/'
+      - './data/:/root/speed-camera/data/'
+    restart: unless-stopped
+    command: /bin/bash /root/speed-camera/speed-camera-docker-run.sh

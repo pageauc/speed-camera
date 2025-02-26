@@ -1,0 +1,37 @@
+               speed-web.py
+           written by Claude Pageau
+
+This is a stand alone web server.
+
+Please Note
+You will need at least one entry in a folder
+before the web server will display content.
+IMPORTANT: Use browser refresh to update files list
+then select a list hyperlink.
+Default config.py webserver settings are
+
+    WEB_PAGE_REFRESH_ON = True
+    WEB_PAGE_REFRESH_SEC = "900"
+    WEB_PAGE_BLANK_ON = False
+
+If a folder is selected on the right pane listing
+the folder contents will appear in existing browser tab.
+Select the <BACK link on Right panel listing to
+navigate back to previous folder. <BACK will not
+be displayed when in web server root folder.
+Use browser refresh button to update web page and
+display most recent data.
+
+Optionally Use < Left or Right > Keyboared arrow keys
+to scroll through directory list.
+
+This web server can display other types of content.
+Web pages with javascript, css Etc will run.
+If a folder has an index.html it will take over
+the browser tab.
+This browser can only access local raspberry pi
+files. It cannot access internet web pages.
+
+see speed-camera github wiki for more details
+
+https://github.com/pageauc/speed-camera/wiki

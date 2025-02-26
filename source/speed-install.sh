@@ -30,22 +30,21 @@ echo "-----------------------------------------------"
 echo "$STATUS Download GitHub Files"
 if $is_upgrade ; then
     echo "Note: config.py will not be overwritten. Updated settings are in config.py.new"
-    speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py" "run.sh" \
-"speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
-"webserver.sh" "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" \
+    speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py" \
+"speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "speed-web.py" \
+"speed-web.sh" "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" \
 "supervisor/speed-cam.conf" "supervisor/speed-web.conf" \
 "strmcam.py" "strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
 else
-    speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py" "run.sh" \
-"speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "webserver.py" \
-"webserver.sh" "rclone-security-sync-recent.sh" "remote-run.sh" "watch-app.sh" \
+    speedFiles=("menubox.sh" "speed-cam.py" "sql_speed_gt.py" \
+"speed-cam.sh" "search-speed.py" "search_config.py" "Readme.md" "makehtml.py" "speed-web.py" \
+"speed-web.sh" "rclone-security-sync-recent.sh" \
 "alpr-speed.py" "sql-make-graph-count-totals.py" "sql-make-graph-speed-ave.py" "user_motion_code.py" \
-"supervisor/speed-cam.conf" "supervisor/speed-web.conf" \
 "strmcam.py" "strmusbipcam.py" "strmpilegcam.py" "strmpilibcam.py")
 fi
 
 for fname in "${speedFiles[@]}" ; do
-    wget_output=$(wget -O $fname -q --show-progress https://raw.github.com/pageauc/speed-camera/master/$fname)
+    wget_output=$(wget -O $fname -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/$fname)
     if [ $? -ne 0 ]; then
         if [ $? -ne 0 ]; then
             echo "ERROR - $fname wget Download Failed. Possible Cause Internet Problem."
@@ -55,25 +54,24 @@ for fname in "${speedFiles[@]}" ; do
     fi
 done
 
-wget -q --show-progress -nc https://raw.github.com/pageauc/pi-timolo2/master/user_motion_code.py
-wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/webserver.txt
+# Install supervisor files
+wget -O supervisor/speed-cam.conf --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/speed-cam.conf
+wget -O supervisor/speed-web.conf --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/speed-web.conf
+wget -O supervisor/Readme.md --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/Readme.md
+
+wget -q --show-progress -nc https://raw.github.com/pageauc/pi-timolo2/master/source/user_motion_code.py
+
+wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/webserver.txt
 
 if [ -f config.py ]; then     # check if local file exists.
-    wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
+    wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/config.py
 else
-    wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/config.py
+    wget -O config.py -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/config.py
 fi
 
-if [ ! -f remote-run.sh ] ; then
-    wget -O watch-app.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/watch-app.sh
-fi
-
-if [ ! -f remote-run.sh ] ; then
-    wget -O remote-run.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/remote-run.sh
-fi
 
 if [ ! -f rclone-security-sync-recent.sh ] ; then
-    wget -O rclone-security-sync-recent.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/rclone-security-sync-recent.sh
+    wget -O rclone-security-sync-recent.sh -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/rclone-samples/rclone-security-sync-recent.sh
 fi
 
 # Install plugins if not already installed.  You must delete a plugin file to force reinstall.
@@ -89,13 +87,13 @@ for fname in "${pluginFiles[@]}" ; do
   if [ -f $fname ]; then     # check if local file exists.
     echo "INFO  : $fname plugin Found.  Skip Download ..."
   else
-    wget_output=$(wget -O $fname -q --show-progress https://raw.github.com/pageauc/speed-camera/master/plugins/$fname)
+    wget_output=$(wget -O $fname -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/plugins/$fname)
     if [ $? -ne 0 ]; then
-        wget_output=$(wget -O $fname -q https://raw.github.com/pageauc/speed-camera/master/plugins/$fname)
+        wget_output=$(wget -O $fname -q https://raw.github.com/pageauc/speed-camera/master/source/plugins/$fname)
         if [ $? -ne 0 ]; then
             echo "ERROR : $fname wget Download Failed. Possible Cause Internet Problem."
         else
-            wget -O $fname "https://raw.github.com/pageauc/speed-camera/master/plugins/$fname"
+            wget -O $fname "https://raw.github.com/pageauc/speed-camera/master/source/plugins/$fname"
         fi
     fi
   fi
@@ -111,13 +109,13 @@ rcloneFiles=("rclone-security-copy.sh" "rclone-security-sync.sh" "rclone-securit
 mkdir -p $RCLONE_DIR
 cd $RCLONE_DIR
 for fname in "${rcloneFiles[@]}" ; do
-    wget_output=$(wget -O $fname -q --show-progress https://raw.github.com/pageauc/speed-camera/master/rclone-samples/$fname)
+    wget_output=$(wget -O $fname -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/rclone-samples/$fname)
     if [ $? -ne 0 ]; then
-        wget_output=$(wget -O $fname -q https://raw.github.com/pageauc/speed-camera/master/rclone-samples/$fname)
+        wget_output=$(wget -O $fname -q https://raw.github.com/pageauc/speed-camera/master/source/rclone-samples/$fname)
         if [ $? -ne 0 ]; then
             echo "ERROR : $fname wget Download Failed. Possible Cause Internet Problem."
         else
-            wget -O $fname "https://raw.github.com/pageauc/speed-camera/master/rclone-samples/$fname"
+            wget -O $fname "https://raw.github.com/pageauc/speed-camera/master/source/rclone-samples/$fname"
         fi
     fi
 done
