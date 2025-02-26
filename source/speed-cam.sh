@@ -5,14 +5,14 @@
 
 # initialize script variables
 login_id=$( whoami )
-timolo2_dir=$( pwd )
-service_name="timolo2-cam"
-conf_file_dir="/home/$login_id/pi-timolo2/supervisor"
-conf_file_name="timolo2-cam.conf"
+speed_dir=$( pwd )
+service_name="speed-cam"
+conf_file_dir="/home/$login_id/speed-camera/supervisor"
+conf_file_name="speed-cam.conf"
 
 # change supervisor conf file for current logged in user
 sed -i s,^user=.*,user=$login_id, $conf_file_dir/$conf_file_name
-sed -i s,^directory=.*,directory=$timolo2_dir, $conf_file_dir/$conf_file_name
+sed -i s,^directory=.*,directory=$speed_dir, $conf_file_dir/$conf_file_name
 
 #speed-cam.sh ver 13.15 written by Claude Pageau
 echo "-----------------------------------------------"

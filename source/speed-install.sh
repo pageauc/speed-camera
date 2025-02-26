@@ -201,18 +201,6 @@ Run from Admin menu per
 
    ./menubox.sh
 
-IMPORTANT: speed-cam.py ver 8.x Requires Updated config.py and plugins
-
-    cd ~/speed-camera
-    cp config.py config.py.bak
-    cp config.py.new config.py
-
-To replace plugins rename plugins folder per below
-
-    cd ~/speed-camera
-    mv plugins pluginsold
-
-Then run menubox.sh UPGRADE menu pick.
 
 -----------------------------------------------
 For Detailed Instructions See https://github.com/pageauc/speed-camera/wiki
