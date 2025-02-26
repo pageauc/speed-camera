@@ -22,6 +22,8 @@ if [ "$1" = "start" ]; then
     sudo supervisorctl start $service_name
     if [ $? -ne 0 ]; then
        echo "ERROR: Try running install Option."
+	   echo "  Also run ./speed-web.py to check if web port is in use."
+	   echo "  If so try changing WEB_SERVER_PORT in config.py"
     fi
     exit 0
 

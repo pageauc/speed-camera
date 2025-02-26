@@ -3,8 +3,8 @@
 ## For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features), [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#reference-links).
 
 ## Note re Bullseye: 
-speed-cam.py ver 11.26 and greater will now run under Raspberry Pi OS Bullseye or later with a pi camera module as well as usbcam and IP/RTSP cameras. 
-For picamera support Run ***sudo raspi-config***, Interface Options, then enable/disable Legacy Camera option and reboot.
+speed-cam.py will run using libcamer, picamera2 under Raspberry Pi OS Bullseye, bookworm, as well as usbcam and IP/RTSP cameras. 
+For picamera support Run ***sudo raspi-config***, Interface Options, then enable/disable Legacy Camera option and reboot (Bullseye only).
 
 ## RPI Quick curl Install or Upgrade   
 ***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will **NOT** be performed as part of   
@@ -12,16 +12,12 @@ For picamera support Run ***sudo raspi-config***, Interface Options, then enable
 to ensure your system is up-to-date.     
 
 #### Step 1
-Press GitHub copy icon on right side of code box below.     
-or With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and select Copy.
+Press GitHub copy icon on right side of code box below.  Copied! will be displayed.   
 
-    curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
+    curl -L https://raw.github.com/pageauc/speed-camera/master/source/speed-install.sh | bash
 
 #### Step 2
-On RPI putty SSH or terminal session right click, select paste then Enter to download and run script.  
-
-This will download and run the **speed-install.sh** script. If running under python3 you will need opencv3 installed if not installed.
-If you need to compile openCV see my Github Repo at [menu driven compile opencv3 from source](https://github.com/pageauc/opencv3-setup) project
+On RPI putty SSH or terminal session right click, select paste then Enter to Download and Run **speed-install.sh** script.  
 
 
 ## Mac or Windows Systems
@@ -29,9 +25,9 @@ See [Windows 10/11 or Apple Mac Docker Install Quick Start](https://github.com/p
 or [Windows or Unix Distro Installs without Docker](https://github.com/pageauc/speed-camera#windows-or-non-rpi-unix-installs)
 
 ## Program Description   
-This is a raspberry pi, Windows, Unix Distro computer openCV object speed camera demo program.
-It is written in python and uses openCV to detect and track the x,y coordinates of the 
-largest moving object in the camera view above a minimum pixel area.
+This project can run on a Raspberry Pi, Windows, Unix Distro cpmputer.
+It is written in python3 and uses openCV to detect and track the x,y coordinates of the 
+largest moving object in the camera view above a minimum pixel area and calculates speed based on calibration settings.
 
 User variables are stored in the [***config.py***](https://github.com/pageauc/speed-camera/blob/master/config.py) file.
 Motion detection is restricted between ***MO_CROP_Y_UPPER***, ***MO_CROP_Y_LOWER***, ***MO_CROP_X_LEFT***, ***MO_CROP_X_RIGHT*** variables  (road or area of interest).
@@ -56,12 +52,10 @@ script is a whiptail menu system to allow easier management of program settings 
 This bash script uses supervisorctl to manage start, stop, status of speed-cam.py and webserver.py. Configured to autostart eg due to interruption of RTSP stream. 
 See conf files in supervisor folder for details. Note: you must run ***./run.sh*** ***install*** to initialize symbolic links to /etc/supervisor/conf.d folder. 
 Stop running any speed-cam and/or websever processes before running ***./run.sh*** ***start*** 
-* [***webserver.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
+* [***speed-web.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
 Allows viewing images and/or data from a web browser (see config.py for webserver settings)   
 * [***rclone***](https://github.com/pageauc/speed-camera/wiki/Manage-rclone-Remote-Storage-File-Transfer)
 Manage settings and setup for optional remote file sync to a remote storage service like google drive, DropBox and many others.   
-* [***watch-app.sh***](https://github.com/pageauc/speed-camera/wiki/watch-app.sh-Remote-Manage-Config)
-for administration of settings from a remote storage service. Plus application monitoring.  
 * [***sql-make-graph-count-totals.py***](https://github.com/pageauc/speed-camera/wiki/How-to-Generate-Speed-Camera-Graphs#sql-make-graph-count-totalspy) Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs folder.
 Graphs display counts by hour, day or month for specfied previous days and speed over. Multiple reports can be managed from
 the config.py ***GRAPH_RUN_LIST*** variable under matplotlib image settings section.       
@@ -106,7 +100,7 @@ See https://github.com/pageauc/opencv3-setup
 For Windows or Unix computer platforms (non RPI or Debian) ensure you have the most
 up-to-date python version. For Download and Install [python](https://www.python.org/downloads) and [Opencv](https://docs.opencv.org/4.x/d5/de5/tutorial_py_setup_in_windows.html)    
 
-The latest python versions includes numpy and recent opencv version that is required to run this code. 
+The latest python3 versions includes numpy and recent opencv version that is required to run this code. 
 You will also need a USB web cam installed and working. 
 To install this program access the GitHub project page at https://github.com/pageauc/speed-camera
 Select the ***green Clone or download*** button. The files will be cloned or zipped
@@ -135,7 +129,7 @@ per [System requirements and Instructions](https://docs.docker.com/desktop/windo
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
 
     cd ~
-    wget https://raw.github.com/pageauc/speed-camera/master/speed-install.sh
+    wget https://raw.github.com/pageauc/speed-camera/master/source/speed-install.sh
     more speed-install.sh       # You can review code if you wish
     chmod +x speed-install.sh
     ./speed-install.sh  # runs install script.
