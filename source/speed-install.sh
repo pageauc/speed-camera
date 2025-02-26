@@ -49,19 +49,19 @@ for fname in "${speedFiles[@]}" ; do
         if [ $? -ne 0 ]; then
             echo "ERROR - $fname wget Download Failed. Possible Cause Internet Problem."
         else
-            wget -O $fname https://raw.github.com/pageauc/speed-camera/master/$fname
+            wget -O $fname https://raw.github.com/pageauc/speed-camera/master/source/$fname
         fi
     fi
 done
 
 # Install supervisor files
-wget -O supervisor/speed-cam.conf --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/speed-cam.conf
-wget -O supervisor/speed-web.conf --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/speed-web.conf
-wget -O supervisor/Readme.md --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/Readme.md
+wget -O supervisor/speed-cam.conf -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/speed-cam.conf
+wget -O supervisor/speed-web.conf -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/speed-web.conf
+wget -O supervisor/Readme.md -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/Readme.md
+wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/webserver.txt
 
 wget -q --show-progress -nc https://raw.github.com/pageauc/pi-timolo2/master/source/user_motion_code.py
 
-wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/webserver.txt
 
 if [ -f config.py ]; then     # check if local file exists.
     wget -O config.py.new -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/config.py
