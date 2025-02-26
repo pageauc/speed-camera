@@ -2,8 +2,8 @@
 ### RPI, Unix and Windows Speed Camera Using python, openCV, RPI camera module, USB Cam or IP Cam
 ## For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features), [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#reference-links).
 
-## Note re Bullseye: 
-speed-cam.py will run using libcamer, picamera2 under Raspberry Pi OS Bullseye, bookworm, as well as usbcam and IP/RTSP cameras. 
+Note re Bullseye: 
+speed-cam.py will run using libcamera, picamera2 under Raspberry Pi OS Bullseye, Bookworm, as well as usbcam and IP/RTSP cameras. 
 For picamera support Run ***sudo raspi-config***, Interface Options, then enable/disable Legacy Camera option and reboot (Bullseye only).
 
 ## RPI Quick curl Install or Upgrade   
