@@ -4,7 +4,7 @@
 
 ***Note re Bullseye***     
 speed-cam.py will run using pi camera with libcamera, picamera2 under Raspberry Pi OS Bullseye, Bookworm,and later. Usbcam and IP/RTSP cameras
-are allso supported. For picamera library support (on Bullseye only) Run ***sudo raspi-config***, Interface Options, then enable/disable Legacy Camera option and reboot.
+ are also supported. For picamera library support (on Bullseye only) Run ***sudo raspi-config***, Interface Options, then enable Legacy Camera option and Reboot.
 
 ## RPI Quick curl Install or Upgrade   
 ***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will **NOT** be performed as part of   
