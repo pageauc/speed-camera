@@ -48,9 +48,8 @@ for the current logged in user (using sed) so user references need not be change
 You can manually nano edit a .conf file Eg. supervisor/speed-cam.conf
 
     ./speed-cam.sh edit
-    # or
+    or
     ./speed-web.sh edit
-
 
 	[program:speed-cam]
 	autostart=false
@@ -77,7 +76,7 @@ Most setting should not need to be changed. The most common would be
 autorestart=false is the default. If there is a problem manually run the appropriate python script
 
     ./speed-cam.sh start
-	# wait a while then try
+	Wait a while then retry
 	./speed-cam.sh status   # in example below camera was already in use
 	-----------------------------------------------
 	./speed-cam.sh supervisorctl status
@@ -85,8 +84,8 @@ autorestart=false is the default. If there is a problem manually run the appropr
 	speed-web                        STOPPED   Not started
 	timolo2-cam                      RUNNING   pid 6725, uptime 2:01:15
 	timolo2-web                      RUNNING   pid 1454, uptime 16:43:46
-	
-	
+
+
 	pi@rpi-arducam:~/speed-camera $ ./speed-cam.py
 	Loading Wait...
 	----------------------------------------------------------------------
@@ -112,7 +111,7 @@ autorestart=false is the default. If there is a problem manually run the appropr
 	  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 477, in _open_camera
 		self.camera.acquire()
 	RuntimeError: Failed to acquire camera: Device or resource busy
-	
+
 In this example timolo2-cam was using the camera
 
 
