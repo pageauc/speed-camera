@@ -43,19 +43,20 @@ function init_status ()
 
   if [ -z "$( pgrep -f speed-web.py )" ]; then
      WEB_1="START"
-     WEB_2="speed-web.py - STOPPED"
+     WEB_2="speed-web - STOPPED"
   else
      speed-web_pid=$( pgrep -f speed-web.py )
      myip=$( ifconfig -a | grep 'inet ' | grep -v 127.0.0 | head -n 1 | tr -s " " | cut -d " " -f 3 )
      myport=$( grep "WEB_SERVER_PORT" config.py | cut -d "=" -f 2 | cut -d "#" -f 1 | awk '{$1=$1};1' )
      WEB_1="STOP"
-     WEB_2="speed-web.py - RUNNING http://$myip:$myport"
+     WEB_2="speed-web - RUNNING http://$myip:$myport"
   fi
 }
 
 #------------------------------------------------------------------------------
 function do_speed_cam ()
 {
+  clear
   if [ -z "$( pgrep -f speed-cam.py )" ]; then
      ./speed-cam.sh start
      if [ -z "$( pgrep -f speed-cam.py )" ]; then
@@ -74,6 +75,7 @@ function do_speed_cam ()
 #------------------------------------------------------------------------------
 function do_webserver ()
 {
+  clear
   if [ -z "$( pgrep -f speed-web.py )" ]; then
      ./speed-web.sh start
      if [ -z "$( pgrep -f speed-web.py )" ]; then
