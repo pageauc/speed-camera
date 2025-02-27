@@ -742,7 +742,7 @@ function do_main_menu ()
   "g VIEW" "View speed-cam.csv File" \
   "h SEARCH" "Images Search Menu (openCV Template Match)" \
   "i UPGRADE" "Program Files from GitHub.com" \
-  "j STATUS" "CPU $temp   Select to Refresh" \
+  "j STATUS" "CPU $temp and supervisorctl status" \
   "k REPORTS" "Run Various sqlite3 Reports" \
   "l HELP" "View Readme.md" \
   "m ABOUT" "Information about this program" \
@@ -769,6 +769,7 @@ function do_main_menu ()
       j\ *) clear
 	        ./speed-cam.sh status
 			do_anykey
+			clear
             do_main_menu ;;
       k\ *) do_report_menu ;;
       l\ *) pandoc -f markdown -t plain  Readme.md | more -d
