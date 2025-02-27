@@ -199,6 +199,8 @@ function do_settings_menu ()
                       --cancel-button Back \
   "a EDIT" "nano $config_file for speed_cam & speed-web" \
   "b VIEW" "config.py for speed_cam & speed-web" \
+  "c CAM " "edit speed-cam.conf for supervisorctl" \
+  "d WEB " "edit speed-web.conf for supervisorctl" \
   "q BACK" "To Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
@@ -210,6 +212,11 @@ function do_settings_menu ()
             do_settings_menu ;;
       b\ *) more -d config.py
             do_anykey
+            do_settings_menu ;;
+      c\ *) ./speed-cam.sh edit
+	        do_anykey
+            do_settings_menu ;;
+      d\ *) ./speed-web.sh edit
             do_settings_menu ;;
       q\ *) do_main_menu ;;
       *) whiptail --msgbox "Programmer error: un recognized option" 0 0 0 ;;
@@ -755,7 +762,8 @@ function do_main_menu ()
     case "$SELECTION" in
       a\ *) do_speed_cam ;;
       b\ *) do_webserver ;;
-      c\ *) do_settings_menu ;;
+      c\ *) do_settings_menu
+	        do_anykey ;;
       d\ *) do_plugins_menu ;;
       e\ *) do_sync_menu
             do_main_menu ;;
