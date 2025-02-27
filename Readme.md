@@ -12,7 +12,7 @@ For picamera support Run ***sudo raspi-config***, Interface Options, then enable
 to ensure your system is up-to-date.     
 
 This install points to the updated speed-camera located in sources folder.  See sources Readme.md for details
-After a while I will remove the necessary files from from https://github.com/pageauc/speed-camera/master/
+After a while I will remove the necessary files from https://github.com/pageauc/speed-camera/master/
 After an upgrade/install ***menubox.sh*** will point to the source folder.
 #### Step 1
 Press GitHub copy icon on right side of code box below.     
