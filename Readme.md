@@ -11,11 +11,14 @@ For picamera support Run ***sudo raspi-config***, Interface Options, then enable
 **speed-install.sh** so it is highly recommended you run these prior to install
 to ensure your system is up-to-date.     
 
+This install points to the updated speed-camera located in sources folder.  See sources Readme.md for details
+After a while I will remove the necessary files from from https://github.com/pageauc/speed-camera/master/
+After an upgrade/install ***menubox.sh*** will point to the source folder.
 #### Step 1
 Press GitHub copy icon on right side of code box below.     
 or With mouse left button highlight curl command in code box below. Right click mouse in **highlighted** area and select Copy.
 
-    curl -L https://raw.github.com/pageauc/speed-camera/master/speed-install.sh | bash
+    curl -L https://raw.github.com/pageauc/speed-camera/master/source/speed-install.sh | bash
 
 #### Step 2
 On RPI putty SSH or terminal session right click, select paste then Enter to download and run script.  
