@@ -767,6 +767,8 @@ function do_main_menu ()
       i\ *) clear
             do_upgrade ;;
       j\ *) clear
+	        ./speed-cam.sh status
+			do_anykey
             do_main_menu ;;
       k\ *) do_report_menu ;;
       l\ *) pandoc -f markdown -t plain  Readme.md | more -d
