@@ -48,12 +48,18 @@ details see [How to Manage Sqlite3 Database](https://github.com/pageauc/speed-ca
   
 * [***menubox.sh***](https://github.com/pageauc/speed-camera/wiki/Admin-and-Settings#manage-settings-using-menuboxsh)
 script is a whiptail menu system to allow easier management of program settings and operation.    
-* [***run.sh***](https://github.com/pageauc/speed-camera/wiki/How-to-use-run.sh)
-This bash script uses supervisorctl to manage start, stop, status of speed-cam.py and webserver.py. Configured to autostart eg due to interruption of RTSP stream. 
-See conf files in supervisor folder for details. Note: you must run ***./run.sh*** ***install*** to initialize symbolic links to /etc/supervisor/conf.d folder. 
-Stop running any speed-cam and/or websever processes before running ***./run.sh*** ***start*** 
+* [***speed-cam.py***](https://github.com/pageauc/speed-camera/wiki/How-to-Run)
+Allows viewing images, video and/or data from a web browser (see config.py for speed-web settings)   
+* [***speed-cam.sh***](https://github.com/pageauc/speed-camera/wiki/How-to-use-run.sh)
+This bash script uses supervisorctl to manage start, stop, status, Etc of speed-cam.py and speed-web.py. Configured to autostart eg due to interruption of RTSP stream. 
+See conf files in supervisor folder for details. Note: you must run ***./speed-cam.sh*** ***install*** to initialize symbolic links to /etc/supervisor/conf.d folder. 
+Stop running any speed-cam and/or websever processes before running ***./speed-cam.sh*** ***start*** 
 * [***speed-web.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
-Allows viewing images and/or data from a web browser (see config.py for webserver settings)   
+Allows viewing images, video and/or data from a web browser (see config.py for speed-web settings)   
+* [***speed-web.sh***](https://github.com/pageauc/speed-camera/wiki/How-to-use-run.sh)
+This bash script uses supervisorctl to manage start, stop, status, Etc of speed-web.py. Configured to restart eg due to interruption 
+See conf files in supervisor folder for details. Note: you must run ***./speed-web.sh*** ***install*** to initialize symbolic links to /etc/supervisor/conf.d folder. 
+Stop running any speed-cam and/or websever processes before running ***./speed-web.sh*** ***start*** 
 * [***rclone***](https://github.com/pageauc/speed-camera/wiki/Manage-rclone-Remote-Storage-File-Transfer)
 Manage settings and setup for optional remote file sync to a remote storage service like google drive, DropBox and many others.   
 * [***sql-make-graph-count-totals.py***](https://github.com/pageauc/speed-camera/wiki/How-to-Generate-Speed-Camera-Graphs#sql-make-graph-count-totalspy) Query sqlite database and Generate one or more matplotlib graph images and save to media/graphs folder.

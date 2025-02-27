@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ver="13.02"
+ver="13.20"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
@@ -34,22 +34,22 @@ function init_status ()
 {
   if [ -z "$( pgrep -f speed-cam.py )" ]; then
     SPEED_1="START"
-    SPEED_2="speed_cam.py in background"
+    SPEED_2="speed_cam - STOPPED"
   else
      speed_cam_pid=$( pgrep -f speed-cam.py )
      SPEED_1="STOP"
-     SPEED_2="speed_cam.py - PID is $speed_cam_pid"
+     SPEED_2="speed_cam - RUNNING PID: $speed_cam_pid"
   fi
 
-  if [ -z "$( pgrep -f webserver.py )" ]; then
+  if [ -z "$( pgrep -f speed-web.py )" ]; then
      WEB_1="START"
-     WEB_2="webserver.py in background"
+     WEB_2="speed-web.py - STOPPED"
   else
-     webserver_pid=$( pgrep -f webserver.py )
+     speed-web_pid=$( pgrep -f speed-web.py )
      myip=$( ifconfig -a | grep 'inet ' | grep -v 127.0.0 | head -n 1 | tr -s " " | cut -d " " -f 3 )
      myport=$( grep "WEB_SERVER_PORT" config.py | cut -d "=" -f 2 | cut -d "#" -f 1 | awk '{$1=$1};1' )
      WEB_1="STOP"
-     WEB_2="webserver.py - PID is $webserver_pid http://$myip:$myport"
+     WEB_2="speed-web.py - RUNNING http://$myip:$myport"
   fi
 }
 
@@ -74,20 +74,20 @@ function do_speed_cam ()
 #------------------------------------------------------------------------------
 function do_webserver ()
 {
-  if [ -z "$( pgrep -f webserver.py )" ]; then
-     ./webserver.sh start
-     if [ -z "$( pgrep -f webserver.py )" ]; then
-        whiptail --msgbox "Failed to Start webserver.py   Please Investigate Problem." 20 70
+  if [ -z "$( pgrep -f speed-web.py )" ]; then
+     ./speed-web.sh start
+     if [ -z "$( pgrep -f speed-web.py )" ]; then
+        whiptail --msgbox "Failed to Start speed-web.py   Please Investigate Problem." 20 70
      else
        myip=$( ifconfig -a | grep 'inet ' | grep -v 127.0.0 | head -n 1 | tr -s " " | cut -d " " -f 3 )
        myport=$( grep "WEB_SERVER_PORT" config.py | cut -d "=" -f 2 | cut -d "#" -f 1 | awk '{$1=$1};1' )
        whiptail --msgbox --title "Webserver Access" "Access speed-cam web server from another network computer web browser using url http://$myip:$myport" 15 50
      fi
   else
-     webserver_pid=$( pgrep -f webserver.py )
-     sudo ./webserver.sh stop
-     if [ ! -z "$( pgrep -f webserver.py )" ]; then
-        whiptail --msgbox "Failed to Stop webserver.py   Please Investigate Problem." 20 70
+     speed-web_pid=$( pgrep -f speed-web.py )
+     sudo ./speed-web.sh stop
+     if [ ! -z "$( pgrep -f speed-web.py )" ]; then
+        whiptail --msgbox "Failed to Stop speed-web.py   Please Investigate Problem." 20 70
      fi
   fi
   do_main_menu
@@ -138,7 +138,7 @@ function do_makehtml_about ()
 
   makehtml.py will combine speed-cam.csv data with the
   associated images into a formatted html page.  You
-  can view pages from the webserver using a web browser
+  can view pages from the speed-web using a web browser
   and can easily navigate up and down the pages.
 
   You must have several speed images in media/images
@@ -147,7 +147,7 @@ function do_makehtml_about ()
   To View html files
   1. Run makehtml.py from menu pick or console
      This will create html files in media/html folder
-  2. Start webserver.sh and note ip and port
+  2. Start speed-web.sh and note ip and port
   3. From a web browser connect to speed-cam web server
      using RPI IP:PORT url
   4. View html files in media/html folder
@@ -195,8 +195,8 @@ function do_settings_menu ()
                       --menu "Arrow/Enter Selects or Tab Key" 0 0 0 \
                       --ok-button Select \
                       --cancel-button Back \
-  "a EDIT" "nano $config_file for speed_cam & webserver" \
-  "b VIEW" "config.py for speed_cam & webserver" \
+  "a EDIT" "nano $config_file for speed_cam & speed-web" \
+  "b VIEW" "config.py for speed_cam & speed-web" \
   "q BACK" "To Main Menu" 3>&1 1>&2 2>&3 )
 
   RET=$?
@@ -555,8 +555,8 @@ function do_report_menu ()
   if [ ! -f ./sql_speed_gt.py ]; then
     echo "Downloading sql_speed_gt.py"
     wget -O sql_speed_gt.py https://raw.github.com/pageauc/speed-camera/master/sql_speed_gt.py
-    chmod +x sql_speed_gt.py 
-    sudo apt-get install python-gnuplot    
+    chmod +x sql_speed_gt.py
+    sudo apt-get install python-gnuplot
   fi
 
   SET_SEL=$( whiptail --title "sqlite3 Report Menu" \
@@ -598,12 +598,12 @@ function do_report_menu ()
             do_report_menu ;;
       c\ *) clear
             echo "graphing 5 day hourly plot for aver speeds >= 17"
-            ./sql-make-graph-speed-ave.py -s 17 -d 5 -t hour           
+            ./sql-make-graph-speed-ave.py -s 17 -d 5 -t hour
             do_anykey
             do_report_menu ;;
       d\ *) clear
             echo "graphing 5 day hourly counts plot for speeds >= 17"
-            ./sql-make-graph-count-totals.py -s 17 -d 5 -t hour           
+            ./sql-make-graph-count-totals.py -s 17 -d 5 -t hour
             do_anykey
             do_report_menu ;;
       e\ *) clear
@@ -641,7 +641,7 @@ function do_report_menu ()
                       ;;
                 esac
             esac
-            do_report_menu ;;            
+            do_report_menu ;;
       g\ *) do_report_about
             do_report_menu ;;
       q\ *) clear
@@ -668,9 +668,9 @@ Note: sql_speed_gt.py uses gnuplot and has been superceded by
 
        sql-make-graph-count-totals.py and
        sql-make-graph-speed-ave.py
-       
-    Run these with the -h parameter to view help.  
-       
+
+    Run these with the -h parameter to view help.
+
 
 \
 " 0 0 0
@@ -683,7 +683,7 @@ function do_upgrade()
                --yesno "Upgrade speed-cam Files from GitHub.\n Some config Files Will be Updated" 0 0 0 \
             s   --yes-button "upgrade" \
                --no-button "Cancel" ); then
-    curlcmd=('/usr/bin/curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/speed-install.sh | bash')
+    curlcmd=('/usr/bin/curl -L https://raw.github.com/pageauc/rpi-speed-camera/master/source/speed-install.sh | bash')
     eval $curlcmd
     do_anykey
   fi
@@ -707,7 +707,7 @@ function do_about()
     in ABOUT menu pick
  6. You can also create html files that combine csv and image data
     into formatted html pages. Output will be put in media/html folder
-    Run makehtml.py. check that webserver is running.  View html files
+    Run makehtml.py. check that speed-web is running.  View html files
     on a network pc web browser by accessing rpi IP address and port.
     eg 192.168.1.100:8080 (replace ip with your rpi ip)
 
@@ -733,7 +733,7 @@ function do_main_menu ()
                        --ok-button Select \
   "a $SPEED_1" "$SPEED_2" \
   "b $WEB_1" "$WEB_2" \
-  "c SETTINGS" "Change speed_cam and webserver settings" \
+  "c SETTINGS" "Change speed_cam and speed-web settings" \
   "d PLUGINS" "Change plugins Settings" \
   "e RCLONE" "Manage File Transfers to Remote Storage" \
   "f HTML" "Make html pages from speed-cam.csv & jpgs" \
