@@ -56,7 +56,7 @@ See conf files in supervisor folder for details. Note: you must run ***./speed-c
 Stop running any speed-cam and/or websever processes before running ***./speed-cam.sh*** ***start*** 
 * [***speed-web.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
 Allows viewing images, video and/or data from a web browser (see config.py for speed-web settings)   
-* [***speed-web.sh***](https://github.com/pageauc/speed-camera/master/source/supervisorReadme.md)
+* [***speed-web.sh***](https://github.com/pageauc/speed-camera/master/source/supervisor/Readme.md)
 This bash script uses supervisorctl to manage start, stop, status, Etc of speed-web.py. Configured to restart eg due to interruption 
 See conf files in supervisor folder for details. Note: you must run ***./speed-web.sh*** ***install*** to initialize symbolic links to /etc/supervisor/conf.d folder. 
 Stop running any speed-cam and/or websever processes before running ***./speed-web.sh*** ***start*** 
