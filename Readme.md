@@ -1,5 +1,5 @@
 ## SPEED CAMERA - Object Motion Tracker [![Mentioned in Awesome <INSERT LIST NAME>](https://awesome.re/mentioned-badge.svg)](https://github.com/thibmaek/awesome-raspberry-pi)
-### RPI, Unix and Windows Speed Camera Using python3, openCV, RPI camera module, USB Cam or IP/RTSP Cam
+#### Raspberry Pi, Unix Disto's and Windows Speed Camera Using python3, openCV, RPI camera module, USB Cam or IP/RTSP Cam
 ### For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features), [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#reference-links).
 
 ***Note re Bullseye***     
