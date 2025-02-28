@@ -1,12 +1,12 @@
 ## SPEED CAMERA - Object Motion Tracker [![Mentioned in Awesome <INSERT LIST NAME>](https://awesome.re/mentioned-badge.svg)](https://github.com/thibmaek/awesome-raspberry-pi)
-### RPI, Unix and Windows Speed Camera Using python, openCV, RPI camera module, USB Cam or IP Cam
+### RPI, Unix and Windows Speed Camera Using python3, openCV, RPI camera module, USB Cam or IP/RTSP Cam
 ### For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features), [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#reference-links).
 
 ***Note re Bullseye***     
 speed-cam.py will run using pi camera with libcamera, picamera2 under Raspberry Pi OS Bullseye, Bookworm,and later. Usbcam and IP/RTSP cameras
  are also supported. For picamera library support (on Bullseye only) Run ***sudo raspi-config***, Interface Options, then enable Legacy Camera option and Reboot.
 
-## RPI Quick curl Install or Upgrade   
+## RPI Quick Install or Upgrade   
 ***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will **NOT** be performed as part of   
 **speed-install.sh** so it is highly recommended you run these prior to install
 to ensure your system is up-to-date.     
