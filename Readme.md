@@ -29,14 +29,14 @@ This project can run on a Raspberry Pi, Windows, Unix Distro cpmputer.
 It is written in python3 and uses openCV to detect and track the x,y coordinates of the 
 largest moving object in the camera view above a minimum pixel area and calculates speed based on calibration settings.
 
-User variables are stored in the [***config.py***](https://github.com/pageauc/speed-camera/blob/master/config.py) file.
+User variables are stored in the [***config.py***](https://github.com/pageauc/speed-camera/blob/master/source/config.py) file.
 Motion detection is restricted between ***MO_CROP_Y_UPPER***, ***MO_CROP_Y_LOWER***, ***MO_CROP_X_LEFT***, ***MO_CROP_X_RIGHT*** variables  (road or area of interest).
 ***MO_CROP_AUTO_ON*** = ***True*** overrides manual settings and will Auto calculate a rough crop area based on image size.
 Motion Tracking is controlled by the ***MO_TRACK_EVENT_COUNT*** variable in config.py.  This sets the number of track events and 
 the track length in pixels.  This may need to be tuned for camera view, cpu speed, etc. 
 Speed is calculated based on ***CAL_OBJ_PX_*** and ***CAL_OBJ_MM_*** variables for L2R and R2L motion direction. A video stream frame image will be
 captured and saved in ***media/images*** dated subfolders (optional) per variable ***IM_SUBDIR_MAX_FILES*** = ***2000*** 
-For variable settings details see [config.py file](https://github.com/pageauc/speed-camera/blob/master/config.py). 
+For variable settings details see [config.py file](https://github.com/pageauc/speed-camera/blob/master/source/config.py). 
 
 If ***LOG_DATA_TO_CSV*** = ***True*** then a ***speed-cam.csv*** file will be created/updated with event data stored in
 CSV (Comma Separated Values) format. This can be imported into a spreadsheet, database, Etc program for further processing.
@@ -50,7 +50,7 @@ details see [How to Manage Sqlite3 Database](https://github.com/pageauc/speed-ca
 script is a whiptail menu system to allow easier management of program settings and operation.    
 * [***speed-cam.py***](https://github.com/pageauc/speed-camera/wiki/How-to-Run)
 Allows viewing images, video and/or data from a web browser (see config.py for speed-web settings)   
-* [***speed-cam.sh***](https://raw.github.com/pageauc/speed-camera/master/source/supervisor/Readme.md)
+* [***speed-cam.sh***](https://raw.github.com/pageauc/speed-camera/master/supervisor/Readme.md)
 This bash script uses supervisorctl to manage start, stop, status, Etc of speed-cam.py and speed-web.py. Configured to autostart eg due to interruption of RTSP stream. 
 See conf files in supervisor folder for details. Note: you must run ***./speed-cam.sh*** ***install*** to initialize symbolic links to /etc/supervisor/conf.d folder. 
 Stop running any speed-cam and/or websever processes before running ***./speed-cam.sh*** ***start*** 
