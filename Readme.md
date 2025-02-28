@@ -163,19 +163,19 @@ require monitoring the verbose log messages in order to fine tune.
     ./menubox.sh
 
 Admin speed-cam Easier using menubox.sh (Once calibrated and/or testing complete)  
-![menubox main menu](https://github.com/pageauc/speed-camera/blob/master/menubox.png)     
+![menubox main menu](https://github.com/pageauc/speed-camera/blob/master/assets/menubox.png)     
 
 View speed-cam data and trends from web browser per sample screen shots. These can be generated 
 from Menubox.sh menu pick or by running scripts from console or via crontab schedule.
 
-![Speed Camera GRAPHS Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_graphs.png)  
-![Speed Camera REPORTS Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_reports.png)   
-![Speed Camera HTML Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_html.png)    
+![Speed Camera GRAPHS Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/assets/speed_web_graphs.png)  
+![Speed Camera REPORTS Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/assets/speed_web_reports.png)   
+![Speed Camera HTML Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/assets/speed_web_html.png)    
 
 You can view recent or historical images directly from the speed web browser page.  These are dynamically created
 and show up-to-date images.  Press the web page refresh button to update display 
-![Speed Camera RECENT Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_recent.png)   
-![Speed Camera IMAGES Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/speed_web_images.png)   
+![Speed Camera RECENT Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/assets/speed_web_recent.png)   
+![Speed Camera IMAGES Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/assets/speed_web_images.png)   
 
 ## Credits  
 Some of this code is based on a YouTube tutorial by
