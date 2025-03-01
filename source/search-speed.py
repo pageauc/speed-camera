@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-ver = "ver 5.60"  # Original issue on 26-Jul-2017 by Claude Pageau
+ver = "ver 13.2"  # Original issue on 26-Jul-2017 by Claude Pageau
 
 """
 speed-search.py written by Claude Pageau pageauc@gmail.com
@@ -73,12 +73,12 @@ from search_config import *  # Read Configuration variables from search_config.p
 from config import *
 
 # Initialize size of rectangle to crop for search matches
-sw = 100 * image_bigger  # default search rectangle Width
-sh = 45 * image_bigger  # default search rectangle height
-crop_x_L = (x_left + 10) * image_bigger
-crop_x_R = (x_right - 10) * image_bigger
-crop_y_U = (y_upper + 10) * image_bigger
-crop_y_D = (y_lower - 10) * image_bigger
+sw = 100 * IM_BIGGER  # default search rectangle Width
+sh = 45 * IM_BIGGER  # default search rectangle height
+crop_x_L = (MO_CROP_X_LEFT + 10) * IM_BIGGER
+crop_x_R = (MO_CROP_X_RIGHT - 10) * IM_BIGGER
+crop_y_U = (MO_CROP_Y_UPPER + 10) * IM_BIGGER
+crop_y_D = (MO_CROP_Y_LOWER - 10) * IM_BIGGER
 blank = "                                                              "
 
 #-----------------------------------------------------------------------------------------------
