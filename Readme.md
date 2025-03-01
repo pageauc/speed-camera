@@ -162,7 +162,8 @@ require monitoring the verbose log messages in order to fine tune.
     cd ~/speed-camera
     ./menubox.sh
 
-Admin speed-cam Easier using menubox.sh (Once calibrated and/or testing complete)  
+Admin pi-speed-camera Easier using menubox.sh (Once calibrated and/or testing complete) 
+ 
 ![menubox main menu](https://github.com/pageauc/speed-camera/blob/master/assets/menubox.png)     
 
 View speed-cam data and trends from web browser per sample screen shots. These can be generated 
