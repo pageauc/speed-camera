@@ -23,7 +23,7 @@ Use Ctrl-c to Exit python scripts.
 	
     ./speed-web.py
 	
-If they run OK, you can start them as background proceees directly per below or use menubox.sh
+If they run OK, you can start them as a background process directly per below or use menubox.sh
 
      cd ~/speed-camera
     ./speed-cam.sh start
