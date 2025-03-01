@@ -1,12 +1,42 @@
 ## speed-cam.sh and speed-web.sh
 ### Introduction
-The bash scripts manage the speed-camera supervisorctl background service for speed-cam.py and speed-web.py
-located in the supervisor folder.
-The scripts can start the .py scripts as background tasks under the specified user= in the conf file settings.
+The bash scripts manage the speed-camera supervisorctl background service for speed-cam.py and speed-web.py.
+The scripts can start, stop Etc. the .py scripts as background tasks under the specified ***user=*** per the conf file settings located in
+the supervisor folder.
 These .conf files will by default not autostart (run on boot) or perform a restart if there is a program issue.
 Eg problem with camera.
 
-### How to Run
+### Install
+
+The shell scripts ***install*** option creates a symlink at ***/etc/supervisor/conf.d*** folder back
+to the speed-camera/supervisor folder .conf files.  Use ./speed-cam.sh and/or speed-web.sh to manage install option.
+
+    cd ~/speed-camera
+    ./speed-cam.sh install
+    ./speed-web.sh install
+	
+Make sure you have test run speed-cam.py and speed-web.py to make sure they run correctly.
+Use Ctrl-c to Exit python scripts.
+Eg
+
+    cd ~/speed-camera
+    ./speed-cam.py
+	
+    ./speed-web.py
+	
+If they run OK, you can start them as background proceees directly per below or use menubox.sh
+
+     cd ~/speed-camera
+    ./speed-cam.sh start
+    ./speed-web.sh start
+	./speed-cam.sh status	
+	-----------------------------------------------
+	./speed-cam.sh supervisorctl status
+    speed-cam                      RUNNING   pid 21464, uptime 3:45:51
+    speed-web                      RUNNING   pid 21452, uptime 3:46:05
+    Done	
+
+### Run
 Access help for speed-cam.sh and or speed-web.sh
 
     cd ~/speed-camera
@@ -39,35 +69,6 @@ example .
     speed-web                      RUNNING   pid 21452, uptime 3:46:05
     Done
 
-### Install and Run service
-
-The shell scripts ***install*** option creates a symlink at ***/etc/supervisor/conf.d*** folder back
-to the speed-camera/supervisor folder .conf files.  Use ./speed-cam.sh and/or speed-web.sh to manage install option.
-
-    cd ~/speed-camera
-    ./speed-cam.sh install
-    ./speed-web.sh install
-	
-Make sure you have test run speed-cam.py and speed-web.py to make sure they run correctly.
-Use Ctrl-c to Exit python scripts.
-Eg
-
-    cd ~/speed-camera
-    ./speed-cam.py
-	
-    ./speed-web.py
-	
-If they run OK, you can start them as background proceees directly per below or use menubox.sh
-
-     cd ~/speed-camera
-    ./speed-cam.sh start
-    ./speed-web.sh start
-	./speed-cam.sh status	
-	-----------------------------------------------
-	./speed-cam.sh supervisorctl status
-    speed-cam                      RUNNING   pid 21464, uptime 3:45:51
-    speed-web                      RUNNING   pid 21452, uptime 3:46:05
-    Done	
 	
 ### Edit Settings 	
 ***Note:*** The supervisor folder .conf files default to user=pi. 
