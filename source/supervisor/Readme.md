@@ -94,7 +94,8 @@ To edit a .conf file Eg. supervisor/speed-cam.conf
 
 Ctrl-x y to save changes and exit nano
 
-The script will then run upervisorctl to reread the .conf file for changes
+The script will then run supervisorctl to reread the .conf file for changes and update.  
+Note process will be stopped.
 
 Most settings should not need to be changed. The most common would be
 
