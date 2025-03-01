@@ -20,7 +20,7 @@ If config.py variable copy_results_on = True then copies of the matching image f
 will be put in a subfolder named the same as the search image filename minus the extension.
 The search file will be copied to the subfolder as well.
 If copy_results = False then no copying will take place.  This can be used for testing
-various config.py search_value settings.  higher will get more results lower more results
+various config.py search_value settings.  higher will get fewer results, lower more results
 This setting is used to determine how close the original image matches other speed images.
 Note Only the cropped rectangle area is used for this search.
 
