@@ -122,18 +122,18 @@ autorestart=false is the default. If there is a problem manually run the appropr
 	speed-cam.py 13.2  written by Claude Pageau
 	Motion Track Largest Moving Object and Calculate Speed per Calibration.
 	----------------------------------------------------------------------
-	2025-02-27 09:55:33 INFO     strmcam    Imported Required Camera Stream Settings from config.py
-	2025-02-27 09:55:33 INFO     is_pi_legacy_cam Check for Legacy Pi Camera Module with command - vcgencmd get_camera
-	2025-02-27 09:55:33 WARNING  is_pi_legacy_cam Problem Finding Pi Legacy Camera supported=0 detected=0, libcamera interfaces=0
-	2025-02-27 09:55:33 WARNING  is_pi_legacy_cam Check Camera Connections and Legacy Pi Cam is Enabled per command sudo raspi-config
-	[17:00:27.510173599] [7898]  INFO Camera camera_manager.cpp:327 libcamera v0.4.0+53-29156679
-	[17:00:27.584252061] [7905] ERROR V4L2 v4l2_device.cpp:390 'imx708': Unable to set controls: Device or resource busy
-	[17:00:27.656564855] [7905]  WARN RPiSdn sdn.cpp:40 Using legacy SDN tuning - please consider moving SDN inside rpi.denoise
-	[17:00:27.666880321] [7905]  INFO RPI vc4.cpp:447 Registered camera /base/soc/i2c0mux/i2c@1/imx708@1a to Unicam device /dev/media3 and ISP device /dev/media0
-	[17:00:27.667163080] [7905]  INFO RPI pipeline_base.cpp:1121 Using configuration file '/usr/share/libcamera/pipeline/rpi/vc4/rpi_apps.yaml'
-	2025-02-27 09:55:35 INFO     _initialize_camera Initialization successful.
-	[17:00:27.677356880] [7898]  INFO Camera camera.cpp:1008 Pipeline handler in use by another process
-	2025-02-27 09:55:35 ERROR    __init__   Camera __init__ sequence did not complete.
+	2025-03-01 04:05:18 INFO     strmcam    Imported Required Camera Stream Settings from config.py
+	2025-03-01 04:05:18 INFO     is_pi_legacy_cam Check for Legacy Pi Camera Module with command - vcgencmd get_camera
+	2025-03-01 04:05:18 WARNING  is_pi_legacy_cam Problem Finding Pi Legacy Camera supported=0 detected=0, libcamera interfaces=0
+	2025-03-01 04:05:18 WARNING  is_pi_legacy_cam Check Camera Connections and Legacy Pi Cam is Enabled per command sudo raspi-config
+	[59:10:13.306679480] [26112]  INFO Camera camera_manager.cpp:327 libcamera v0.4.0+53-29156679
+	[59:10:13.374879946] [26117] ERROR V4L2 v4l2_device.cpp:390 'imx708': Unable to set controls: Device or resource busy
+	[59:10:13.447371690] [26117]  WARN RPiSdn sdn.cpp:40 Using legacy SDN tuning - please consider moving SDN inside rpi.denoise
+	[59:10:13.457334918] [26117]  INFO RPI vc4.cpp:447 Registered camera /base/soc/i2c0mux/i2c@1/imx708@1a to Unicam device /dev/media3 and ISP device /dev/media0
+	[59:10:13.457599708] [26117]  INFO RPI pipeline_base.cpp:1121 Using configuration file '/usr/share/libcamera/pipeline/rpi/vc4/rpi_apps.yaml'
+	2025-03-01 04:05:21 INFO     _initialize_camera Initialization successful.
+	[59:10:13.466883772] [26112]  INFO Camera camera.cpp:1008 Pipeline handler in use by another process
+	2025-03-01 04:05:21 ERROR    __init__   Camera __init__ sequence did not complete.
 	WARN : Camera Error. Retrying 3
 	Traceback (most recent call last):
 	  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 269, in __init__
@@ -142,7 +142,8 @@ autorestart=false is the default. If there is a problem manually run the appropr
 		self.camera.acquire()
 	RuntimeError: Failed to acquire camera: Device or resource busy
 
-In this example timolo2-cam was using the camera
+
+In example above timolo2-cam was using the camera
 
 
 
