@@ -80,10 +80,10 @@ To edit a .conf file Eg. supervisor/speed-cam.conf
     ./speed-cam.sh edit
 
 	[program:speed-cam]
+	process_name=speed-cam
 	autostart=false
 	autorestart=false
 	startsecs=5
-	process_name=speed-cam
 	user=pi
 	command=python3 speed-cam.py
 	directory=/home/pi/speed-camera/
