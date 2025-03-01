@@ -17,7 +17,6 @@ to the speed-camera/supervisor folder .conf files.  Use ./speed-cam.sh and/or sp
 	
 Make sure you have test run speed-cam.py and speed-web.py to make sure they run correctly.
 Use Ctrl-c to Exit python scripts.
-Eg
 
     cd ~/speed-camera
     ./speed-cam.py
@@ -29,6 +28,7 @@ If they run OK, you can start them as background proceees directly per below or 
      cd ~/speed-camera
     ./speed-cam.sh start
     ./speed-web.sh start
+	
 	./speed-cam.sh status	
 	-----------------------------------------------
 	./speed-cam.sh supervisorctl status
@@ -41,11 +41,9 @@ Access help for speed-cam.sh and or speed-web.sh
 
     cd ~/speed-camera
     ./speed-cam.sh help
-    # or
-    ./speed-web.sh help
 
-example .
-./speed-cam.sh help
+    -----------------------------------------------
+    ./speed-cam.sh supervisorctl help
 
     Usage: ./speed-cam.sh [Option]
 
@@ -75,11 +73,11 @@ example .
 The .sh scripts will ***auto modify the appropriate .conf file***
 for the current logged in user (using sed) so user references need not be changed.
 
-You can manually nano edit a .conf file Eg. supervisor/speed-cam.conf
+To edit a .conf file Eg. supervisor/speed-cam.conf
 
-    ./speed-cam.sh edit
-    or
     ./speed-web.sh edit
+    or
+    ./speed-cam.sh edit
 
 	[program:speed-cam]
 	autostart=false
