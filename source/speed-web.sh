@@ -86,7 +86,7 @@ elif [ "$1" = "uninstall" ]; then
     sudo supervisorctl update
 
 elif [ "$1" = "upgrade" ]; then
-    curl -L https://raw.github.com/pageauc/pi-timolo2/master/source/timolo2-install.sh | bash
+    curl -L https://raw.github.com/pageauc/speed-camera/master/source/speed-install.sh | bash
     exit 0
 else
    echo "
