@@ -151,6 +151,8 @@ if "$rclone_install" == true ; then
     rm rclone.zip
     rm -r rclone-tmp
     echo "INFO  : /usr/bin/rclone Install Complete"
+else
+    echo "INFO  : /usr/bin/rclone is Up-To-Date"
 fi
 
 echo "$STATUS Make required Files Executable"
