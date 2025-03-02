@@ -198,14 +198,26 @@ $STATUS Complete
 
    cd ~/speed-camera
    ./speed-cam.py
+   
+    Calibrate speed camera per wiki instructions.  After Calibration is complete
+    nano config.py and update CAL_OBJ_ variables and CALIBRATE_ON = False
 
-Calibrate speed camera per wiki instructions.  After Calibration is complete
-set config.py variable calibrate = False
+5 - To run speed-cam.py and speed-web.py as background tasks
+    You will need to create symlinks to enable supervisorctl operation per below.
+	This will allow proper operation of menubox.ah
 
-Run from Admin menu per
+    cd ~/speed-camera
+    ./speed-cam.sh install
+    ./speed-web.sh install
 
-   ./menubox.sh
+6 - To Test Run speed execute the following commands in RPI SSH
+    or terminal session. 
 
+    ./speed-cam.py
+
+7 - To manage speed-camera, Run menubox.sh per commands below
+
+    ./menubox.sh
 
 -----------------------------------------------
 For Detailed Instructions See https://github.com/pageauc/speed-camera/wiki
