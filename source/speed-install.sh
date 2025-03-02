@@ -61,7 +61,7 @@ wget -O supervisor/speed-web.conf -q --show-progress https://raw.github.com/page
 wget -O supervisor/Readme.md -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/Readme.md
 wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/webserver.txt
 
-wget -q --show-progress -nc https://raw.github.com/pageauc/pi-timolo2/master/source/user_motion_code.py
+wget -q --show-progress -nc https://raw.github.com/pageauc/speed-camera/master/source/user_motion_code.py
 
 
 if [ -f config.py ]; then     # check if local file exists.
@@ -76,7 +76,7 @@ if [ ! -f rclone-security-sync-recent.sh ] ; then
 fi
 
 # Install plugins if not already installed.  You must delete a plugin file to force reinstall.
-echo "INFO  : $STATUS Check/Install pi-timolo/plugins    Wait ..."
+echo "INFO  : $STATUS Check/Install speed-camera/plugins    Wait ..."
 PLUGINS_DIR='plugins'  # Default folder install location
 # List of plugin Files to Check
 pluginFiles=("__init__.py" "picam240.py" "webcam240.py" "picam480.py" "webcam480.py" "rtsp352.py" \
