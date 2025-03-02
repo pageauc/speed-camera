@@ -130,6 +130,8 @@ if [ -f /usr/bin/rclone ]; then
     if [ "$rclone_ins_ver" == "$rclone_cur_ver" ]; then
         rclone_install=false
     fi
+else
+    echo "INFO  : /usr/bin/rclone is Up-To-Date"
 fi
 
 if "$rclone_install" == true ; then
