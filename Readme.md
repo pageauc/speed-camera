@@ -25,7 +25,7 @@ See [Windows 10/11 or Apple Mac Docker Install Quick Start](https://github.com/p
 or [Windows or Unix Distro Installs without Docker](https://github.com/pageauc/speed-camera#windows-or-non-rpi-unix-installs)
 
 ### Program Description   
-This project can run on a Raspberry Pi, Windows, Unix Distro cpmputer.
+This project can run on a Raspberry Pi, Windows, Unix Distro computer.
 It is written in python3 and uses openCV to detect and track the x,y coordinates of the 
 largest moving object in the camera view above a minimum pixel area and calculates speed based on calibration settings.
 
