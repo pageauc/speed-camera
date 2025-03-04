@@ -1,12 +1,12 @@
 ## SPEED CAMERA - Object Motion Tracker [![Mentioned in Awesome <INSERT LIST NAME>](https://awesome.re/mentioned-badge.svg)](https://github.com/thibmaek/awesome-raspberry-pi)
 #### Raspberry Pi, Unix Disto's and Windows Speed Camera Using python3, openCV, RPI camera module, USB Cam or IP/RTSP Cam
-### For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features), [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#reference-links).
+#### For Details See [Program Features](https://github.com/pageauc/speed-camera/wiki/Program-Description#program-features), [Wiki Instructions](https://github.com/pageauc/speed-camera/wiki) and [YouTube Videos](https://github.com/pageauc/speed-camera#reference-links).
 
 ***Note re Bullseye***     
 speed-cam.py will run using pi camera with libcamera, picamera2 under Raspberry Pi OS Bullseye, Bookworm,and later. Usbcam and IP/RTSP cameras
  are also supported. For picamera library support (on Bullseye only) Run ***sudo raspi-config***, Interface Options, then enable Legacy Camera option and Reboot.
 
-## RPI Quick Install or Upgrade   
+### RPI Quick Install or Upgrade   
 ***IMPORTANT*** - A raspbian **sudo apt-get update** and **sudo apt-get upgrade** will **NOT** be performed as part of   
 **speed-install.sh** so it is highly recommended you run these prior to install
 to ensure your system is up-to-date.     
@@ -20,11 +20,11 @@ Press GitHub copy icon on right side of code box below.  Copied! will be display
 On RPI putty SSH or terminal session right click, select paste then Enter to Download and Run **speed-install.sh** script.  
 
 
-## Mac or Windows Systems
+### Mac or Windows Systems
 See [Windows 10/11 or Apple Mac Docker Install Quick Start](https://github.com/pageauc/speed-camera#docker-install-quick-start)    
 or [Windows or Unix Distro Installs without Docker](https://github.com/pageauc/speed-camera#windows-or-non-rpi-unix-installs)
 
-## Program Description   
+### Program Description   
 This project can run on a Raspberry Pi, Windows, Unix Distro cpmputer.
 It is written in python3 and uses openCV to detect and track the x,y coordinates of the 
 largest moving object in the camera view above a minimum pixel area and calculates speed based on calibration settings.
@@ -44,7 +44,7 @@ Release 8.9 adds a **sqlite3** database to store speed data. Default is ***data/
 Database setting can be managed from config.py.  Database is automatically created from config.py settings. For more
 details see [How to Manage Sqlite3 Database](https://github.com/pageauc/speed-camera/wiki/How-to-Manage-Sqlite3-Database)
 
-## Admin, Reports, Graphs and Utilities scripts
+### Admin, Reports, Graphs and Utilities scripts
   
 * [***menubox.sh***](https://github.com/pageauc/speed-camera/wiki/Admin-and-Settings#manage-settings-using-menuboxsh)
 script is a whiptail menu system to allow easier management of program settings and operation.    
@@ -79,7 +79,7 @@ This is a demo that processes existing speed camera images with a front or back 
 License plate reader. Output is saved to media/alpr folder. For installation, Settings and Run details see
 [ALPR Wiki Documentaion](https://github.com/pageauc/speed-camera/wiki/alpr-speed.py---Process-speed-images-with-OPENALPR-Automatic-License-Plate-Reader)       
 
-## Reference Links
+### Reference Links
 * YouTube Tutorial Video https://www.youtube.com/watch?v=n2WT3Qb0SIU
 * YouTube Speed Lapse Video https://youtu.be/-xdB_x_CbC8
 * YouTube Speed Camera Video https://youtu.be/eRi50BbJUro
@@ -89,7 +89,7 @@ License plate reader. Output is saved to media/alpr folder. For installation, Se
 * YouTube Channel https://www.youtube.com/user/pageaucp 
 * Speed Camera GitHub Repo https://github.com/pageauc/speed-camera      
 
-## Requirements
+### Requirements
 [***Raspberry Pi computer***](https://www.raspberrypi.org/documentation/setup/) and a [***RPI camera module installed***](https://www.raspberrypi.org/documentation/usage/camera/)
 or USB Camera plugged in. Make sure hardware is tested and works. Most [RPI models](https://www.raspberrypi.org/products/) will work OK. 
 A quad core RPI will greatly improve performance due to threading. A recent version of 
@@ -102,7 +102,7 @@ For Details See [***Wiki details***](https://github.com/pageauc/speed-camera/wik
 It is recommended you upgrade to OpenCV version 3.x.x  For Easy compile of opencv 3.4.2 from source 
 See https://github.com/pageauc/opencv3-setup
 
-## Windows or Non RPI Unix Installs
+### Windows or Non RPI Unix Installs
 For Windows or Unix computer platforms (non RPI or Debian) ensure you have the most
 up-to-date python version. For Download and Install [python](https://www.python.org/downloads) and [Opencv](https://docs.opencv.org/4.x/d5/de5/tutorial_py_setup_in_windows.html)    
 
@@ -115,7 +115,7 @@ or command prompt terminal window. Note bash .sh shell scripts will not work wit
 special support for bash is installed for windows Eg http://win-bash.sourceforge.net/  http://www.cygwin.com/
 ***Note:*** I have Not tested these.   
 
-## Docker Install Quick Start
+### Docker Install Quick Start
 speed camera supports a docker installation on    
 Apple Macintosh per [System requirements and Instructions](https://docs.docker.com/desktop/mac/install/)    
 and      
@@ -131,7 +131,7 @@ per [System requirements and Instructions](https://docs.docker.com/desktop/windo
 1. Run [docker-compose up](https://docs.docker.com/compose/reference/up/) per documentation
 1. Run [docker build](https://docs.docker.com/engine/reference/commandline/build/) command locally to get a fresh image.
  
-## Raspberry pi Manual Install or Upgrade   
+### Raspberry pi Manual Install or Upgrade   
 From logged in RPI SSH session or console terminal perform the following. Allows you to review install code before running
 
     cd ~
@@ -140,7 +140,7 @@ From logged in RPI SSH session or console terminal perform the following. Allows
     chmod +x speed-install.sh
     ./speed-install.sh  # runs install script.
     
-## Run to view verbose logging 
+### Run to view verbose logging 
 
     cd ~/speed-camera    
     ./speed-cam.py
@@ -157,7 +157,7 @@ The config.py motion tracking variable called ***track_counter*** = can be adjus
 Default is 5 but a quad core RPI3 and latest opencv version eg 3.4.2 can be 10-15 or possibly greater.  This will
 require monitoring the verbose log messages in order to fine tune.
     
-## Run menubox.sh 
+### Run menubox.sh 
 
     cd ~/speed-camera
     ./menubox.sh
@@ -178,7 +178,7 @@ and show up-to-date images.  Press the web page refresh button to update display
 ![Speed Camera RECENT Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/assets/speed_web_recent.png)   
 ![Speed Camera IMAGES Folder Web Page](https://github.com/pageauc/speed-camera/blob/master/assets/speed_web_images.png)   
 
-## Credits  
+### Credits  
 Some of this code is based on a YouTube tutorial by
 Kyle Hounslow using C here https://www.youtube.com/watch?v=X6rPdRZzgjg
 
