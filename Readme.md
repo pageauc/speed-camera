@@ -19,6 +19,7 @@ Press GitHub copy icon on right side of code box below.  Copied! will be display
 #### Step 2
 On RPI putty SSH or terminal session right click, select paste then Enter to Download and Run **speed-install.sh** script.  
 
+To get started, see Instructions at the end of the script.
 
 ### Mac or Windows Systems
 See [Windows 10/11 or Apple Mac Docker Install Quick Start](https://github.com/pageauc/speed-camera#docker-install-quick-start)    
