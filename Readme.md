@@ -52,11 +52,11 @@ script is a whiptail menu system to allow easier management of program settings 
 * [***speed-cam.py***](https://github.com/pageauc/speed-camera/wiki/How-to-Run)
 View operation and log messages in real time. Monitor, troubleshoot and tune speed camera (see config.py for speed-cam.py settings)   
 * [***speed-cam.sh***](https://github.com/pageauc/speed-camera/tree/master/source/supervisor)
-This bash script uses supervisorctl to manage start, stop, status, Etc of speed-cam.py and speed-web.py. Configured to autostart eg due to interruption of RTSP stream. 
+This bash script uses supervisorctl to manage start, stop, status, Etc of speed-cam.py Configured to autostart eg due to interruption of RTSP stream. 
 See conf files in supervisor folder for details. Note: you must run ***./speed-cam.sh*** ***install*** to initialize symbolic links to /etc/supervisor/conf.d folder. 
 Stop running any speed-cam and/or websever processes before running ***./speed-cam.sh*** ***start*** 
 * [***speed-web.py***](https://github.com/pageauc/speed-camera/wiki/How-to-View-Data#how-to-view-images-and-or-data-from-a-web-browser)
-Allows viewing images, video and/or data from a web browser (see config.py for speed-web settings)   
+Allows viewing images, video and/or data from a web browser. This will display web server messages. (see config.py for speed-web.py settings)   
 * [***speed-web.sh***](https://github.com/pageauc/speed-camera/tree/master/source/supervisor)
 This bash script uses supervisorctl to manage start, stop, status, Etc of speed-web.py. Configured to restart eg due to interruption 
 See conf files in supervisor folder for details. Note: you must run ***./speed-web.sh*** ***install*** to initialize symbolic links to /etc/supervisor/conf.d folder. 
