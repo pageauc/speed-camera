@@ -64,7 +64,7 @@ function do_speed_cam ()
      fi
   else
      speed_cam_pid=$( pgrep -f speed-cam.py )
-     sudo ./speed-cam.sh stop
+     ./speed-cam.sh stop
       if [ ! -z "$( pgrep -f speed-cam.py )" ]; then
           whiptail --msgbox "Failed to Stop speed-cam.py   Please Investigate Problem" 20 70
       fi
@@ -87,7 +87,7 @@ function do_webserver ()
      fi
   else
      speed-web_pid=$( pgrep -f speed-web.py )
-     sudo ./speed-web.sh stop
+     ./speed-web.sh stop
      if [ ! -z "$( pgrep -f speed-web.py )" ]; then
         whiptail --msgbox "Failed to Stop speed-web.py   Please Investigate Problem." 20 70
      fi
