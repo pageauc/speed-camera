@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script will run the pi-timolo2.py as a background task
+# This script will run the speed-web.py as a background task
 # You will then be able close the terminal session.
 # use the edit option and change autostart=true
 
