@@ -16,8 +16,8 @@ class CamStream:
     Note pilibcamstream.py must be in same folder as your script.
     ----------------------------------------------------------
 
-    from pilibcamstream import PiLibCamStream
-    vs = PiLibCamStream(im_size=(640, 480), vflip=True, hflip=False).start()
+    from strmpilibcam import CamStream
+    vs = CamStream(im_size=(640, 480), vflip=True, hflip=False).start()
     while True:
         frame = vs.read()  # frame will be array that opencv can process.
         # add code to process stream image arrays.
