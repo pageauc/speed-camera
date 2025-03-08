@@ -56,6 +56,7 @@ import logging
 import sqlite3
 import numpy as np
 
+os.environ["LIBCAMERA_LOG_LEVELS"]="FATAL"
 # import the main strmcam launch module
 try:
     from strmcam import strmcam
@@ -646,6 +647,13 @@ def take_calibration_image(speed, filename, cal_image):
     # If there is bad contrast with background you can change the hash
     # colors to give more contrast.  You need to change values below
     # per values cvRed, cvBlue, cvWhite, cvBlack, cvGreen
+    print("""
+Before starting calibration, Make sure camera is aligned properly
+Set ALIGN_CAM_ON=True in config.py. Start speed-cam and speed.web.
+Review alignment image in speed-web browser under Recent.
+After alignment is OK set ALIGN_CAM_ON=False in config.py
+and Continue with calibration
+""")
 
     hash_color = cvRed
     motion_win_color = cvBlue
@@ -1257,6 +1265,18 @@ def speed_camera():
     if SHOW_SETTINGS_ON:
         # show_config(configFilePath)
         show_settings()  # Show variable settings
+
+    if CALIBRATE_ON:       
+        print("""
+    -------------------------------------------------------------------        
+    Before starting calibration, Make sure camera is aligned properly
+    Set ALIGN_CAM_ON=True in config.py. Start speed-cam and speed.web.
+    Review alignment image in speed-web browser under Recent.
+    After alignment is OK set ALIGN_CAM_ON=False in config.py
+    restart speed-cam.py
+    and Continue with calibration
+    -------------------------------------------------------------------   
+        """)       
 
     # initialize variables and settings
     ave_speed = 0.0
