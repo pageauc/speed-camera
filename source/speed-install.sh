@@ -199,7 +199,7 @@ $STATUS Complete
 
    cd ~/speed-camera
    ./speed-cam.py
-   
+
     Calibrate speed camera per wiki instructions.  After Calibration is complete
     nano config.py and update CAL_OBJ_ variables and set CALIBRATE_ON=False
 
@@ -212,7 +212,7 @@ $STATUS Complete
     ./speed-web.sh install
 
 6 - To Test Run speed execute the following commands in RPI SSH
-    or terminal session. 
+    or terminal session.
 
     ./speed-cam.py
 
