@@ -40,14 +40,14 @@ ERROR: Problem Starting RPI Camera Stream Thread
     RPI Camera Already in Use or has an Issue.
     To see if supervisorctl is using camera, Run command below.
 
-        ./timolo2.sh status
-        ./timolo2.sh stop   # Run if supervisorctl status shows timolo2-cam in use
+        ./speed-cam.sh status
+        ./speed-cam.sh stop   # Run if supervisorctl status shows speed-cam in use
                               otherwise check if another process is using camera.
-        ./timolo2.sh status # recheck status.
+        ./speed-cam.sh status # recheck status.
 
     If status does not show anything, Try
 
-        pgrep -f timolo
+        pgrep -f speed-cam
         sudo kill PID    # if PID reported by pgrep
 
     and Try Again.
@@ -75,6 +75,7 @@ Wait ...
 
         self.picam2.start()
         time.sleep(2) # Allow camera time to warm up
+        self.picam2.set_controls({"AfMode": 0, "LensPosition": 1})   # turns off autofocus
 
         # initialize variables
         self.thread = None  # Initialize Thread variable
