@@ -96,6 +96,9 @@ def strmcam():
         cam_title = None
         if cam_name == 'pilibcam':
             # check if pi libcam
+            # Disable picamera2 and libcamera logging. Some DEBUG messages may still appear
+            logging.getLogger('picamera2').setLevel(logging.CRITICAL)
+            logging.getLogger('libcamera').setLevel(logging.CRITICAL)
             if not is_pi_legacy_cam():
                 if not os.path.exists('/usr/bin/libcamera-still'):
                     logging.error('libcamera not Installed')
