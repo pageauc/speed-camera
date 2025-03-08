@@ -195,12 +195,13 @@ $STATUS Complete
    Review and modify the config.py settings as required using nano editor
 4. To start speed-cam open SSH or a GUI desktop Terminal session
    and change to speed-camera folder and launch per commands below
+   If you need to quickly align camera set config.py ALIGN_CAM_ON=True.
 
    cd ~/speed-camera
    ./speed-cam.py
    
     Calibrate speed camera per wiki instructions.  After Calibration is complete
-    nano config.py and update CAL_OBJ_ variables and CALIBRATE_ON = False
+    nano config.py and update CAL_OBJ_ variables and set CALIBRATE_ON=False
 
 5 - To run speed-cam.py and speed-web.py as background tasks
     You will need to create symlinks to enable supervisorctl operation per below.

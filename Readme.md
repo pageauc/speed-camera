@@ -19,7 +19,8 @@ Press GitHub copy icon on right side of code box below.  Copied! will be display
 #### Step 2
 On RPI putty SSH or terminal session right click, select paste then Enter to Download and Run **speed-install.sh** script.  
 
-To get started, see Instructions at the end of the script.
+To get started, see Instructions at the end of the install script. Initial default config.py setting is CALIBRATE_ON=True.
+You may also need to Align Camera using config.py ALIGN_CAM_ON=True setting.  Once calibration is complete set CALIBRATE_ON=False
 
 ### Mac or Windows Systems
 See [Windows 10/11 or Apple Mac Docker Install Quick Start](https://github.com/pageauc/speed-camera#docker-install-quick-start)    
