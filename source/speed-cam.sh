@@ -97,9 +97,9 @@ Usage: ./$(basename "$0") [Option]
   status       Status of supervisor service
   edit         nano edit $conf_file_dir
   log          tail -n 200 /var/log/$service_name.log
-  install      Install symbolic link for timolo2-cam supervisor service
-  uninstall    Uninstall symbolic link for timolo2-cam supervisor service
-  upgrade      Upgrade pi-timolo2 files from GitHub
+  install      Install symbolic link for speed-cam supervisor service
+  uninstall    Uninstall symbolic link for speed-cam supervisor service
+  upgrade      Upgrade speed-camera files from GitHub
   help         Display Usage message and Status
 
   Example:  ./$(basename "$0") status
