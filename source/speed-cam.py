@@ -2000,12 +2000,12 @@ if __name__ == "__main__":
     # Auto Calculate motion crop area settings
 
     if MO_CROP_AUTO_ON:
-        X_SCALE = 8.0
-        Y_SCALE = 4.0
+        X_SCALE = 3.5
+        Y_SCALE = 3.0
         # reduce motion area for larger stream sizes
         if img_width > 1000:
-            X_SCALE = 3.0
-            Y_SCALE = 3.0
+            X_SCALE = 2.8
+            Y_SCALE = 2.5
         # If motion box crop settings not found in config.py then
         # Auto adjust the crop image to suit the real image size.
         # For details See comments in config.py Motion Events settings section
