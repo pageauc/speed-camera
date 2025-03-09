@@ -2,14 +2,15 @@
 """
 speed-cam.py written by Claude Pageau
 Windows, Unix, Raspberry (Pi) - python opencv2 Object Speed tracking
-using picamera module, Web Cam or RTSP IP Camera
+using Pi camera module, Web Cam or RTSP IP Camera
+Newest release supports libcamera, picamera2 python3 module
 GitHub Repo at https://github.com/pageauc/speed-camera
 Post issue to Github.
 
 This is a python openCV object speed tracking demonstration program.
 It will detect speed in the field of view and use openCV to calculate the
 largest contour and return its x,y center coordinate.  The image is tracked for
-a specified loop count and the final speed is calculated.
+a specified loop count and the final speed is calculated per calibration settings.
 Note: Variables for this program are stored in config.py
 
 Some of this code is based on a YouTube tutorial by
@@ -27,7 +28,7 @@ Installation
 ------------
 Requires a Raspberry Pi or compatible, Windows, Unix PC or Mac with webcam or RTSP IP Camera.
 or a virtual machine unix distro eg Debian. Runs best under python3 but code is compatible with python2.
-Works with RPI camera module using picamera or libpicamera2 python module.
+Works with RPI camera module using picamera or libcamera, picamera2 python3 module.
 See github wiki for detail https://github.com/pageauc/speed-camera/wiki
 
 Install from a GitHub download, Docker or using Curl install from logged in SSH session per commands below.
@@ -40,11 +41,9 @@ or
     ./speed-install.sh
     ./speed-cam.py
 
-Note to Self - Look at eliminating python variable camel case and use all snake naming
-
 """
 from __future__ import print_function
-PROG_VER = "13.2"  # current version of this python script
+PROG_VER = "13.3"  # current version of this python script
 print('Loading Wait...')
 import os
 import sys
