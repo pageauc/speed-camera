@@ -42,7 +42,7 @@ ERROR: Problem Starting RPI Camera Stream Thread
 
         ./speed-cam.sh status
         ./speed-cam.sh stop   # Run if supervisorctl status shows speed-cam in use
-                              otherwise check if another process is using camera.
+                                otherwise check if another process is using camera.
         ./speed-cam.sh status # recheck status.
 
     If status does not show anything, Try

@@ -28,7 +28,7 @@ Installation
 ------------
 Requires a Raspberry Pi or compatible, Windows, Unix PC or Mac with webcam or RTSP IP Camera.
 or a virtual machine unix distro eg Debian. Runs best under python3 but code is compatible with python2.
-Works with RPI camera module using picamera or libcamera, picamera2 python3 module.
+Works with RPI camera module using legacy picamera or libcamera, picamera2 python3 module.
 See github wiki for detail https://github.com/pageauc/speed-camera/wiki
 
 Install from a GitHub download, Docker or using Curl install from logged in SSH session per commands below.
