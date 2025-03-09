@@ -55,8 +55,15 @@ done
 
 # Install supervisor files
 wget -O Readme.md -q --show-progress https://raw.github.com/pageauc/speed-camera/master/Readme.md
-wget -O supervisor/speed-cam.conf -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/speed-cam.conf
-wget -O supervisor/speed-web.conf -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/speed-web.conf
+
+if [ ! -f supervisor/speed-cam.conf ]; then   # Do not overwrite existing file
+    wget -O supervisor/speed-cam.conf -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/speed-cam.conf
+fi
+
+if [ ! -f supervisor/speed-web.conf ]; then   # Do not overwrite existing file
+    wget -O supervisor/speed-web.conf -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/speed-web.conf
+fi
+
 wget -O supervisor/Readme.md -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/supervisor/Readme.md
 wget -O media/webserver.txt -q --show-progress https://raw.github.com/pageauc/speed-camera/master/source/webserver.txt
 
