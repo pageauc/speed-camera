@@ -1266,17 +1266,17 @@ def speed_camera():
         # show_config(configFilePath)
         show_settings()  # Show variable settings
 
-    if CALIBRATE_ON:       
+    if CALIBRATE_ON:
         print("""
-    --------------------- Align Camera --------------------------------        
+    --------------------- Align Camera --------------------------------
     Before starting calibration, Make sure camera is aligned properly
     Set ALIGN_CAM_ON=True in config.py. Start speed-cam and speed.web
     Review alignment image in speed-web browser under Recent folder.
     After alignment is OK, set ALIGN_CAM_ON=False in config.py
     restart speed-cam.py
     and Continue with calibration
-    -------------------------------------------------------------------   
-        """)       
+    -------------------------------------------------------------------
+        """)
 
     # initialize variables and settings
     ave_speed = 0.0
