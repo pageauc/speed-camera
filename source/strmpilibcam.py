@@ -75,7 +75,10 @@ Wait ...
 
         self.picam2.start()
         time.sleep(2) # Allow camera time to warm up
-        self.picam2.set_controls({"AfMode": 0, "LensPosition": 1})   # turns off autofocus
+        try:
+            self.picam2.set_controls({"AfMode": 0, "LensPosition": 1})   # turns off autofocus
+        except RuntimeError:
+            pass
 
         # initialize variables
         self.thread = None  # Initialize Thread variable
