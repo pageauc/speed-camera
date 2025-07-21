@@ -186,7 +186,7 @@ sudo apt-get install -yq python3-matplotlib
 sudo apt-get install -yq python3-numpy
 sudo apt-get install -yq supervisor
 sudo apt-get install -yq libgl1-mesa-dri
-sudo apt-get install -yq fonts-freefont-ttf # Required for Jessie Lite Only
+sudo apt-get install -yq fonts-freefont-ttf # Required for RPI OS Lite Only
 sudo apt-get install -yq pandoc  # convert markdown to plain text for Readme.md
 dos2unix -q *
 
