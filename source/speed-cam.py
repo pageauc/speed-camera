@@ -1162,8 +1162,8 @@ def get_motion_contours(grayimage1):
             image_ok = True
         except (ValueError, TypeError):
             if time.time() - start_time > timeout:
-               logging.error("image Stream Image is Not Complete. Cannot Crop. Retry.")
-               logging.error(
+                logging.error("image Stream Image is Not Complete. Cannot Crop. Retry.")
+                logging.error(
                     "%i second timeout exceeded.  Partial or No images received.",
                     timeout,
                 )
