@@ -1161,18 +1161,18 @@ def get_motion_contours(grayimage1):
             image_crop = image[MO_CROP_Y_UPPER:MO_CROP_Y_LOWER, MO_CROP_X_LEFT:MO_CROP_X_RIGHT]
             image_ok = True
         except (ValueError, TypeError):
-            logging.error("image Stream Image is Not Complete. Cannot Crop. Retry.")
             if time.time() - start_time > timeout:
-                logging.error(
+               logging.error("image Stream Image is Not Complete. Cannot Crop. Retry.")
+               logging.error(
                     "%i second timeout exceeded.  Partial or No images received.",
                     timeout,
                 )
                 logging.error(
                     "Possible camera or communication problem.  Please Investigate."
                 )
-                sys.exit(1)
-            else:
-                image_ok = False
+                start_time = time.time()
+            image_ok = False
+                
     # Convert to gray scale, which is easier
     grayimage2 = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
     # Get differences between the two greyed images
