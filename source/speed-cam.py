@@ -43,7 +43,7 @@ or
 
 """
 from __future__ import print_function
-PROG_VER = "13.3"  # current version of this python script
+PROG_VER = "13.4"  # current version of this python script
 print('Loading Wait...')
 import os
 import sys
@@ -1145,13 +1145,14 @@ def get_motion_contours(grayimage1):
     Read a Camera stream image frame, crop and
     get diff of two cropped greyscale images.
     Use opencv to detect motion contours.
-    Added timeout in case camera has a problem.
+    Added timeout_sec in case camera has a problem.
     Eg. Network problem with RTSP cam
     """
     image_ok = False
     start_time = time.time()
-    timeout = 60  # seconds to wait if camera communications is lost eg network stream.
+    timeout_sec = 60  # seconds to wait if camera communications is lost eg network stream.
                   # Note to self.  Look at adding setting to config.py
+    minutes_to_wait = 10
     global differenceimage
 
     while not image_ok:
@@ -1161,16 +1162,20 @@ def get_motion_contours(grayimage1):
             image_crop = image[MO_CROP_Y_UPPER:MO_CROP_Y_LOWER, MO_CROP_X_LEFT:MO_CROP_X_RIGHT]
             image_ok = True
         except (ValueError, TypeError):
-            if time.time() - start_time > timeout:
+            if time.time() - start_time > timeout_sec:
                 logging.error("image Stream Image is Not Complete. Cannot Crop. Retry.")
                 logging.error(
-                    "%i second timeout exceeded.  Partial or No images received.",
-                    timeout,
+                    "%i min %i second timeout remaining.  Partial or No images received.",
+                    minutes_to_wait, timeout_sec,
                 )
                 logging.error(
                     "Possible camera or communication problem.  Please Investigate."
                 )
                 start_time = time.time()
+                minutes_to_wait -= 1
+                if minutes_to_wait < 0:
+                    logging.error("Timout Exceeded. Aborting.")
+                    sys.exit(1)
             image_ok = False
                 
     # Convert to gray scale, which is easier
