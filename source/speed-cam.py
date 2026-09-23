@@ -1729,10 +1729,16 @@ def speed_camera():
                             # Insert speed_data into sqlite3 database table
                             # Note cam_location and status may not be in proper order
                             # Unless speed table is recreated.
+                            # Always use parameterized queries: sqlite3 >= 3.41 rejects double-quoted
+                            # string literals (DQS), so ".format(tuple)" style inserts break on Trixie+.
                             try:
+                                # 1. Build placeholder list from the data itself
                                 placeholders = ",".join(["?"] * len(speed_data))
+                                
+                                # 2. Build SQL with ? marks (never embed values in the text) 
                                 sql_cmd = "INSERT INTO {} VALUES ({})".format(DB_TABLE, placeholders)
 
+                                # 3. Connect, execute with data as second argument, commit, close
                                 db_conn = db_check(DB_PATH)
                                 db_conn.execute(sql_cmd, speed_data)
                                 db_conn.commit()
