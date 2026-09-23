@@ -1734,8 +1734,8 @@ def speed_camera():
                             try:
                                 # 1. Build placeholder list from the data itself
                                 placeholders = ",".join(["?"] * len(speed_data))
-                                
-                                # 2. Build SQL with ? marks (never embed values in the text) 
+
+                                # 2. Build SQL with ? marks (never embed values in the text)
                                 sql_cmd = "INSERT INTO {} VALUES ({})".format(DB_TABLE, placeholders)
 
                                 # 3. Connect, execute with data as second argument, commit, close
